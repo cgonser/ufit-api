@@ -1,0 +1,41 @@
+doctrine:
+    dbal:
+        url: '%env(resolve:DATABASE_URL)%'
+        types:
+            uuid: Ramsey\Uuid\Doctrine\UuidType
+
+        # IMPORTANT: You MUST configure your server version,
+        # either here or in the DATABASE_URL env var (see .env file)
+        #server_version: '5.7'
+    orm:
+        auto_generate_proxy_classes: true
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+        auto_mapping: true
+        mappings:
+            App\Core:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/src/Core/Entity'
+                prefix: 'App\Core\Entity'
+                alias: AppCore
+
+            App\Customer:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/src/Customer/Entity'
+                prefix: 'App\Customer\Entity'
+                alias: AppCustomer
+
+            App\Vendor:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/src/Vendor/Entity'
+                prefix: 'App\Vendor\Entity'
+                alias: AppVendor
+
+            App\Marketplace:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/src/Marketplace/Entity'
+                prefix: 'App\Marketplace\Entity'
+                alias: AppVendor

@@ -1,0 +1,47 @@
+security:
+    encoders:
+        # Our user class and the algorithm we'll use to encode passwords
+        # 'auto' means to let Symfony choose the best possible password hasher (Argon2 or Bcrypt)
+        # https://symfony.com/doc/current/security.html#c-encoding-passwords
+        App\Vendor\Entity\Vendor: 'auto'
+        App\Customer\Entity\Customer: 'auto'
+
+    providers:
+        vendors:
+            entity: { class: App\Vendor\Entity\Vendor, property: email }
+        customers:
+            entity: { class: App\Customer\Entity\Customer, property: email }
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        customer_login:
+            pattern: ^/customers/login
+            stateless: true
+            anonymous: true
+            provider: customers
+            json_login:
+                check_path: /customers/login
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        customer:
+            pattern: ^/customers
+            stateless: true
+            anonymous: true
+            guard:
+                authenticators:
+                    - lexik_jwt_authentication.jwt_token_authenticator
+            provider: customers
+
+
+    # Easy way to control access for large sections of your site
+    # Note: Only the *first* access control that matches will be used
+    access_control:
+        - { path: ^/customers/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/customers, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
+        - { path: ^/customers, roles: IS_AUTHENTICATED_FULLY }
+
+        # - { path: ^/profile, roles: ROLE_USER }
