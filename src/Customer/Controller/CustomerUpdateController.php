@@ -5,6 +5,7 @@ namespace App\Customer\Controller;
 use App\Core\Exception\ApiJsonException;
 use App\Core\Exception\ApiJsonInputValidationException;
 use App\Core\Response\ApiJsonResponse;
+use App\Customer\Dto\CustomerDto;
 use App\Customer\Entity\Customer;
 use App\Customer\Exception\CustomerEmailAddressInUseException;
 use App\Customer\Exception\CustomerNotFoundException;
@@ -12,6 +13,8 @@ use App\Customer\Provider\CustomerProvider;
 use App\Customer\Request\CustomerUpdateRequest;
 use App\Customer\ResponseMapper\CustomerResponseMapper;
 use App\Customer\Service\CustomerService;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Annotations as OA;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -40,6 +43,21 @@ class CustomerUpdateController extends AbstractController
      * @Route("/customers", methods="PUT", name="customers_update")
      *
      * @ParamConverter("customerUpdateRequest", converter="fos_rest.request_body")
+     *
+     * @OA\Tag(name="Customer")
+     * @OA\RequestBody(
+     *     required=true,
+     *     @OA\JsonContent(ref=@Model(type=CustomerUpdateRequest::class))
+     * )
+     * @OA\Response(
+     *     response=204,
+     *     description="Updates the current customer",
+     *     @OA\JsonContent(ref=@Model(type=CustomerDto::class))
+     * )
+     * @OA\Response(
+     *     response=400,
+     *     description="Invalid input"
+     * )
      */
     public function update(
         CustomerUpdateRequest $customerUpdateRequest,

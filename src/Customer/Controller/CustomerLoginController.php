@@ -8,7 +8,6 @@ use App\Core\Response\ApiJsonResponse;
 use App\Customer\Entity\Customer;
 use App\Customer\Exception\CustomerInvalidPasswordException;
 use App\Customer\Request\CustomerPasswordChangeRequest;
-use App\Customer\Service\CustomerService;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -17,32 +16,31 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
-class CustomerPasswordController extends AbstractController
+class CustomerLoginController extends AbstractController
 {
-    private CustomerService $customerService;
-
-    public function __construct(CustomerService $customerService)
-    {
-        $this->customerService = $customerService;
-    }
-
     /**
-     * @Route("/customers/password", methods="PUT", name="customer_password_change")
-     *
-     * @ParamConverter("customerPasswordChangeRequest", converter="fos_rest.request_body")
+     * @Route("/customers/login", methods="POST")
      *
      * @OA\Tag(name="Customer")
      * @OA\RequestBody(
      *     required=true,
-     *     @OA\JsonContent(ref=@Model(type=CustomerPasswordChangeRequest::class))
+     *     @OA\JsonContent(
+     *         required={"username", "password"},
+     *         @OA\Property(property="username", type="string"),
+     *         @OA\Property(property="password", type="string")
+     *     )
      * )
      * @OA\Response(
-     *     response=204,
-     *     description="Updates the current customer"
+     *     response=200,
+     *     description="Provides the authentication token"
      * )
      * @OA\Response(
      *     response=400,
      *     description="Invalid input"
+     * )
+     * @OA\Response(
+     *     response=401,
+     *     description="Invalid credentials"
      * )
      */
     public function changePassword(

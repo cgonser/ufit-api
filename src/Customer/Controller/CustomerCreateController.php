@@ -5,10 +5,13 @@ namespace App\Customer\Controller;
 use App\Core\Exception\ApiJsonException;
 use App\Core\Exception\ApiJsonInputValidationException;
 use App\Core\Response\ApiJsonResponse;
+use App\Customer\Dto\CustomerDto;
 use App\Customer\Exception\CustomerEmailAddressInUseException;
 use App\Customer\Request\CustomerCreateRequest;
 use App\Customer\ResponseMapper\CustomerResponseMapper;
 use App\Customer\Service\CustomerService;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Annotations as OA;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,6 +36,21 @@ class CustomerCreateController extends AbstractController
      * @Route("/customers", methods="POST", name="customers_create")
      *
      * @ParamConverter("customerCreateRequest", converter="fos_rest.request_body")
+     *
+     * @OA\Tag(name="Customer")
+     * @OA\RequestBody(
+     *     required=true,
+     *     @OA\JsonContent(ref=@Model(type=CustomerCreateRequest::class))
+     * )
+     * @OA\Response(
+     *     response=201,
+     *     description="Creates a new customer",
+     *     @OA\JsonContent(ref=@Model(type=CustomerDto::class))
+     * )
+     * @OA\Response(
+     *     response=400,
+     *     description="Invalid input"
+     * )
      */
     public function create(
         CustomerCreateRequest $customerCreateRequest,

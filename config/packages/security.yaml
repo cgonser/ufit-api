@@ -36,12 +36,10 @@ security:
                     - lexik_jwt_authentication.jwt_token_authenticator
             provider: customers
 
-
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/customers/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/customers, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
         - { path: ^/customers, roles: IS_AUTHENTICATED_FULLY }
-
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/doc, roles: IS_AUTHENTICATED_ANONYMOUSLY }
