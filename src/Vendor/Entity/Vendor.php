@@ -3,6 +3,8 @@
 namespace App\Vendor\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Doctrine\UuidGenerator;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -10,16 +12,17 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass="App\Vendor\Repository\VendorRepository")
  * @ORM\Table(name="vendor")
- * @UniqueEntity(fields={"email"}, message="vendor.error.email_not_unique")
+ * @UniqueEntity(fields={"email"})
  */
 class Vendor implements UserInterface, \Serializable
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="uuid", unique=true)
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class=UuidGenerator::class)
      */
-    private int $id;
+    private UuidInterface $id;
 
     /**
      * @ORM\Column(type="string")
@@ -49,7 +52,7 @@ class Vendor implements UserInterface, \Serializable
      */
     private ?string $slug = null;
 
-    public function getId(): ?int
+    public function getId(): ?UuidInterface
     {
         return $this->id;
     }
@@ -177,5 +180,10 @@ class Vendor implements UserInterface, \Serializable
     {
         // add $this->salt too if you don't use Bcrypt or Argon2i
         [$this->id, $this->email, $this->password] = unserialize($serialized, ['allowed_classes' => false]);
+    }
+
+    public function isNew(): bool
+    {
+        return !isset($this->id);
     }
 }

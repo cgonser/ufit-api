@@ -2,82 +2,60 @@
 
 namespace App\Vendor\Controller;
 
-use App\Vendor\Entity\VendorPlan;
-use App\Vendor\Form\VendorPlanType;
-use App\Vendor\Repository\VendorPlanRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use App\Core\Exception\ApiJsonException;
+use App\Core\Response\ApiJsonResponse;
+use App\Vendor\Dto\VendorPlanDto;
+use App\Vendor\Entity\Vendor;
+use App\Vendor\Provider\VendorPlanProvider;
+use App\Vendor\ResponseMapper\VendorPlanResponseMapper;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Annotations as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/plan")
- * @IsGranted("ROLE_VENDOR")
- */
 class VendorPlanController extends AbstractController
 {
-    /**
-     * @Route("/", methods="GET", name="vendor_plan_index")
-     */
-    public function index(VendorPlanRepository $vendorPlanRepository): Response
-    {
-        $vendorPlans = $vendorPlanRepository->findBy(['vendor' => $this->getUser()]);
+    private VendorPlanResponseMapper $vendorPlanResponseMapper;
 
-        return $this->render('vendor/plan/index.html.twig', [
-            'vendor_plans' => $vendorPlans,
-        ]);
+    private VendorPlanProvider $vendorPlanProvider;
+
+    public function __construct(
+        VendorPlanProvider $vendorPlanProvider,
+        VendorPlanResponseMapper $vendorPlanResponseMapper
+    ) {
+        $this->vendorPlanResponseMapper = $vendorPlanResponseMapper;
+        $this->vendorPlanProvider = $vendorPlanProvider;
     }
 
     /**
-     * @Route("/new", methods="GET|POST", name="vendor_plan_new")
+     * @Route("/vendors/{vendorId}/plans", methods="GET", name="vendors_plans_get")
+     *
+     * @OA\Tag(name="VendorPlan")
+     * @OA\Response(
+     *     response=200,
+     *     description="Returns the information about a vendor plans",
+     *     @OA\JsonContent(
+     *         type="array",
+     *         @OA\Items(ref=@Model(type=VendorPlanDto::class)))
+     *     )
+     * )
+     *
+     * @Security(name="Bearer")
      */
-    public function new(Request $request): Response
+    public function getVendorPlans(string $vendorId): Response
     {
-        $vendorPlan = new VendorPlan();
-        $vendorPlan->setVendor($this->getUser());
-
-        $form = $this->createForm(VendorPlanType::class, $vendorPlan);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($vendorPlan);
-            $em->flush();
-
-            $this->addFlash('success', 'vendor.plan.label.created_successfully');
-
-            return $this->redirectToRoute('vendor_plan_index');
+        if ('current' == $vendorId) {
+            /** @var Vendor $vendor */
+            $vendor = $this->getUser();
+        } else {
+            // vendor fetching not implemented yet; requires also authorization
+            throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
         }
 
-        return $this->render('vendor/plan/new.html.twig', [
-            'vendor_plan' => $vendorPlan,
-            'form' => $form->createView(),
-        ]);
-    }
+        $vendorPlans = $this->vendorPlanProvider->findVendorPlans($vendor);
 
-
-    /**
-     * @Route("/{id<\d+>}/edit", methods="GET|POST", name="vendor_plan_edit")
-     * @IsGranted("edit", subject="vendorPlan", message="general.label.access_denied")
-     */
-    public function edit(Request $request, VendorPlan $vendorPlan): Response
-    {
-        $form = $this->createForm(VendorPlanType::class, $vendorPlan);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-
-            $this->addFlash('success', 'vendor.plan.label.updated_successfully');
-
-            return $this->redirectToRoute('vendor_plan_edit', ['id' => $vendorPlan->getId()]);
-        }
-
-        return $this->render('vendor/plan/edit.html.twig', [
-            'vendor_plan' => $vendorPlan,
-            'form' => $form->createView(),
-        ]);
+        return new ApiJsonResponse(Response::HTTP_OK, $this->vendorPlanResponseMapper->mapMultiple($vendorPlans));
     }
 }

@@ -342,6 +342,9 @@
     "symfony/http-kernel": {
         "version": "v5.1.8"
     },
+    "symfony/intl": {
+        "version": "v5.1.8"
+    },
     "symfony/mailer": {
         "version": "4.3",
         "recipe": {
@@ -406,6 +409,9 @@
         ]
     },
     "symfony/polyfill-intl-grapheme": {
+        "version": "v1.20.0"
+    },
+    "symfony/polyfill-intl-icu": {
         "version": "v1.20.0"
     },
     "symfony/polyfill-intl-idn": {

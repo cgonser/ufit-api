@@ -17,45 +17,35 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Customer implements UserInterface, \Serializable
 {
     /**
-     * @var UuidInterface
-     *
      * @ORM\Id
      * @ORM\Column(type="uuid", unique=true)
      * @ORM\GeneratedValue(strategy="CUSTOM")
      * @ORM\CustomIdGenerator(class=UuidGenerator::class)
      */
-    private $id;
+    private UuidInterface $id;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string")
      * @Assert\NotBlank()
      */
-    private $name;
+    private string $name;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string", unique=true)
      * @Assert\NotBlank()
      * @Assert\Email()
      */
-    private $email;
+    private string $email;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string")
      */
-    private $password;
+    private ?string $password;
 
     /**
-     * @var array
-     *
      * @ORM\Column(type="json")
      */
-    private $roles = [];
+    private array $roles = [];
 
     public function getId(): ?UuidInterface
     {

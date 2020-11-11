@@ -3,21 +3,25 @@
 namespace App\Core\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Doctrine\UuidGenerator;
+use Ramsey\Uuid\UuidInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Core\Repository\CurrencyRepository")
  * @ORM\Table(name="currency")
+ * @UniqueEntity(fields={"code"})
  */
-
 class Currency
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="uuid", unique=true)
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class=UuidGenerator::class)
      */
-    private int $id;
+    private UuidInterface $id;
 
     /**
      * @ORM\Column(type="string", nullable=false)
@@ -31,7 +35,7 @@ class Currency
      */
     private string $code;
 
-    public function getId(): int
+    public function getId(): UuidInterface
     {
         return $this->id;
     }

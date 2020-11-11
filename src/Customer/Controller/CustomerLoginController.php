@@ -2,24 +2,14 @@
 
 namespace App\Customer\Controller;
 
-use App\Core\Exception\ApiJsonException;
-use App\Core\Exception\ApiJsonInputValidationException;
-use App\Core\Response\ApiJsonResponse;
-use App\Customer\Entity\Customer;
-use App\Customer\Exception\CustomerInvalidPasswordException;
-use App\Customer\Request\CustomerPasswordChangeRequest;
-use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class CustomerLoginController extends AbstractController
 {
     /**
-     * @Route("/customers/login", methods="POST")
+     * @Route("/customers/login", methods="POST", name="customer_login_check")
      *
      * @OA\Tag(name="Customer")
      * @OA\RequestBody(
@@ -43,23 +33,7 @@ class CustomerLoginController extends AbstractController
      *     description="Invalid credentials"
      * )
      */
-    public function changePassword(
-        CustomerPasswordChangeRequest $customerPasswordChangeRequest,
-        ConstraintViolationListInterface $validationErrors
-    ): Response {
-        try {
-            if ($validationErrors->count() > 0) {
-                throw new ApiJsonInputValidationException($validationErrors);
-            }
-
-            /** @var Customer $customer */
-            $customer = $this->getUser();
-
-            $this->customerService->changePassword($customer, $customerPasswordChangeRequest);
-
-            return new ApiJsonResponse(Response::HTTP_NO_CONTENT);
-        } catch (CustomerInvalidPasswordException $e) {
-            throw new ApiJsonException(Response::HTTP_BAD_REQUEST, $e->getMessage());
-        }
+    public function login()
+    {
     }
 }

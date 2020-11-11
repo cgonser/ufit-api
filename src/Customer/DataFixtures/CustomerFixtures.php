@@ -2,18 +2,18 @@
 
 namespace App\Customer\DataFixtures;
 
-use App\Customer\Entity\Customer;
+use App\Customer\Request\CustomerCreateRequest;
+use App\Customer\Service\CustomerService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class CustomerFixtures extends Fixture
 {
-    private $passwordEncoder;
+    private CustomerService $customerService;
 
-    public function __construct(UserPasswordEncoderInterface $passwordEncoder)
+    public function __construct(CustomerService $customerService)
     {
-        $this->passwordEncoder = $passwordEncoder;
+        $this->customerService = $customerService;
     }
 
     public function load(ObjectManager $manager): void
@@ -23,15 +23,15 @@ class CustomerFixtures extends Fixture
 
     private function loadCustomers(ObjectManager $manager): void
     {
-        foreach ($this->getCustomerData() as [$name, $password, $email, $roles]) {
-            $user = new Customer();
-            $user->setName($name);
-            $user->setEmail($email);
-            $user->setPassword($this->passwordEncoder->encodePassword($user, $password));
-            $user->setRoles($roles);
+        foreach ($this->getCustomerData() as [$name, $password, $email]) {
+            $customerCreateRequest = new CustomerCreateRequest();
+            $customerCreateRequest->name = $name;
+            $customerCreateRequest->email = $email;
+            $customerCreateRequest->password = $password;
 
-            $manager->persist($user);
-            $this->addReference($email, $user);
+            $customer = $this->customerService->create($customerCreateRequest);
+
+            $this->addReference($email, $customer);
         }
 
         $manager->flush();
@@ -40,9 +40,9 @@ class CustomerFixtures extends Fixture
     private function getCustomerData(): array
     {
         return [
-            ['Customer 1', '123', 'customer1@customer.com', ['ROLE_CUSTOMER']],
-            ['Customer 2', '123', 'customer2@customer.com', ['ROLE_CUSTOMER']],
-            ['Customer 3', '123', 'customer3@customer.com', ['ROLE_CUSTOMER']],
+            ['Customer 1', '123', 'customer1@customer.com'],
+            ['Customer 2', '123', 'customer2@customer.com'],
+            ['Customer 3', '123', 'customer3@customer.com'],
         ];
     }
 }

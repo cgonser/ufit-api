@@ -23,12 +23,12 @@ services:
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
 
-    App\Vendor\:
-        resource: '../src/Vendor/*'
-        exclude: '../src/Vendor/{DependencyInjection,Entity,Tests,Kernel.php}'
+    App\Core\:
+        resource: '../src/Core/*'
+        exclude: '../src/Core/{DependencyInjection,Entity,Tests,Kernel.php}'
 
-    App\Vendor\Controller\:
-        resource: '../src/Vendor/Controller'
+    App\Core\Controller\:
+        resource: '../src/Core/Controller'
         tags: ['controller.service_arguments']
 
     App\Customer\:
@@ -39,21 +39,25 @@ services:
         resource: '../src/Customer/Controller'
         tags: ['controller.service_arguments']
 
-    App\Marketplace\:
-        resource: '../src/Marketplace/*'
-        exclude: '../src/Marketplace/{DependencyInjection,Entity,Tests,Kernel.php}'
+    App\Vendor\:
+        resource: '../src/Vendor/*'
+        exclude: '../src/Vendor/{DependencyInjection,Entity,Tests,Kernel.php}'
 
-    App\Marketplace\Controller\:
-        resource: '../src/Marketplace/Controller'
+    App\Vendor\Controller\:
+        resource: '../src/Vendor/Controller'
+        tags: ['controller.service_arguments']
+
+    App\Subscription\:
+        resource: '../src/Subscription/*'
+        exclude: '../src/Subscription/{DependencyInjection,Entity,Tests,Kernel.php}'
+
+    App\Subscription\Controller\:
+        resource: '../src/Subscription/Controller'
         tags: ['controller.service_arguments']
 
     #
     #    App\Blog\EventSubscriber\CommentNotificationSubscriber:
     #        $sender: '%app.notifications.email_sender%'
-
-    App\Core\:
-        resource: '../src/Core/*'
-        exclude: '../src/Core/{DependencyInjection,Entity,Tests,Kernel.php}'
 
     App\Core\ArgumentResolver\UuidValueResolver:
         tags:

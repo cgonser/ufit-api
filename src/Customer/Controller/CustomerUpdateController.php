@@ -40,7 +40,7 @@ class CustomerUpdateController extends AbstractController
     }
 
     /**
-     * @Route("/customers", methods="PUT", name="customers_update")
+     * @Route("/customers/{customerId}", methods="PUT", name="customers_update")
      *
      * @ParamConverter("customerUpdateRequest", converter="fos_rest.request_body")
      *
@@ -51,7 +51,7 @@ class CustomerUpdateController extends AbstractController
      * )
      * @OA\Response(
      *     response=204,
-     *     description="Updates the current customer",
+     *     description="Updates a customer",
      *     @OA\JsonContent(ref=@Model(type=CustomerDto::class))
      * )
      * @OA\Response(
@@ -60,6 +60,7 @@ class CustomerUpdateController extends AbstractController
      * )
      */
     public function update(
+        string $customerId,
         CustomerUpdateRequest $customerUpdateRequest,
         ConstraintViolationListInterface $validationErrors
     ): Response {
@@ -68,8 +69,13 @@ class CustomerUpdateController extends AbstractController
                 throw new ApiJsonInputValidationException($validationErrors);
             }
 
-            /** @var Customer $customer */
-            $customer = $this->getUser();
+            if ('current' == $customerId) {
+                /** @var Customer $customer */
+                $customer = $this->getUser();
+            } else {
+                // customer fetching not implemented yet; requires also authorization
+                throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
+            }
 
             $this->customerService->update($customer, $customerUpdateRequest);
 

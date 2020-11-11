@@ -4,6 +4,8 @@ namespace App\Vendor\Entity;
 
 use App\Core\Entity\Currency;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Doctrine\UuidGenerator;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -15,10 +17,11 @@ class VendorPlan
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="uuid", unique=true)
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class=UuidGenerator::class)
      */
-    private int $id;
+    private UuidInterface $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="Vendor")
@@ -61,7 +64,7 @@ class VendorPlan
      */
     private ?\DateTimeInterface $updatedAt = null;
 
-    public function getId(): ?int
+    public function getId(): ?UuidInterface
     {
         return $this->id;
     }

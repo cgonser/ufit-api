@@ -33,9 +33,9 @@ doctrine:
                 prefix: 'App\Vendor\Entity'
                 alias: AppVendor
 
-            App\Marketplace:
+            App\Subscription:
                 is_bundle: false
                 type: annotation
-                dir: '%kernel.project_dir%/src/Marketplace/Entity'
-                prefix: 'App\Marketplace\Entity'
+                dir: '%kernel.project_dir%/src/Subscription/Entity'
+                prefix: 'App\Subscription\Entity'
                 alias: AppVendor

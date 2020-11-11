@@ -2,20 +2,18 @@
 
 namespace App\Vendor\DataFixtures;
 
-use App\Vendor\Entity\Vendor;
-use App\Vendor\Repository\VendorRepository;
-use App\Vendor\Service\VendorManager;
+use App\Vendor\Request\VendorCreateRequest;
+use App\Vendor\Service\VendorService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class VendorFixtures extends Fixture
 {
-    private VendorManager $vendorManager;
+    private VendorService $vendorService;
 
-    public function __construct(VendorManager $vendorManager)
+    public function __construct(VendorService $vendorService)
     {
-        $this->vendorManager = $vendorManager;
+        $this->vendorService = $vendorService;
     }
 
     public function load(ObjectManager $manager): void
@@ -26,12 +24,12 @@ class VendorFixtures extends Fixture
     private function loadVendors(ObjectManager $manager): void
     {
         foreach ($this->getVendorData() as [$name, $password, $email]) {
-            $vendor = new Vendor();
-            $vendor->setName($name);
-            $vendor->setPassword($password);
-            $vendor->setEmail($email);
+            $vendorCreateRequest = new VendorCreateRequest();
+            $vendorCreateRequest->name = $name;
+            $vendorCreateRequest->password = $password;
+            $vendorCreateRequest->email = $email;
 
-            $this->vendorManager->createVendor($vendor);
+            $vendor = $this->vendorService->create($vendorCreateRequest);
 
             $this->addReference($email, $vendor);
         }
@@ -42,7 +40,9 @@ class VendorFixtures extends Fixture
     private function getVendorData(): array
     {
         return [
-            ['Vendor', '123', 'vendor@gonser.eu'],
+            ['Vendor 1', '123', 'vendor1@vendor.com'],
+            ['Vendor 2', '123', 'vendor2@vendor.com'],
+            ['Vendor 3', '123', 'vendor3@vendor.com'],
         ];
     }
 }

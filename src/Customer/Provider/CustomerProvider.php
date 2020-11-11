@@ -15,7 +15,8 @@ class CustomerProvider
     {
         $this->customerRepository = $customerRepository;
     }
-    public function find(UuidInterface $customerId): Customer
+
+    public function get(UuidInterface $customerId): Customer
     {
         /** @var Customer|null $customer */
         $customer = $this->customerRepository->find($customerId);
@@ -29,7 +30,7 @@ class CustomerProvider
 
     public function findOneByEmail(string $emailAddress): ?Customer
     {
-        return $this->customerRepository->findOneBy(["email" => $emailAddress]);
+        return $this->customerRepository->findOneBy(['email' => $emailAddress]);
     }
 
     public function findAll(): array

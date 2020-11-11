@@ -27,7 +27,7 @@ class CustomerPasswordController extends AbstractController
     }
 
     /**
-     * @Route("/customers/password", methods="PUT", name="customer_password_change")
+     * @Route("/customers/{customerId}/password", methods="PUT", name="customer_password_change")
      *
      * @ParamConverter("customerPasswordChangeRequest", converter="fos_rest.request_body")
      *
@@ -46,6 +46,7 @@ class CustomerPasswordController extends AbstractController
      * )
      */
     public function changePassword(
+        string $customerId,
         CustomerPasswordChangeRequest $customerPasswordChangeRequest,
         ConstraintViolationListInterface $validationErrors
     ): Response {
@@ -54,8 +55,13 @@ class CustomerPasswordController extends AbstractController
                 throw new ApiJsonInputValidationException($validationErrors);
             }
 
-            /** @var Customer $customer */
-            $customer = $this->getUser();
+            if ('current' == $customerId) {
+                /** @var Customer $customer */
+                $customer = $this->getUser();
+            } else {
+                // customer fetching not implemented yet; requires also authorization
+                throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
+            }
 
             $this->customerService->changePassword($customer, $customerPasswordChangeRequest);
 

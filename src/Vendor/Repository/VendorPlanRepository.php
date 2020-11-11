@@ -20,26 +20,9 @@ class VendorPlanRepository extends ServiceEntityRepository
         parent::__construct($registry, VendorPlan::class);
     }
 
-    public function findActivePlansByVendor(Vendor $vendor)
+    public function save(VendorPlan $vendorPlan)
     {
-        return $this->createQueryBuilder('vp')
-            ->andWhere('vp.vendor = :vendor')
-            ->setParameter('vendor', $vendor)
-            ->orderBy('vp.id', 'ASC')
-            ->getQuery()
-            ->getResult()
-        ;
+        $this->getEntityManager()->persist($vendorPlan);
+        $this->getEntityManager()->flush();
     }
-
-    /*
-    public function findOneBySomeField($value): ?VendorPlan
-    {
-        return $this->createQueryBuilder('v')
-            ->andWhere('v.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }
