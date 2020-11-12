@@ -1,53 +1,56 @@
-[
-  {
-    "essential": true,
-    "memoryReservation": 64,
-    "name": "php-fpm",
-    "image": "",
-    "environment": [],
-    "logConfiguration": {
-      "logDriver": "awslogs",
-      "options": {
-        "awslogs-group": "prod/ecs/api",
-        "awslogs-region": "eu-central-1",
-        "awslogs-stream-prefix": "php-fpm"
-      }
-    }
-  },
-  {
-    "essential": true,
-    "memoryReservation": 32,
-    "name": "nginx",
-    "image": "nginx:1-alpine",
-    "environment": [],
-    "logConfiguration": {
-      "logDriver": "awslogs",
-      "options": {
-        "awslogs-group": "prod/ecs/api",
-        "awslogs-region": "eu-central-1",
-        "awslogs-stream-prefix": "nginx"
+{
+  "family": "api",
+  "containerDefinitions": [
+    {
+      "essential": true,
+      "memoryReservation": 64,
+      "name": "php-fpm",
+      "image": "",
+      "environment": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "prod/ecs/api",
+          "awslogs-region": "eu-central-1",
+          "awslogs-stream-prefix": "php-fpm"
+        }
       }
     },
-    "portMappings": [
-      {
-        "hostPort": 0,
-        "protocol": "tcp",
-        "containerPort": 80
-      }
-    ],
-    "volumesFrom": [
-      {
-        "sourceContainer": "php-fpm"
-      }
-    ],
-    "dependsOn": [
-      {
-        "containerName": "php-fpm",
-        "condition": "START"
-      }
-    ],
-    "links": [
-      "php-fpm"
-    ]
-  }
-]
+    {
+      "essential": true,
+      "memoryReservation": 32,
+      "name": "nginx",
+      "image": "nginx:1-alpine",
+      "environment": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "prod/ecs/api",
+          "awslogs-region": "eu-central-1",
+          "awslogs-stream-prefix": "nginx"
+        }
+      },
+      "portMappings": [
+        {
+          "hostPort": 0,
+          "protocol": "tcp",
+          "containerPort": 80
+        }
+      ],
+      "volumesFrom": [
+        {
+          "sourceContainer": "php-fpm"
+        }
+      ],
+      "dependsOn": [
+        {
+          "containerName": "php-fpm",
+          "condition": "START"
+        }
+      ],
+      "links": [
+        "php-fpm"
+      ]
+    }
+  ]
+}
