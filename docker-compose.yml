@@ -2,7 +2,7 @@ version: '3.2'
 
 services:
     php-fpm:
-        container_name: 99trainer-api
+        container_name: ufit-api
         build: .
         env_file: .env
         expose:
@@ -10,7 +10,7 @@ services:
         volumes:
             - .:/app
     nginx:
-        container_name: 99trainer-nginx
+        container_name: ufit-nginx
         image: nginx:alpine
         ports:
             - 80:80
@@ -20,7 +20,7 @@ services:
             - ./docker/nginx/etc/nginx/conf.d:/etc/nginx/conf.d
             - .:/app
     db:
-        container_name: 99trainer-db
+        container_name: ufit-db
         image: postgres:11-alpine
         env_file: .env
         ports:
@@ -32,4 +32,4 @@ volumes:
     dbdata:
 
 networks:
-    99trainer:
+    ufit:

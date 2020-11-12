@@ -68,7 +68,7 @@ class CustomerControllerTest extends CustomerBaseTest
     public function testGetCustomer()
     {
         $client = $this->createAuthenticatedClient();
-        $client->request('GET', '/customers');
+        $client->request('GET', '/customers/current');
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $this->assertResponseHeaderSame('Content-Type', 'application/json');
@@ -88,7 +88,7 @@ class CustomerControllerTest extends CustomerBaseTest
 
         $this->jsonPut(
             $client,
-            '/customers',
+            '/customers/current',
             [
                 'name' => $customer->getName(),
                 'email' => $customer->getEmail(),
@@ -97,7 +97,7 @@ class CustomerControllerTest extends CustomerBaseTest
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
 
-        $client->request('GET', '/customers');
+        $client->request('GET', '/customers/current');
         $response = json_decode($client->getResponse()->getContent(), true);
         $this->assertSame($response['name'], $customer->getName());
         $this->assertSame($response['email'], $customer->getEmail());

@@ -11,24 +11,24 @@ PWD ?= pwd_unknown
 
 # PROJECT_NAME defaults to name of the current directory.
 # should not to be changed if you follow GitOps operating procedures.
-PROJECT_NAME=99trainer
+PROJECT_NAME=ufit
 
 # Note. If you change this, you also need to update docker-compose.yml.
 # only useful in a setting with multiple services/ makefiles.
 SERVICE_TARGET := php-fpm
 
-POSTGRES_USER=99trainer
-POSTGRES_DB=99trainer
-POSTGRES_PASSWORD=99trainer
+POSTGRES_USER=ufit
+POSTGRES_DB=ufit
+POSTGRES_PASSWORD=ufit
 
 # aws configs
-AWS_PROFILE=99trainer
+AWS_PROFILE=ufit
 AWS_REPOSITORY_URI=
 AWS_REGION=us-east-1
 AWS_ECS_CLUSTER=prod
 AWS_ECS_SERVICE=site
 
-DOCKER_IMAGE_NAME=99trainer-api
+DOCKER_IMAGE_NAME=ufit-api
 
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
 CMD_ARGUMENTS ?= $(cmd)
