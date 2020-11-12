@@ -25,8 +25,17 @@
 # test
  
 on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  page_build:
   release:
-    types: [created]
+    types: # This configuration does not affect the page_build event above
+      - created
+
 
 name: Deploy to Amazon ECS
 
