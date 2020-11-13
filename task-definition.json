@@ -27,13 +27,13 @@
         {
           "name": "JWT_PASSPHRASE",
           "value": "5a1fc680ff6c595dda3714f7a7b66df2"
+        },
+        {
+          "name": "APP_SECRET",
+          "valueFrom": "ef819fc48a4f25481ce7e2e84d26ffba"
         }
       ],
       "secrets": [
-        {
-          "name": "APP_ENV",
-          "value": "prod"
-        },
         {
           "name": "DATABASE_URL",
           "valueFrom": "arn:aws:ssm:eu-central-1:590392040163:parameter/production/database/url"
