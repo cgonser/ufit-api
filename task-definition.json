@@ -30,7 +30,7 @@
         },
         {
           "name": "APP_SECRET",
-          "valueFrom": "ef819fc48a4f25481ce7e2e84d26ffba"
+          "value": "ef819fc48a4f25481ce7e2e84d26ffba"
         }
       ],
       "secrets": [
