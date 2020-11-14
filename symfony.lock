@@ -1,4 +1,7 @@
 {
+    "behat/transliterator": {
+        "version": "v1.3.0"
+    },
     "brick/math": {
         "version": "0.9.1"
     },
@@ -110,6 +113,9 @@
         "files": [
             "config/packages/fos_rest.yaml"
         ]
+    },
+    "gedmo/doctrine-extensions": {
+        "version": "v3.0.0"
     },
     "laminas/laminas-code": {
         "version": "3.4.1"
@@ -239,6 +245,18 @@
         },
         "files": [
             "phpcs.xml.dist"
+        ]
+    },
+    "stof/doctrine-extensions-bundle": {
+        "version": "1.2",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "1.2",
+            "ref": "6c1ceb662f8997085f739cd089bfbef67f245983"
+        },
+        "files": [
+            "config/packages/stof_doctrine_extensions.yaml"
         ]
     },
     "symfony/asset": {

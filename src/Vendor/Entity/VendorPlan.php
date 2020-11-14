@@ -4,6 +4,7 @@ namespace App\Vendor\Entity;
 
 use App\Core\Entity\Currency;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -12,6 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="App\Vendor\Repository\VendorPlanRepository")
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="vendor_plan")
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt")
  */
 class VendorPlan
 {
@@ -37,6 +39,11 @@ class VendorPlan
     private string $name;
 
     /**
+     * @ORM\Column(type="string")
+     */
+    private ?string $slug = null;
+
+    /**
      * @ORM\Column(type="integer")
      * @Assert\NotBlank()
      */
@@ -55,14 +62,19 @@ class VendorPlan
     private \DateInterval $duration;
 
     /**
-     * @ORM\Column(name="created_at", type="datetimetz", nullable=true)
+     * @ORM\Column(name="created_at", type="datetime", nullable=true)
      */
     private ?\DateTimeInterface $createdAt = null;
 
     /**
-     * @ORM\Column(name="updated_at", type="datetimetz", nullable=true)
+     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
      */
     private ?\DateTimeInterface $updatedAt = null;
+
+    /**
+     * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
+     */
+    private ?\DateTimeInterface $deletedAt = null;
 
     public function getId(): ?UuidInterface
     {
@@ -91,6 +103,18 @@ class VendorPlan
     public function getName(): ?string
     {
         return $this->name;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(?string $slug): self
+    {
+        $this->slug = $slug;
+
+        return $this;
     }
 
     public function getPrice(): int
@@ -151,6 +175,23 @@ class VendorPlan
         $this->updatedAt = $updatedAt;
 
         return $this;
+    }
+
+    public function getDeletedAt(): ?\DateTimeInterface
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?\DateTimeInterface $deletedAt): self
+    {
+        $this->deletedAt = $deletedAt;
+
+        return $this;
+    }
+
+    public function isNew(): bool
+    {
+        return !isset($this->id);
     }
 
     /**

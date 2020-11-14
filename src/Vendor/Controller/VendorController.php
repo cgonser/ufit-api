@@ -36,10 +36,12 @@ class VendorController extends AbstractController
      * @OA\Tag(name="Vendor")
      * @OA\Response(
      *     response=200,
-     *     description="Returns the information about the current vendor",
-     *     @OA\JsonContent(ref=@Model(type=VendorDto::class))
+     *     description="Returns the information about all vendors",
+     *     @OA\JsonContent(
+     *         type="array",
+     *         @OA\Items(ref=@Model(type=VendorDto::class)))
+     *     )*
      * )
-     *
      * @Security(name="Bearer")
      */
     public function getVendors(): Response

@@ -5,6 +5,7 @@ namespace App\Vendor\Service;
 use App\Vendor\Entity\Vendor;
 use App\Vendor\Exception\VendorEmailAddressInUseException;
 use App\Vendor\Exception\VendorInvalidPasswordException;
+use App\Vendor\Exception\VendorSlugInUseException;
 use App\Vendor\Provider\VendorProvider;
 use App\Vendor\Repository\VendorRepository;
 use App\Vendor\Request\VendorCreateRequest;
@@ -46,7 +47,7 @@ class VendorService
         $vendor->setName($vendorCreateRequest->name);
         $vendor->setEmail($vendorCreateRequest->email);
         $vendor->setPassword($this->passwordEncoder->encodePassword($vendor, $vendorCreateRequest->password));
-        $vendor->setSlug($this->generateVendorSlug($vendor));
+        $vendor->setSlug($this->generateSlug($vendor));
         $vendor->setRoles(['ROLE_VENDOR']);
 
         $this->vendorRepository->save($vendor);
@@ -60,8 +61,13 @@ class VendorService
             throw new VendorEmailAddressInUseException();
         }
 
+        if (!$this->isSlugUnique($vendor, $vendorUpdateRequest->slug)) {
+            throw new VendorSlugInUseException();
+        }
+
         $vendor->setName($vendorUpdateRequest->name);
         $vendor->setEmail($vendorUpdateRequest->email);
+        $vendor->setSlug($vendorUpdateRequest->slug);
 
         $this->vendorRepository->save($vendor);
     }
@@ -102,7 +108,7 @@ class VendorService
         $this->vendorRepository->save($vendor);
     }
 
-    public function generateVendorSlug(Vendor $vendor, ?int $suffix = null): string
+    public function generateSlug(Vendor $vendor, ?int $suffix = null): string
     {
         $slug = strtolower($this->slugger->slug($vendor->getName()));
 
@@ -110,18 +116,27 @@ class VendorService
             $slug .= '-'.(string) $suffix;
         }
 
-        $existingVendor = $this->vendorProvider->findOneBySlug($slug);
-
-        if (!$existingVendor) {
-            return $slug;
-        }
-
-        if (!$vendor->isNew() && $existingVendor->getId()->toString() == $vendor->getId()->toString()) {
+        if ($this->isSlugUnique($vendor, $slug)) {
             return $slug;
         }
 
         $suffix = null !== $suffix ? $suffix + 1 : 1;
 
-        return $this->generateVendorSlug($vendor, $suffix);
+        return $this->generateSlug($vendor, $suffix);
+    }
+
+    private function isSlugUnique(Vendor $vendor, string $slug): bool
+    {
+        $existingVendor = $this->vendorProvider->findOneBySlug($slug);
+
+        if (!$existingVendor) {
+            return true;
+        }
+
+        if (!$vendor->isNew() && $existingVendor->getId()->toString() == $vendor->getId()->toString()) {
+            return true;
+        }
+
+        return false;
     }
 }

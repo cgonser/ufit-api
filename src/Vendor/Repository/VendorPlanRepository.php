@@ -25,4 +25,10 @@ class VendorPlanRepository extends ServiceEntityRepository
         $this->getEntityManager()->persist($vendorPlan);
         $this->getEntityManager()->flush();
     }
+
+    public function delete(VendorPlan $vendorPlan)
+    {
+        $this->getEntityManager()->remove($vendorPlan);
+        $this->getEntityManager()->flush();
+    }
 }

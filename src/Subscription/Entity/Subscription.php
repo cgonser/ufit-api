@@ -10,7 +10,6 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass="App\Subscription\Repository\SubscriptionRepository")
  * @ORM\Table(name="subscription")
  */
-
 class Subscription
 {
     /**

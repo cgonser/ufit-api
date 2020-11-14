@@ -21,6 +21,11 @@ class VendorPlanUpdateRequest
 
     /**
      * @OA\Property()
+     */
+    public ?string $slug = null;
+
+    /**
+     * @OA\Property()
      * @Assert\NotBlank()
      * @Assert\Positive()
      */

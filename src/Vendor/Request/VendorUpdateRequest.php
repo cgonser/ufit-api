@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @OA\RequestBody(
  *     request="VendorUpdateRequest",
- *     required={"name", "email", "password"},
+ *     required={"name", "email"},
  * )
  */
 class VendorUpdateRequest
@@ -18,6 +18,11 @@ class VendorUpdateRequest
      * @Assert\NotBlank()
      */
     public ?string $name = null;
+
+    /**
+     * @OA\Property()
+     */
+    public ?string $slug = null;
 
     /**
      * @OA\Property()

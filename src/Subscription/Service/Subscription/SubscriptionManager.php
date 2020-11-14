@@ -2,9 +2,9 @@
 
 namespace App\Subscription\Service\Subscription;
 
+use App\Customer\Entity\Customer;
 use App\Subscription\Entity\Subscription;
 use App\Subscription\Repository\SubscriptionRepository;
-use App\Customer\Entity\Customer;
 use App\Vendor\Entity\VendorPlan;
 
 class SubscriptionManager
@@ -21,7 +21,7 @@ class SubscriptionManager
         $subscription = (new Subscription())
             ->setCustomer($customer)
             ->setVendorPlan($vendorPlan)
-            ->setExpiresAt((new \DateTime)->add($vendorPlan->getDuration()))
+            ->setExpiresAt((new \DateTime())->add($vendorPlan->getDuration()))
         ;
 
         $this->subscriptionRepository->save($subscription);

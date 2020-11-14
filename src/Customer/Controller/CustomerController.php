@@ -37,7 +37,10 @@ class CustomerController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Returns the information all customers",
-     *     @OA\JsonContent(ref=@Model(type=CustomerDto::class))
+     *     @OA\JsonContent(
+     *         type="array",
+     *         @OA\Items(ref=@Model(type=CustomerDto::class)))
+     *     )*
      * )
      * @Security(name="Bearer")
      */
