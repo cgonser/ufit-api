@@ -12,7 +12,8 @@ class VendorResponseMapper
         $vendorDto = new VendorDto();
         $vendorDto->id = $vendor->getId()->toString();
         $vendorDto->name = $vendor->getName() ?? '';
-        $vendorDto->email = $vendor->getEmail() ?? '';
+        $vendorDto->slug = $vendor->getSlug() ?? '';
+        // $vendorDto->email = $vendor->getEmail() ?? '';
 
         return $vendorDto;
     }

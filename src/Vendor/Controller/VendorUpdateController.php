@@ -45,7 +45,7 @@ class VendorUpdateController extends AbstractController
      *     @OA\JsonContent(ref=@Model(type=VendorUpdateRequest::class))
      * )
      * @OA\Response(
-     *     response=204,
+     *     response=200,
      *     description="Updates a vendor",
      *     @OA\JsonContent(ref=@Model(type=VendorDto::class))
      * )
@@ -74,7 +74,7 @@ class VendorUpdateController extends AbstractController
 
             $this->vendorService->update($vendor, $vendorUpdateRequest);
 
-            return new ApiJsonResponse(Response::HTTP_NO_CONTENT);
+            return new ApiJsonResponse(Response::HTTP_OK, $this->vendorResponseMapper->map($vendor));
         } catch (VendorNotFoundException $e) {
             throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
         } catch (VendorEmailAddressInUseException $e) {
