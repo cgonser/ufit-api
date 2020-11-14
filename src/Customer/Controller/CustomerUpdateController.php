@@ -50,7 +50,7 @@ class CustomerUpdateController extends AbstractController
      *     @OA\JsonContent(ref=@Model(type=CustomerUpdateRequest::class))
      * )
      * @OA\Response(
-     *     response=204,
+     *     response=200,
      *     description="Updates a customer",
      *     @OA\JsonContent(ref=@Model(type=CustomerDto::class))
      * )
@@ -79,7 +79,7 @@ class CustomerUpdateController extends AbstractController
 
             $this->customerService->update($customer, $customerUpdateRequest);
 
-            return new ApiJsonResponse(Response::HTTP_NO_CONTENT);
+            return new ApiJsonResponse(Response::HTTP_OK, $this->customerResponseMapper->map($customer));
         } catch (CustomerNotFoundException $e) {
             throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
         } catch (CustomerEmailAddressInUseException $e) {
