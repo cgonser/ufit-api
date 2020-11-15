@@ -25,5 +25,8 @@ RUN rm -rf var/cache/* ; \
 
 VOLUME /app
 
-CMD composer dump-autoload; bin/console cache:clear ; php-fpm
+CMD composer dump-autoload; \
+    bin/console cache:clear; \
+    bin/console assets:install; \
+    php-fpm
 
