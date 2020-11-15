@@ -28,7 +28,7 @@ security:
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
         customer:
-            pattern: ^/customers
+            pattern: ^/(customers|subscriptions)
             stateless: true
             anonymous: true
             guard:
@@ -62,6 +62,7 @@ security:
         - { path: ^/customers/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/customers, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
         - { path: ^/customers, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/subscriptions, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/vendors/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/vendors, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
         - { path: ^/vendors, roles: IS_AUTHENTICATED_FULLY }

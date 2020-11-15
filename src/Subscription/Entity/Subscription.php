@@ -5,19 +5,24 @@ namespace App\Subscription\Entity;
 use App\Customer\Entity\Customer;
 use App\Vendor\Entity\VendorPlan;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Ramsey\Uuid\Doctrine\UuidGenerator;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Subscription\Repository\SubscriptionRepository")
  * @ORM\Table(name="subscription")
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt")
  */
 class Subscription
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="uuid", unique=true)
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class=UuidGenerator::class)
      */
-    private int $id;
+    private UuidInterface $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Customer\Entity\Customer")
@@ -36,7 +41,12 @@ class Subscription
      */
     private ?\DateTimeInterface $expiresAt = null;
 
-    public function getId(): int
+    /**
+     * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
+     */
+    private ?\DateTimeInterface $deletedAt = null;
+
+    public function getId(): UuidInterface
     {
         return $this->id;
     }
@@ -73,6 +83,18 @@ class Subscription
     public function setExpiresAt(?\DateTimeInterface $expiresAt): self
     {
         $this->expiresAt = $expiresAt;
+
+        return $this;
+    }
+
+    public function getDeletedAt(): ?\DateTimeInterface
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?\DateTimeInterface $deletedAt): self
+    {
+        $this->deletedAt = $deletedAt;
 
         return $this;
     }

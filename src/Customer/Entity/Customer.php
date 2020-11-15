@@ -47,7 +47,7 @@ class Customer implements UserInterface, \Serializable
      */
     private array $roles = [];
 
-    public function getId(): ?UuidInterface
+    public function getId(): UuidInterface
     {
         return $this->id;
     }
