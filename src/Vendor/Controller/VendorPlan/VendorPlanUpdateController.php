@@ -52,7 +52,7 @@ class VendorPlanUpdateController extends AbstractController
      *     @OA\JsonContent(ref=@Model(type=VendorPlanUpdateRequest::class))
      * )
      * @OA\Response(
-     *     response=204,
+     *     response=200,
      *     description="Updates a plan",
      *     @OA\JsonContent(ref=@Model(type=VendorPlanDto::class))
      * )

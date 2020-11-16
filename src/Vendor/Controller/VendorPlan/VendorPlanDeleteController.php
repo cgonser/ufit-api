@@ -42,7 +42,7 @@ class VendorPlanDeleteController extends AbstractController
      *
      * @OA\Tag(name="VendorPlan")
      * @OA\Response(
-     *     response=200,
+     *     response=204,
      *     description="Deletes a plan"
      * )
      * @OA\Response(
@@ -67,7 +67,7 @@ class VendorPlanDeleteController extends AbstractController
 
             $this->vendorPlanService->delete($vendorPlan);
 
-            return new ApiJsonResponse(Response::HTTP_OK);
+            return new ApiJsonResponse(Response::HTTP_NO_CONTENT);
         } catch (VendorPlanNotFoundException $e) {
             throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
         }

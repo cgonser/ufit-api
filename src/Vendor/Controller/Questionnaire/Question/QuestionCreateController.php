@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Vendor\Controller\Questionnaire;
+namespace App\Vendor\Controller\Questionnaire\Question;
 
 use App\Core\Exception\ApiJsonException;
 use App\Core\Exception\ApiJsonInputValidationException;
-use App\Core\Exception\CurrencyNotFoundException;
 use App\Core\Response\ApiJsonResponse;
 use App\Vendor\Dto\QuestionDto;
 use App\Vendor\Entity\Vendor;
-use App\Vendor\Exception\VendorPlanInvalidDurationException;
+use App\Vendor\Exception\QuestionnaireNotFoundException;
 use App\Vendor\Provider\QuestionnaireProvider;
 use App\Vendor\Request\QuestionCreateRequest;
 use App\Vendor\ResponseMapper\QuestionResponseMapper;
@@ -59,6 +58,10 @@ class QuestionCreateController extends AbstractController
      *     response=400,
      *     description="Invalid input"
      * )
+     * @OA\Response(
+     *     response=404,
+     *     description="Questionnaire not found"
+     * )
      */
     public function create(
         string $questionnaireId,
@@ -70,6 +73,7 @@ class QuestionCreateController extends AbstractController
                 throw new ApiJsonInputValidationException($validationErrors);
             }
 
+            // TODO: implement authorization
             /** @var Vendor $vendor */
             $vendor = $this->getUser();
 
@@ -80,8 +84,8 @@ class QuestionCreateController extends AbstractController
             $question = $this->questionService->create($questionnaire, $questionCreateRequest);
 
             return new ApiJsonResponse(Response::HTTP_CREATED, $this->questionResponseMapper->map($question));
-        } catch (VendorPlanInvalidDurationException | CurrencyNotFoundException $e) {
-            throw new ApiJsonException(Response::HTTP_BAD_REQUEST, $e->getMessage());
+        } catch (QuestionnaireNotFoundException $e) {
+            throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
         }
     }
 }
