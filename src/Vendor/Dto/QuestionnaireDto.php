@@ -2,6 +2,8 @@
 
 namespace App\Vendor\Dto;
 
+use OpenApi\Annotations as OA;
+
 class QuestionnaireDto
 {
     public string $id;
@@ -12,5 +14,8 @@ class QuestionnaireDto
 
     public string $createdAt;
 
+    /**
+     * @OA\Property(type="array", @OA\Items(type="QuestionDto"))
+     */
     public array $questions = [];
 }

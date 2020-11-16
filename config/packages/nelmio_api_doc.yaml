@@ -17,6 +17,7 @@ nelmio_api_doc:
             - ^/customers
             - ^/vendors
             - ^/subscriptions
+            - ^/questionnaires
     models:
         use_jms: false
         names:
@@ -25,3 +26,5 @@ nelmio_api_doc:
             - { alias: Vendor, type: App\Vendor\Dto\VendorDto }
             - { alias: VendorPlan, type: App\Vendor\Dto\VendorPlanDto }
             - { alias: Subscription, type: App\Subscription\Dto\SubscriptionDto }
+            - { alias: Questionnaire, type: App\Vendor\Dto\QuestionnaireDto }
+            - { alias: Question, type: App\Vendor\Dto\QuestionDto }
