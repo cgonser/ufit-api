@@ -2,20 +2,20 @@
 
 namespace App\Vendor\Entity;
 
-use App\Core\Entity\Currency;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity(repositoryClass="App\Vendor\Repository\VendorPlanRepository")
+ * @ORM\Entity(repositoryClass="App\Vendor\Repository\QuestionnaireRepository")
  * @ORM\HasLifecycleCallbacks()
- * @ORM\Table(name="vendor_plan")
+ * @ORM\Table(name="questionnaire")
  * @Gedmo\SoftDeleteable(fieldName="deletedAt")
  */
-class VendorPlan
+class Questionnaire
 {
     /**
      * @ORM\Id
@@ -32,39 +32,14 @@ class VendorPlan
     private Vendor $vendor;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Questionnaire")
-     * @ORM\JoinColumn(name="questionnaire_id", referencedColumnName="id")
+     * @ORM\Column()
      */
-    private Questionnaire $questionnaire;
+    private string $title;
 
     /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank()
+     * @ORM\OneToMany(targetEntity="Question", mappedBy="questionnaire", cascade={"persist"})
      */
-    private string $name;
-
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
-    private ?string $slug = null;
-
-    /**
-     * @ORM\Column(type="integer")
-     * @Assert\NotBlank()
-     */
-    private int $price;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Core\Entity\Currency")
-     * @ORM\JoinColumn(name="currency_id", referencedColumnName="id")
-     * @Assert\NotBlank()
-     */
-    private Currency $currency;
-
-    /**
-     * @ORM\Column(type="dateinterval")
-     */
-    private \DateInterval $duration;
+    private Collection $questions;
 
     /**
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
@@ -81,7 +56,12 @@ class VendorPlan
      */
     private ?\DateTimeInterface $deletedAt = null;
 
-    public function getId(): ?UuidInterface
+    public function __construct()
+    {
+        $this->questions = new ArrayCollection();
+    }
+
+    public function getId(): UuidInterface
     {
         return $this->id;
     }
@@ -98,74 +78,14 @@ class VendorPlan
         return $this;
     }
 
-    public function getQuestionnaire(): Questionnaire
+    public function getTitle(): string
     {
-        return $this->questionnaire;
+        return $this->title;
     }
 
-    public function setQuestionnaire(Questionnaire $questionnaire): self
+    public function setTitle(string $title): self
     {
-        $this->questionnaire = $questionnaire;
-
-        return $this;
-    }
-
-    public function setName(string $name): self
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function getSlug(): ?string
-    {
-        return $this->slug;
-    }
-
-    public function setSlug(?string $slug): self
-    {
-        $this->slug = $slug;
-
-        return $this;
-    }
-
-    public function getPrice(): int
-    {
-        return $this->price;
-    }
-
-    public function setPrice(int $price): self
-    {
-        $this->price = $price;
-
-        return $this;
-    }
-
-    public function getCurrency(): Currency
-    {
-        return $this->currency;
-    }
-
-    public function setCurrency(Currency $currency): self
-    {
-        $this->currency = $currency;
-
-        return $this;
-    }
-
-    public function getDuration(): ?\DateInterval
-    {
-        return $this->duration;
-    }
-
-    public function setDuration(\DateInterval $duration): self
-    {
-        $this->duration = $duration;
+        $this->title = $title;
 
         return $this;
     }
@@ -206,9 +126,18 @@ class VendorPlan
         return $this;
     }
 
-    public function isNew(): bool
+    public function getQuestions(): Collection
     {
-        return !isset($this->id);
+        return $this->questions;
+    }
+
+    public function addQuestion(Question $question): self
+    {
+        $question->setQuestionnaire($this);
+
+        $this->questions[] = $question;
+
+        return $this;
     }
 
     /**

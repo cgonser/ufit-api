@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Vendor\Controller;
+namespace App\Vendor\Controller\VendorPlan;
 
 use App\Core\Exception\ApiJsonException;
 use App\Core\Exception\ApiJsonInputValidationException;
@@ -23,42 +23,27 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
-class VendorPlanUpdateController extends AbstractController
+class VendorPlanDeleteController extends AbstractController
 {
-    private VendorPlanProvider $vendorPlanProvider;
-
     private VendorPlanService $vendorPlanService;
 
-    private VendorPlanResponseMapper $vendorPlanResponseMapper;
+    private VendorPlanProvider $vendorPlanProvider;
 
     public function __construct(
-        VendorPlanProvider $vendorPlanProvider,
         VendorPlanService $vendorPlanService,
-        VendorPlanResponseMapper $vendorPlanResponseMapper
+        VendorPlanProvider $vendorPlanProvider
     ) {
-        $this->vendorPlanResponseMapper = $vendorPlanResponseMapper;
-        $this->vendorPlanProvider = $vendorPlanProvider;
         $this->vendorPlanService = $vendorPlanService;
+        $this->vendorPlanProvider = $vendorPlanProvider;
     }
 
     /**
-     * @Route("/vendors/{vendorId}/plans/{vendorPlanId}", methods="PUT", name="vendors_plans_update")
-     *
-     * @ParamConverter("vendorPlanUpdateRequest", converter="fos_rest.request_body")
+     * @Route("/vendors/{vendorId}/plans/{vendorPlanId}", methods="DELETE", name="vendors_plans_delete")
      *
      * @OA\Tag(name="VendorPlan")
-     * @OA\RequestBody(
-     *     required=true,
-     *     @OA\JsonContent(ref=@Model(type=VendorPlanUpdateRequest::class))
-     * )
      * @OA\Response(
-     *     response=204,
-     *     description="Updates a plan",
-     *     @OA\JsonContent(ref=@Model(type=VendorPlanDto::class))
-     * )
-     * @OA\Response(
-     *     response=400,
-     *     description="Invalid input"
+     *     response=200,
+     *     description="Deletes a plan"
      * )
      * @OA\Response(
      *     response=404,
@@ -67,15 +52,9 @@ class VendorPlanUpdateController extends AbstractController
      */
     public function create(
         string $vendorId,
-        string $vendorPlanId,
-        VendorPlanUpdateRequest $vendorPlanUpdateRequest,
-        ConstraintViolationListInterface $validationErrors
+        string $vendorPlanId
     ): Response {
         try {
-            if ($validationErrors->count() > 0) {
-                throw new ApiJsonInputValidationException($validationErrors);
-            }
-
             if ('current' == $vendorId) {
                 /** @var Vendor $vendor */
                 $vendor = $this->getUser();
@@ -86,13 +65,11 @@ class VendorPlanUpdateController extends AbstractController
 
             $vendorPlan = $this->vendorPlanProvider->getByVendorAndId($vendor, Uuid::fromString($vendorPlanId));
 
-            $this->vendorPlanService->update($vendorPlan, $vendorPlanUpdateRequest);
+            $this->vendorPlanService->delete($vendorPlan);
 
-            return new ApiJsonResponse(Response::HTTP_CREATED, $this->vendorPlanResponseMapper->map($vendorPlan));
+            return new ApiJsonResponse(Response::HTTP_OK);
         } catch (VendorPlanNotFoundException $e) {
             throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
-        } catch (VendorPlanInvalidDurationException | CurrencyNotFoundException $e) {
-            throw new ApiJsonException(Response::HTTP_BAD_REQUEST, $e->getMessage());
         }
     }
 }

@@ -47,7 +47,7 @@ security:
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
         vendor:
-            pattern: ^/vendors
+            pattern: ^/(vendors|questionnaires)
             stateless: true
             anonymous: true
             guard:
@@ -66,4 +66,5 @@ security:
         - { path: ^/vendors/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/vendors, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
         - { path: ^/vendors, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/questionnaires, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/doc, roles: IS_AUTHENTICATED_ANONYMOUSLY }

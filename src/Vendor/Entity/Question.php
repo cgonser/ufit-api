@@ -2,20 +2,18 @@
 
 namespace App\Vendor\Entity;
 
-use App\Core\Entity\Currency;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity(repositoryClass="App\Vendor\Repository\VendorPlanRepository")
+ * @ORM\Entity(repositoryClass="App\Vendor\Repository\QuestionRepository")
  * @ORM\HasLifecycleCallbacks()
- * @ORM\Table(name="vendor_plan")
+ * @ORM\Table(name="question")
  * @Gedmo\SoftDeleteable(fieldName="deletedAt")
  */
-class VendorPlan
+class Question
 {
     /**
      * @ORM\Id
@@ -26,45 +24,20 @@ class VendorPlan
     private UuidInterface $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Vendor")
-     * @ORM\JoinColumn(name="vendor_id", referencedColumnName="id", nullable=false)
-     */
-    private Vendor $vendor;
-
-    /**
      * @ORM\ManyToOne(targetEntity="Questionnaire")
-     * @ORM\JoinColumn(name="questionnaire_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="questionnaire_id", referencedColumnName="id", nullable=false)
      */
     private Questionnaire $questionnaire;
 
     /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank()
+     * @ORM\Column(type="integer", name="order_num")
      */
-    private string $name;
+    private int $order = 0;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="text")
      */
-    private ?string $slug = null;
-
-    /**
-     * @ORM\Column(type="integer")
-     * @Assert\NotBlank()
-     */
-    private int $price;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Core\Entity\Currency")
-     * @ORM\JoinColumn(name="currency_id", referencedColumnName="id")
-     * @Assert\NotBlank()
-     */
-    private Currency $currency;
-
-    /**
-     * @ORM\Column(type="dateinterval")
-     */
-    private \DateInterval $duration;
+    private string $question;
 
     /**
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
@@ -81,21 +54,9 @@ class VendorPlan
      */
     private ?\DateTimeInterface $deletedAt = null;
 
-    public function getId(): ?UuidInterface
+    public function getId(): UuidInterface
     {
         return $this->id;
-    }
-
-    public function getVendor(): Vendor
-    {
-        return $this->vendor;
-    }
-
-    public function setVendor(Vendor $vendor): self
-    {
-        $this->vendor = $vendor;
-
-        return $this;
     }
 
     public function getQuestionnaire(): Questionnaire
@@ -110,62 +71,26 @@ class VendorPlan
         return $this;
     }
 
-    public function setName(string $name): self
+    public function getOrder(): int
     {
-        $this->name = $name;
+        return $this->order;
+    }
+
+    public function setOrder(int $order): self
+    {
+        $this->order = $order;
 
         return $this;
     }
 
-    public function getName(): ?string
+    public function getQuestion(): string
     {
-        return $this->name;
+        return $this->question;
     }
 
-    public function getSlug(): ?string
+    public function setQuestion(string $question): self
     {
-        return $this->slug;
-    }
-
-    public function setSlug(?string $slug): self
-    {
-        $this->slug = $slug;
-
-        return $this;
-    }
-
-    public function getPrice(): int
-    {
-        return $this->price;
-    }
-
-    public function setPrice(int $price): self
-    {
-        $this->price = $price;
-
-        return $this;
-    }
-
-    public function getCurrency(): Currency
-    {
-        return $this->currency;
-    }
-
-    public function setCurrency(Currency $currency): self
-    {
-        $this->currency = $currency;
-
-        return $this;
-    }
-
-    public function getDuration(): ?\DateInterval
-    {
-        return $this->duration;
-    }
-
-    public function setDuration(\DateInterval $duration): self
-    {
-        $this->duration = $duration;
+        $this->question = $question;
 
         return $this;
     }
@@ -204,11 +129,6 @@ class VendorPlan
         $this->deletedAt = $deletedAt;
 
         return $this;
-    }
-
-    public function isNew(): bool
-    {
-        return !isset($this->id);
     }
 
     /**

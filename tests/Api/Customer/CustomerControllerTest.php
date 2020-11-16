@@ -75,6 +75,7 @@ class CustomerControllerTest extends CustomerBaseTest
 
         $response = json_decode($client->getResponse()->getContent(), true);
         $customer = $this->getCustomer();
+        $this->assertNotEmpty($response['id']);
         $this->assertSame($response['name'], $customer->getName());
         $this->assertSame($response['email'], $customer->getEmail());
     }
@@ -95,10 +96,10 @@ class CustomerControllerTest extends CustomerBaseTest
             ]
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
 
-        $client->request('GET', '/customers/current');
         $response = json_decode($client->getResponse()->getContent(), true);
+        $this->assertNotEmpty($response['id']);
         $this->assertSame($response['name'], $customer->getName());
         $this->assertSame($response['email'], $customer->getEmail());
     }

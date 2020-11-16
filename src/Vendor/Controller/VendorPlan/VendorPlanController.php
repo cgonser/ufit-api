@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Vendor\Controller;
+namespace App\Vendor\Controller\VendorPlan;
 
 use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;

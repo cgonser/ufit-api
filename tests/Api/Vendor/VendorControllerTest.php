@@ -39,7 +39,9 @@ class VendorControllerTest extends VendorBaseTest
 
         $response = json_decode($client->getResponse()->getContent(), true);
         $this->assertSame($response['name'], $vendor->getName());
-        $this->assertSame($response['email'], $email);
+        $this->assertNotEmpty($response['id']);
+        $this->assertNotEmpty($response['slug']);
+        // $this->assertSame($response['email'], $email);
     }
 
     public function testPostDuplicatedVendor()
@@ -76,7 +78,9 @@ class VendorControllerTest extends VendorBaseTest
         $response = json_decode($client->getResponse()->getContent(), true);
         $vendor = $this->getVendor();
         $this->assertSame($response['name'], $vendor->getName());
-        $this->assertSame($response['email'], $vendor->getEmail());
+        $this->assertNotEmpty($response['id']);
+        $this->assertNotEmpty($response['slug']);
+        // $this->assertSame($response['email'], $vendor->getEmail());
     }
 
     public function testPutVendor()
@@ -91,15 +95,16 @@ class VendorControllerTest extends VendorBaseTest
             '/vendors/current',
             [
                 'name' => $vendor->getName(),
+                'slug' => strtolower($vendor->getName()),
                 'email' => $vendor->getEmail(),
             ]
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
 
-        $client->request('GET', '/vendors/current');
         $response = json_decode($client->getResponse()->getContent(), true);
         $this->assertSame($response['name'], $vendor->getName());
-        $this->assertSame($response['email'], $vendor->getEmail());
+        $this->assertNotEmpty($response['id']);
+        $this->assertNotEmpty($response['slug']);
     }
 }
