@@ -7,6 +7,7 @@ use App\Core\Exception\ApiJsonInputValidationException;
 use App\Core\Response\ApiJsonResponse;
 use App\Customer\Dto\CustomerPhotoDto;
 use App\Customer\Entity\Customer;
+use App\Customer\Exception\CustomerPhotoInvalidPhotoException;
 use App\Customer\Exception\CustomerPhotoInvalidTakenAtException;
 use App\Customer\Exception\CustomerPhotoNotFoundException;
 use App\Customer\Provider\CustomerPhotoProvider;
@@ -46,13 +47,15 @@ class CustomerPhotoUpdateController extends AbstractController
      * @ParamConverter("customerPhotoRequest", converter="fos_rest.request_body")
      *
      * @OA\Tag(name="CustomerPhoto")
+     *
      * @OA\RequestBody(
      *     required=true,
      *     @OA\JsonContent(ref=@Model(type=CustomerPhotoRequest::class))
      * )
+     *
      * @OA\Response(
      *     response=200,
-     *     description="Updates a photo",
+     *     description="Uploads a photo",
      *     @OA\JsonContent(ref=@Model(type=CustomerPhotoDto::class))
      * )
      * @OA\Response(
@@ -61,10 +64,10 @@ class CustomerPhotoUpdateController extends AbstractController
      * )
      * @OA\Response(
      *     response=404,
-     *     description="Plan not found"
+     *     description="Photo not found"
      * )
      */
-    public function create(
+    public function update(
         string $customerId,
         string $customerPhotoId,
         CustomerPhotoRequest $customerPhotoRequest,
@@ -96,7 +99,7 @@ class CustomerPhotoUpdateController extends AbstractController
             );
         } catch (CustomerPhotoNotFoundException $e) {
             throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
-        } catch (CustomerPhotoInvalidTakenAtException $e) {
+        } catch (CustomerPhotoInvalidTakenAtException | CustomerPhotoInvalidPhotoException $e) {
             throw new ApiJsonException(Response::HTTP_BAD_REQUEST, $e->getMessage());
         }
     }

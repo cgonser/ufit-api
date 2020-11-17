@@ -18,4 +18,10 @@ class PhotoTypeRepository extends ServiceEntityRepository
         $this->getEntityManager()->persist($photoType);
         $this->getEntityManager()->flush();
     }
+
+    public function delete(PhotoType $photoType)
+    {
+        $this->getEntityManager()->remove($photoType);
+        $this->getEntityManager()->flush();
+    }
 }

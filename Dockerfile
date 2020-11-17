@@ -4,10 +4,31 @@ RUN mkdir -p /etc/nginx/conf.d
 ADD ./docker/nginx/etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
 VOLUME /etc/nginx/conf.d
 
-RUN apk --update --no-cache add git postgresql-dev libintl icu icu-dev
-RUN docker-php-ext-install pdo_pgsql intl
-COPY --from=composer /usr/bin/composer /usr/bin/composer
+RUN set -e; \
+         apk add --no-cache \
+                coreutils \
+                freetype-dev \
+                libintl \
+                libjpeg-turbo-dev \
+                libjpeg-turbo \
+                libpng-dev \
+                libzip-dev \
+                jpeg-dev \
+                git \
+                icu \
+                icu-dev \
+                zlib-dev \
+                curl-dev \
+                imap-dev \
+                libxslt-dev libxml2-dev \
+                postgresql-dev \
+                libgcrypt-dev
 
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg
+
+RUN docker-php-ext-install gd pdo_pgsql intl exif zip
+
+COPY --from=composer /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 COPY . /app
 

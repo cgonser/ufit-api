@@ -31,6 +31,22 @@
         {
           "name": "APP_SECRET",
           "value": "ef819fc48a4f25481ce7e2e84d26ffba"
+        },
+        {
+          "name": "AWS_S3_REGION",
+          "value": "eu-central-1"
+        },
+        {
+          "name": "AWS_S3_ACCESS_KEY_ID",
+          "value": "AKIAYS5Q3TLR5JGRX3EG"
+        },
+        {
+          "name": "AWS_S3_ACCESS_KEY_SECRET",
+          "value": "92AZsSYWc6YqLt78ILK/LoHswj/+Nr0DpptqginP"
+        },
+        {
+          "name": "AWS_S3_BUCKET_NAME",
+          "value": "ufit-customer-photos"
         }
       ],
       "secrets": [

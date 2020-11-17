@@ -29,7 +29,7 @@ class CustomerPhotoRequest
     /**
      * @OA\Property()
      */
-    public ?string $file = null;
+    public ?string $photoContents = null;
 
     /**
      * @OA\Property()

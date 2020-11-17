@@ -47,7 +47,7 @@ class CustomerPhotoDeleteController extends AbstractController
      * )
      * @OA\Response(
      *     response=404,
-     *     description="Plan not found"
+     *     description="Photo not found"
      * )
      */
     public function create(

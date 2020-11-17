@@ -33,24 +33,24 @@ class CustomerPhoto
     private PhotoType $photoType;
 
     /**
-     * @ORM\Column()
+     * @ORM\Column(nullable=true)
      */
     private ?string $title;
 
     /**
-     * @ORM\Column()
+     * @ORM\Column(type="text", nullable=true)
      */
     private ?string $description;
 
     /**
-     * @ORM\Column()
+     * @ORM\Column(nullable=true)
      */
     private ?string $filename;
 
     /**
-     * @ORM\Column()
+     * @ORM\Column(name="taken_at", type="datetime", nullable=true)
      */
-    private ?\DateTimeInterface $takenAt;
+    private ?\DateTimeInterface $takenAt = null;
 
     public function getId(): UuidInterface
     {
@@ -122,10 +122,20 @@ class CustomerPhoto
         return $this->takenAt;
     }
 
-    public function setTakenAt(?\DateTimeInterface $takenAt): self
+    public function setTakenAt(?\DateTimeInterface $takenAt = null): self
     {
         $this->takenAt = $takenAt;
 
         return $this;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function prePersist()
+    {
+        if (null === $this->getTakenAt()) {
+            $this->setTakenAt(new \DateTime());
+        }
     }
 }

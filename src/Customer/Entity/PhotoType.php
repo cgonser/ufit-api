@@ -43,4 +43,9 @@ class PhotoType
 
         return $this;
     }
+
+    public function isNew(): bool
+    {
+        return !isset($this->id);
+    }
 }

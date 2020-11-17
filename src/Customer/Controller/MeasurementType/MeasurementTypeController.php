@@ -12,6 +12,7 @@ use App\Customer\ResponseMapper\MeasurementTypeResponseMapper;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -68,15 +69,14 @@ class MeasurementTypeController extends AbstractController
     public function getMeasurementType(string $measurementTypeId): Response
     {
         try {
-            if ('current' == $measurementTypeId) {
-                /** @var MeasurementType $measurementType */
-                $measurementType = $this->getUser();
-            } else {
-                // measurementType fetching not implemented yet; requires also authorization
-                throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
-            }
+            $measurementType = $this->measurementTypeProvider->get(
+                Uuid::fromString($measurementTypeId)
+            );
 
-            return new ApiJsonResponse(Response::HTTP_OK, $this->measurementTypeResponseMapper->map($measurementType));
+            return new ApiJsonResponse(
+                Response::HTTP_OK,
+                $this->measurementTypeResponseMapper->map($measurementType)
+            );
         } catch (MeasurementTypeNotFoundException $e) {
             throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
         }

@@ -29,15 +29,6 @@ class MeasurementTypeService
 
     public function create(MeasurementTypeRequest $measurementTypeRequest): MeasurementType
     {
-        $existingMeasurementType = $this->measurementTypeProvider->findOneByCategoryAndName(
-            $measurementTypeRequest->category,
-            $measurementTypeRequest->name
-        );
-
-        if ($existingMeasurementType) {
-            throw new MeasurementTypeAlreadyExistsException();
-        }
-
         $measurementType = new MeasurementType();
 
         $this->mapFromRequest($measurementType, $measurementTypeRequest);

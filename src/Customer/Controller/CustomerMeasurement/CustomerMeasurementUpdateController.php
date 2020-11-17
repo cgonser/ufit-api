@@ -61,10 +61,10 @@ class CustomerMeasurementUpdateController extends AbstractController
      * )
      * @OA\Response(
      *     response=404,
-     *     description="Plan not found"
+     *     description="Measurement not found"
      * )
      */
-    public function create(
+    public function update(
         string $customerId,
         string $customerMeasurementId,
         CustomerMeasurementRequest $customerMeasurementRequest,

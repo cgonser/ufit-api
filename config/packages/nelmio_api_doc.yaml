@@ -25,7 +25,8 @@ nelmio_api_doc:
             - { alias: Currency, type: App\Core\Dto\CurrencyDto }
             - { alias: Customer, type: App\Customer\Dto\CustomerDto }
             - { alias: CustomerMeasurement, type: App\Customer\Dto\CustomerMeasurementDto }
-#            - { alias: CustomerMeasureItem, type: App\Customer\Dto\CustomerMeasureItemDto }
+            - { alias: CustomerMeasurementItem, type: App\Customer\Dto\CustomerMeasurementItemDto }
+            - { alias: CustomerPhoto, type: App\Customer\Dto\CustomerPhotoDto }
             - { alias: MeasurementType, type: App\Customer\Dto\MeasurementTypeDto }
             - { alias: Vendor, type: App\Vendor\Dto\VendorDto }
             - { alias: VendorPlan, type: App\Vendor\Dto\VendorPlanDto }

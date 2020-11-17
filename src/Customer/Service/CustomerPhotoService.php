@@ -4,23 +4,32 @@ namespace App\Customer\Service;
 
 use App\Customer\Entity\Customer;
 use App\Customer\Entity\CustomerPhoto;
+use App\Customer\Exception\CustomerPhotoInvalidPhotoException;
 use App\Customer\Exception\CustomerPhotoInvalidTakenAtException;
 use App\Customer\Provider\CustomerPhotoProvider;
 use App\Customer\Repository\CustomerPhotoRepository;
 use App\Customer\Request\CustomerPhotoRequest;
+use League\Flysystem\FilesystemInterface;
 
 class CustomerPhotoService
 {
+    private array $allowedImageTypes = [
+    ];
+
     private CustomerPhotoRepository $customerPhotoRepository;
 
     private CustomerPhotoProvider $customerPhotoProvider;
 
+    private FilesystemInterface $filesystem;
+
     public function __construct(
         CustomerPhotoRepository $customerPhotoRepository,
-        CustomerPhotoProvider $customerPhotoProvider
+        CustomerPhotoProvider $customerPhotoProvider,
+        FilesystemInterface $filesystem
     ) {
         $this->customerPhotoRepository = $customerPhotoRepository;
         $this->customerPhotoProvider = $customerPhotoProvider;
+        $this->filesystem = $filesystem;
     }
 
     public function create(Customer $customer, CustomerPhotoRequest $customerPhotoRequest): CustomerPhoto
@@ -32,6 +41,13 @@ class CustomerPhotoService
 
         $this->customerPhotoRepository->save($customerPhoto);
 
+        if (null !== $customerPhotoRequest->photoContents) {
+            $this->persistPhoto(
+                $customerPhoto,
+                $this->decodePhotoContents($customerPhotoRequest->photoContents)
+            );
+        }
+
         return $customerPhoto;
     }
 
@@ -40,11 +56,18 @@ class CustomerPhotoService
         $this->mapFromRequest($customerPhoto, $customerPhotoRequest);
 
         $this->customerPhotoRepository->save($customerPhoto);
+
+        if (null !== $customerPhotoRequest->photoContents) {
+            $this->persistPhoto(
+                $customerPhoto,
+                $this->decodePhotoContents($customerPhotoRequest->photoContents)
+            );
+        }
     }
 
     private function mapFromRequest(CustomerPhoto $customerPhoto, CustomerPhotoRequest $customerPhotoRequest)
     {
-        // TODO: photoType, filename
+        // TODO: photoType
         $customerPhoto->setTitle($customerPhotoRequest->title);
         $customerPhoto->setDescription($customerPhotoRequest->description);
 
@@ -56,6 +79,34 @@ class CustomerPhotoService
             }
 
             $customerPhoto->setTakenAt($takenAt);
+        } elseif (null === $customerPhoto->getTakenAt()) {
+            $customerPhoto->setTakenAt(new \DateTime());
         }
+    }
+
+    private function persistPhoto(CustomerPhoto $customerPhoto, string $photoContents)
+    {
+        $imageInfo = getimagesizefromstring($photoContents);
+
+        if (false === $imageInfo) {
+            throw new CustomerPhotoInvalidPhotoException();
+        }
+
+        $extension = explode('/', $imageInfo['mime'])[1];
+
+        $filename = $customerPhoto->getId()->toString().'.'.$extension;
+
+        $this->filesystem->write($filename, $photoContents);
+
+        $customerPhoto->setFilename($filename);
+
+        $this->customerPhotoRepository->save($customerPhoto);
+    }
+
+    public function decodePhotoContents(string $photoContents): ?string
+    {
+        return null !== $photoContents
+            ? base64_decode($photoContents)
+            : null;
     }
 }

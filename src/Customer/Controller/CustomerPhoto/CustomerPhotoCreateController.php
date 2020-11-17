@@ -11,6 +11,8 @@ use App\Customer\Exception\CustomerPhotoInvalidTakenAtException;
 use App\Customer\Request\CustomerPhotoRequest;
 use App\Customer\ResponseMapper\CustomerPhotoResponseMapper;
 use App\Customer\Service\CustomerPhotoService;
+use FOS\RestBundle\Controller\Annotations\FileParam;
+use FOS\RestBundle\Request\ParamFetcherInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -71,7 +73,10 @@ class CustomerPhotoCreateController extends AbstractController
                 throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
             }
 
-            $customerPhoto = $this->customerPhotoService->create($customer, $customerPhotoRequest);
+            $customerPhoto = $this->customerPhotoService->create(
+                $customer,
+                $customerPhotoRequest
+            );
 
             return new ApiJsonResponse(
                 Response::HTTP_CREATED,

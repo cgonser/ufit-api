@@ -47,7 +47,7 @@ class CustomerMeasurementDeleteController extends AbstractController
      * )
      * @OA\Response(
      *     response=404,
-     *     description="Plan not found"
+     *     description="Measurement not found"
      * )
      */
     public function create(
