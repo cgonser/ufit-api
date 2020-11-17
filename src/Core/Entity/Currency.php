@@ -68,4 +68,9 @@ class Currency
     {
         return $this->getName();
     }
+
+    public function isNew(): bool
+    {
+        return !isset($this->id);
+    }
 }

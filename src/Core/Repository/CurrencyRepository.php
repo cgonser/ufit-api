@@ -12,4 +12,16 @@ class CurrencyRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Currency::class);
     }
+
+    public function save(Currency $currency)
+    {
+        $this->getEntityManager()->persist($currency);
+        $this->getEntityManager()->flush();
+    }
+
+    public function delete(Currency $currency)
+    {
+        $this->getEntityManager()->remove($currency);
+        $this->getEntityManager()->flush();
+    }
 }
