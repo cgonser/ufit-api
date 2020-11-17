@@ -9,7 +9,7 @@ use App\Vendor\Dto\QuestionDto;
 use App\Vendor\Entity\Vendor;
 use App\Vendor\Exception\QuestionnaireNotFoundException;
 use App\Vendor\Provider\QuestionnaireProvider;
-use App\Vendor\Request\QuestionCreateRequest;
+use App\Vendor\Request\QuestionRequest;
 use App\Vendor\ResponseMapper\QuestionResponseMapper;
 use App\Vendor\Service\QuestionService;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -42,12 +42,12 @@ class QuestionCreateController extends AbstractController
     /**
      * @Route("/questionnaires/{questionnaireId}/questions", methods="POST", name="questionnaires_questions_create")
      *
-     * @ParamConverter("questionCreateRequest", converter="fos_rest.request_body")
+     * @ParamConverter("questionRequest", converter="fos_rest.request_body")
      *
      * @OA\Tag(name="Questionnaire")
      * @OA\RequestBody(
      *     required=true,
-     *     @OA\JsonContent(ref=@Model(type=QuestionCreateRequest::class))
+     *     @OA\JsonContent(ref=@Model(type=QuestionRequest::class))
      * )
      * @OA\Response(
      *     response=201,
@@ -65,7 +65,7 @@ class QuestionCreateController extends AbstractController
      */
     public function create(
         string $questionnaireId,
-        QuestionCreateRequest $questionCreateRequest,
+        QuestionRequest $questionRequest,
         ConstraintViolationListInterface $validationErrors
     ): Response {
         try {
@@ -81,9 +81,12 @@ class QuestionCreateController extends AbstractController
                 $vendor, Uuid::fromString($questionnaireId)
             );
 
-            $question = $this->questionService->create($questionnaire, $questionCreateRequest);
+            $question = $this->questionService->create($questionnaire, $questionRequest);
 
-            return new ApiJsonResponse(Response::HTTP_CREATED, $this->questionResponseMapper->map($question));
+            return new ApiJsonResponse(
+                Response::HTTP_CREATED,
+                $this->questionResponseMapper->map($question)
+            );
         } catch (QuestionnaireNotFoundException $e) {
             throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
         }

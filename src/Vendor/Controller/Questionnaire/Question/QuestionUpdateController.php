@@ -10,7 +10,7 @@ use App\Vendor\Exception\QuestionnaireNotFoundException;
 use App\Vendor\Exception\QuestionNotFoundException;
 use App\Vendor\Provider\QuestionnaireProvider;
 use App\Vendor\Provider\QuestionProvider;
-use App\Vendor\Request\QuestionUpdateRequest;
+use App\Vendor\Request\QuestionRequest;
 use App\Vendor\ResponseMapper\QuestionResponseMapper;
 use App\Vendor\Service\QuestionService;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -46,12 +46,12 @@ class QuestionUpdateController extends AbstractController
     /**
      * @Route("/questionnaires/{questionnaireId}/questions/{questionId}", methods="PUT", name="questionnaires_questions_update")
      *
-     * @ParamConverter("questionUpdateRequest", converter="fos_rest.request_body")
+     * @ParamConverter("questionRequest", converter="fos_rest.request_body")
      *
      * @OA\Tag(name="Questionnaire")
      * @OA\RequestBody(
      *     required=true,
-     *     @OA\JsonContent(ref=@Model(type=QuestionUpdateRequest::class))
+     *     @OA\JsonContent(ref=@Model(type=QuestionRequest::class))
      * )
      * @OA\Response(
      *     response=200,
@@ -70,7 +70,7 @@ class QuestionUpdateController extends AbstractController
     public function updateQuestion(
         string $questionnaireId,
         string $questionId,
-        QuestionUpdateRequest $questionUpdateRequest
+        QuestionRequest $questionRequest
     ): Response {
         try {
             // TODO: implement authorization
@@ -86,7 +86,7 @@ class QuestionUpdateController extends AbstractController
                 Uuid::fromString($questionId)
             );
 
-            $this->questionService->update($question, $questionUpdateRequest);
+            $this->questionService->update($question, $questionRequest);
 
             return new ApiJsonResponse(
                 Response::HTTP_OK,

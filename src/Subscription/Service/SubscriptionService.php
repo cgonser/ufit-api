@@ -5,7 +5,7 @@ namespace App\Subscription\Service;
 use App\Customer\Provider\CustomerProvider;
 use App\Subscription\Entity\Subscription;
 use App\Subscription\Repository\SubscriptionRepository;
-use App\Subscription\Request\SubscriptionCreateRequest;
+use App\Subscription\Request\SubscriptionRequest;
 use App\Vendor\Provider\VendorPlanProvider;
 use Ramsey\Uuid\Uuid;
 
@@ -27,10 +27,10 @@ class SubscriptionService
         $this->vendorPlanProvider = $vendorPlanProvider;
     }
 
-    public function create(SubscriptionCreateRequest $subscriptionCreateRequest): Subscription
+    public function create(SubscriptionRequest $subscriptionRequest): Subscription
     {
-        $customer = $this->customerProvider->get(Uuid::fromString($subscriptionCreateRequest->customerId));
-        $vendorPlan = $this->vendorPlanProvider->get(Uuid::fromString($subscriptionCreateRequest->vendorPlanId));
+        $customer = $this->customerProvider->get(Uuid::fromString($subscriptionRequest->customerId));
+        $vendorPlan = $this->vendorPlanProvider->get(Uuid::fromString($subscriptionRequest->vendorPlanId));
 
         $subscription = (new Subscription())
             ->setCustomer($customer)

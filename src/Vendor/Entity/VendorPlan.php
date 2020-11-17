@@ -33,9 +33,9 @@ class VendorPlan
 
     /**
      * @ORM\ManyToOne(targetEntity="Questionnaire")
-     * @ORM\JoinColumn(name="questionnaire_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="questionnaire_id", referencedColumnName="id", nullable=true)
      */
-    private Questionnaire $questionnaire;
+    private ?Questionnaire $questionnaire = null;
 
     /**
      * @ORM\Column(type="string")
@@ -98,12 +98,12 @@ class VendorPlan
         return $this;
     }
 
-    public function getQuestionnaire(): Questionnaire
+    public function getQuestionnaire(): ?Questionnaire
     {
         return $this->questionnaire;
     }
 
-    public function setQuestionnaire(Questionnaire $questionnaire): self
+    public function setQuestionnaire(?Questionnaire $questionnaire = null): self
     {
         $this->questionnaire = $questionnaire;
 

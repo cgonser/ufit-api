@@ -7,9 +7,8 @@ use App\Customer\Exception\CustomerEmailAddressInUseException;
 use App\Customer\Exception\CustomerInvalidPasswordException;
 use App\Customer\Provider\CustomerProvider;
 use App\Customer\Repository\CustomerRepository;
-use App\Customer\Request\CustomerCreateRequest;
 use App\Customer\Request\CustomerPasswordChangeRequest;
-use App\Customer\Request\CustomerUpdateRequest;
+use App\Customer\Request\CustomerRequest;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
@@ -31,33 +30,45 @@ class CustomerService
         $this->customerProvider = $customerProvider;
     }
 
-    public function create(CustomerCreateRequest $customerCreateRequest): Customer
+    public function create(CustomerRequest $customerRequest): Customer
     {
-        if ($this->isEmailAddressInUse($customerCreateRequest->email)) {
-            throw new CustomerEmailAddressInUseException();
-        }
-
         $customer = new Customer();
-        $customer->setName($customerCreateRequest->name);
-        $customer->setEmail($customerCreateRequest->email);
-        $customer->setPassword($this->userPasswordEncoder->encodePassword($customer, $customerCreateRequest->password));
-        $customer->setRoles(['ROLE_CUSTOMER']);
+
+        $this->mapFromRequest($customer, $customerRequest);
 
         $this->customerRepository->save($customer);
 
         return $customer;
     }
 
-    public function update(Customer $customer, CustomerUpdateRequest $customerUpdateRequest)
+    public function update(Customer $customer, CustomerRequest $customerRequest)
     {
-        if ($this->isEmailAddressInUse($customerUpdateRequest->email, $customer->getId())) {
+        $this->mapFromRequest($customer, $customerRequest);
+
+        $this->customerRepository->save($customer);
+    }
+
+    public function mapFromRequest(Customer $customer, CustomerRequest $customerRequest)
+    {
+        $isEmailAddressInUse = $this->isEmailAddressInUse(
+            $customerRequest->email,
+            $customer->isNew() ? null : $customer->getId()
+        );
+
+        if ($isEmailAddressInUse) {
             throw new CustomerEmailAddressInUseException();
         }
 
-        $customer->setName($customerUpdateRequest->name);
-        $customer->setEmail($customerUpdateRequest->email);
+        $customer->setName($customerRequest->name);
+        $customer->setEmail($customerRequest->email);
 
-        $this->customerRepository->save($customer);
+        if (null !== $customerRequest->password) {
+            $customer->setPassword($this->userPasswordEncoder->encodePassword($customer, $customerRequest->password));
+        }
+
+        if ($customer->isNew() || 0 == count($customer->getRoles())) {
+            $customer->setRoles(['ROLE_CUSTOMER']);
+        }
     }
 
     public function isEmailAddressInUse(string $emailAddress, ?UuidInterface $customerId = null): bool

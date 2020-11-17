@@ -9,7 +9,7 @@ use App\Core\Response\ApiJsonResponse;
 use App\Vendor\Dto\QuestionnaireDto;
 use App\Vendor\Entity\Vendor;
 use App\Vendor\Exception\VendorPlanInvalidDurationException;
-use App\Vendor\Request\QuestionnaireCreateRequest;
+use App\Vendor\Request\QuestionnaireRequest;
 use App\Vendor\ResponseMapper\QuestionnaireResponseMapper;
 use App\Vendor\Service\QuestionnaireService;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -37,12 +37,12 @@ class QuestionnaireCreateController extends AbstractController
     /**
      * @Route("/questionnaires", methods="POST", name="questionnaires_create")
      *
-     * @ParamConverter("questionnaireCreateRequest", converter="fos_rest.request_body")
+     * @ParamConverter("questionnaireRequest", converter="fos_rest.request_body")
      *
      * @OA\Tag(name="Questionnaire")
      * @OA\RequestBody(
      *     required=true,
-     *     @OA\JsonContent(ref=@Model(type=QuestionnaireCreateRequest::class))
+     *     @OA\JsonContent(ref=@Model(type=QuestionnaireRequest::class))
      * )
      * @OA\Response(
      *     response=201,
@@ -55,7 +55,7 @@ class QuestionnaireCreateController extends AbstractController
      * )
      */
     public function create(
-        QuestionnaireCreateRequest $questionnaireCreateRequest,
+        QuestionnaireRequest $questionnaireRequest,
         ConstraintViolationListInterface $validationErrors
     ): Response {
         try {
@@ -63,7 +63,7 @@ class QuestionnaireCreateController extends AbstractController
                 throw new ApiJsonInputValidationException($validationErrors);
             }
 
-            if ('current' == $questionnaireCreateRequest->vendorId) {
+            if ('current' == $questionnaireRequest->vendorId) {
                 /** @var Vendor $vendor */
                 $vendor = $this->getUser();
             } else {
@@ -71,7 +71,7 @@ class QuestionnaireCreateController extends AbstractController
                 throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
             }
 
-            $questionnaire = $this->questionnaireService->create($vendor, $questionnaireCreateRequest);
+            $questionnaire = $this->questionnaireService->create($vendor, $questionnaireRequest);
 
             return new ApiJsonResponse(Response::HTTP_CREATED, $this->questionnaireResponseMapper->map($questionnaire));
         } catch (VendorPlanInvalidDurationException | CurrencyNotFoundException $e) {

@@ -49,7 +49,7 @@ class VendorPlanProvider
         return $this->vendorPlanRepository->findBy(['vendor' => $vendor]);
     }
 
-    public function findOneByVendorAndSlug(Vendor $vendor, string $slug): ?Vendor
+    public function findOneByVendorAndSlug(Vendor $vendor, string $slug): ?VendorPlan
     {
         return $this->vendorPlanRepository->findOneBy([
             'vendor' => $vendor,

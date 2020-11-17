@@ -6,12 +6,13 @@ use App\Core\Provider\CurrencyProvider;
 use App\Vendor\Entity\Vendor;
 use App\Vendor\Entity\VendorPlan;
 use App\Vendor\Exception\VendorPlanInvalidDurationException;
-use App\Vendor\Exception\VendorPlanNotFoundException;
+use App\Vendor\Exception\VendorPlanSlugInUseException;
+use App\Vendor\Provider\QuestionnaireProvider;
 use App\Vendor\Provider\VendorPlanProvider;
 use App\Vendor\Provider\VendorProvider;
 use App\Vendor\Repository\VendorPlanRepository;
-use App\Vendor\Request\VendorPlanCreateRequest;
-use App\Vendor\Request\VendorPlanUpdateRequest;
+use App\Vendor\Request\VendorPlanRequest;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 class VendorPlanService
@@ -22,6 +23,8 @@ class VendorPlanService
 
     private VendorProvider $vendorProvider;
 
+    private QuestionnaireProvider $questionnaireProvider;
+
     private CurrencyProvider $currencyProvider;
 
     private SluggerInterface $slugger;
@@ -30,48 +33,66 @@ class VendorPlanService
         VendorPlanRepository $vendorPlanRepository,
         VendorPlanProvider $vendorPlanProvider,
         VendorProvider $vendorProvider,
+        QuestionnaireProvider $questionnaireProvider,
         CurrencyProvider $currencyProvider,
         SluggerInterface $slugger
     ) {
         $this->vendorPlanRepository = $vendorPlanRepository;
         $this->vendorPlanProvider = $vendorPlanProvider;
         $this->vendorProvider = $vendorProvider;
+        $this->questionnaireProvider = $questionnaireProvider;
         $this->currencyProvider = $currencyProvider;
         $this->slugger = $slugger;
     }
 
-    public function create(Vendor $vendor, VendorPlanCreateRequest $vendorPlanCreateRequest): VendorPlan
+    public function create(Vendor $vendor, VendorPlanRequest $vendorPlanRequest): VendorPlan
     {
         $vendorPlan = new VendorPlan();
         $vendorPlan->setVendor($vendor);
-        $vendorPlan->setName($vendorPlanCreateRequest->name);
-        $vendorPlan->setPrice($vendorPlanCreateRequest->price);
-        $vendorPlan->setCurrency($this->currencyProvider->getByCode($vendorPlanCreateRequest->currency));
-        $vendorPlan->setDuration(
-            $this->prepareDuration($vendorPlanCreateRequest->durationMonths, $vendorPlanCreateRequest->durationDays)
-        );
-        $vendorPlan->setSlug($this->generateSlug($vendorPlan));
+
+        $this->mapFromRequest($vendorPlan, $vendorPlanRequest);
 
         $this->vendorPlanRepository->save($vendorPlan);
 
         return $vendorPlan;
     }
 
-    public function update(VendorPlan $vendorPlan, VendorPlanUpdateRequest $vendorPlanUpdateRequest)
+    public function update(VendorPlan $vendorPlan, VendorPlanRequest $vendorPlanRequest)
     {
-        if (!$this->isSlugUnique($vendorPlan, $vendorPlanUpdateRequest->slug)) {
-            throw new VendorPlanNotFoundException();
-        }
-
-        $vendorPlan->setName($vendorPlanUpdateRequest->name);
-        $vendorPlan->setPrice($vendorPlanUpdateRequest->price);
-        $vendorPlan->setCurrency($this->currencyProvider->getByCode($vendorPlanUpdateRequest->currency));
-        $vendorPlan->setDuration(
-            $this->prepareDuration($vendorPlanUpdateRequest->durationMonths, $vendorPlanUpdateRequest->durationDays)
-        );
-        $vendorPlan->setSlug($vendorPlanUpdateRequest->slug);
+        $this->mapFromRequest($vendorPlan, $vendorPlanRequest);
 
         $this->vendorPlanRepository->save($vendorPlan);
+    }
+
+    private function mapFromRequest(VendorPlan $vendorPlan, VendorPlanRequest $vendorPlanRequest)
+    {
+        $vendorPlan->setName($vendorPlanRequest->name);
+        $vendorPlan->setPrice($vendorPlanRequest->price);
+        $vendorPlan->setCurrency($this->currencyProvider->getByCode($vendorPlanRequest->currency));
+        $vendorPlan->setDuration(
+            $this->prepareDuration($vendorPlanRequest->durationMonths, $vendorPlanRequest->durationDays)
+        );
+
+        if (null !== $vendorPlanRequest->slug) {
+            if (!$this->isSlugUnique($vendorPlan, $vendorPlanRequest->slug)) {
+                throw new VendorPlanSlugInUseException();
+            }
+
+            $vendorPlan->setSlug($vendorPlanRequest->slug);
+        } elseif (null === $vendorPlan->getSlug()) {
+            $vendorPlan->setSlug($this->generateSlug($vendorPlan));
+        }
+
+        if (null !== $vendorPlanRequest->questionnaireId) {
+            $questionnaire = $this->questionnaireProvider->getByVendorAndId(
+                $vendorPlan->getVendor(),
+                Uuid::fromString($vendorPlanRequest->questionnaireId)
+            );
+
+            $vendorPlan->setQuestionnaire($questionnaire);
+        } else {
+            $vendorPlan->setQuestionnaire(null);
+        }
     }
 
     private function prepareDuration(string $durationMonths, string $durationDays): \DateInterval

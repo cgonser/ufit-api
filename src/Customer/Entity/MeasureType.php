@@ -14,14 +14,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  */
 class MeasureType
 {
-    public const MEASURE_UNIT_KG = 'kg';
-    public const MEASURE_UNIT_LB = 'lb';
-    public const MEASURE_UNIT_CM = 'cm';
-    public const MEASURE_UNIT_IN = 'in';
-
-    public const MEASURE_TYPE_WEIGHT = 'weight';
-    public const MEASURE_TYPE_SIZE = 'size';
-
     /**
      * @ORM\Id
      * @ORM\Column(type="uuid", unique=true)
@@ -38,12 +30,17 @@ class MeasureType
     /**
      * @ORM\Column()
      */
+    private string $slug;
+
+    /**
+     * @ORM\Column()
+     */
     private string $unit;
 
     /**
      * @ORM\Column()
      */
-    private string $type;
+    private string $category;
 
     public function getId(): UuidInterface
     {
@@ -62,6 +59,18 @@ class MeasureType
         return $this;
     }
 
+    public function getSlug(): string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): self
+    {
+        $this->slug = $slug;
+
+        return $this;
+    }
+
     public function getUnit(): string
     {
         return $this->unit;
@@ -74,15 +83,20 @@ class MeasureType
         return $this;
     }
 
-    public function getType(): string
+    public function getCategory(): string
     {
-        return $this->type;
+        return $this->category;
     }
 
-    public function setType(string $type): self
+    public function setCategory(string $category): self
     {
-        $this->type = $type;
+        $this->category = $category;
 
         return $this;
+    }
+
+    public function isNew(): bool
+    {
+        return !isset($this->id);
     }
 }

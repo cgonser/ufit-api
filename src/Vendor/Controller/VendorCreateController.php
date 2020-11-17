@@ -7,7 +7,7 @@ use App\Core\Exception\ApiJsonInputValidationException;
 use App\Core\Response\ApiJsonResponse;
 use App\Vendor\Dto\VendorDto;
 use App\Vendor\Exception\VendorEmailAddressInUseException;
-use App\Vendor\Request\VendorCreateRequest;
+use App\Vendor\Request\VendorRequest;
 use App\Vendor\ResponseMapper\VendorResponseMapper;
 use App\Vendor\Service\VendorService;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -35,12 +35,12 @@ class VendorCreateController extends AbstractController
     /**
      * @Route("/vendors", methods="POST", name="vendors_create")
      *
-     * @ParamConverter("vendorCreateRequest", converter="fos_rest.request_body")
+     * @ParamConverter("vendorRequest", converter="fos_rest.request_body")
      *
      * @OA\Tag(name="Vendor")
      * @OA\RequestBody(
      *     required=true,
-     *     @OA\JsonContent(ref=@Model(type=VendorCreateRequest::class))
+     *     @OA\JsonContent(ref=@Model(type=VendorRequest::class))
      * )
      * @OA\Response(
      *     response=201,
@@ -53,7 +53,7 @@ class VendorCreateController extends AbstractController
      * )
      */
     public function create(
-        VendorCreateRequest $vendorCreateRequest,
+        VendorRequest $vendorRequest,
         ConstraintViolationListInterface $validationErrors
     ): Response {
         try {
@@ -61,7 +61,7 @@ class VendorCreateController extends AbstractController
                 throw new ApiJsonInputValidationException($validationErrors);
             }
 
-            $vendor = $this->vendorService->create($vendorCreateRequest);
+            $vendor = $this->vendorService->create($vendorRequest);
 
             return new ApiJsonResponse(Response::HTTP_CREATED, $this->vendorResponseMapper->map($vendor));
         } catch (VendorEmailAddressInUseException $e) {

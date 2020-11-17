@@ -4,14 +4,12 @@ namespace App\Vendor\Controller\Questionnaire;
 
 use App\Core\Exception\ApiJsonException;
 use App\Core\Exception\ApiJsonInputValidationException;
-use App\Core\Exception\CurrencyNotFoundException;
 use App\Core\Response\ApiJsonResponse;
 use App\Vendor\Dto\QuestionnaireDto;
 use App\Vendor\Entity\Vendor;
 use App\Vendor\Exception\QuestionnaireNotFoundException;
-use App\Vendor\Exception\VendorPlanInvalidDurationException;
 use App\Vendor\Provider\QuestionnaireProvider;
-use App\Vendor\Request\QuestionnaireUpdateRequest;
+use App\Vendor\Request\QuestionnaireRequest;
 use App\Vendor\ResponseMapper\QuestionnaireResponseMapper;
 use App\Vendor\Service\QuestionnaireService;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -44,12 +42,12 @@ class QuestionnaireUpdateController extends AbstractController
     /**
      * @Route("/questionnaires/{questionnaireId}", methods="PUT", name="questionnaires_update")
      *
-     * @ParamConverter("questionnaireUpdateRequest", converter="fos_rest.request_body")
+     * @ParamConverter("questionnaireRequest", converter="fos_rest.request_body")
      *
      * @OA\Tag(name="Questionnaire")
      * @OA\RequestBody(
      *     required=true,
-     *     @OA\JsonContent(ref=@Model(type=QuestionnaireUpdateRequest::class))
+     *     @OA\JsonContent(ref=@Model(type=QuestionnaireRequest::class))
      * )
      * @OA\Response(
      *     response=200,
@@ -67,7 +65,7 @@ class QuestionnaireUpdateController extends AbstractController
      */
     public function update(
         string $questionnaireId,
-        QuestionnaireUpdateRequest $questionnaireUpdateRequest,
+        QuestionnaireRequest $questionnaireRequest,
         ConstraintViolationListInterface $validationErrors
     ): Response {
         try {
@@ -84,7 +82,7 @@ class QuestionnaireUpdateController extends AbstractController
                 Uuid::fromString($questionnaireId)
             );
 
-            $this->questionnaireService->update($questionnaire, $questionnaireUpdateRequest);
+            $this->questionnaireService->update($questionnaire, $questionnaireRequest);
 
             return new ApiJsonResponse(Response::HTTP_CREATED, $this->questionnaireResponseMapper->map($questionnaire));
         } catch (QuestionnaireNotFoundException $e) {

@@ -7,12 +7,17 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @OA\RequestBody(
- *     request="QuestionnaireUpdateRequest",
+ *     request="QuestionnaireRequest",
  *     required={"name"}
  * )
  */
-class QuestionnaireUpdateRequest
+class QuestionnaireRequest
 {
+    /**
+     * @OA\Property()
+     */
+    public ?string $vendorId = null;
+
     /**
      * @OA\Property()
      * @Assert\NotBlank()

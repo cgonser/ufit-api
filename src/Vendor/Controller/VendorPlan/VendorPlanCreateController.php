@@ -8,8 +8,9 @@ use App\Core\Exception\CurrencyNotFoundException;
 use App\Core\Response\ApiJsonResponse;
 use App\Vendor\Dto\VendorPlanDto;
 use App\Vendor\Entity\Vendor;
+use App\Vendor\Exception\QuestionnaireNotFoundException;
 use App\Vendor\Exception\VendorPlanInvalidDurationException;
-use App\Vendor\Request\VendorPlanCreateRequest;
+use App\Vendor\Request\VendorPlanRequest;
 use App\Vendor\ResponseMapper\VendorPlanResponseMapper;
 use App\Vendor\Service\VendorPlanService;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -37,12 +38,12 @@ class VendorPlanCreateController extends AbstractController
     /**
      * @Route("/vendors/{vendorId}/plans", methods="POST", name="vendors_plans_create")
      *
-     * @ParamConverter("vendorPlanCreateRequest", converter="fos_rest.request_body")
+     * @ParamConverter("vendorPlanRequest", converter="fos_rest.request_body")
      *
      * @OA\Tag(name="VendorPlan")
      * @OA\RequestBody(
      *     required=true,
-     *     @OA\JsonContent(ref=@Model(type=VendorPlanCreateRequest::class))
+     *     @OA\JsonContent(ref=@Model(type=VendorPlanRequest::class))
      * )
      * @OA\Response(
      *     response=201,
@@ -56,7 +57,7 @@ class VendorPlanCreateController extends AbstractController
      */
     public function create(
         string $vendorId,
-        VendorPlanCreateRequest $vendorPlanCreateRequest,
+        VendorPlanRequest $vendorPlanRequest,
         ConstraintViolationListInterface $validationErrors
     ): Response {
         try {
@@ -72,10 +73,13 @@ class VendorPlanCreateController extends AbstractController
                 throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
             }
 
-            $vendorPlan = $this->vendorPlanService->create($vendor, $vendorPlanCreateRequest);
+            $vendorPlan = $this->vendorPlanService->create($vendor, $vendorPlanRequest);
 
-            return new ApiJsonResponse(Response::HTTP_CREATED, $this->vendorPlanResponseMapper->map($vendorPlan));
-        } catch (VendorPlanInvalidDurationException | CurrencyNotFoundException $e) {
+            return new ApiJsonResponse(
+                Response::HTTP_CREATED,
+                $this->vendorPlanResponseMapper->map($vendorPlan)
+            );
+        } catch (VendorPlanInvalidDurationException | CurrencyNotFoundException | QuestionnaireNotFoundException $e) {
             throw new ApiJsonException(Response::HTTP_BAD_REQUEST, $e->getMessage());
         }
     }

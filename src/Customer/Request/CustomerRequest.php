@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Vendor\Request;
+namespace App\Customer\Request;
 
 use OpenApi\Annotations as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @OA\RequestBody(
- *     request="VendorUpdateRequest",
+ *     request="CustomerRequest",
  *     required={"name", "email"},
  * )
  */
-class VendorUpdateRequest
+class CustomerRequest
 {
     /**
      * @OA\Property()
@@ -21,13 +21,13 @@ class VendorUpdateRequest
 
     /**
      * @OA\Property()
-     */
-    public ?string $slug = null;
-
-    /**
-     * @OA\Property()
      * @Assert\NotBlank()
      * @Assert\Email()
      */
     public ?string $email = null;
+
+    /**
+     * @OA\Property()
+     */
+    public ?string $password = null;
 }

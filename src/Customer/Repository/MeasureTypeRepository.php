@@ -18,4 +18,10 @@ class MeasureTypeRepository extends ServiceEntityRepository
         $this->getEntityManager()->persist($measureType);
         $this->getEntityManager()->flush();
     }
+
+    public function delete(MeasureType $measureType)
+    {
+        $this->getEntityManager()->remove($measureType);
+        $this->getEntityManager()->flush();
+    }
 }

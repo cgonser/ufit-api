@@ -8,6 +8,8 @@ class VendorPlanDto
 
     public string $vendorId;
 
+    public ?string $questionnaireId = null;
+
     public string $name;
 
     public int $price;

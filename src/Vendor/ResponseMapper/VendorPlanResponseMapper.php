@@ -18,6 +18,10 @@ class VendorPlanResponseMapper
         $vendorPlanDto->durationMonths = $vendorPlan->getDuration()->m;
         $vendorPlanDto->price = $vendorPlan->getPrice();
 
+        $vendorPlanDto->questionnaireId = null !== $vendorPlan->getQuestionnaire()
+            ? $vendorPlan->getQuestionnaire()->getId()->toString()
+            : null;
+
         return $vendorPlanDto;
     }
 

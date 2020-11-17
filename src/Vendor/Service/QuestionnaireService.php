@@ -6,8 +6,7 @@ use App\Vendor\Entity\Questionnaire;
 use App\Vendor\Entity\Vendor;
 use App\Vendor\Provider\QuestionnaireProvider;
 use App\Vendor\Repository\QuestionnaireRepository;
-use App\Vendor\Request\QuestionnaireCreateRequest;
-use App\Vendor\Request\QuestionnaireUpdateRequest;
+use App\Vendor\Request\QuestionnaireRequest;
 
 class QuestionnaireService
 {
@@ -23,20 +22,20 @@ class QuestionnaireService
         $this->questionnaireProvider = $questionnaireProvider;
     }
 
-    public function create(Vendor $vendor, QuestionnaireCreateRequest $questionnaireCreateRequest): Questionnaire
+    public function create(Vendor $vendor, QuestionnaireRequest $questionnaireRequest): Questionnaire
     {
         $questionnaire = new Questionnaire();
         $questionnaire->setVendor($vendor);
-        $questionnaire->setTitle($questionnaireCreateRequest->title);
+        $questionnaire->setTitle($questionnaireRequest->title);
 
         $this->questionnaireRepository->save($questionnaire);
 
         return $questionnaire;
     }
 
-    public function update(Questionnaire $questionnaire, QuestionnaireUpdateRequest $questionnaireUpdateRequest)
+    public function update(Questionnaire $questionnaire, QuestionnaireRequest $questionnaireRequest)
     {
-        $questionnaire->setTitle($questionnaireUpdateRequest->title);
+        $questionnaire->setTitle($questionnaireRequest->title);
 
         $this->questionnaireRepository->save($questionnaire);
     }

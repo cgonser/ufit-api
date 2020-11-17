@@ -10,7 +10,7 @@ use App\Customer\Entity\Customer;
 use App\Customer\Exception\CustomerEmailAddressInUseException;
 use App\Customer\Exception\CustomerNotFoundException;
 use App\Customer\Provider\CustomerProvider;
-use App\Customer\Request\CustomerUpdateRequest;
+use App\Customer\Request\CustomerRequest;
 use App\Customer\ResponseMapper\CustomerResponseMapper;
 use App\Customer\Service\CustomerService;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -42,12 +42,12 @@ class CustomerUpdateController extends AbstractController
     /**
      * @Route("/customers/{customerId}", methods="PUT", name="customers_update")
      *
-     * @ParamConverter("customerUpdateRequest", converter="fos_rest.request_body")
+     * @ParamConverter("customerRequest", converter="fos_rest.request_body")
      *
      * @OA\Tag(name="Customer")
      * @OA\RequestBody(
      *     required=true,
-     *     @OA\JsonContent(ref=@Model(type=CustomerUpdateRequest::class))
+     *     @OA\JsonContent(ref=@Model(type=CustomerRequest::class))
      * )
      * @OA\Response(
      *     response=200,
@@ -61,7 +61,7 @@ class CustomerUpdateController extends AbstractController
      */
     public function update(
         string $customerId,
-        CustomerUpdateRequest $customerUpdateRequest,
+        CustomerRequest $customerRequest,
         ConstraintViolationListInterface $validationErrors
     ): Response {
         try {
@@ -77,7 +77,7 @@ class CustomerUpdateController extends AbstractController
                 throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
             }
 
-            $this->customerService->update($customer, $customerUpdateRequest);
+            $this->customerService->update($customer, $customerRequest);
 
             return new ApiJsonResponse(Response::HTTP_OK, $this->customerResponseMapper->map($customer));
         } catch (CustomerNotFoundException $e) {

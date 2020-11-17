@@ -7,7 +7,7 @@ use App\Core\Exception\ApiJsonInputValidationException;
 use App\Core\Response\ApiJsonResponse;
 use App\Customer\Dto\CustomerDto;
 use App\Customer\Exception\CustomerEmailAddressInUseException;
-use App\Customer\Request\CustomerCreateRequest;
+use App\Customer\Request\CustomerRequest;
 use App\Customer\ResponseMapper\CustomerResponseMapper;
 use App\Customer\Service\CustomerService;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -35,12 +35,12 @@ class CustomerCreateController extends AbstractController
     /**
      * @Route("/customers", methods="POST", name="customers_create")
      *
-     * @ParamConverter("customerCreateRequest", converter="fos_rest.request_body")
+     * @ParamConverter("customerRequest", converter="fos_rest.request_body")
      *
      * @OA\Tag(name="Customer")
      * @OA\RequestBody(
      *     required=true,
-     *     @OA\JsonContent(ref=@Model(type=CustomerCreateRequest::class))
+     *     @OA\JsonContent(ref=@Model(type=CustomerRequest::class))
      * )
      * @OA\Response(
      *     response=201,
@@ -53,7 +53,7 @@ class CustomerCreateController extends AbstractController
      * )
      */
     public function create(
-        CustomerCreateRequest $customerCreateRequest,
+        CustomerRequest $customerRequest,
         ConstraintViolationListInterface $validationErrors
     ): Response {
         try {
@@ -61,7 +61,7 @@ class CustomerCreateController extends AbstractController
                 throw new ApiJsonInputValidationException($validationErrors);
             }
 
-            $customer = $this->customerService->create($customerCreateRequest);
+            $customer = $this->customerService->create($customerRequest);
 
             return new ApiJsonResponse(Response::HTTP_CREATED, $this->customerResponseMapper->map($customer));
         } catch (CustomerEmailAddressInUseException $e) {

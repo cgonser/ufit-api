@@ -6,8 +6,7 @@ use App\Vendor\Entity\Question;
 use App\Vendor\Entity\Questionnaire;
 use App\Vendor\Repository\QuestionnaireRepository;
 use App\Vendor\Repository\QuestionRepository;
-use App\Vendor\Request\QuestionCreateRequest;
-use App\Vendor\Request\QuestionUpdateRequest;
+use App\Vendor\Request\QuestionRequest;
 
 class QuestionService
 {
@@ -23,11 +22,11 @@ class QuestionService
         $this->questionRepository = $questionRepository;
     }
 
-    public function create(Questionnaire $questionnaire, QuestionCreateRequest $questionCreateRequest): Question
+    public function create(Questionnaire $questionnaire, QuestionRequest $questionRequest): Question
     {
         $question = new Question();
-        $question->setQuestion($questionCreateRequest->question);
-        $question->setOrder($questionCreateRequest->order);
+
+        $this->mapFromRequest($question, $questionRequest);
 
         $questionnaire->addQuestion($question);
 
@@ -36,12 +35,17 @@ class QuestionService
         return $question;
     }
 
-    public function update(Question $question, QuestionUpdateRequest $questionUpdateRequest)
+    public function update(Question $question, QuestionRequest $questionRequest)
     {
-        $question->setQuestion($questionUpdateRequest->question);
-        $question->setOrder($questionUpdateRequest->order);
+        $this->mapFromRequest($question, $questionRequest);
 
         $this->questionRepository->save($question);
+    }
+
+    private function mapFromRequest(Question $question, QuestionRequest $questionRequest)
+    {
+        $question->setQuestion($questionRequest->question);
+        $question->setOrder($questionRequest->order);
     }
 
     public function delete(Question $question)

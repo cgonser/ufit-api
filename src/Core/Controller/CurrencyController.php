@@ -30,7 +30,7 @@ class CurrencyController extends AbstractController
     /**
      * @Route("/currencies", methods="GET", name="currencies_get")
      *
-     * @OA\Tag(name="Currency")
+     * @OA\Tag(name="Parameters")
      * @OA\Response(
      *     response=200,
      *     description="Returns all available currencies",

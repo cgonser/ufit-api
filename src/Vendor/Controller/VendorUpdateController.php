@@ -9,7 +9,7 @@ use App\Vendor\Dto\VendorDto;
 use App\Vendor\Entity\Vendor;
 use App\Vendor\Exception\VendorEmailAddressInUseException;
 use App\Vendor\Exception\VendorNotFoundException;
-use App\Vendor\Request\VendorUpdateRequest;
+use App\Vendor\Request\VendorRequest;
 use App\Vendor\ResponseMapper\VendorResponseMapper;
 use App\Vendor\Service\VendorService;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -37,12 +37,12 @@ class VendorUpdateController extends AbstractController
     /**
      * @Route("/vendors/{vendorId}", methods="PUT", name="vendors_update")
      *
-     * @ParamConverter("vendorUpdateRequest", converter="fos_rest.request_body")
+     * @ParamConverter("vendorRequest", converter="fos_rest.request_body")
      *
      * @OA\Tag(name="Vendor")
      * @OA\RequestBody(
      *     required=true,
-     *     @OA\JsonContent(ref=@Model(type=VendorUpdateRequest::class))
+     *     @OA\JsonContent(ref=@Model(type=VendorRequest::class))
      * )
      * @OA\Response(
      *     response=200,
@@ -56,7 +56,7 @@ class VendorUpdateController extends AbstractController
      */
     public function update(
         string $vendorId,
-        VendorUpdateRequest $vendorUpdateRequest,
+        VendorRequest $vendorRequest,
         ConstraintViolationListInterface $validationErrors
     ): Response {
         try {
@@ -72,7 +72,7 @@ class VendorUpdateController extends AbstractController
                 throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
             }
 
-            $this->vendorService->update($vendor, $vendorUpdateRequest);
+            $this->vendorService->update($vendor, $vendorRequest);
 
             return new ApiJsonResponse(Response::HTTP_OK, $this->vendorResponseMapper->map($vendor));
         } catch (VendorNotFoundException $e) {

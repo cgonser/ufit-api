@@ -6,7 +6,7 @@ use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
 use App\Customer\Exception\CustomerNotFoundException;
 use App\Subscription\Dto\SubscriptionDto;
-use App\Subscription\Request\SubscriptionCreateRequest;
+use App\Subscription\Request\SubscriptionRequest;
 use App\Subscription\ResponseMapper\SubscriptionResponseMapper;
 use App\Subscription\Service\SubscriptionService;
 use App\Vendor\Exception\VendorPlanNotFoundException;
@@ -39,12 +39,12 @@ class SubscriptionCreateController extends AbstractController
     /**
      * @Route("/subscriptions", methods="POST", name="subscription_create")
      *
-     * @ParamConverter("subscriptionCreateRequest", converter="fos_rest.request_body")
+     * @ParamConverter("subscriptionRequest", converter="fos_rest.request_body")
      *
      * @OA\Tag(name="Subscription")
      * @OA\RequestBody(
      *     required=true,
-     *     @OA\JsonContent(ref=@Model(type=SubscriptionCreateRequest::class))
+     *     @OA\JsonContent(ref=@Model(type=SubscriptionRequest::class))
      * )
      * @OA\Response(
      *     response=201,
@@ -56,10 +56,10 @@ class SubscriptionCreateController extends AbstractController
      *     description="Invalid input"
      * )
      */
-    public function subscribe(SubscriptionCreateRequest $subscriptionCreateRequest)
+    public function subscribe(SubscriptionRequest $subscriptionRequest)
     {
         try {
-            $subscription = $this->subscriptionService->create($subscriptionCreateRequest);
+            $subscription = $this->subscriptionService->create($subscriptionRequest);
 
             return new ApiJsonResponse(Response::HTTP_CREATED, $this->subscriptionResponseMapper->map($subscription));
         } catch (VendorPlanNotFoundException | CustomerNotFoundException $e) {

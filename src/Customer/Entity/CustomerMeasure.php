@@ -2,6 +2,7 @@
 
 namespace App\Customer\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
@@ -27,9 +28,80 @@ class CustomerMeasure
     private Customer $customer;
 
     /**
+     * @ORM\OneToMany(targetEntity="CustomerMeasureItem", mappedBy="customerMeasure", cascade={"persist"})
+     */
+    private Collection $items;
+
+    /**
+     * @ORM\Column(type="text")
+     */
+    private ?string $notes = null;
+
+    /**
      * @ORM\Column()
      */
     private \DateTimeInterface $takenAt;
 
-    // link to vendor somehow
+    public function getId(): UuidInterface
+    {
+        return $this->id;
+    }
+
+    public function getCustomer(): Customer
+    {
+        return $this->customer;
+    }
+
+    public function setCustomer(Customer $customer): self
+    {
+        $this->customer = $customer;
+
+        return $this;
+    }
+
+    public function getItems(): Collection
+    {
+        return $this->items;
+    }
+
+    public function setItems(Collection $items): self
+    {
+        $this->items = $items;
+
+        return $this;
+    }
+
+    public function getNotes(): ?string
+    {
+        return $this->notes;
+    }
+
+    public function setNotes(?string $notes): self
+    {
+        $this->notes = $notes;
+
+        return $this;
+    }
+
+    public function getTakenAt(): \DateTimeInterface
+    {
+        return $this->takenAt;
+    }
+
+    public function setTakenAt(\DateTimeInterface $takenAt): self
+    {
+        $this->takenAt = $takenAt;
+
+        return $this;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function prePersist()
+    {
+        if (!$this->getTakenAt()) {
+            $this->setTakenAt(new \DateTime());
+        }
+    }
 }

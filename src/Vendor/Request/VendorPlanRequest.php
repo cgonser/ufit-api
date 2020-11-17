@@ -7,17 +7,22 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @OA\RequestBody(
- *     request="VendorPlanCreateRequest",
+ *     request="VendorPlanRequest",
  *     required={"name", "price", "currency", "durationDays", "durationMonths"},
  * )
  */
-class VendorPlanCreateRequest
+class VendorPlanRequest
 {
     /**
      * @OA\Property()
      * @Assert\NotBlank()
      */
     public ?string $name = null;
+
+    /**
+     * @OA\Property()
+     */
+    public ?string $slug = null;
 
     /**
      * @OA\Property()
@@ -46,4 +51,9 @@ class VendorPlanCreateRequest
      * @Assert\PositiveOrZero()
      */
     public ?string $durationMonths = null;
+
+    /**
+     * @OA\Property()
+     */
+    public ?string $questionnaireId = null;
 }

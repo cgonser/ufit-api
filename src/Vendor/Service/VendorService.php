@@ -8,9 +8,8 @@ use App\Vendor\Exception\VendorInvalidPasswordException;
 use App\Vendor\Exception\VendorSlugInUseException;
 use App\Vendor\Provider\VendorProvider;
 use App\Vendor\Repository\VendorRepository;
-use App\Vendor\Request\VendorCreateRequest;
 use App\Vendor\Request\VendorPasswordChangeRequest;
-use App\Vendor\Request\VendorUpdateRequest;
+use App\Vendor\Request\VendorRequest;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -37,39 +36,58 @@ class VendorService
         $this->slugger = $slugger;
     }
 
-    public function create(VendorCreateRequest $vendorCreateRequest): Vendor
+    public function create(VendorRequest $vendorRequest): Vendor
     {
-        if ($this->isEmailAddressInUse($vendorCreateRequest->email)) {
-            throw new VendorEmailAddressInUseException();
-        }
-
         $vendor = new Vendor();
-        $vendor->setName($vendorCreateRequest->name);
-        $vendor->setEmail($vendorCreateRequest->email);
-        $vendor->setPassword($this->passwordEncoder->encodePassword($vendor, $vendorCreateRequest->password));
-        $vendor->setSlug($this->generateSlug($vendor));
-        $vendor->setRoles(['ROLE_VENDOR']);
+
+        $this->mapFromRequest($vendor, $vendorRequest);
 
         $this->vendorRepository->save($vendor);
 
         return $vendor;
     }
 
-    public function update(Vendor $vendor, VendorUpdateRequest $vendorUpdateRequest)
+    public function update(Vendor $vendor, VendorRequest $vendorRequest)
     {
-        if ($this->isEmailAddressInUse($vendorUpdateRequest->email, $vendor->getId())) {
-            throw new VendorEmailAddressInUseException();
-        }
-
-        if (!$this->isSlugUnique($vendor, $vendorUpdateRequest->slug)) {
-            throw new VendorSlugInUseException();
-        }
-
-        $vendor->setName($vendorUpdateRequest->name);
-        $vendor->setEmail($vendorUpdateRequest->email);
-        $vendor->setSlug($vendorUpdateRequest->slug);
+        $this->mapFromRequest($vendor, $vendorRequest);
 
         $this->vendorRepository->save($vendor);
+    }
+
+    public function mapFromRequest(Vendor $vendor, VendorRequest $vendorRequest)
+    {
+        if (null !== $vendorRequest->email) {
+            $isEmailAddressInUse = $this->isEmailAddressInUse(
+                $vendorRequest->email,
+                $vendor->isNew() ? null : $vendor->getId()
+            );
+
+            if ($isEmailAddressInUse) {
+                throw new VendorEmailAddressInUseException();
+            }
+
+            $vendor->setEmail($vendorRequest->email);
+        }
+
+        $vendor->setName($vendorRequest->name);
+
+        if (null !== $vendorRequest->password) {
+            $vendor->setPassword($this->passwordEncoder->encodePassword($vendor, $vendorRequest->password));
+        }
+
+        if ($vendor->isNew() || 0 == count($vendor->getRoles())) {
+            $vendor->setRoles(['ROLE_VENDOR']);
+        }
+
+        if (null !== $vendorRequest->slug) {
+            if (!$this->isSlugUnique($vendor, $vendorRequest->slug)) {
+                throw new VendorSlugInUseException();
+            }
+
+            $vendor->setSlug($vendorRequest->slug);
+        } elseif (null === $vendor->getSlug()) {
+            $vendor->setSlug($this->generateSlug($vendor));
+        }
     }
 
     public function isEmailAddressInUse(string $emailAddress, ?UuidInterface $vendorId = null): bool

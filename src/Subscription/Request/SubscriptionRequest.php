@@ -1,28 +1,27 @@
 <?php
 
-namespace App\Customer\Request;
+namespace App\Subscription\Request;
 
 use OpenApi\Annotations as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @OA\RequestBody(
- *     request="CustomerUpdateRequest",
- *     required={"name", "email", "password"},
+ *     request="SubscriptionRequest",
+ *     required={"customerId", "vendorPlanId"},
  * )
  */
-class CustomerUpdateRequest
+class SubscriptionRequest
 {
     /**
      * @OA\Property()
      * @Assert\NotBlank()
      */
-    public ?string $name = null;
+    public ?string $customerId = null;
 
     /**
      * @OA\Property()
      * @Assert\NotBlank()
-     * @Assert\Email()
      */
-    public ?string $email = null;
+    public ?string $vendorPlanId = null;
 }

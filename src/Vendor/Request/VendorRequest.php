@@ -7,11 +7,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @OA\RequestBody(
- *     request="VendorCreateRequest",
- *     required={"name", "email", "password"},
+ *     request="VendorRequest",
+ *     required={"name", "email"},
  * )
  */
-class VendorCreateRequest
+class VendorRequest
 {
     /**
      * @OA\Property()
@@ -28,7 +28,11 @@ class VendorCreateRequest
 
     /**
      * @OA\Property()
-     * @Assert\NotBlank()
      */
     public ?string $password = null;
+
+    /**
+     * @OA\Property()
+     */
+    public ?string $slug = null;
 }
