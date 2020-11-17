@@ -15,7 +15,7 @@ nelmio_api_doc:
         path_patterns:
             - ^/currencies
             - ^/customers
-            - ^/measure_types
+            - ^/measurement_types
             - ^/vendors
             - ^/subscriptions
             - ^/questionnaires
@@ -24,9 +24,9 @@ nelmio_api_doc:
         names:
             - { alias: Currency, type: App\Core\Dto\CurrencyDto }
             - { alias: Customer, type: App\Customer\Dto\CustomerDto }
-            - { alias: CustomerMeasure, type: App\Customer\Dto\CustomerMeasureDto }
+            - { alias: CustomerMeasurement, type: App\Customer\Dto\CustomerMeasurementDto }
 #            - { alias: CustomerMeasureItem, type: App\Customer\Dto\CustomerMeasureItemDto }
-            - { alias: MeasureType, type: App\Customer\Dto\MeasureTypeDto }
+            - { alias: MeasurementType, type: App\Customer\Dto\MeasurementTypeDto }
             - { alias: Vendor, type: App\Vendor\Dto\VendorDto }
             - { alias: VendorPlan, type: App\Vendor\Dto\VendorPlanDto }
             - { alias: Subscription, type: App\Subscription\Dto\SubscriptionDto }
