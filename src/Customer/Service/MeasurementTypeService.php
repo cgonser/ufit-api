@@ -68,7 +68,7 @@ class MeasurementTypeService
         }
 
         $measurementType->setName($measurementTypeRequest->name);
-        $measurementType->setUnit($measurementTypeRequest->unit);
+        $measurementType->setUnits(implode(MeasurementType::UNIT_SEPARATOR, $measurementTypeRequest->units));
         $measurementType->setCategory($measurementTypeRequest->category);
         $measurementType->setSlug($this->generateSlug($measurementType));
     }

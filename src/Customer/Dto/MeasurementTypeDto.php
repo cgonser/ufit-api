@@ -10,7 +10,10 @@ class MeasurementTypeDto
 
     public string $slug;
 
-    public string $unit;
-
     public string $category;
+
+    /**
+     * @var string[]
+     */
+    public array $units;
 }

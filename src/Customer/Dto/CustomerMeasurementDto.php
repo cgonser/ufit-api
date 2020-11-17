@@ -13,6 +13,7 @@ class CustomerMeasurementDto
     public string $takenAt;
 
     /**
+     * @var CustomerMeasurementItemDto[]
      * @OA\Property(type="array", @OA\Items(type="CustomerMeasurementItemDto"))
      */
     public array $items = [];

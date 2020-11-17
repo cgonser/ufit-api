@@ -2,6 +2,7 @@
 
 namespace App\Customer\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
@@ -38,9 +39,14 @@ class CustomerMeasurement
     private ?string $notes = null;
 
     /**
-     * @ORM\Column()
+     * @ORM\Column(name="taken_at", type="datetime", nullable=true)
      */
-    private \DateTimeInterface $takenAt;
+    private ?\DateTimeInterface $takenAt = null;
+
+    public function __construct()
+    {
+        $this->items = new ArrayCollection();
+    }
 
     public function getId(): UuidInterface
     {
@@ -71,6 +77,15 @@ class CustomerMeasurement
         return $this;
     }
 
+    public function addItem(CustomerMeasurementItem $customerMeasurementItem): self
+    {
+        $customerMeasurementItem->setCustomerMeasurement($this);
+
+        $this->items[] = $customerMeasurementItem;
+
+        return $this;
+    }
+
     public function getNotes(): ?string
     {
         return $this->notes;
@@ -83,12 +98,12 @@ class CustomerMeasurement
         return $this;
     }
 
-    public function getTakenAt(): \DateTimeInterface
+    public function getTakenAt(): ?\DateTimeInterface
     {
         return $this->takenAt;
     }
 
-    public function setTakenAt(\DateTimeInterface $takenAt): self
+    public function setTakenAt(?\DateTimeInterface $takenAt = null): self
     {
         $this->takenAt = $takenAt;
 
@@ -100,7 +115,7 @@ class CustomerMeasurement
      */
     public function prePersist()
     {
-        if (!$this->getTakenAt()) {
+        if (null === $this->getTakenAt()) {
             $this->setTakenAt(new \DateTime());
         }
     }

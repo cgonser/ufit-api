@@ -35,7 +35,12 @@ class CustomerMeasurementItem
     /**
      * @ORM\Column()
      */
-    private ?int $measurement;
+    private int $measurement;
+
+    /**
+     * @ORM\Column()
+     */
+    private string $unit;
 
     public function getId(): UuidInterface
     {
@@ -66,14 +71,26 @@ class CustomerMeasurementItem
         return $this;
     }
 
-    public function getMeasurement(): ?int
+    public function getMeasurement(): int
     {
         return $this->measurement;
     }
 
-    public function setMeasurement(?int $measurement): self
+    public function setMeasurement(int $measurement): self
     {
         $this->measurement = $measurement;
+
+        return $this;
+    }
+
+    public function getUnit(): string
+    {
+        return $this->unit;
+    }
+
+    public function setUnit(string $unit): self
+    {
+        $this->unit = $unit;
 
         return $this;
     }

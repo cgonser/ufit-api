@@ -47,6 +47,16 @@ class Customer implements UserInterface, \Serializable
      */
     private array $roles = [];
 
+    /**
+     * @ORM\Column(name="created_at", type="datetime", nullable=true)
+     */
+    private ?\DateTimeInterface $createdAt = null;
+
+    /**
+     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
+     */
+    private ?\DateTimeInterface $updatedAt = null;
+
     public function getId(): UuidInterface
     {
         return $this->id;
@@ -112,6 +122,30 @@ class Customer implements UserInterface, \Serializable
         $this->roles = $roles;
     }
 
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
     /**
      * Returns the salt that was originally used to encode the password.
      *
@@ -153,6 +187,28 @@ class Customer implements UserInterface, \Serializable
     {
         // add $this->salt too if you don't use Bcrypt or Argon2i
         [$this->id, $this->email, $this->password] = unserialize($serialized, ['allowed_classes' => false]);
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function prePersist()
+    {
+        if (!$this->getCreatedAt()) {
+            $this->setCreatedAt(new \DateTime());
+        }
+
+        if (!$this->getUpdatedAt()) {
+            $this->setUpdatedAt(new \DateTime());
+        }
+    }
+
+    /**
+     * @ORM\PreUpdate
+     */
+    public function preUpdate()
+    {
+        $this->setUpdatedAt(new \DateTime());
     }
 
     public function isNew(): bool

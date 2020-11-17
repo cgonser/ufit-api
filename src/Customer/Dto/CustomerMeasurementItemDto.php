@@ -8,11 +8,13 @@ class CustomerMeasurementItemDto
 {
     public string $id;
 
-    public string $customerMeasurementId;
+    /**
+     * @var MeasurementTypeDto[]
+     * @OA\Property(type="array", @OA\Items(type="MeasurementTypeDto"))
+     */
+    public MeasurementTypeDto $measurementType;
 
-    public string $type;
-
-    public string $measurement;
+    public int $measurement;
 
     public string $unit;
 }

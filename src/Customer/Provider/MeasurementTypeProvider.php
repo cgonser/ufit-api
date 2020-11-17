@@ -43,6 +43,18 @@ class MeasurementTypeProvider
         return $measurementType;
     }
 
+    public function getBySlug(string $slug): MeasurementType
+    {
+        /** @var MeasurementType|null $measurementType */
+        $measurementType = $this->findOneBySlug($slug);
+
+        if (!$measurementType) {
+            throw new MeasurementTypeNotFoundException();
+        }
+
+        return $measurementType;
+    }
+
     public function findByCategory(string $category): array
     {
         return $this->measurementTypeRepository->findBy(['category' => $category]);

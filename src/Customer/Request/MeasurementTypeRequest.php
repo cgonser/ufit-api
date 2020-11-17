@@ -3,6 +3,7 @@
 namespace App\Customer\Request;
 
 use OpenApi\Annotations as OA;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @OA\RequestBody(
@@ -13,16 +14,25 @@ class MeasurementTypeRequest
 {
     /**
      * @OA\Property()
+     * @Assert\NotBlank()
      */
     public ?string $name = null;
 
     /**
-     * @OA\Property()
+     * @var string[]
+     *
+     * @OA\Property(
+     *     type="array",
+     *     @OA\Items(type="string")
+     * )
+     *
+     * @Assert\NotBlank()
      */
-    public ?string $unit = null;
+    public array $units = [];
 
     /**
      * @OA\Property()
+     * @Assert\NotBlank()
      */
     public ?string $category = null;
 }

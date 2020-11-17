@@ -13,8 +13,8 @@ class MeasurementTypeResponseMapper
         $measurementTypeDto->id = $measurementType->getId();
         $measurementTypeDto->name = $measurementType->getName();
         $measurementTypeDto->slug = $measurementType->getSlug();
-        $measurementTypeDto->unit = $measurementType->getUnit();
         $measurementTypeDto->category = $measurementType->getCategory();
+        $measurementTypeDto->units = explode(MeasurementType::UNIT_SEPARATOR, $measurementType->getUnits());
 
         return $measurementTypeDto;
     }

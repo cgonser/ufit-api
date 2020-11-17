@@ -14,6 +14,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  */
 class MeasurementType
 {
+    public const UNIT_SEPARATOR = ',';
+
     /**
      * @ORM\Id
      * @ORM\Column(type="uuid", unique=true)
@@ -35,7 +37,7 @@ class MeasurementType
     /**
      * @ORM\Column()
      */
-    private string $unit;
+    private string $units;
 
     /**
      * @ORM\Column()
@@ -71,14 +73,14 @@ class MeasurementType
         return $this;
     }
 
-    public function getUnit(): string
+    public function getUnits(): string
     {
-        return $this->unit;
+        return $this->units;
     }
 
-    public function setUnit(string $unit): self
+    public function setUnits(string $units): self
     {
-        $this->unit = $unit;
+        $this->units = $units;
 
         return $this;
     }
@@ -98,5 +100,13 @@ class MeasurementType
     public function isNew(): bool
     {
         return !isset($this->id);
+    }
+
+    public function isUnitValid(string $unit): bool
+    {
+        return in_array(
+            $unit,
+            explode(self::UNIT_SEPARATOR, $this->getUnits())
+        );
     }
 }

@@ -7,14 +7,22 @@ use App\Customer\Entity\CustomerMeasurementItem;
 
 class CustomerMeasurementItemResponseMapper
 {
+    private MeasurementTypeResponseMapper $measurementTypeResponseMapper;
+
+    public function __construct(MeasurementTypeResponseMapper $measurementTypeResponseMapper)
+    {
+        $this->measurementTypeResponseMapper = $measurementTypeResponseMapper;
+    }
+
     public function map(CustomerMeasurementItem $customerMeasurementItem): CustomerMeasurementItemDto
     {
         $customerMeasurementItemDto = new CustomerMeasurementItemDto();
         $customerMeasurementItemDto->id = $customerMeasurementItem->getId()->toString();
-        $customerMeasurementItemDto->customerMeasurementId = $customerMeasurementItem->getCustomerMeasurement()->getId()->toString();
-        $customerMeasurementItemDto->type = $customerMeasurementItem->getMeasurementType()->getName();
-        $customerMeasurementItemDto->measurement = (string) $customerMeasurementItem->getMeasurement();
-        $customerMeasurementItemDto->unit = $customerMeasurementItem->getMeasurementType()->getUnit();
+        $customerMeasurementItemDto->measurement = $customerMeasurementItem->getMeasurement();
+        $customerMeasurementItemDto->unit = $customerMeasurementItem->getUnit();
+        $customerMeasurementItemDto->measurementType = $this->measurementTypeResponseMapper->map(
+            $customerMeasurementItem->getMeasurementType()
+        );
 
         return $customerMeasurementItemDto;
     }
