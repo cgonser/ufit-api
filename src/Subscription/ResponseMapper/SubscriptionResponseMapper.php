@@ -14,6 +14,7 @@ class SubscriptionResponseMapper
         $subscriptionDto->vendorPlanId = $subscription->getVendorPlan()->getId()->toString();
         $subscriptionDto->customerId = $subscription->getCustomer()->getId()->toString();
         $subscriptionDto->expiresAt = $subscription->getExpiresAt()->format(DATE_ISO8601);
+        $subscriptionDto->isApproved = $subscription->getIsApproved();
 
         return $subscriptionDto;
     }

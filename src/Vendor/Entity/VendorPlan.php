@@ -67,6 +67,11 @@ class VendorPlan
     private \DateInterval $duration;
 
     /**
+     * @ORM\Column(type="boolean", nullable=false, options={"default": false})
+     */
+    private bool $isApprovalRequired = false;
+
+    /**
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
      */
     private ?\DateTimeInterface $createdAt = null;
@@ -166,6 +171,18 @@ class VendorPlan
     public function setDuration(\DateInterval $duration): self
     {
         $this->duration = $duration;
+
+        return $this;
+    }
+
+    public function isApprovalRequired(): bool
+    {
+        return $this->isApprovalRequired;
+    }
+
+    public function setIsApprovalRequired(bool $isApprovalRequired): self
+    {
+        $this->isApprovalRequired = $isApprovalRequired;
 
         return $this;
     }

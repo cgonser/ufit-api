@@ -2,6 +2,7 @@
 
 namespace App\Subscription\Service;
 
+use App\Customer\Entity\Customer;
 use App\Customer\Provider\CustomerProvider;
 use App\Subscription\Entity\Subscription;
 use App\Subscription\Repository\SubscriptionRepository;
@@ -27,20 +28,50 @@ class SubscriptionService
         $this->vendorPlanProvider = $vendorPlanProvider;
     }
 
-    public function create(SubscriptionRequest $subscriptionRequest): Subscription
+    public function createFromCustomerRequest(Customer $customer, SubscriptionRequest $subscriptionRequest): Subscription
     {
-        $customer = $this->customerProvider->get(Uuid::fromString($subscriptionRequest->customerId));
         $vendorPlan = $this->vendorPlanProvider->get(Uuid::fromString($subscriptionRequest->vendorPlanId));
 
         $subscription = (new Subscription())
             ->setCustomer($customer)
             ->setVendorPlan($vendorPlan)
-            ->setExpiresAt((new \DateTime())->add($vendorPlan->getDuration()))
         ;
 
         $this->subscriptionRepository->save($subscription);
 
+        if (!$vendorPlan->isApprovalRequired()) {
+            $this->approve($subscription);
+        }
+
         return $subscription;
+    }
+
+    public function reject(Subscription $subscription, ?string $reviewNotes = null)
+    {
+        $subscription->setIsApproved(false);
+        $subscription->setReviewNotes($reviewNotes);
+        $subscription->setReviewedAt(new \DateTime());
+        $subscription->setExpiresAt(new \DateTime());
+
+        $this->subscriptionRepository->save($subscription);
+    }
+
+    public function approve(Subscription $subscription, ?string $reviewNotes = null)
+    {
+        $subscription->setIsApproved(true);
+        $subscription->setReviewNotes($reviewNotes);
+        $subscription->setReviewedAt(new \DateTime());
+
+        $this->calculateExpiration($subscription);
+
+        $this->subscriptionRepository->save($subscription);
+    }
+
+    private function calculateExpiration(Subscription $subscription)
+    {
+        $subscription->setExpiresAt(
+            (new \DateTime())->add($subscription->getVendorPlan()->getDuration())
+        );
     }
 
     public function delete(Subscription $subscription)

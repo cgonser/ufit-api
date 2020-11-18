@@ -11,4 +11,6 @@ class SubscriptionDto
     public string $vendorPlanId;
 
     public string $expiresAt;
+
+    public ?bool $isApproved;
 }

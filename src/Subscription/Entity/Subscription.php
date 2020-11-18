@@ -37,7 +37,22 @@ class Subscription
     private VendorPlan $vendorPlan;
 
     /**
-     * @ORM\Column(name="expires_at", type="datetimetz", nullable=true)
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private ?bool $isApproved = null;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private ?string $reviewNotes = null;
+
+    /**
+     * @ORM\Column(name="reviewed_at", type="datetime", nullable=true)
+     */
+    private ?\DateTimeInterface $reviewedAt = null;
+
+    /**
+     * @ORM\Column(name="expires_at", type="datetime", nullable=true)
      */
     private ?\DateTimeInterface $expiresAt = null;
 
@@ -71,6 +86,42 @@ class Subscription
     public function setVendorPlan(VendorPlan $vendorPlan): self
     {
         $this->vendorPlan = $vendorPlan;
+
+        return $this;
+    }
+
+    public function getIsApproved(): ?bool
+    {
+        return $this->isApproved;
+    }
+
+    public function setIsApproved(?bool $isApproved): self
+    {
+        $this->isApproved = $isApproved;
+
+        return $this;
+    }
+
+    public function getReviewNotes(): ?string
+    {
+        return $this->reviewNotes;
+    }
+
+    public function setReviewNotes(?string $reviewNotes): self
+    {
+        $this->reviewNotes = $reviewNotes;
+
+        return $this;
+    }
+
+    public function getReviewedAt(): ?\DateTimeInterface
+    {
+        return $this->reviewedAt;
+    }
+
+    public function setReviewedAt(?\DateTimeInterface $reviewedAt): self
+    {
+        $this->reviewedAt = $reviewedAt;
 
         return $this;
     }
