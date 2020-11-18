@@ -27,7 +27,7 @@ class VendorSubscriptionProvider
             return $this->subscriptionRepository->findActiveByVendor($vendor);
         }
 
-        if (false === $vendorSubscriptionSearchRequest->isActive) {
+        if (true === $vendorSubscriptionSearchRequest->isInactive) {
             return $this->subscriptionRepository->findInactiveByVendor($vendor);
         }
 
