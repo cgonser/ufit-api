@@ -47,10 +47,7 @@ class MeasurementTypeService
 
     public function mapFromRequest(MeasurementType $measurementType, MeasurementTypeRequest $measurementTypeRequest)
     {
-        $existingMeasurementType = $this->measurementTypeProvider->findOneByCategoryAndName(
-            $measurementTypeRequest->category,
-            $measurementTypeRequest->name
-        );
+        $existingMeasurementType = $this->measurementTypeProvider->findOneByName($measurementTypeRequest->name);
 
         if ($existingMeasurementType &&
             ($measurementType->isNew() || $existingMeasurementType->getId()->toString() != $measurementType->getId()->toString())
@@ -60,7 +57,6 @@ class MeasurementTypeService
 
         $measurementType->setName($measurementTypeRequest->name);
         $measurementType->setUnits(implode(MeasurementType::UNIT_SEPARATOR, $measurementTypeRequest->units));
-        $measurementType->setCategory($measurementTypeRequest->category);
         $measurementType->setSlug($this->generateSlug($measurementType));
     }
 

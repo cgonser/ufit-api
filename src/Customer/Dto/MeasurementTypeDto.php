@@ -10,8 +10,6 @@ class MeasurementTypeDto
 
     public string $slug;
 
-    public string $category;
-
     /**
      * @var string[]
      */

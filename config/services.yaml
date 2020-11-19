@@ -78,3 +78,4 @@ services:
                 credentials:
                     key: '%env(AWS_S3_ACCESS_KEY_ID)%'
                     secret: '%env(AWS_S3_ACCESS_KEY_SECRET)%'
+

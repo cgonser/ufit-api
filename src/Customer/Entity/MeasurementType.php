@@ -39,11 +39,6 @@ class MeasurementType
      */
     private string $units;
 
-    /**
-     * @ORM\Column()
-     */
-    private string $category;
-
     public function getId(): UuidInterface
     {
         return $this->id;
@@ -81,18 +76,6 @@ class MeasurementType
     public function setUnits(string $units): self
     {
         $this->units = $units;
-
-        return $this;
-    }
-
-    public function getCategory(): string
-    {
-        return $this->category;
-    }
-
-    public function setCategory(string $category): self
-    {
-        $this->category = $category;
 
         return $this;
     }

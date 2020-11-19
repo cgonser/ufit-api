@@ -55,22 +55,14 @@ class MeasurementTypeProvider
         return $measurementType;
     }
 
-    public function findByCategory(string $category): array
-    {
-        return $this->measurementTypeRepository->findBy(['category' => $category]);
-    }
-
     public function findOneBySlug(string $slug): ?MeasurementType
     {
         return $this->measurementTypeRepository->findOneBy(['slug' => $slug]);
     }
 
-    public function findOneByCategoryAndName(string $category, string $name): ?MeasurementType
+    public function findOneByName(string $name): ?MeasurementType
     {
-        return $this->measurementTypeRepository->findOneBy([
-            'category' => $category,
-            'name' => $name,
-        ]);
+        return $this->measurementTypeRepository->findOneBy(['name' => $name]);
     }
 
     public function findAll(): array

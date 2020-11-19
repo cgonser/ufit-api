@@ -29,10 +29,4 @@ class MeasurementTypeRequest
      * @Assert\NotBlank()
      */
     public array $units = [];
-
-    /**
-     * @OA\Property()
-     * @Assert\NotBlank()
-     */
-    public ?string $category = null;
 }

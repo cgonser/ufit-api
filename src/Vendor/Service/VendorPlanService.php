@@ -72,6 +72,7 @@ class VendorPlanService
         $vendorPlan->setDuration(
             $this->prepareDuration($vendorPlanRequest->durationMonths, $vendorPlanRequest->durationDays)
         );
+        $vendorPlan->setIsApprovalRequired($vendorPlanRequest->isApprovalRequired);
 
         if (null !== $vendorPlanRequest->slug) {
             if (!$this->isSlugUnique($vendorPlan, $vendorPlanRequest->slug)) {

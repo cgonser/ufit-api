@@ -29,7 +29,7 @@ class VendorPlanRequest
      * @Assert\NotBlank()
      * @Assert\Positive()
      */
-    public ?string $price = null;
+    public ?int $price = null;
 
     /**
      * @OA\Property()
@@ -43,17 +43,22 @@ class VendorPlanRequest
      * @Assert\NotBlank()
      * @Assert\PositiveOrZero()
      */
-    public ?string $durationDays = null;
+    public ?int $durationDays = null;
 
     /**
      * @OA\Property()
      * @Assert\NotBlank()
      * @Assert\PositiveOrZero()
      */
-    public ?string $durationMonths = null;
+    public ?int $durationMonths = null;
 
     /**
      * @OA\Property()
      */
     public ?string $questionnaireId = null;
+
+    /**
+     * @OA\Property()
+     */
+    public ?bool $isApprovalRequired = false;
 }
