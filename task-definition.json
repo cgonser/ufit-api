@@ -14,7 +14,7 @@
         },
         {
           "name": "CORS_ALLOW_ORIGIN",
-          "value": "^https?://(localhost|127\\.0\\.0\\.1)(:[0-9]+)?$"
+          "value": "^https?://(ufit.io|localhost|127\\.0\\.0\\.1)(:[0-9]+)?$"
         },
         {
           "name": "JWT_SECRET_KEY",
