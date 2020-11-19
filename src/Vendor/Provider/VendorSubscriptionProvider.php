@@ -41,10 +41,7 @@ class VendorSubscriptionProvider
     public function getByVendorAndId(Vendor $vendor, UuidInterface $subscriptionId): Subscription
     {
         /** @var Subscription|null $subscription */
-        $subscription = $this->subscriptionRepository->findOneBy([
-            'id' => $subscriptionId,
-            'vendor' => $vendor,
-        ]);
+        $subscription = $this->subscriptionRepository->findOneByVendorAndId($vendor, $subscriptionId);
 
         if (!$subscription) {
             throw new SubscriptionNotFoundException();

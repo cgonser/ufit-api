@@ -7,6 +7,7 @@ use App\Customer\Provider\CustomerProvider;
 use App\Subscription\Entity\Subscription;
 use App\Subscription\Repository\SubscriptionRepository;
 use App\Subscription\Request\SubscriptionRequest;
+use App\Subscription\Request\SubscriptionReviewRequest;
 use App\Vendor\Provider\VendorPlanProvider;
 use Ramsey\Uuid\Uuid;
 
@@ -46,25 +47,31 @@ class SubscriptionService
         return $subscription;
     }
 
-    public function reject(Subscription $subscription, ?string $reviewNotes = null)
+    public function review(Subscription $subscription, SubscriptionReviewRequest $subscriptionReviewRequest)
     {
-        $subscription->setIsApproved(false);
-        $subscription->setReviewNotes($reviewNotes);
+        if (true === $subscriptionReviewRequest->isApproved) {
+            $this->approve($subscription);
+        } else {
+            $this->reject($subscription);
+        }
+
+        $subscription->setReviewNotes($subscriptionReviewRequest->reviewNotes);
         $subscription->setReviewedAt(new \DateTime());
-        $subscription->setExpiresAt(new \DateTime());
 
         $this->subscriptionRepository->save($subscription);
+    }
+
+    public function reject(Subscription $subscription)
+    {
+        $subscription->setIsApproved(false);
+        $subscription->setExpiresAt(new \DateTime());
     }
 
     public function approve(Subscription $subscription, ?string $reviewNotes = null)
     {
         $subscription->setIsApproved(true);
-        $subscription->setReviewNotes($reviewNotes);
-        $subscription->setReviewedAt(new \DateTime());
 
         $this->calculateExpiration($subscription);
-
-        $this->subscriptionRepository->save($subscription);
     }
 
     private function calculateExpiration(Subscription $subscription)

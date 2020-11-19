@@ -7,6 +7,7 @@ use App\Customer\Entity\Customer;
 use App\Vendor\Entity\Vendor;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Ramsey\Uuid\UuidInterface;
 
 class SubscriptionRepository extends ServiceEntityRepository
 {
@@ -87,6 +88,20 @@ class SubscriptionRepository extends ServiceEntityRepository
             ->orderBy('s.id', 'ASC')
             ->getQuery()
             ->getResult()
+            ;
+    }
+
+    public function findOneByVendorAndId(Vendor $vendor, UuidInterface $subscriptionId): ?Subscription
+    {
+        return $this->createQueryBuilder('s')
+            ->innerJoin('s.vendorPlan', 'vp')
+            ->andWhere('vp.vendor = :vendor')
+            ->andWhere('s.id = :subscriptionId')
+            ->setParameter('vendor', $vendor)
+            ->setParameter('subscriptionId', $subscriptionId)
+            ->orderBy('s.id', 'ASC')
+            ->getQuery()
+            ->getOneOrNullResult()
             ;
     }
 
