@@ -60,7 +60,7 @@ class SubscriptionController extends AbstractController
 
         return new ApiJsonResponse(
             Response::HTTP_OK,
-            $this->subscriptionResponseMapper->mapMultiple($subscriptions)
+            $this->subscriptionResponseMapper->mapMultiple($subscriptions, true)
         );
     }
 
@@ -91,7 +91,7 @@ class SubscriptionController extends AbstractController
 
             return new ApiJsonResponse(
                 Response::HTTP_OK,
-                $this->subscriptionResponseMapper->map($subscription)
+                $this->subscriptionResponseMapper->map($subscription, true)
             );
         } catch (SubscriptionNotFoundException $e) {
             throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());

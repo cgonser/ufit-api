@@ -14,13 +14,13 @@ class ApiJsonResponse extends JsonResponse
 
     private function format($data = null)
     {
-        if ($data === null) {
+        if (null === $data) {
             return new \ArrayObject();
         }
 
         if (is_string($data)) {
             return [
-                "message" => $data,
+                'message' => $data,
             ];
         }
 

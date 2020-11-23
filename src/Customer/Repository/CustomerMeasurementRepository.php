@@ -18,4 +18,10 @@ class CustomerMeasurementRepository extends ServiceEntityRepository
         $this->getEntityManager()->persist($customerMeasurement);
         $this->getEntityManager()->flush();
     }
+
+    public function delete(CustomerMeasurement $customerMeasurement)
+    {
+        $this->getEntityManager()->remove($customerMeasurement);
+        $this->getEntityManager()->flush();
+    }
 }

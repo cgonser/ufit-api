@@ -10,7 +10,7 @@ use App\Subscription\Request\SubscriptionReviewRequest;
 use App\Subscription\ResponseMapper\SubscriptionResponseMapper;
 use App\Subscription\Service\SubscriptionService;
 use App\Vendor\Entity\Vendor;
-use App\Vendor\Provider\VendorSubscriptionProvider;
+use App\Subscription\Provider\VendorSubscriptionProvider;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;

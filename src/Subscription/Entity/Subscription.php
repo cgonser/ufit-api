@@ -57,6 +57,31 @@ class Subscription
     private ?\DateTimeInterface $expiresAt = null;
 
     /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private ?bool $isActive = null;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private ?bool $cancelledByCustomer = null;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private ?bool $cancelledByVendor = null;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private ?string $cancellationNotes = null;
+
+    /**
+     * @ORM\Column(name="cancelled_at", type="datetime", nullable=true)
+     */
+    private ?\DateTimeInterface $cancelledAt = null;
+
+    /**
      * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
      */
     private ?\DateTimeInterface $deletedAt = null;
@@ -134,6 +159,66 @@ class Subscription
     public function setExpiresAt(?\DateTimeInterface $expiresAt): self
     {
         $this->expiresAt = $expiresAt;
+
+        return $this;
+    }
+
+    public function getIsActive(): ?bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(?bool $isActive): self
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    public function getCancelledByCustomer(): ?bool
+    {
+        return $this->cancelledByCustomer;
+    }
+
+    public function setCancelledByCustomer(?bool $cancelledByCustomer): self
+    {
+        $this->cancelledByCustomer = $cancelledByCustomer;
+
+        return $this;
+    }
+
+    public function getCancelledByVendor(): ?bool
+    {
+        return $this->cancelledByVendor;
+    }
+
+    public function setCancelledByVendor(?bool $cancelledByVendor): self
+    {
+        $this->cancelledByVendor = $cancelledByVendor;
+
+        return $this;
+    }
+
+    public function getCancellationNotes(): ?string
+    {
+        return $this->cancellationNotes;
+    }
+
+    public function setCancellationNotes(?string $cancellationNotes): self
+    {
+        $this->cancellationNotes = $cancellationNotes;
+
+        return $this;
+    }
+
+    public function getCancelledAt(): ?\DateTimeInterface
+    {
+        return $this->cancelledAt;
+    }
+
+    public function setCancelledAt(?\DateTimeInterface $cancelledAt): self
+    {
+        $this->cancelledAt = $cancelledAt;
 
         return $this;
     }

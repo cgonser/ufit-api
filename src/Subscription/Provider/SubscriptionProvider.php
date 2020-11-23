@@ -6,7 +6,6 @@ use App\Customer\Entity\Customer;
 use App\Subscription\Entity\Subscription;
 use App\Subscription\Exception\SubscriptionNotFoundException;
 use App\Subscription\Repository\SubscriptionRepository;
-use App\Vendor\Entity\Vendor;
 use Ramsey\Uuid\UuidInterface;
 
 class SubscriptionProvider
@@ -40,8 +39,6 @@ class SubscriptionProvider
 
         return $subscription;
     }
-
-
 
     public function findAll(): array
     {

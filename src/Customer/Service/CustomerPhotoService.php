@@ -65,6 +65,11 @@ class CustomerPhotoService
         }
     }
 
+    public function delete(CustomerPhoto $customerPhoto)
+    {
+        $this->customerPhotoRepository->delete($customerPhoto);
+    }
+
     private function mapFromRequest(CustomerPhoto $customerPhoto, CustomerPhotoRequest $customerPhotoRequest)
     {
         // TODO: photoType

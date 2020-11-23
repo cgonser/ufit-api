@@ -60,6 +60,11 @@ class CustomerMeasurementService
         $this->customerMeasurementRepository->save($customerMeasurement);
     }
 
+    public function delete(CustomerMeasurement $customerMeasurement)
+    {
+        $this->customerMeasurementRepository->delete($customerMeasurement);
+    }
+
     private function mapFromRequest(CustomerMeasurement $customerMeasurement, CustomerMeasurementRequest $customerMeasurementRequest)
     {
         $customerMeasurement->setNotes($customerMeasurementRequest->notes);

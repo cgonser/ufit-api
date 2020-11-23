@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Vendor\Provider;
+namespace App\Subscription\Provider;
 
 use App\Subscription\Entity\Subscription;
 use App\Subscription\Exception\SubscriptionNotFoundException;

@@ -50,10 +50,8 @@ class CustomerPhotoDeleteController extends AbstractController
      *     description="Photo not found"
      * )
      */
-    public function create(
-        string $customerId,
-        string $customerPhotoId
-    ): Response {
+    public function delete(string $customerId, string $customerPhotoId): Response
+    {
         try {
             if ('current' == $customerId) {
                 /** @var Customer $customer */

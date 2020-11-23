@@ -18,4 +18,10 @@ class CustomerPhotoRepository extends ServiceEntityRepository
         $this->getEntityManager()->persist($customerPhoto);
         $this->getEntityManager()->flush();
     }
+
+    public function delete(CustomerPhoto $customerPhoto)
+    {
+        $this->getEntityManager()->remove($customerPhoto);
+        $this->getEntityManager()->flush();
+    }
 }

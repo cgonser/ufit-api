@@ -27,6 +27,11 @@ security:
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
+        customer_token_refresh:
+            pattern:  ^/customers/token/refresh
+            stateless: true
+            anonymous: true
+
         customer:
             pattern: ^/(customers|subscriptions)
             stateless: true
@@ -46,6 +51,11 @@ security:
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
+        vendor_token_refresh:
+            pattern:  ^/vendors/token/refresh
+            stateless: true
+            anonymous: true
+
         vendor:
             pattern: ^/(vendors|questionnaires)
             stateless: true
@@ -60,10 +70,12 @@ security:
     access_control:
         - { path: ^/currencies, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/customers/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/customers/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/customers, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
         - { path: ^/customers, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/subscriptions, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/vendors/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/vendors/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/vendors, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
         - { path: ^/vendors, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/questionnaires, roles: IS_AUTHENTICATED_FULLY }

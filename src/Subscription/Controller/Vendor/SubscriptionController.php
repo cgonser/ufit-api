@@ -9,7 +9,7 @@ use App\Subscription\Exception\SubscriptionNotFoundException;
 use App\Subscription\Request\VendorSubscriptionSearchRequest;
 use App\Subscription\ResponseMapper\SubscriptionResponseMapper;
 use App\Vendor\Entity\Vendor;
-use App\Vendor\Provider\VendorSubscriptionProvider;
+use App\Subscription\Provider\VendorSubscriptionProvider;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
@@ -49,6 +49,12 @@ class SubscriptionController extends AbstractController
      * @OA\Response(
      *     response=200,
      *     description="Returns all subscriptions of a given vendor",
+     *     @OA\Header(
+     *         header="X-Total-Count",
+     *         @OA\Schema(
+     *             type="int"
+     *         )
+     *     ),
      *     @OA\JsonContent(
      *         type="array",
      *         @OA\Items(ref=@Model(type=SubscriptionDto::class)))
@@ -74,9 +80,14 @@ class SubscriptionController extends AbstractController
             $vendorSubscriptionSearchRequest
         );
 
+        $subscriptionsCount = count($subscriptions);
+
         return new ApiJsonResponse(
             Response::HTTP_OK,
-            $this->subscriptionResponseMapper->mapMultiple($subscriptions)
+            $this->subscriptionResponseMapper->mapMultiple($subscriptions, true),
+            [
+                'X-Total-Count' => $subscriptionsCount,
+            ]
         );
     }
 
@@ -110,7 +121,7 @@ class SubscriptionController extends AbstractController
 
             return new ApiJsonResponse(
                 Response::HTTP_OK,
-                $this->subscriptionResponseMapper->map($subscription)
+                $this->subscriptionResponseMapper->map($subscription, true)
             );
         } catch (SubscriptionNotFoundException $e) {
             throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());

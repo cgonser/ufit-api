@@ -12,6 +12,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.0",
         "doctrine/orm": "^2.7",
         "friendsofsymfony/rest-bundle": "^3.0",
+        "gesdinet/jwt-refresh-token-bundle": "^0.9.1",
         "league/flysystem-aws-s3-v3": "^1.0",
         "league/flysystem-bundle": "^1.5",
         "lexik/jwt-authentication-bundle": "^2.9",

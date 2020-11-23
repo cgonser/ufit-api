@@ -2,13 +2,20 @@
 
 namespace App\Subscription\Dto;
 
+use App\Customer\Dto\CustomerDto;
+use App\Vendor\Dto\VendorPlanDto;
+
 class SubscriptionDto
 {
     public string $id;
 
-    public string $customerId;
+    public ?string $customerId;
 
-    public string $vendorPlanId;
+    public ?CustomerDto $customer;
+
+    public ?string $vendorPlanId;
+
+    public ?VendorPlanDto $vendorPlan;
 
     public ?string $expiresAt;
 

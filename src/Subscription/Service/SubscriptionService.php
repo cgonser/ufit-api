@@ -81,8 +81,25 @@ class SubscriptionService
         );
     }
 
-    public function delete(Subscription $subscription)
+    private function cancel(Subscription $subscription)
     {
-        $this->subscriptionRepository->delete($subscription);
+        $subscription->setCancelledAt(new \DateTime());
+        $subscription->setIsActive(false);
+
+        $this->subscriptionRepository->save($subscription);
+    }
+
+    public function customerCancellation(Subscription $subscription)
+    {
+        $subscription->setCancelledByCustomer(true);
+
+        $this->cancel($subscription);
+    }
+
+    public function vendorCancellation(Subscription $subscription)
+    {
+        $subscription->setCancelledByVendor(true);
+
+        $this->cancel($subscription);
     }
 }

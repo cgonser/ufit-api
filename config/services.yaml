@@ -79,3 +79,9 @@ services:
                     key: '%env(AWS_S3_ACCESS_KEY_ID)%'
                     secret: '%env(AWS_S3_ACCESS_KEY_SECRET)%'
 
+    gesdinet.jwtrefreshtoken.refresh_token_manager:
+        class:  App\Core\Doctrine\RefreshTokenManager
+        public: true
+        arguments: [ '@gesdinet.jwtrefreshtoken.object_manager', '%gesdinet.jwtrefreshtoken.refresh_token.class%' ]
+
+    Gesdinet\JWTRefreshTokenBundle\Service\RefreshToken: '@gesdinet.jwtrefreshtoken'
