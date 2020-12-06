@@ -8,6 +8,7 @@ services:
         expose:
             - 9000
         volumes:
+            - ./docker/php-fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf
             - .:/app
     nginx:
         container_name: ufit-nginx
@@ -17,7 +18,8 @@ services:
         links:
             - php-fpm
         volumes:
-            - ./docker/nginx/etc/nginx/conf.d:/etc/nginx/conf.d
+            - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+            - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
             - .:/app
     db:
         container_name: ufit-db

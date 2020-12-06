@@ -79,4 +79,5 @@ security:
         - { path: ^/vendors, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
         - { path: ^/vendors, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/questionnaires, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/health, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/doc, roles: IS_AUTHENTICATED_ANONYMOUSLY }

@@ -1,8 +1,11 @@
 FROM php:7.4-fpm-alpine
 
 RUN mkdir -p /etc/nginx/conf.d
-ADD ./docker/nginx/etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
+ADD ./docker/nginx/default.conf /etc/nginx/conf.d/default.conf
+ADD ./docker/nginx/nginx.conf /etc/nginx/nginx.conf
 VOLUME /etc/nginx/conf.d
+
+ADD ./docker/php-fpm/www.conf /usr/local/etc/php-fpm.d/www.conf
 
 RUN set -e; \
          apk add --no-cache \
