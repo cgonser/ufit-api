@@ -4,14 +4,11 @@ namespace App\Tests\Api\Vendor;
 
 use App\Vendor\Entity\Vendor;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
-use Liip\TestFixturesBundle\Test\FixturesTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 abstract class VendorBaseTest extends WebTestCase
 {
-    use FixturesTrait;
-
     protected const DEFAULT_VENDOR_PASSWORD = '123';
 
     protected ?KernelBrowser $authenticatedClient = null;

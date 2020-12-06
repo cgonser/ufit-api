@@ -4,14 +4,11 @@ namespace App\Tests\Api\Customer;
 
 use App\Customer\Entity\Customer;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
-use Liip\TestFixturesBundle\Test\FixturesTrait;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 abstract class CustomerBaseTest extends WebTestCase
 {
-    use FixturesTrait;
-
     protected const DEFAULT_CUSTOMER_PASSWORD = '123';
 
     protected ?KernelBrowser $authenticatedClient = null;
@@ -73,7 +70,7 @@ abstract class CustomerBaseTest extends WebTestCase
         if (null === $this->fixtures) {
             $this->fixtures = $this->loadFixtures(
                 [
-                    'App\Customer\DataFixtures\CustomerFixtures',
+                    'App\Customer\Data0Fixtures\CustomerFixtures',
                 ]
             )->getReferenceRepository();
         }
