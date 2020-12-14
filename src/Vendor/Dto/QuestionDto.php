@@ -10,5 +10,5 @@ class QuestionDto
 
     public string $question;
 
-    public string $order;
+    public ?int $order = null;
 }

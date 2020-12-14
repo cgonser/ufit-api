@@ -30,9 +30,9 @@ class Question
     private Questionnaire $questionnaire;
 
     /**
-     * @ORM\Column(type="integer", name="order_num")
+     * @ORM\Column(type="integer", name="order_num", , nullable=true)
      */
-    private int $order = 0;
+    private ?int $order = null;
 
     /**
      * @ORM\Column(type="text")
@@ -71,12 +71,12 @@ class Question
         return $this;
     }
 
-    public function getOrder(): int
+    public function getOrder(): ?int
     {
         return $this->order;
     }
 
-    public function setOrder(int $order): self
+    public function setOrder(?int $order = null): self
     {
         $this->order = $order;
 

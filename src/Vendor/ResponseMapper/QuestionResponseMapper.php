@@ -13,7 +13,7 @@ class QuestionResponseMapper
         $questionDto->id = $question->getId()->toString();
         $questionDto->questionnaireId = $question->getQuestionnaire()->getId()->toString();
         $questionDto->question = $question->getQuestion() ?? '';
-        $questionDto->order = $question->getOrder() ?? '';
+        $questionDto->order = $question->getOrder() ?? null;
 
         return $questionDto;
     }

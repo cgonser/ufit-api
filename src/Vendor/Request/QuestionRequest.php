@@ -15,9 +15,14 @@ class QuestionRequest
 {
     /**
      * @OA\Property()
+     */
+    public ?string $id = null;
+
+    /**
+     * @OA\Property()
      * @Assert\Positive()
      */
-    public ?string $order = null;
+    public ?int $order = null;
 
     /**
      * @OA\Property()

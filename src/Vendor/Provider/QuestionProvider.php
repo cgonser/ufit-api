@@ -29,13 +29,18 @@ class QuestionProvider
         return $question;
     }
 
-    public function getByQuestionnaireAndId(Questionnaire $questionnaire, UuidInterface $questionId): Question
+    public function findOneByQuestionnaireAndId(Questionnaire $questionnaire, UuidInterface $questionId): ?Question
     {
-        /** @var Question|null $vendorPlan */
-        $question = $this->questionRepository->findOneBy([
+        return $this->questionRepository->findOneBy([
             'id' => $questionId,
             'questionnaire' => $questionnaire,
         ]);
+    }
+
+    public function getByQuestionnaireAndId(Questionnaire $questionnaire, UuidInterface $questionId): Question
+    {
+        /** @var Question|null $vendorPlan */
+        $question = $this->findOneByQuestionnaireAndId($questionnaire, $questionId);
 
         if (!$question) {
             throw new QuestionNotFoundException();
