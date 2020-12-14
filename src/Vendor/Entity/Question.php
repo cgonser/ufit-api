@@ -30,7 +30,7 @@ class Question
     private Questionnaire $questionnaire;
 
     /**
-     * @ORM\Column(type="integer", name="order_num", , nullable=true)
+     * @ORM\Column(type="integer", name="order_num", nullable=true)
      */
     private ?int $order = null;
 
