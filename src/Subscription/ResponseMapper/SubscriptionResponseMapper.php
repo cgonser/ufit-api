@@ -34,7 +34,7 @@ class SubscriptionResponseMapper
         $subscriptionDto->isApproved = $subscription->getIsApproved();
 
         if ($mapRelations) {
-            $subscriptionDto->vendorPlan = $this->vendorPlanResponseMapper->map($subscription->getVendorPlan(), true);
+            $subscriptionDto->vendorPlan = $this->vendorPlanResponseMapper->map($subscription->getVendorPlan());
             $subscriptionDto->customer = $this->customerResponseMapper->map($subscription->getCustomer());
         } else {
             $subscriptionDto->vendorPlanId = $subscription->getVendorPlan()->getId()->toString();

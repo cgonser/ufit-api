@@ -56,7 +56,12 @@ class VendorController extends AbstractController
     }
 
     /**
-     * @Route("/vendors/{vendorId}", methods="GET", name="vendors_get_one")
+     * @Route(
+     *     "/vendors/{vendorId}",
+     *     methods="GET",
+     *     name="vendors_get_one",
+     *     requirements={"vendorId" = "[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}"}
+     * )
      *
      * @OA\Tag(name="Vendor")
      * @OA\Response(
@@ -70,11 +75,38 @@ class VendorController extends AbstractController
     public function getVendor(string $vendorId): Response
     {
         try {
-            if ('current' == $vendorId) {
+            $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
+
+            return new ApiJsonResponse(Response::HTTP_OK, $this->vendorResponseMapper->map($vendor));
+        } catch (VendorNotFoundException $e) {
+            throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
+        }
+    }
+
+    /**
+     * @Route("/vendors/{slug}", methods="GET", name="vendors_get_one_by_slug")
+     *
+     * @OA\Tag(name="Vendor")
+     * @OA\Response(
+     *     response=200,
+     *     description="Returns the information about a vendor",
+     *     @OA\JsonContent(ref=@Model(type=VendorDto::class))
+     * )
+     *
+     * @Security(name="Bearer")
+     */
+    public function getVendorBySlug(string $slug): Response
+    {
+        try {
+            if ('current' == $slug) {
                 /** @var Vendor $vendor */
                 $vendor = $this->getUser();
             } else {
-                $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
+                $vendor = $this->vendorProvider->findOneBySlug($slug);
+
+                if (null === $vendor) {
+                    throw new VendorNotFoundException();
+                }
             }
 
             return new ApiJsonResponse(Response::HTTP_OK, $this->vendorResponseMapper->map($vendor));
