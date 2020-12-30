@@ -12,6 +12,7 @@ use App\Vendor\ResponseMapper\VendorResponseMapper;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -73,8 +74,7 @@ class VendorController extends AbstractController
                 /** @var Vendor $vendor */
                 $vendor = $this->getUser();
             } else {
-                // vendor fetching not implemented yet; requires also authorization
-                throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
+                $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
             }
 
             return new ApiJsonResponse(Response::HTTP_OK, $this->vendorResponseMapper->map($vendor));

@@ -7,6 +7,13 @@ use App\Vendor\Entity\Vendor;
 
 class VendorResponseMapper
 {
+    private VendorPlanResponseMapper $vendorPlanResponseMapper;
+
+    public function __construct(VendorPlanResponseMapper $vendorPlanResponseMapper)
+    {
+        $this->vendorPlanResponseMapper = $vendorPlanResponseMapper;
+    }
+
     public function map(Vendor $vendor): VendorDto
     {
         $vendorDto = new VendorDto();
@@ -14,6 +21,8 @@ class VendorResponseMapper
         $vendorDto->name = $vendor->getName() ?? '';
         $vendorDto->slug = $vendor->getSlug() ?? '';
         // $vendorDto->email = $vendor->getEmail() ?? '';
+
+        $vendorDto->plans = $this->vendorPlanResponseMapper->mapMultiple($vendor->getPlans()->toArray());
 
         return $vendorDto;
     }

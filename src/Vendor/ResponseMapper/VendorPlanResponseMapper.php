@@ -7,47 +7,43 @@ use App\Vendor\Entity\VendorPlan;
 
 class VendorPlanResponseMapper
 {
-    private VendorResponseMapper $vendorResponseMapper;
-
     private QuestionnaireResponseMapper $questionnaireResponseMapper;
 
-    public function __construct(
-        VendorResponseMapper $vendorResponseMapper,
-        QuestionnaireResponseMapper $questionnaireResponseMapper
-    ) {
-        $this->vendorResponseMapper = $vendorResponseMapper;
+    public function __construct(QuestionnaireResponseMapper $questionnaireResponseMapper)
+    {
         $this->questionnaireResponseMapper = $questionnaireResponseMapper;
     }
 
-    public function map(VendorPlan $vendorPlan, bool $mapVendor = false): VendorPlanDto
+    public function map(VendorPlan $vendorPlan, bool $mapQuestionnaire = true): VendorPlanDto
     {
         $vendorPlanDto = new VendorPlanDto();
         $vendorPlanDto->id = $vendorPlan->getId()->toString();
+        $vendorPlanDto->vendorId = $vendorPlan->getVendor()->getId()->toString();
         $vendorPlanDto->name = $vendorPlan->getName() ?? '';
         $vendorPlanDto->currency = $vendorPlan->getCurrency()->getCode();
         $vendorPlanDto->durationDays = $vendorPlan->getDuration()->d;
         $vendorPlanDto->durationMonths = $vendorPlan->getDuration()->m;
         $vendorPlanDto->price = $vendorPlan->getPrice();
 
-        if ($mapVendor) {
-            $vendorPlanDto->vendor = $this->vendorResponseMapper->map($vendorPlan->getVendor());
+        if ($mapQuestionnaire) {
+            $vendorPlanDto->questionnaire = null !== $vendorPlan->getQuestionnaire()
+                ? $this->questionnaireResponseMapper->map($vendorPlan->getQuestionnaire())
+                : null;
         } else {
-            $vendorPlanDto->vendorId = $vendorPlan->getVendor()->getId()->toString();
+            $vendorPlanDto->questionnaireId = null !== $vendorPlan->getQuestionnaire()
+                ? $vendorPlan->getQuestionnaire()->getId()->toString()
+                : null;
         }
-
-        $vendorPlanDto->questionnaireId = null !== $vendorPlan->getQuestionnaire()
-            ? $vendorPlan->getQuestionnaire()->getId()->toString()
-            : null;
 
         return $vendorPlanDto;
     }
 
-    public function mapMultiple(array $vendorPlans, bool $mapVendor = false): array
+    public function mapMultiple(array $vendorPlans, bool $mapQuestionnaire = false): array
     {
         $vendorPlanDtos = [];
 
         foreach ($vendorPlans as $vendorPlan) {
-            $vendorPlanDtos[] = $this->map($vendorPlan, $mapVendor);
+            $vendorPlanDtos[] = $this->map($vendorPlan, $mapQuestionnaire);
         }
 
         return $vendorPlanDtos;

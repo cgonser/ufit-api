@@ -2,6 +2,8 @@
 
 namespace App\Vendor\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
@@ -23,6 +25,11 @@ class Vendor implements UserInterface, \Serializable
      * @ORM\CustomIdGenerator(class=UuidGenerator::class)
      */
     private UuidInterface $id;
+
+    /**
+     * @ORM\OneToMany(targetEntity="VendorPlan", mappedBy="vendor", cascade={"persist"})
+     */
+    private Collection $plans;
 
     /**
      * @ORM\Column(type="string")
@@ -61,6 +68,11 @@ class Vendor implements UserInterface, \Serializable
      * @ORM\Column(name="updated_at", type="datetime", nullable=true)
      */
     private ?\DateTimeInterface $updatedAt = null;
+
+    public function __construct()
+    {
+        $this->plans = new ArrayCollection();
+    }
 
     public function getId(): ?UuidInterface
     {
@@ -169,6 +181,20 @@ class Vendor implements UserInterface, \Serializable
     public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getPlans(): Collection
+    {
+        return $this->plans;
+    }
+
+    public function addPlan(VendorPlan $vendorPlan): self
+    {
+        $vendorPlan->setVendor($this);
+
+        $this->plans[] = $vendorPlan;
 
         return $this;
     }
