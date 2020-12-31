@@ -67,6 +67,8 @@ class VendorPlanService
     private function mapFromRequest(VendorPlan $vendorPlan, VendorPlanRequest $vendorPlanRequest)
     {
         $vendorPlan->setName($vendorPlanRequest->name);
+        $vendorPlan->setDescription($vendorPlanRequest->description);
+        $vendorPlan->setFeatures($vendorPlanRequest->features);
         $vendorPlan->setPrice($vendorPlanRequest->price);
         $vendorPlan->setCurrency($this->currencyProvider->getByCode($vendorPlanRequest->currency));
         $vendorPlan->setDuration(

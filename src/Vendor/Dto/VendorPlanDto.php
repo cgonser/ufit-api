@@ -14,6 +14,10 @@ class VendorPlanDto
 
     public string $name;
 
+    public ?string $description;
+
+    public ?array $features;
+
     public int $price;
 
     public string $currency;

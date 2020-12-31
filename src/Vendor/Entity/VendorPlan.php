@@ -49,6 +49,16 @@ class VendorPlan
     private ?string $slug = null;
 
     /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private ?string $description = null;
+
+    /**
+     * @ORM\Column(type="json", nullable=true)
+     */
+    private ?array $features = null;
+
+    /**
      * @ORM\Column(type="integer")
      * @Assert\NotBlank()
      */
@@ -135,6 +145,34 @@ class VendorPlan
     public function setSlug(?string $slug): self
     {
         $this->slug = $slug;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getFeatures(): ?array
+    {
+        return $this->features;
+    }
+
+    public function setFeatures(?array $features): self
+    {
+        if (is_array($features) && 0 == count($features)) {
+            $features = null;
+        }
+
+        $this->features = $features;
 
         return $this;
     }

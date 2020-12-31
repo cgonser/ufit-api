@@ -26,6 +26,16 @@ class VendorPlanRequest
 
     /**
      * @OA\Property()
+     */
+    public ?string $description = null;
+
+    /**
+     * @OA\Property()
+     */
+    public ?array $features = null;
+
+    /**
+     * @OA\Property()
      * @Assert\NotBlank()
      * @Assert\Positive()
      */
