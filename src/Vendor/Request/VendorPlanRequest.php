@@ -30,7 +30,7 @@ class VendorPlanRequest
     public ?string $description = null;
 
     /**
-     * @OA\Property()
+     * @OA\Property(type="array", @OA\Items(type="string"))
      */
     public ?array $features = null;
 
