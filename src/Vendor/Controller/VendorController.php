@@ -69,8 +69,6 @@ class VendorController extends AbstractController
      *     description="Returns the information about a vendor",
      *     @OA\JsonContent(ref=@Model(type=VendorDto::class))
      * )
-     *
-     * @Security(name="Bearer")
      */
     public function getVendor(string $vendorId): Response
     {
@@ -92,8 +90,6 @@ class VendorController extends AbstractController
      *     description="Returns the information about a vendor",
      *     @OA\JsonContent(ref=@Model(type=VendorDto::class))
      * )
-     *
-     * @Security(name="Bearer")
      */
     public function getVendorBySlug(string $slug): Response
     {
