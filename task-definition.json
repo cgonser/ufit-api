@@ -47,6 +47,14 @@
         {
           "name": "AWS_S3_BUCKET_NAME",
           "value": "ufit-customer-photos"
+        },
+        {
+          "name": "FACEBOOK_APP_ID",
+          "value": "2972239403014236"
+        },
+        {
+          "name": "FACEBOOK_APP_SECRET",
+          "value": "70784613d539492d8821d3b3a69dadad"
         }
       ],
       "secrets": [

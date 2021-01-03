@@ -70,17 +70,22 @@ security:
     access_control:
         - { path: ^/currencies, roles: IS_AUTHENTICATED_ANONYMOUSLY }
 
-        - { path: ^/customers/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/customers/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/customers, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
+        - { path: ^/customers/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/customers/token/refresh$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/customers$, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
+
         - { path: ^/customers, roles: IS_AUTHENTICATED_FULLY }
 
-        - { path: ^/vendors/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/vendors/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/vendors/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/vendors/login/facebook$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/vendors/token/refresh$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/vendors$, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
+
         - { path: ^/vendors/current/?$, roles: IS_AUTHENTICATED_FULLY, methods: [GET] }
         - { path: ^/vendors/(\w|\-)+/?$, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [GET] }
+
         - { path: ^/vendors, roles: IS_AUTHENTICATED_FULLY }
+
         - { path: ^/questionnaires, roles: IS_AUTHENTICATED_FULLY }
 
         - { path: ^/subscriptions, roles: IS_AUTHENTICATED_FULLY }

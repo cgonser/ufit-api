@@ -45,9 +45,9 @@ class Vendor implements UserInterface, \Serializable
     private string $email;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      */
-    private ?string $password;
+    private ?string $password = null;
 
     /**
      * @ORM\Column(type="json")
@@ -120,7 +120,7 @@ class Vendor implements UserInterface, \Serializable
         return $this->password;
     }
 
-    public function setPassword(string $password): self
+    public function setPassword(?string $password): self
     {
         $this->password = $password;
 

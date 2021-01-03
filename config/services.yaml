@@ -79,6 +79,13 @@ services:
                     key: '%env(AWS_S3_ACCESS_KEY_ID)%'
                     secret: '%env(AWS_S3_ACCESS_KEY_SECRET)%'
 
+    Facebook\Facebook:
+        arguments:
+            -
+                app_id: '%env(FACEBOOK_APP_ID)%'
+                app_secret: '%env(FACEBOOK_APP_SECRET)%'
+                default_graph_version: 'v2.10'
+
     gesdinet.jwtrefreshtoken.refresh_token_manager:
         class:  App\Core\Doctrine\RefreshTokenManager
         public: true

@@ -105,6 +105,9 @@
     "egulias/email-validator": {
         "version": "2.1.23"
     },
+    "facebook/graph-sdk": {
+        "version": "5.7.0"
+    },
     "friendsofsymfony/rest-bundle": {
         "version": "2.2",
         "recipe": {

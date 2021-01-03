@@ -11,6 +11,7 @@
         "doctrine/doctrine-bundle": "^2.1",
         "doctrine/doctrine-migrations-bundle": "^3.0",
         "doctrine/orm": "^2.7",
+        "facebook/graph-sdk": "^5.7",
         "friendsofsymfony/rest-bundle": "^3.0",
         "gesdinet/jwt-refresh-token-bundle": "^0.9.1",
         "league/flysystem-aws-s3-v3": "^1.0",
