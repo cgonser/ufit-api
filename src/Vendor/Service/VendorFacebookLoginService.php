@@ -34,7 +34,7 @@ class VendorFacebookLoginService
         $this->JWTManager = $JWTManager;
     }
 
-    public function authenticateVendorFromToken(string $accessToken): string
+    public function prepareVendorFromFacebookToken(string $accessToken): Vendor
     {
         try {
             $response = $this->facebook->get('/me?fields=id,name,email', $accessToken);
@@ -47,7 +47,7 @@ class VendorFacebookLoginService
                 $vendor = $this->createVendorFromGraphUser($graphUser);
             }
 
-            return $this->JWTManager->create($vendor);
+            return $vendor;
         } catch (FacebookResponseException | FacebookSDKException $e) {
             throw new VendorFacebookLoginFailedException();
         }

@@ -6,24 +6,26 @@ use App\Core\Exception\ApiJsonException;
 use App\Vendor\Exception\VendorFacebookLoginFailedException;
 use App\Vendor\Request\VendorLoginFacebookRequest;
 use App\Vendor\Service\VendorFacebookLoginService;
+use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\AuthenticationSuccessHandler;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class VendorFacebookLoginController extends AbstractController
 {
-    /**
-     * @var VendorFacebookLoginService
-     */
     private VendorFacebookLoginService $vendorFacebookLoginService;
 
-    public function __construct(VendorFacebookLoginService $vendorFacebookLoginService)
-    {
+    private AuthenticationSuccessHandler $authenticationSuccessHandler;
+
+    public function __construct(
+        VendorFacebookLoginService $vendorFacebookLoginService,
+        AuthenticationSuccessHandler $authenticationSuccessHandler
+    ) {
         $this->vendorFacebookLoginService = $vendorFacebookLoginService;
+        $this->authenticationSuccessHandler = $authenticationSuccessHandler;
     }
 
     /**
@@ -38,7 +40,7 @@ class VendorFacebookLoginController extends AbstractController
      * )
      * @OA\Response(
      *     response=200,
-     *     description="Returns the API access token",
+     *     description="Returns the API access token"
      * )
      * @OA\Response(
      *     response=400,
@@ -52,11 +54,11 @@ class VendorFacebookLoginController extends AbstractController
     public function facebookLogin(VendorLoginFacebookRequest $vendorLoginFacebookRequest): Response
     {
         try {
-            $accessToken = $this->vendorFacebookLoginService->authenticateVendorFromToken(
+            $vendor = $this->vendorFacebookLoginService->prepareVendorFromFacebookToken(
                 $vendorLoginFacebookRequest->accessToken
             );
 
-            return new JsonResponse(['token' => $accessToken]);
+            return $this->authenticationSuccessHandler->handleAuthenticationSuccess($vendor);
         } catch (VendorFacebookLoginFailedException $e) {
             throw new ApiJsonException(Response::HTTP_UNAUTHORIZED, $e->getMessage());
         }
