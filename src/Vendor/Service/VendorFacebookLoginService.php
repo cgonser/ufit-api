@@ -10,7 +10,6 @@ use Facebook\Exceptions\FacebookResponseException;
 use Facebook\Exceptions\FacebookSDKException;
 use Facebook\Facebook;
 use Facebook\GraphNodes\GraphUser;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 
 class VendorFacebookLoginService
 {
@@ -20,18 +19,14 @@ class VendorFacebookLoginService
 
     private VendorService $vendorService;
 
-    private JWTTokenManagerInterface $JWTManager;
-
     public function __construct(
         Facebook $facebook,
         VendorProvider $vendorProvider,
-        VendorService $vendorService,
-        JWTTokenManagerInterface $JWTManager
+        VendorService $vendorService
     ) {
         $this->facebook = $facebook;
         $this->vendorProvider = $vendorProvider;
         $this->vendorService = $vendorService;
-        $this->JWTManager = $JWTManager;
     }
 
     public function prepareVendorFromFacebookToken(string $accessToken): Vendor

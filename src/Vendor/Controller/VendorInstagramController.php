@@ -4,8 +4,8 @@ namespace App\Vendor\Controller;
 
 use App\Core\Exception\ApiJsonException;
 use App\Vendor\Exception\VendorFacebookLoginFailedException;
-use App\Vendor\Request\VendorLoginFacebookRequest;
-use App\Vendor\Service\VendorFacebookLoginService;
+use App\Vendor\Request\VendorInstagramLoginRequest;
+use App\Vendor\Service\VendorInstagramLoginService;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\AuthenticationSuccessHandler;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
@@ -14,48 +14,30 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class VendorFacebookLoginController extends AbstractController
+class VendorInstagramController extends AbstractController
 {
-    private VendorFacebookLoginService $vendorFacebookLoginService;
+    private VendorInstagramLoginService $vendorFacebookLoginService;
 
     private AuthenticationSuccessHandler $authenticationSuccessHandler;
 
     public function __construct(
-        VendorFacebookLoginService $vendorFacebookLoginService,
+        VendorInstagramLoginService $vendorInstagramLoginService,
         AuthenticationSuccessHandler $authenticationSuccessHandler
     ) {
-        $this->vendorFacebookLoginService = $vendorFacebookLoginService;
+        $this->vendorInstagramLoginService = $vendorInstagramLoginService;
         $this->authenticationSuccessHandler = $authenticationSuccessHandler;
     }
 
     /**
-     * @Route("/vendors/login/facebook", methods="POST", name="vendor_facebook_login")
+     * @Route("/vendors/login/instagram", methods="POST", name="vendor_instagram_login")
      *
-     * @ParamConverter("vendorLoginFacebookRequest", converter="fos_rest.request_body")
-     *
-     * @OA\Tag(name="Vendor")
-     * @OA\RequestBody(
-     *     required=true,
-     *     @OA\JsonContent(ref=@Model(type=VendorLoginFacebookRequest::class))
-     * )
-     * @OA\Response(
-     *     response=200,
-     *     description="Returns the API access token"
-     * )
-     * @OA\Response(
-     *     response=400,
-     *     description="Invalid input"
-     * )
-     * @OA\Response(
-     *     response=401,
-     *     description="Invalid credentials"
-     * )
+     * @ParamConverter("vendorInstagramLoginRequest", converter="fos_rest.request_body")
      */
-    public function facebookLogin(VendorLoginFacebookRequest $vendorLoginFacebookRequest): Response
+    public function login(VendorInstagramLoginRequest $vendorInstagramLoginRequest): Response
     {
         try {
-            $vendor = $this->vendorFacebookLoginService->prepareVendorFromFacebookToken(
-                $vendorLoginFacebookRequest->accessToken
+            $vendor = $this->vendorInstagramLoginService->prepareVendorFromInstagramCode(
+                $vendorInstagramLoginRequest->code
             );
 
             return $this->authenticationSuccessHandler->handleAuthenticationSuccess($vendor);

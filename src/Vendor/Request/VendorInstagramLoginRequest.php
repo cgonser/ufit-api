@@ -7,21 +7,15 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @OA\RequestBody(
- *     request="VendorLoginFacebookRequest",
- *     required={"accessToken", "userId"},
+ *     request="VendorInstagramLoginRequest",
+ *     required={"code"},
  * )
  */
-class VendorLoginFacebookRequest
+class VendorInstagramLoginRequest
 {
     /**
      * @OA\Property()
      * @Assert\NotBlank()
      */
-    public ?string $accessToken = null;
-
-    /**
-     * @OA\Property()
-     * @Assert\NotBlank()
-     */
-    public ?string $userId = null;
+    public ?string $code = null;
 }
