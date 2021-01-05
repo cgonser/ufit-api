@@ -82,6 +82,11 @@ class VendorPlan
     private bool $isApprovalRequired = false;
 
     /**
+     * @ORM\Column(type="boolean", nullable=false, options={"default": true})
+     */
+    private bool $isVisible = true;
+
+    /**
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
      */
     private ?\DateTimeInterface $createdAt = null;
@@ -221,6 +226,18 @@ class VendorPlan
     public function setIsApprovalRequired(bool $isApprovalRequired): self
     {
         $this->isApprovalRequired = $isApprovalRequired;
+
+        return $this;
+    }
+
+    public function isVisible(): bool
+    {
+        return $this->isVisible;
+    }
+
+    public function setIsVisible(bool $isVisible): self
+    {
+        $this->isVisible = $isVisible;
 
         return $this;
     }

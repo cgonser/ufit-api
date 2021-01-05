@@ -25,6 +25,8 @@ class VendorPlanDto
 
     public int $price;
 
+    public bool $isVisible;
+
     public string $currency;
 
     public string $durationMonths;

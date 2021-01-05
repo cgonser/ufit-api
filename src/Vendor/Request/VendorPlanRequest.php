@@ -70,5 +70,10 @@ class VendorPlanRequest
     /**
      * @OA\Property()
      */
+    public ?bool $isVisible = null;
+
+    /**
+     * @OA\Property()
+     */
     public ?bool $isApprovalRequired = false;
 }

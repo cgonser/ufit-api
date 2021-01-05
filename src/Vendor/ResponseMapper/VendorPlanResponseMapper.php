@@ -24,6 +24,7 @@ class VendorPlanResponseMapper
         $vendorPlanDto->durationDays = $vendorPlan->getDuration()->d;
         $vendorPlanDto->durationMonths = $vendorPlan->getDuration()->m;
         $vendorPlanDto->price = $vendorPlan->getPrice();
+        $vendorPlanDto->isVisible = $vendorPlan->isVisible();
         $vendorPlanDto->description = $vendorPlan->getDescription();
         $vendorPlanDto->features = $vendorPlan->getFeatures();
 
