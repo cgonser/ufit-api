@@ -1,0 +1,10 @@
+local.ufit.io {
+    log stdout
+    
+    tls /root/certs/local.ufit.io-cert.pem /root/certs/local.ufit.io-key.pem
+
+    proxy / http://nginx:80 {
+        transparent
+        header_upstream Host  "local.ufit.io"
+    }
+}

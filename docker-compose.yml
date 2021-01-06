@@ -4,6 +4,7 @@ services:
     php-fpm:
         container_name: ufit-api
         build: .
+        image: ufit-api-php-fpm
         env_file: .env
         expose:
             - 9000
@@ -30,8 +31,17 @@ services:
         volumes:
             - dbdata:/var/lib/postgresql/data
 
+    caddy:
+        container_name: ufit-caddy
+        image: "abiosoft/caddy:latest"
+        volumes:
+            - ./docker/caddy/certs:/root/certs
+            - ./docker/caddy/Caddyfile:/etc/Caddyfile
+        ports:
+            - "443:2015"
+        depends_on:
+            - nginx
+
 volumes:
     dbdata:
 
-networks:
-    ufit:
