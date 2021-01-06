@@ -3,7 +3,14 @@
 namespace App\Vendor\Service;
 
 use App\Vendor\Entity\Vendor;
+use App\Vendor\Entity\VendorInstagramProfile;
+use App\Vendor\Exception\VendorInstagramLoginFailedException;
+use App\Vendor\Exception\VendorInstagramLoginMissingEmailException;
 use App\Vendor\Provider\VendorProvider;
+use App\Vendor\Repository\VendorInstagramProfileRepository;
+use App\Vendor\Request\VendorRequest;
+use EspressoDev\InstagramBasicDisplay\InstagramBasicDisplay;
+use EspressoDev\InstagramBasicDisplay\InstagramBasicDisplayException;
 
 class VendorInstagramLoginService
 {
@@ -11,64 +18,70 @@ class VendorInstagramLoginService
 
     private VendorService $vendorService;
 
+    private InstagramBasicDisplay $instagramBasicDisplay;
+
+    private VendorInstagramProfileRepository $vendorInstagramProfileRepository;
+
     public function __construct(
         VendorProvider $vendorProvider,
-        VendorService $vendorService
+        VendorService $vendorService,
+        InstagramBasicDisplay $instagramBasicDisplay,
+        VendorInstagramProfileRepository $vendorInstagramProfileRepository
     ) {
         $this->vendorProvider = $vendorProvider;
         $this->vendorService = $vendorService;
+        $this->instagramBasicDisplay = $instagramBasicDisplay;
+        $this->vendorInstagramProfileRepository = $vendorInstagramProfileRepository;
     }
 
-    public function prepareVendorFromInstagramCode(string $code): Vendor
+    public function prepareVendorFromInstagramCode(string $code, ?string $email = null): Vendor
     {
         try {
-            $data = $this->GetToken($code);
+            $temporaryToken = $this->instagramBasicDisplay->getOAuthToken($code, true);
+            $accessToken = $this->instagramBasicDisplay->getLongLivedToken($temporaryToken, true);
 
-            $url = 'https://graph.instagram.com/me/?fields=id,username,email,account_type,media_count&access_token='.$data['access_token'];
+            $this->instagramBasicDisplay->setAccessToken($accessToken);
+            $this->instagramBasicDisplay->setUserFields('id,account_type,username');
+            $profile = $this->instagramBasicDisplay->getUserProfile();
 
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            $data = json_decode(curl_exec($ch), true);
-            $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
+            $vendorInstagramProfile = $this->vendorInstagramProfileRepository->findOneBy(['instagramId' => $profile->id]);
 
-            dump($data);
+            if (!$vendorInstagramProfile) {
+                if (null === $email) {
+                    throw new VendorInstagramLoginMissingEmailException();
+                }
 
-            exit;
-//
-//            $vendor = $this->vendorProvider->findOneByEmail($graphUser->getEmail());
-//
-//            if (!$vendor) {
-//                $vendor = $this->createVendorFromGraphUser($graphUser);
-//            }
+                $vendorInstagramProfile = $this->createVendorInstagramProfileAndEmail($profile, $accessToken, $email);
+            }
 
-//            return $vendor;
-        } catch (FacebookResponseException | FacebookSDKException $e) {
-            throw new VendorFacebookLoginFailedException();
+            return $vendorInstagramProfile->getVendor();
+        } catch (InstagramBasicDisplayException $e) {
+            throw new VendorInstagramLoginFailedException();
         }
     }
 
-    public function GetToken($code)
+    private function createVendorInstagramProfileAndEmail(\stdClass $profile, string $accessToken, string $email): VendorInstagramProfile
     {
-        $client_id = '1063810574125577';
-        $redirect_uri = 'https://local.ufit.io/instagram-login.html';
-        $client_secret = '648493dd6a14c2e27166f37c9c33949d';
+        $vendorRequest = new VendorRequest();
+        $vendorRequest->name = $profile->username;
+        $vendorRequest->email = $email;
 
-        $url = 'https://api.instagram.com/oauth/access_token';
+        $vendor = $this->vendorService->create($vendorRequest);
 
-        $urlPost = 'client_id='.$client_id.'&redirect_uri='.$redirect_uri.'&client_secret='.$client_secret.'&code='.$code.'&grant_type=authorization_code';
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $urlPost);
-        $data = json_decode(curl_exec($ch), true);
-        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+        return $this->createVendorInstagram($profile, $accessToken, $vendor);
+    }
 
-        return $data;
+    private function createVendorInstagram(\stdClass $profile, string $accessToken, Vendor $vendor): VendorInstagramProfile
+    {
+        $vendorInstagramProfile = (new VendorInstagramProfile())
+            ->setVendor($vendor)
+            ->setInstagramId($profile->id)
+            ->setUsername($profile->username)
+            ->setAccessToken($accessToken)
+            ->setIsBusiness('BUSINESS' == $profile->account_type);
+
+        $this->vendorInstagramProfileRepository->save($vendorInstagramProfile);
+
+        return $vendorInstagramProfile;
     }
 }

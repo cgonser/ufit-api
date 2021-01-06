@@ -105,6 +105,9 @@
     "egulias/email-validator": {
         "version": "2.1.23"
     },
+    "espresso-dev/instagram-basic-display-php": {
+        "version": "v1.1.4"
+    },
     "facebook/graph-sdk": {
         "version": "5.7.0"
     },

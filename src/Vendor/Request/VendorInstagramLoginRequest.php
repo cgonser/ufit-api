@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @OA\RequestBody(
  *     request="VendorInstagramLoginRequest",
- *     required={"code"},
+ *     required={"code", "email"},
  * )
  */
 class VendorInstagramLoginRequest
@@ -18,4 +18,10 @@ class VendorInstagramLoginRequest
      * @Assert\NotBlank()
      */
     public ?string $code = null;
+
+    /**
+     * @OA\Property()
+     * @Assert\Email()
+     */
+    public ?string $email = null;
 }

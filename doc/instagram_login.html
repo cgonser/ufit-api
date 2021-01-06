@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Instagram Login</title>
+</head>
+<body>
+
+<script>
+    // Reference: https://developers.facebook.com/docs/instagram-basic-display-api/guides/getting-access-tokens-and-permissions
+
+    // https://api.instagram.com/oauth/authorize?
+    //  client_id=1063810574125577&
+    //  scope=user_profile,user_media&response_type=code&redirect_uri=https://local.ufit.io/instagram-login.html
+
+    loginWithInstagramCode = async function (code, email) {
+        var apiResponse = await fetch(
+            'https://local.ufit.io/vendors/login/instagram',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'code': code,
+                    'email': email
+                })
+            }
+        );
+
+        console.log(apiResponse);
+        // apiResponse.token = API JWT Token
+    }
+
+    const params = new URLSearchParams(window.location.search)
+    loginWithInstagramCode(params.get('code'), 'carlos@gonser.eu');
+
+</script>
+
+
+</body>
+</html>

@@ -86,6 +86,13 @@ services:
                 app_secret: '%env(FACEBOOK_APP_SECRET)%'
                 default_graph_version: 'v2.10'
 
+    EspressoDev\InstagramBasicDisplay\InstagramBasicDisplay:
+        arguments:
+            -
+                appId: '%env(INSTAGRAM_APP_ID)%'
+                appSecret: '%env(INSTAGRAM_APP_SECRET)%'
+                redirectUri: '%env(INSTAGRAM_REDIRECT_URI)%'
+
     gesdinet.jwtrefreshtoken.refresh_token_manager:
         class:  App\Core\Doctrine\RefreshTokenManager
         public: true

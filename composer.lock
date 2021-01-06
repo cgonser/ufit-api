@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "15da0d434ff8408b0e39f9ddab6ab89b",
+    "content-hash": "245ea60ea98123be3831b5719722e266",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -1421,6 +1421,48 @@
                 "validator"
             ],
             "time": "2020-10-31T20:37:35+00:00"
+        },
+        {
+            "name": "espresso-dev/instagram-basic-display-php",
+            "version": "v1.1.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/espresso-dev/instagram-basic-display-php.git",
+                "reference": "8b9ac7a7bd3dca6c3a31ca66afe5508e0eae9f28"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/espresso-dev/instagram-basic-display-php/zipball/8b9ac7a7bd3dca6c3a31ca66afe5508e0eae9f28",
+                "reference": "8b9ac7a7bd3dca6c3a31ca66afe5508e0eae9f28",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "php": ">=5.6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "EspressoDev\\InstagramBasicDisplay\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Herman Schutte",
+                    "email": "herman@espresso.dev"
+                }
+            ],
+            "description": "A simple PHP class for accessing the Instagram Basic Display API",
+            "homepage": "https://github.com/espresso-dev/instagram-basic-display-php",
+            "keywords": [
+                "api",
+                "instagram"
+            ],
+            "time": "2020-10-22T07:42:32+00:00"
         },
         {
             "name": "facebook/graph-sdk",
@@ -8161,8 +8203,10 @@
     "platform": {
         "php": ">=7.4",
         "ext-ctype": "*",
+        "ext-curl": "*",
         "ext-gd": "*",
-        "ext-iconv": "*"
+        "ext-iconv": "*",
+        "ext-json": "*"
     },
     "platform-dev": {
         "ext-json": "*"

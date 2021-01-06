@@ -55,6 +55,18 @@
         {
           "name": "FACEBOOK_APP_SECRET",
           "value": "70784613d539492d8821d3b3a69dadad"
+        },
+        {
+          "name": "INSTAGRAM_APP_ID",
+          "value": "1063810574125577"
+        },
+        {
+          "name": "INSTAGRAM_APP_SECRET",
+          "value": "648493dd6a14c2e27166f37c9c33949d"
+        },
+        {
+          "name": "INSTAGRAM_REDIRECT_URI",
+          "value": "https://local.ufit.io/instagram-login.html"
         }
       ],
       "secrets": [

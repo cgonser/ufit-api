@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Instagram Login</title>
+    <title>Facebook Login</title>
 </head>
 <body>
 
@@ -35,6 +35,7 @@
 
     checkLoginState = function () {
         FB.getLoginStatus(function (response) {
+            console.log(response);
             // handle fb auth response:
             // response.status specifies the login status of the person using the app. The status can be one of the following:
             //     connected - the person is logged into Facebook, and has logged into your app.
@@ -58,7 +59,7 @@
 
     loginWithFacebookToken = async function (accessToken, userId) {
         var apiResponse = await fetch(
-            'https://api.ufit.io/vendors/login/facebook',
+            'https://local.ufit.io/vendors/login/facebook',
             {
                 method: 'POST',
                 headers: {
