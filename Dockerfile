@@ -9,6 +9,7 @@ ADD ./docker/php-fpm/www.conf /usr/local/etc/php-fpm.d/www.conf
 
 RUN set -e; \
          apk add --no-cache \
+                acl \
                 coreutils \
                 freetype-dev \
                 libintl \
@@ -43,9 +44,9 @@ RUN set -eux; \
 	# composer clear-cache
 
 RUN rm -rf /app/var/* ; \
-    umask 775 /app/var ; \
-	mkdir -p /app/var/cache /app/var/log;
-
+	mkdir -p /app/var/cache /app/var/log ; \
+	setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX /app/var ; \
+	setfacl -dR -m u:www-data:rwX -m u:"$(whoami)":rwX /app/var
 
 VOLUME /app
 
