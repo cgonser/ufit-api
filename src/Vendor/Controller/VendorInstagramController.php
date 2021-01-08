@@ -4,7 +4,6 @@ namespace App\Vendor\Controller;
 
 use App\Core\Exception\ApiJsonException;
 use App\Vendor\Exception\VendorEmailAddressInUseException;
-use App\Vendor\Exception\VendorFacebookLoginFailedException;
 use App\Vendor\Exception\VendorInstagramLoginFailedException;
 use App\Vendor\Exception\VendorInstagramLoginMissingEmailException;
 use App\Vendor\Request\VendorInstagramLoginRequest;

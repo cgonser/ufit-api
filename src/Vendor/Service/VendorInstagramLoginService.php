@@ -11,10 +11,11 @@ use App\Vendor\Repository\VendorInstagramProfileRepository;
 use App\Vendor\Request\VendorRequest;
 use EspressoDev\InstagramBasicDisplay\InstagramBasicDisplay;
 use EspressoDev\InstagramBasicDisplay\InstagramBasicDisplayException;
+use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 
-class VendorInstagramLoginService
+class VendorInstagramLoginService implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
@@ -30,15 +31,12 @@ class VendorInstagramLoginService
         VendorProvider $vendorProvider,
         VendorService $vendorService,
         InstagramBasicDisplay $instagramBasicDisplay,
-        VendorInstagramProfileRepository $vendorInstagramProfileRepository,
-        LoggerInterface $logger
+        VendorInstagramProfileRepository $vendorInstagramProfileRepository
     ) {
         $this->vendorProvider = $vendorProvider;
         $this->vendorService = $vendorService;
         $this->instagramBasicDisplay = $instagramBasicDisplay;
         $this->vendorInstagramProfileRepository = $vendorInstagramProfileRepository;
-
-        $this->setLogger($logger);
     }
 
     public function prepareVendorFromInstagramCode(string $code, ?string $email = null): Vendor
