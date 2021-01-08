@@ -2,7 +2,7 @@ monolog:
     handlers:
         main:
             type:         fingers_crossed
-            action_level: debug
+            action_level: info
             handler:      nested
         nested:
             type:  stream

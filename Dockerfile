@@ -42,10 +42,10 @@ RUN set -eux; \
 	# composer install --prefer-dist --no-dev --no-scripts --no-progress --no-suggest; \
 	# composer clear-cache
 
-RUN rm -rf var/cache/* ; \
-    rm -rf var/log/* ; \
-	mkdir -p var/cache var/log; \
-	chmod -R 777 var;
+RUN rm -rf /app/var/* ; \
+    umask 775 /app/var ; \
+	mkdir -p /app/var/cache /app/var/log;
+
 
 VOLUME /app
 
