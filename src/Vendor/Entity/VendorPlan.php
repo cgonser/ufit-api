@@ -72,9 +72,9 @@ class VendorPlan
     private Currency $currency;
 
     /**
-     * @ORM\Column(type="dateinterval")
+     * @ORM\Column(type="dateinterval", nullable=true)
      */
-    private \DateInterval $duration;
+    private ?\DateInterval $duration = null;
 
     /**
      * @ORM\Column(type="boolean", nullable=false, options={"default": false})

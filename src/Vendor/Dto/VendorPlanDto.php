@@ -31,7 +31,7 @@ class VendorPlanDto
 
     public string $currency;
 
-    public string $durationMonths;
+    public ?string $durationMonths = null;
 
-    public string $durationDays;
+    public ?string $durationDays = null;
 }

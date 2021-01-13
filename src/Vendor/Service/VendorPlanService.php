@@ -71,12 +71,22 @@ class VendorPlanService
         $vendorPlan->setFeatures($vendorPlanRequest->features);
         $vendorPlan->setPrice($vendorPlanRequest->price);
         $vendorPlan->setCurrency($this->currencyProvider->getByCode($vendorPlanRequest->currency));
-        $vendorPlan->setDuration(
-            $this->prepareDuration($vendorPlanRequest->durationMonths, $vendorPlanRequest->durationDays)
-        );
         $vendorPlan->setIsApprovalRequired($vendorPlanRequest->isApprovalRequired);
         $vendorPlan->setIsRecurring($vendorPlanRequest->isRecurring);
-        $vendorPlan->setIsVisible($vendorPlanRequest->isVisible);
+
+        if (null !== $vendorPlanRequest->durationMonths || null !== $vendorPlanRequest->durationDays) {
+            $vendorPlan->setDuration(
+                $this->prepareDuration($vendorPlanRequest->durationMonths, $vendorPlanRequest->durationDays)
+            );
+        }
+
+        if ($vendorPlan->isRecurring() && !$vendorPlan->getDuration()) {
+            throw new VendorPlanInvalidDurationException();
+        }
+
+        if (null !== $vendorPlanRequest->isVisible) {
+            $vendorPlan->setIsVisible($vendorPlanRequest->isVisible);
+        }
 
         if (null !== $vendorPlanRequest->slug) {
             if (!$this->isSlugUnique($vendorPlan, $vendorPlanRequest->slug)) {

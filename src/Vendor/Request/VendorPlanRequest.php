@@ -50,14 +50,12 @@ class VendorPlanRequest
 
     /**
      * @OA\Property()
-     * @Assert\NotBlank()
      * @Assert\PositiveOrZero()
      */
     public ?int $durationDays = null;
 
     /**
      * @OA\Property()
-     * @Assert\NotBlank()
      * @Assert\PositiveOrZero()
      */
     public ?int $durationMonths = null;
