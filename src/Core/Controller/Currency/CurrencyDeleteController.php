@@ -40,12 +40,12 @@ class CurrencyDeleteController extends AbstractController
      * @OA\Tag(name="Currency")
      * @OA\Response(
      *     response=200,
-     *     description="Updates a measurement type",
+     *     description="Deletes a currency",
      *     @OA\JsonContent(ref=@Model(type=CurrencyDto::class))
      * )
      * @OA\Response(
      *     response=404,
-     *     description="Measurement type not found"
+     *     description="Currency not found"
      * )
      */
     public function delete(string $currencyId): Response
