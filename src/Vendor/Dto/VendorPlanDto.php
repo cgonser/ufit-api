@@ -27,6 +27,8 @@ class VendorPlanDto
 
     public bool $isVisible;
 
+    public bool $isRecurring;
+
     public string $currency;
 
     public string $durationMonths;

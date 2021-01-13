@@ -87,6 +87,11 @@ class VendorPlan
     private bool $isVisible = true;
 
     /**
+     * @ORM\Column(type="boolean", nullable=false, options={"default": true})
+     */
+    private bool $isRecurring = true;
+
+    /**
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
      */
     private ?\DateTimeInterface $createdAt = null;
@@ -238,6 +243,18 @@ class VendorPlan
     public function setIsVisible(bool $isVisible): self
     {
         $this->isVisible = $isVisible;
+
+        return $this;
+    }
+
+    public function isRecurring(): bool
+    {
+        return $this->isRecurring;
+    }
+
+    public function setIsRecurring(bool $isRecurring): self
+    {
+        $this->isRecurring = $isRecurring;
 
         return $this;
     }

@@ -36,6 +36,7 @@ class SubscriptionService
         $subscription = (new Subscription())
             ->setCustomer($customer)
             ->setVendorPlan($vendorPlan)
+            ->setIsRecurring($vendorPlan->isRecurring())
         ;
 
         $this->subscriptionRepository->save($subscription);
@@ -70,6 +71,7 @@ class SubscriptionService
     public function approve(Subscription $subscription, ?string $reviewNotes = null)
     {
         $subscription->setIsApproved(true);
+        $subscription->setReviewNotes($reviewNotes);
 
         $this->calculateExpiration($subscription);
     }

@@ -75,5 +75,10 @@ class VendorPlanRequest
     /**
      * @OA\Property()
      */
-    public ?bool $isApprovalRequired = false;
+    public bool $isApprovalRequired = false;
+
+    /**
+     * @OA\Property()
+     */
+    public bool $isRecurring = true;
 }

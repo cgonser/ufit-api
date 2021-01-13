@@ -22,4 +22,6 @@ class SubscriptionDto
     public ?string $reviewedAt;
 
     public ?bool $isApproved;
+
+    public ?bool $isRecurring;
 }

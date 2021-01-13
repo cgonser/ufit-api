@@ -57,6 +57,11 @@ class Subscription
     private ?\DateTimeInterface $expiresAt = null;
 
     /**
+     * @ORM\Column(type="boolean", nullable=false, options={"default": true})
+     */
+    private bool $isRecurring = true;
+
+    /**
      * @ORM\Column(type="boolean", nullable=true)
      */
     private ?bool $isActive = null;
@@ -115,7 +120,7 @@ class Subscription
         return $this;
     }
 
-    public function getIsApproved(): ?bool
+    public function isApproved(): ?bool
     {
         return $this->isApproved;
     }
@@ -163,7 +168,18 @@ class Subscription
         return $this;
     }
 
-    public function getIsActive(): ?bool
+    public function isRecurring(): bool
+    {
+        return $this->isRecurring;
+    }
+
+    public function setIsRecurring(bool $isRecurring): self
+    {
+        $this->isRecurring = $isRecurring;
+        return $this;
+    }
+
+    public function isActive(): ?bool
     {
         return $this->isActive;
     }

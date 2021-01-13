@@ -75,6 +75,7 @@ class VendorPlanService
             $this->prepareDuration($vendorPlanRequest->durationMonths, $vendorPlanRequest->durationDays)
         );
         $vendorPlan->setIsApprovalRequired($vendorPlanRequest->isApprovalRequired);
+        $vendorPlan->setIsRecurring($vendorPlanRequest->isRecurring);
         $vendorPlan->setIsVisible($vendorPlanRequest->isVisible);
 
         if (null !== $vendorPlanRequest->slug) {

@@ -31,7 +31,8 @@ class SubscriptionResponseMapper
         $subscriptionDto->reviewedAt = $subscription->getReviewedAt()
             ? $subscription->getReviewedAt()->format(\DateTimeInterface::ISO8601)
             : null;
-        $subscriptionDto->isApproved = $subscription->getIsApproved();
+        $subscriptionDto->isApproved = $subscription->isApproved();
+        $subscriptionDto->isRecurring = $subscription->isRecurring();
 
         if ($mapRelations) {
             $subscriptionDto->vendorPlan = $this->vendorPlanResponseMapper->map($subscription->getVendorPlan());
