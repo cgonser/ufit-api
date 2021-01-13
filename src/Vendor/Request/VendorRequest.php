@@ -40,4 +40,9 @@ class VendorRequest
      * @OA\Property()
      */
     public ?string $slug = null;
+
+    /**
+     * @OA\Property()
+     */
+    public ?string $photoContents = null;
 }

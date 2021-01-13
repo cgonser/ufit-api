@@ -65,6 +65,11 @@ class VendorPlan
     private int $price;
 
     /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private ?string $image = null;
+
+    /**
      * @ORM\ManyToOne(targetEntity="App\Core\Entity\Currency")
      * @ORM\JoinColumn(name="currency_id", referencedColumnName="id")
      * @Assert\NotBlank()
@@ -195,6 +200,18 @@ class VendorPlan
     public function setPrice(int $price): self
     {
         $this->price = $price;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
 
         return $this;
     }

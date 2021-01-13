@@ -9,6 +9,7 @@ use App\Vendor\Exception\VendorInstagramLoginMissingEmailException;
 use App\Vendor\Request\VendorInstagramLoginRequest;
 use App\Vendor\Service\VendorInstagramManager;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\AuthenticationSuccessHandler;
+use OpenApi\Annotations as OA;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,6 +31,8 @@ class VendorInstagramController extends AbstractController
 
     /**
      * @Route("/vendors/login/instagram", methods="POST", name="vendor_instagram_login")
+     *
+     * @OA\Tag(name="Vendor")
      *
      * @ParamConverter("vendorInstagramLoginRequest", converter="fos_rest.request_body")
      */

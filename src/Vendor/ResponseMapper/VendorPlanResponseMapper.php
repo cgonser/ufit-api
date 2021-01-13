@@ -4,13 +4,23 @@ namespace App\Vendor\ResponseMapper;
 
 use App\Vendor\Dto\VendorPlanDto;
 use App\Vendor\Entity\VendorPlan;
+use Aws\S3\S3Client;
 
 class VendorPlanResponseMapper
 {
     private QuestionnaireResponseMapper $questionnaireResponseMapper;
 
-    public function __construct(QuestionnaireResponseMapper $questionnaireResponseMapper)
-    {
+    private S3Client $s3Client;
+
+    private string $vendorPhotoS3Bucket;
+
+    public function __construct(
+        QuestionnaireResponseMapper $questionnaireResponseMapper,
+        S3Client $s3Client,
+        string $vendorPhotoS3Bucket
+    ) {
+        $this->s3Client = $s3Client;
+        $this->vendorPhotoS3Bucket = $vendorPhotoS3Bucket;
         $this->questionnaireResponseMapper = $questionnaireResponseMapper;
     }
 
@@ -37,6 +47,13 @@ class VendorPlanResponseMapper
             $vendorPlanDto->questionnaireId = null !== $vendorPlan->getQuestionnaire()
                 ? $vendorPlan->getQuestionnaire()->getId()->toString()
                 : null;
+        }
+
+        if (null != $vendorPlan->getImage()) {
+            $vendorPlanDto->image = $this->s3Client->getObjectUrl(
+                $this->vendorPhotoS3Bucket,
+                $vendorPlan->getImage()
+            );
         }
 
         return $vendorPlanDto;

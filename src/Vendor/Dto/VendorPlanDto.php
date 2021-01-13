@@ -23,15 +23,17 @@ class VendorPlanDto
      */
     public ?array $features;
 
-    public int $price;
+    public ?int $price = null;
 
     public bool $isVisible;
 
     public bool $isRecurring;
 
-    public string $currency;
+    public ?string $currency = null;
 
     public ?string $durationMonths = null;
 
     public ?string $durationDays = null;
+
+    public ?string $image;
 }

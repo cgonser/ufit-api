@@ -20,6 +20,8 @@ class VendorService
 
     private VendorProvider $vendorProvider;
 
+    private VendorPhotoService $vendorPhotoService;
+
     private UserPasswordEncoderInterface $passwordEncoder;
 
     private SluggerInterface $slugger;
@@ -27,11 +29,13 @@ class VendorService
     public function __construct(
         VendorRepository $vendorRepository,
         VendorProvider $vendorProvider,
+        VendorPhotoService $vendorPhotoService,
         UserPasswordEncoderInterface $passwordEncoder,
         SluggerInterface $slugger
     ) {
         $this->vendorRepository = $vendorRepository;
         $this->vendorProvider = $vendorProvider;
+        $this->vendorPhotoService = $vendorPhotoService;
         $this->passwordEncoder = $passwordEncoder;
         $this->slugger = $slugger;
     }
@@ -44,6 +48,13 @@ class VendorService
 
         $this->vendorRepository->save($vendor);
 
+        if (null !== $vendorRequest->photoContents) {
+            $this->vendorPhotoService->uploadPhoto(
+                $vendor,
+                $this->vendorPhotoService->decodePhotoContents($vendorRequest->photoContents)
+            );
+        }
+
         return $vendor;
     }
 
@@ -52,6 +63,13 @@ class VendorService
         $this->mapFromRequest($vendor, $vendorRequest);
 
         $this->vendorRepository->save($vendor);
+
+        if (null !== $vendorRequest->photoContents) {
+            $this->vendorPhotoService->uploadPhoto(
+                $vendor,
+                $this->vendorPhotoService->decodePhotoContents($vendorRequest->photoContents)
+            );
+        }
     }
 
     public function mapFromRequest(Vendor $vendor, VendorRequest $vendorRequest)

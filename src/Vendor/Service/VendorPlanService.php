@@ -21,6 +21,8 @@ class VendorPlanService
 
     private VendorPlanProvider $vendorPlanProvider;
 
+    private VendorPlanImageService $vendorPlanImageService;
+
     private VendorProvider $vendorProvider;
 
     private QuestionnaireProvider $questionnaireProvider;
@@ -32,6 +34,7 @@ class VendorPlanService
     public function __construct(
         VendorPlanRepository $vendorPlanRepository,
         VendorPlanProvider $vendorPlanProvider,
+        VendorPlanImageService $vendorPlanImageService,
         VendorProvider $vendorProvider,
         QuestionnaireProvider $questionnaireProvider,
         CurrencyProvider $currencyProvider,
@@ -39,6 +42,7 @@ class VendorPlanService
     ) {
         $this->vendorPlanRepository = $vendorPlanRepository;
         $this->vendorPlanProvider = $vendorPlanProvider;
+        $this->vendorPlanImageService = $vendorPlanImageService;
         $this->vendorProvider = $vendorProvider;
         $this->questionnaireProvider = $questionnaireProvider;
         $this->currencyProvider = $currencyProvider;
@@ -62,17 +66,41 @@ class VendorPlanService
         $this->mapFromRequest($vendorPlan, $vendorPlanRequest);
 
         $this->vendorPlanRepository->save($vendorPlan);
+
+        if (null !== $vendorPlanRequest->imageContents) {
+            $this->vendorPlanImageService->uploadImage($vendorPlan, $vendorPlanRequest->imageContents);
+        }
     }
 
     private function mapFromRequest(VendorPlan $vendorPlan, VendorPlanRequest $vendorPlanRequest)
     {
-        $vendorPlan->setName($vendorPlanRequest->name);
-        $vendorPlan->setDescription($vendorPlanRequest->description);
-        $vendorPlan->setFeatures($vendorPlanRequest->features);
-        $vendorPlan->setPrice($vendorPlanRequest->price);
-        $vendorPlan->setCurrency($this->currencyProvider->getByCode($vendorPlanRequest->currency));
-        $vendorPlan->setIsApprovalRequired($vendorPlanRequest->isApprovalRequired);
-        $vendorPlan->setIsRecurring($vendorPlanRequest->isRecurring);
+        if (null !== $vendorPlanRequest->name) {
+            $vendorPlan->setName($vendorPlanRequest->name);
+        }
+
+        if (null !== $vendorPlanRequest->description) {
+            $vendorPlan->setDescription($vendorPlanRequest->description);
+        }
+
+        if (null !== $vendorPlanRequest->features) {
+            $vendorPlan->setFeatures($vendorPlanRequest->features);
+        }
+
+        if (null !== $vendorPlanRequest->price) {
+            $vendorPlan->setPrice($vendorPlanRequest->price);
+        }
+
+        if (null !== $vendorPlanRequest->currency) {
+            $vendorPlan->setCurrency($this->currencyProvider->getByCode($vendorPlanRequest->currency));
+        }
+
+        if (null !== $vendorPlanRequest->isApprovalRequired) {
+            $vendorPlan->setIsApprovalRequired($vendorPlanRequest->isApprovalRequired);
+        }
+
+        if (null !== $vendorPlanRequest->isRecurring) {
+            $vendorPlan->setIsRecurring($vendorPlanRequest->isRecurring);
+        }
 
         if (null !== $vendorPlanRequest->durationMonths || null !== $vendorPlanRequest->durationDays) {
             $vendorPlan->setDuration(

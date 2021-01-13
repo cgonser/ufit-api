@@ -8,14 +8,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @OA\RequestBody(
  *     request="VendorPlanRequest",
- *     required={"name", "price", "currency", "durationDays", "durationMonths"},
+ *     required={"name", "price", "currency"},
  * )
  */
 class VendorPlanRequest
 {
     /**
      * @OA\Property()
-     * @Assert\NotBlank()
      */
     public ?string $name = null;
 
@@ -36,14 +35,12 @@ class VendorPlanRequest
 
     /**
      * @OA\Property()
-     * @Assert\NotBlank()
      * @Assert\Positive()
      */
     public ?int $price = null;
 
     /**
      * @OA\Property()
-     * @Assert\NotBlank()
      * @Assert\Currency()
      */
     public ?string $currency = null;
@@ -73,10 +70,15 @@ class VendorPlanRequest
     /**
      * @OA\Property()
      */
-    public bool $isApprovalRequired = false;
+    public ?bool $isApprovalRequired = null;
 
     /**
      * @OA\Property()
      */
-    public bool $isRecurring = true;
+    public ?bool $isRecurring = null;
+
+    /**
+     * @OA\Property()
+     */
+    public ?string $imageContents = null;
 }
