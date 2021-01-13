@@ -13,9 +13,6 @@ use League\Flysystem\FilesystemInterface;
 
 class CustomerPhotoService
 {
-    private array $allowedImageTypes = [
-    ];
-
     private CustomerPhotoRepository $customerPhotoRepository;
 
     private CustomerPhotoProvider $customerPhotoProvider;

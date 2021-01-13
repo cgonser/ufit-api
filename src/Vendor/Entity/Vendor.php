@@ -46,6 +46,12 @@ class Vendor implements UserInterface, \Serializable
 
     /**
      * @ORM\Column(type="string", nullable=true)
+     * @Assert\NotBlank()
+     */
+    private string $photo;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
      */
     private ?string $password = null;
 
@@ -111,6 +117,18 @@ class Vendor implements UserInterface, \Serializable
     public function setEmail(string $email): self
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function getPhoto(): string
+    {
+        return $this->photo;
+    }
+
+    public function setPhoto(string $photo): self
+    {
+        $this->photo = $photo;
 
         return $this;
     }
