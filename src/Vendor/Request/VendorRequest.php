@@ -29,6 +29,11 @@ class VendorRequest
     /**
      * @OA\Property()
      */
+    public ?string $biography = null;
+
+    /**
+     * @OA\Property()
+     */
     public ?string $password = null;
 
     /**

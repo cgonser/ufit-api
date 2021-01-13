@@ -45,8 +45,12 @@
           "value": "92AZsSYWc6YqLt78ILK/LoHswj/+Nr0DpptqginP"
         },
         {
-          "name": "AWS_S3_BUCKET_NAME",
+          "name": "CUSTOMER_PHOTO_BUCKET_NAME",
           "value": "ufit-customer-photos"
+        },
+        {
+          "name": "VENDOR_PHOTO_BUCKET_NAME",
+          "value": "ufit-vendor-photos"
         },
         {
           "name": "FACEBOOK_APP_ID",

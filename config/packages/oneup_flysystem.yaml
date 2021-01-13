@@ -1,14 +1,23 @@
 # Read the documentation: https://github.com/1up-lab/OneupFlysystemBundle/tree/master/Resources/doc/index.md
 oneup_flysystem:
     adapters:
-        default_adapter:
+#        customer_photo_adapter:
 #            local:
 #                directory: '%kernel.cache_dir%/flysystem'
+        customer_photo_adapter:
             awss3v3:
                 client: Aws\S3\S3Client
                 bucket: '%customer_photo.s3_bucket%'
-    filesystems:
-        default_filesystem:
-            adapter: default_adapter
-            alias: League\Flysystem\FilesystemInterface
+        vendor_photo_adapter:
+            awss3v3:
+                client: Aws\S3\S3Client
+                bucket: '%vendor_photo.s3_bucket%'
 
+    filesystems:
+        customer_photo_filesystem:
+            adapter: customer_photo_adapter
+            alias: customerPhotoFileSystem
+
+        vendor_photo_filesystem:
+            adapter: vendor_photo_adapter
+            alias: vendorPhotoFileSystem

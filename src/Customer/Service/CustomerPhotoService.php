@@ -22,11 +22,11 @@ class CustomerPhotoService
     public function __construct(
         CustomerPhotoRepository $customerPhotoRepository,
         CustomerPhotoProvider $customerPhotoProvider,
-        FilesystemInterface $filesystem
+        FilesystemInterface $customerPhotoFileSystem
     ) {
         $this->customerPhotoRepository = $customerPhotoRepository;
         $this->customerPhotoProvider = $customerPhotoProvider;
-        $this->filesystem = $filesystem;
+        $this->filesystem = $customerPhotoFileSystem;
     }
 
     public function create(Customer $customer, CustomerPhotoRequest $customerPhotoRequest): CustomerPhoto

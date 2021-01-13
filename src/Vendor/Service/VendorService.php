@@ -69,14 +69,16 @@ class VendorService
             $vendor->setEmail($vendorRequest->email);
         }
 
-        $vendor->setName($vendorRequest->name);
+        if (null !== $vendorRequest->name) {
+            $vendor->setName($vendorRequest->name);
+        }
 
         if (null !== $vendorRequest->password) {
             $vendor->setPassword($this->passwordEncoder->encodePassword($vendor, $vendorRequest->password));
         }
 
-        if ($vendor->isNew() || 0 == count($vendor->getRoles())) {
-            $vendor->setRoles(['ROLE_VENDOR']);
+        if (null !== $vendorRequest->biography) {
+            $vendor->setBiography($vendorRequest->biography);
         }
 
         if (null !== $vendorRequest->slug) {
@@ -87,6 +89,10 @@ class VendorService
             $vendor->setSlug($vendorRequest->slug);
         } elseif (null === $vendor->getSlug()) {
             $vendor->setSlug($this->generateSlug($vendor));
+        }
+
+        if ($vendor->isNew() || 0 == count($vendor->getRoles())) {
+            $vendor->setRoles(['ROLE_VENDOR']);
         }
     }
 
@@ -156,5 +162,12 @@ class VendorService
         }
 
         return false;
+    }
+
+    public function updateName(Vendor $vendor, string $name)
+    {
+        $vendor->setName($name);
+
+        $this->vendorRepository->save($vendor);
     }
 }
