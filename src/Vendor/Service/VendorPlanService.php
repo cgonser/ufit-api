@@ -3,6 +3,7 @@
 namespace App\Vendor\Service;
 
 use App\Core\Provider\CurrencyProvider;
+use App\Core\Provider\PaymentMethodProvider;
 use App\Vendor\Entity\Vendor;
 use App\Vendor\Entity\VendorPlan;
 use App\Vendor\Exception\VendorPlanInvalidDurationException;
@@ -29,6 +30,8 @@ class VendorPlanService
 
     private CurrencyProvider $currencyProvider;
 
+    private PaymentMethodProvider $paymentMethodProvider;
+
     private SluggerInterface $slugger;
 
     public function __construct(
@@ -38,6 +41,7 @@ class VendorPlanService
         VendorProvider $vendorProvider,
         QuestionnaireProvider $questionnaireProvider,
         CurrencyProvider $currencyProvider,
+        PaymentMethodProvider $paymentMethodProvider,
         SluggerInterface $slugger
     ) {
         $this->vendorPlanRepository = $vendorPlanRepository;
@@ -46,6 +50,7 @@ class VendorPlanService
         $this->vendorProvider = $vendorProvider;
         $this->questionnaireProvider = $questionnaireProvider;
         $this->currencyProvider = $currencyProvider;
+        $this->paymentMethodProvider = $paymentMethodProvider;
         $this->slugger = $slugger;
     }
 
@@ -106,6 +111,14 @@ class VendorPlanService
             $vendorPlan->setDuration(
                 $this->prepareDuration($vendorPlanRequest->durationMonths, $vendorPlanRequest->durationDays)
             );
+        }
+
+        if (null !== $vendorPlanRequest->paymentMethods) {
+            foreach ($vendorPlanRequest->paymentMethods as $paymentMethodId) {
+                $vendorPlan->addPaymentMethod(
+                    $this->paymentMethodProvider->get(Uuid::fromString($paymentMethodId))
+                );
+            }
         }
 
         if ($vendorPlan->isRecurring() && !$vendorPlan->getDuration()) {

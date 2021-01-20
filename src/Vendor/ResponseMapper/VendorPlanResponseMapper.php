@@ -2,6 +2,7 @@
 
 namespace App\Vendor\ResponseMapper;
 
+use App\Core\ResponseMapper\PaymentMethodResponseMapper;
 use App\Vendor\Dto\VendorPlanDto;
 use App\Vendor\Entity\VendorPlan;
 use Aws\S3\S3Client;
@@ -10,18 +11,22 @@ class VendorPlanResponseMapper
 {
     private QuestionnaireResponseMapper $questionnaireResponseMapper;
 
+    private PaymentMethodResponseMapper $paymentMethodResponseMapper;
+
     private S3Client $s3Client;
 
     private string $vendorPhotoS3Bucket;
 
     public function __construct(
         QuestionnaireResponseMapper $questionnaireResponseMapper,
+        PaymentMethodResponseMapper $paymentMethodResponseMapper,
         S3Client $s3Client,
         string $vendorPhotoS3Bucket
     ) {
+        $this->questionnaireResponseMapper = $questionnaireResponseMapper;
+        $this->paymentMethodResponseMapper = $paymentMethodResponseMapper;
         $this->s3Client = $s3Client;
         $this->vendorPhotoS3Bucket = $vendorPhotoS3Bucket;
-        $this->questionnaireResponseMapper = $questionnaireResponseMapper;
     }
 
     public function map(VendorPlan $vendorPlan, bool $mapQuestionnaire = true): VendorPlanDto
@@ -38,6 +43,9 @@ class VendorPlanResponseMapper
         $vendorPlanDto->isRecurring = $vendorPlan->isRecurring();
         $vendorPlanDto->description = $vendorPlan->getDescription();
         $vendorPlanDto->features = $vendorPlan->getFeatures();
+        $vendorPlanDto->paymentMethods = $this->paymentMethodResponseMapper->mapMultiple(
+            $vendorPlan->getPaymentMethods()->toArray()
+        );
 
         if ($mapQuestionnaire) {
             $vendorPlanDto->questionnaire = null !== $vendorPlan->getQuestionnaire()

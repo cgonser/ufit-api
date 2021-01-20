@@ -40,6 +40,11 @@ class VendorPlanRequest
     public ?int $price = null;
 
     /**
+     * @OA\Property(type="array", @OA\Items(type="string"))
+     */
+    public ?array $paymentMethods = null;
+
+    /**
      * @OA\Property()
      * @Assert\Currency()
      */

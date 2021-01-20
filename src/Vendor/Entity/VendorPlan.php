@@ -3,6 +3,9 @@
 namespace App\Vendor\Entity;
 
 use App\Core\Entity\Currency;
+use App\Core\Entity\PaymentMethod;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
@@ -70,6 +73,11 @@ class VendorPlan
     private ?string $image = null;
 
     /**
+     * @ORM\ManyToMany(targetEntity="App\Core\Entity\PaymentMethod")
+     */
+    private Collection $paymentMethods;
+
+    /**
      * @ORM\ManyToOne(targetEntity="App\Core\Entity\Currency")
      * @ORM\JoinColumn(name="currency_id", referencedColumnName="id")
      * @Assert\NotBlank()
@@ -110,6 +118,11 @@ class VendorPlan
      * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
      */
     private ?\DateTimeInterface $deletedAt = null;
+
+    public function __construct()
+    {
+        $this->paymentMethods = new ArrayCollection();
+    }
 
     public function getId(): ?UuidInterface
     {
@@ -224,6 +237,18 @@ class VendorPlan
     public function setCurrency(Currency $currency): self
     {
         $this->currency = $currency;
+
+        return $this;
+    }
+
+    public function getPaymentMethods(): Collection
+    {
+        return $this->paymentMethods;
+    }
+
+    public function addPaymentMethod(PaymentMethod $paymentMethod): self
+    {
+        $this->paymentMethods->add($paymentMethod);
 
         return $this;
     }

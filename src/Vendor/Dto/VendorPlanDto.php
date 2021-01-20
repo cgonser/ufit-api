@@ -23,6 +23,8 @@ class VendorPlanDto
      */
     public ?array $features;
 
+    public ?array $paymentMethods;
+
     public ?int $price = null;
 
     public bool $isVisible;
