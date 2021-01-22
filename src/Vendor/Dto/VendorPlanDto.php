@@ -23,6 +23,9 @@ class VendorPlanDto
      */
     public ?array $features;
 
+    /**
+     * @OA\Property(type="array", @OA\Items(type="string"))
+     */
     public ?array $paymentMethods;
 
     public ?int $price = null;
