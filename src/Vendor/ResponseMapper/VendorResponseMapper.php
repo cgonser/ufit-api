@@ -31,7 +31,7 @@ class VendorResponseMapper
         $vendorDto->name = $vendor->getName();
         $vendorDto->slug = $vendor->getSlug();
         $vendorDto->biography = $vendor->getBiography();
-        // $vendorDto->email = $vendor->getEmail() ?? '';
+        $vendorDto->email = $vendor->getEmail();
 
         if (null != $vendor->getPhoto()) {
             $vendorDto->photo = $this->s3Client->getObjectUrl($this->vendorPhotoS3Bucket, $vendor->getPhoto());
