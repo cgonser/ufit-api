@@ -38,6 +38,11 @@ class Vendor implements UserInterface, \Serializable
     private string $name;
 
     /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private ?string $displayName;
+
+    /**
      * @ORM\Column(type="string", unique=true)
      * @Assert\NotBlank()
      * @Assert\Email()
@@ -99,6 +104,18 @@ class Vendor implements UserInterface, \Serializable
     public function getName(): ?string
     {
         return $this->name;
+    }
+
+    public function getDisplayName(): ?string
+    {
+        return $this->displayName;
+    }
+
+    public function setDisplayName(?string $displayName): self
+    {
+        $this->displayName = $displayName;
+
+        return $this;
     }
 
     public function getUsername(): ?string

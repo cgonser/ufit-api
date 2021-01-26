@@ -8,18 +8,20 @@ class VendorDto
 {
     public string $id;
 
-    public ?string $name = null;
+    public ?string $name;
 
-    public ?string $email = null;
+    public ?string $displayName;
 
-    public ?string $slug = null;
+    public ?string $email;
 
-    public ?string $photo = null;
+    public ?string $slug;
 
-    public ?string $biography = null;
+    public ?string $photo;
+
+    public ?string $biography;
 
     /**
      * @OA\Property(type="array", @OA\Items(type="VendorPlanDto"))
      */
-    public array $plans;
+    public ?array $plans;
 }

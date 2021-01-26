@@ -90,6 +90,7 @@ class VendorInstagramManager implements LoggerAwareInterface
 
         $vendorRequest = new VendorRequest();
         $vendorRequest->name = $accountData->getFullName();
+        $vendorRequest->displayName = $accountData->getFullName();
         $vendorRequest->biography = $accountData->getBiography();
 
         $this->vendorService->update($vendorInstagramProfile->getVendor(), $vendorRequest);
@@ -110,6 +111,7 @@ class VendorInstagramManager implements LoggerAwareInterface
             $accountData = $this->instagramScrapper->getAccount($profile->username);
 
             $vendorRequest->name = $accountData->getFullName();
+            $vendorRequest->displayName = $accountData->getFullName();
             $vendorRequest->biography = $accountData->getBiography();
 
             $photoUrl = $accountData->getProfilePicUrlHd() ?: null;

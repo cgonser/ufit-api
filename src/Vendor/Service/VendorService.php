@@ -91,6 +91,10 @@ class VendorService
             $vendor->setName($vendorRequest->name);
         }
 
+        if (null !== $vendorRequest->displayName) {
+            $vendor->setDisplayName($vendorRequest->displayName);
+        }
+
         if (null !== $vendorRequest->password) {
             $vendor->setPassword($this->passwordEncoder->encodePassword($vendor, $vendorRequest->password));
         }

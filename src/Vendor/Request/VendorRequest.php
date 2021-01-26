@@ -21,6 +21,11 @@ class VendorRequest
 
     /**
      * @OA\Property()
+     */
+    public ?string $displayName = null;
+
+    /**
+     * @OA\Property()
      * @Assert\NotBlank()
      * @Assert\Email()
      */

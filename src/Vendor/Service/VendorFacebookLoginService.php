@@ -52,6 +52,7 @@ class VendorFacebookLoginService
     {
         $vendorRequest = new VendorRequest();
         $vendorRequest->name = $graphUser->getName();
+        $vendorRequest->displayName = $graphUser->getName();
         $vendorRequest->email = $graphUser->getEmail();
 
         return $this->vendorService->create($vendorRequest);
