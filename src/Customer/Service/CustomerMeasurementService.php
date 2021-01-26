@@ -70,7 +70,7 @@ class CustomerMeasurementService
         $customerMeasurement->setNotes($customerMeasurementRequest->notes);
 
         if (null !== $customerMeasurementRequest->takenAt) {
-            $takenAt = \DateTime::createFromFormat($customerMeasurementRequest->takenAt, \DateTimeInterface::ISO8601);
+            $takenAt = \DateTime::createFromFormat(\DateTimeInterface::ISO8601, $customerMeasurementRequest->takenAt);
 
             if (false === $takenAt) {
                 throw new CustomerMeasurementInvalidTakenAtException();

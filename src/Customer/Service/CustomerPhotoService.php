@@ -74,7 +74,7 @@ class CustomerPhotoService
         $customerPhoto->setDescription($customerPhotoRequest->description);
 
         if (null !== $customerPhotoRequest->takenAt) {
-            $takenAt = \DateTime::createFromFormat($customerPhotoRequest->takenAt, \DateTimeInterface::ISO8601);
+            $takenAt = \DateTime::createFromFormat(\DateTimeInterface::ISO8601, $customerPhotoRequest->takenAt);
 
             if (false === $takenAt) {
                 throw new CustomerPhotoInvalidTakenAtException();

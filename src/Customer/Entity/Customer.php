@@ -48,6 +48,31 @@ class Customer implements UserInterface, \Serializable
     private array $roles = [];
 
     /**
+     * @ORM\Column(nullable=true)
+     */
+    private ?string $phone = null;
+
+    /**
+     * @ORM\Column(name="birth_date", type="datetime", nullable=true)
+     */
+    private ?\DateTimeInterface $birthDate = null;
+
+    /**
+     * @ORM\Column(nullable=true)
+     */
+    private ?string $gender = null;
+
+    /**
+     * @ORM\Column(nullable=true)
+     */
+    private ?int $height = null;
+
+    /**
+     * @ORM\Column(type="json", nullable=true)
+     */
+    private ?array $goals = [];
+
+    /**
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
      */
     private ?\DateTimeInterface $createdAt = null;
@@ -100,6 +125,66 @@ class Customer implements UserInterface, \Serializable
     public function setPassword(string $password): void
     {
         $this->password = $password;
+    }
+
+    public function getGoals(): ?array
+    {
+        return $this->goals;
+    }
+
+    public function setGoals(?array $goals): self
+    {
+        $this->goals = $goals;
+
+        return $this;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): self
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getBirthDate(): ?\DateTime
+    {
+        return $this->birthDate;
+    }
+
+    public function setBirthDate(?\DateTime $birthDate): self
+    {
+        $this->birthDate = $birthDate;
+
+        return $this;
+    }
+
+    public function getHeight(): ?int
+    {
+        return $this->height;
+    }
+
+    public function setHeight(?int $height): self
+    {
+        $this->height = $height;
+
+        return $this;
+    }
+
+    public function getGender(): ?string
+    {
+        return $this->gender;
+    }
+
+    public function setGender(?string $gender): self
+    {
+        $this->gender = $gender;
+
+        return $this;
     }
 
     /**

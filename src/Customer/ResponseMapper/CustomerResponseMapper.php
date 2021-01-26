@@ -13,6 +13,13 @@ class CustomerResponseMapper
         $customerDto->id = $customer->getId();
         $customerDto->name = $customer->getName();
         $customerDto->email = $customer->getEmail();
+        $customerDto->phone = $customer->getPhone();
+        $customerDto->gender = $customer->getGender();
+        $customerDto->height = $customer->getHeight();
+        $customerDto->birthDate = $customer->getBirthDate()
+            ? $customer->getBirthDate()->format('Y-m-d')
+            : null;
+        $customerDto->goals = $customer->getGoals();
 
         return $customerDto;
     }

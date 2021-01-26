@@ -4,6 +4,7 @@ namespace App\Customer\Service;
 
 use App\Customer\Entity\Customer;
 use App\Customer\Exception\CustomerEmailAddressInUseException;
+use App\Customer\Exception\CustomerInvalidBirthDateException;
 use App\Customer\Exception\CustomerInvalidPasswordException;
 use App\Customer\Provider\CustomerProvider;
 use App\Customer\Repository\CustomerRepository;
@@ -59,11 +60,42 @@ class CustomerService
             throw new CustomerEmailAddressInUseException();
         }
 
-        $customer->setName($customerRequest->name);
-        $customer->setEmail($customerRequest->email);
+        if (null !== $customerRequest->name) {
+            $customer->setName($customerRequest->name);
+        }
+
+        if (null !== $customerRequest->email) {
+            $customer->setEmail($customerRequest->email);
+        }
+
+        if (null !== $customerRequest->phone) {
+            $customer->setPhone($customerRequest->phone);
+        }
 
         if (null !== $customerRequest->password) {
             $customer->setPassword($this->userPasswordEncoder->encodePassword($customer, $customerRequest->password));
+        }
+
+        if (null !== $customerRequest->height) {
+            $customer->setHeight($customerRequest->height);
+        }
+
+        if (null !== $customerRequest->birthDate) {
+            $birthDate = \DateTime::createFromFormat('Y-m-d', $customerRequest->birthDate);
+
+            if (false === $birthDate) {
+                throw new CustomerInvalidBirthDateException();
+            }
+
+            $customer->setBirthDate($birthDate);
+        }
+
+        if (null !== $customerRequest->gender) {
+            $customer->setGender($customerRequest->gender);
+        }
+
+        if (null !== $customerRequest->goals) {
+            $customer->setGoals($customerRequest->goals);
         }
 
         if ($customer->isNew() || 0 == count($customer->getRoles())) {

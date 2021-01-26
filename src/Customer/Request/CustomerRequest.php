@@ -29,5 +29,30 @@ class CustomerRequest
     /**
      * @OA\Property()
      */
+    public ?string $phone = null;
+
+    /**
+     * @OA\Property()
+     */
     public ?string $password = null;
+
+    /**
+     * @OA\Property()
+     */
+    public ?int $height = null;
+
+    /**
+     * @OA\Property()
+     */
+    public ?string $birthDate = null;
+
+    /**
+     * @OA\Property()
+     */
+    public ?string $gender = null;
+
+    /**
+     * @OA\Property(type="array", @OA\Items(type="string"))
+     */
+    public ?array $goals = null;
 }
