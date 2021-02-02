@@ -78,6 +78,11 @@ class SubscriptionService
 
     private function calculateExpiration(Subscription $subscription)
     {
+        if (null === $subscription->getVendorPlan()->getDuration()) {
+            $subscription->setExpiresAt(null);
+            return;
+        }
+
         $subscription->setExpiresAt(
             (new \DateTime())->add($subscription->getVendorPlan()->getDuration())
         );

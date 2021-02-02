@@ -13,9 +13,8 @@ class VendorSubscriptionProvider
 {
     private SubscriptionRepository $subscriptionRepository;
 
-    public function __construct(
-        SubscriptionRepository $subscriptionRepository
-    ) {
+    public function __construct(SubscriptionRepository $subscriptionRepository)
+    {
         $this->subscriptionRepository = $subscriptionRepository;
     }
 
@@ -48,5 +47,10 @@ class VendorSubscriptionProvider
         }
 
         return $subscription;
+    }
+
+    public function findByVendor(Vendor $vendor): array
+    {
+        return $this->subscriptionRepository->findCustomersByVendor($vendor);
     }
 }

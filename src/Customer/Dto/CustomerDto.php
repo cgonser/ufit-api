@@ -2,6 +2,8 @@
 
 namespace App\Customer\Dto;
 
+use App\Subscription\Dto\SubscriptionDto;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 
 class CustomerDto
@@ -25,4 +27,10 @@ class CustomerDto
      * @OA\Property(type="array", @OA\Items(type="string"))
      */
     public ?array $goals;
+
+    /**
+     * @var SubscriptionDto[]
+     * @OA\Property(type="array", @OA\Items(ref=@Model(type=SubscriptionDto::class)))
+     */
+    public ?array $subscriptions;
 }

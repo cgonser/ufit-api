@@ -2,6 +2,9 @@
 
 namespace App\Customer\Entity;
 
+use App\Subscription\Entity\Subscription;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
@@ -81,6 +84,16 @@ class Customer implements UserInterface, \Serializable
      * @ORM\Column(name="updated_at", type="datetime", nullable=true)
      */
     private ?\DateTimeInterface $updatedAt = null;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Subscription\Entity\Subscription", mappedBy="customer")
+     */
+    private Collection $subscriptions;
+
+    public function __construct()
+    {
+        $this->subscriptions = new ArrayCollection();
+    }
 
     public function getId(): UuidInterface
     {
@@ -205,6 +218,18 @@ class Customer implements UserInterface, \Serializable
     public function setRoles(array $roles): void
     {
         $this->roles = $roles;
+    }
+
+    public function getSubscriptions()
+    {
+        return $this->subscriptions;
+    }
+
+    public function addSubscription(Subscription $subscription): self
+    {
+        $this->subscriptions->add($subscription);
+
+        return $this;
     }
 
     public function getCreatedAt(): ?\DateTimeInterface

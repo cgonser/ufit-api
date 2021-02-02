@@ -2,6 +2,7 @@
 
 namespace App\Vendor\Dto;
 
+use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 
 class QuestionnaireDto
@@ -15,7 +16,8 @@ class QuestionnaireDto
     public string $createdAt;
 
     /**
-     * @OA\Property(type="array", @OA\Items(type="QuestionDto"))
+     * @var QuestionDto[]
+     * @OA\Property(type="array", @OA\Items(ref=@Model(type=QuestionDto::class)))
      */
     public array $questions = [];
 }

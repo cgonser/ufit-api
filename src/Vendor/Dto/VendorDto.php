@@ -2,6 +2,7 @@
 
 namespace App\Vendor\Dto;
 
+use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 
 class VendorDto
@@ -21,7 +22,8 @@ class VendorDto
     public ?string $biography;
 
     /**
-     * @OA\Property(type="array", @OA\Items(type="VendorPlanDto"))
+     * @var VendorPlanDto[]
+     * @OA\Property(type="array", @OA\Items(ref=@Model(type=VendorPlanDto::class)))
      */
     public ?array $plans;
 }

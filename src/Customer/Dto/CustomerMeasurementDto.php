@@ -2,6 +2,7 @@
 
 namespace App\Customer\Dto;
 
+use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 
 class CustomerMeasurementDto
@@ -14,7 +15,7 @@ class CustomerMeasurementDto
 
     /**
      * @var CustomerMeasurementItemDto[]
-     * @OA\Property(type="array", @OA\Items(type="CustomerMeasurementItemDto"))
+     * @OA\Property(type="array", @OA\Items(ref=@Model(type=CustomerMeasurementItemDto::class)))
      */
     public array $items = [];
 }

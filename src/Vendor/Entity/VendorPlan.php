@@ -4,6 +4,7 @@ namespace App\Vendor\Entity;
 
 use App\Core\Entity\Currency;
 use App\Core\Entity\PaymentMethod;
+use App\Subscription\Entity\Subscription;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -78,6 +79,11 @@ class VendorPlan
     private Collection $paymentMethods;
 
     /**
+     * @ORM\OneToMany(targetEntity="App\Subscription\Entity\Subscription", mappedBy="vendorPlan")
+     */
+    private Collection $subscriptions;
+
+    /**
      * @ORM\ManyToOne(targetEntity="App\Core\Entity\Currency")
      * @ORM\JoinColumn(name="currency_id", referencedColumnName="id")
      * @Assert\NotBlank()
@@ -121,6 +127,7 @@ class VendorPlan
 
     public function __construct()
     {
+        $this->subscriptions = new ArrayCollection();
         $this->paymentMethods = new ArrayCollection();
     }
 
@@ -249,6 +256,18 @@ class VendorPlan
     public function addPaymentMethod(PaymentMethod $paymentMethod): self
     {
         $this->paymentMethods->add($paymentMethod);
+
+        return $this;
+    }
+
+    public function getSubscriptions()
+    {
+        return $this->subscriptions;
+    }
+
+    public function addSubscription(Subscription $subscription): self
+    {
+        $this->subscriptions->add($subscription);
 
         return $this;
     }

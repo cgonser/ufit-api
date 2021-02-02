@@ -2,6 +2,7 @@
 
 namespace App\Subscription\ResponseMapper;
 
+use App\Customer\Entity\Customer;
 use App\Customer\ResponseMapper\CustomerResponseMapper;
 use App\Subscription\Dto\SubscriptionDto;
 use App\Subscription\Entity\Subscription;
@@ -54,5 +55,21 @@ class SubscriptionResponseMapper
         }
 
         return $subscriptionDtos;
+    }
+
+    public function mapMultipleCustomers(array $customers): array
+    {
+        $customerDtos = [];
+
+        /** @var Customer $customer */
+        foreach ($customers as $customer) {
+            $customerDto = $this->customerResponseMapper->map($customer);
+
+            $customerDto->subscriptions = $this->mapMultiple($customer->getSubscriptions()->toArray());
+
+            $customerDtos[] = $customerDto;
+        }
+
+        return $customerDtos;
     }
 }

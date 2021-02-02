@@ -25,13 +25,13 @@ class Subscription
     private UuidInterface $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Customer\Entity\Customer")
+     * @ORM\ManyToOne(targetEntity="App\Customer\Entity\Customer", inversedBy="subscriptions")
      * @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
      */
     private Customer $customer;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Vendor\Entity\VendorPlan")
+     * @ORM\ManyToOne(targetEntity="App\Vendor\Entity\VendorPlan", inversedBy="subscriptions")
      * @ORM\JoinColumn(name="vendor_plan_id", referencedColumnName="id")
      */
     private VendorPlan $vendorPlan;

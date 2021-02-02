@@ -40,7 +40,7 @@ class Vendor implements UserInterface, \Serializable
     /**
      * @ORM\Column(type="string", nullable=true)
      */
-    private ?string $displayName;
+    private ?string $displayName = null;
 
     /**
      * @ORM\Column(type="string", unique=true)

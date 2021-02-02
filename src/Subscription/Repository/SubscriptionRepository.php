@@ -2,8 +2,8 @@
 
 namespace App\Subscription\Repository;
 
-use App\Subscription\Entity\Subscription;
 use App\Customer\Entity\Customer;
+use App\Subscription\Entity\Subscription;
 use App\Vendor\Entity\Vendor;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -14,6 +14,25 @@ class SubscriptionRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Subscription::class);
+    }
+
+    public function findCustomersByVendor(Vendor $vendor)
+    {
+        $query = $this->getEntityManager()->createQueryBuilder()
+            ->select('c')
+            ->addSelect('s')
+            ->from(Customer::class, 'c')
+            ->innerJoin('c.subscriptions', 's')
+            ->innerJoin('s.vendorPlan', 'vp')
+            ->andWhere('vp.vendor = :vendor')
+            ->setParameter('vendor', $vendor)
+            ->orderBy('c.id', 'ASC');
+
+//            ->andWhere('s.isApproved = true')
+//            ->andWhere('s.expiresAt >= :expiresAt')
+//            ->setParameter('expiresAt', $expiresAt)
+
+        return $query->getQuery()->getResult();
     }
 
     public function findActiveSubscriptionsByCustomer(Customer $customer)
@@ -28,8 +47,7 @@ class SubscriptionRepository extends ServiceEntityRepository
             ->setParameter('expiresAt', $expiresAt)
             ->orderBy('s.id', 'ASC')
             ->getQuery()
-            ->getResult()
-            ;
+            ->getResult();
     }
 
     public function findActiveByVendor(Vendor $vendor)
@@ -46,8 +64,7 @@ class SubscriptionRepository extends ServiceEntityRepository
             ->setParameter('expiresAt', $expiresAt)
             ->orderBy('s.id', 'ASC')
             ->getQuery()
-            ->getResult()
-            ;
+            ->getResult();
     }
 
     public function findInactiveByVendor(Vendor $vendor)
@@ -64,8 +81,7 @@ class SubscriptionRepository extends ServiceEntityRepository
             ->setParameter('expiresAt', $expiresAt)
             ->orderBy('s.id', 'ASC')
             ->getQuery()
-            ->getResult()
-            ;
+            ->getResult();
     }
 
     public function findPendingByVendor(Vendor $vendor)
@@ -77,8 +93,7 @@ class SubscriptionRepository extends ServiceEntityRepository
             ->setParameter('vendor', $vendor)
             ->orderBy('s.id', 'ASC')
             ->getQuery()
-            ->getResult()
-            ;
+            ->getResult();
     }
 
     public function findByVendor(Vendor $vendor)
@@ -89,8 +104,7 @@ class SubscriptionRepository extends ServiceEntityRepository
             ->setParameter('vendor', $vendor)
             ->orderBy('s.id', 'ASC')
             ->getQuery()
-            ->getResult()
-            ;
+            ->getResult();
     }
 
     public function findOneByVendorAndId(Vendor $vendor, UuidInterface $subscriptionId): ?Subscription
@@ -103,8 +117,7 @@ class SubscriptionRepository extends ServiceEntityRepository
             ->setParameter('subscriptionId', $subscriptionId)
             ->orderBy('s.id', 'ASC')
             ->getQuery()
-            ->getOneOrNullResult()
-            ;
+            ->getOneOrNullResult();
     }
 
     public function save(Subscription $subscription)
