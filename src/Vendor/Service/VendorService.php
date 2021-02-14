@@ -10,6 +10,7 @@ use App\Vendor\Provider\VendorProvider;
 use App\Vendor\Repository\VendorRepository;
 use App\Vendor\Request\VendorPasswordChangeRequest;
 use App\Vendor\Request\VendorRequest;
+use App\Vendor\Request\VendorSocialLinkRequest;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -117,6 +118,26 @@ class VendorService
             $vendor->setSlug($this->generateSlug($vendor));
         }
 
+        if (null !== $vendorRequest->allowEmailMarketing) {
+            $vendor->setAllowEmailMarketing($vendorRequest->allowEmailMarketing);
+        }
+
+        if (null !== $vendorRequest->socialLinks) {
+            $vendor->setSocialLinks($vendorRequest->socialLinks);
+        }
+
+        if (null !== $vendorRequest->country) {
+            $vendor->setCountry($vendorRequest->country);
+        }
+
+        if (null !== $vendorRequest->locale) {
+            $vendor->setLocale($vendorRequest->locale);
+        }
+
+        if (null !== $vendorRequest->timezone) {
+            $vendor->setTimezone($vendorRequest->timezone);
+        }
+
         if ($vendor->isNew() || 0 == count($vendor->getRoles())) {
             $vendor->setRoles(['ROLE_VENDOR']);
         }
@@ -193,6 +214,13 @@ class VendorService
     public function updateName(Vendor $vendor, string $name)
     {
         $vendor->setName($name);
+
+        $this->vendorRepository->save($vendor);
+    }
+
+    public function updateSocialLink(Vendor $vendor, VendorSocialLinkRequest $vendorSocialLinkRequest)
+    {
+        $vendor->setSocialLink($vendorSocialLinkRequest->network, $vendorSocialLinkRequest->link);
 
         $this->vendorRepository->save($vendor);
     }

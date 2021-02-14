@@ -1,0 +1,7 @@
+{% trans_default_domain 'email' %}
+
+{% extends "email/base.html.twig" %}
+
+{% block content %}
+    {{ 'subscription.created_customer.content'|trans({ '%vendor_name%': vendor_name })|markdown_to_html }}
+{% endblock %}

@@ -49,5 +49,30 @@ class VendorRequest
     /**
      * @OA\Property()
      */
+    public ?string $country = null;
+
+    /**
+     * @OA\Property()
+     */
+    public ?string $locale = null;
+
+    /**
+     * @OA\Property()
+     */
+    public ?string $timezone = null;
+
+    /**
+     * @OA\Property()
+     */
     public ?string $photoContents = null;
+
+    /**
+     * @OA\Property()
+     */
+    public ?bool $allowEmailMarketing = null;
+
+    /**
+     * @OA\Property(type="array", @OA\Items(type="array", @OA\Items(type="string")))
+     */
+    public ?array $socialLinks = null;
 }

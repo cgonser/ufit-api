@@ -1,0 +1,40 @@
+customer:
+    program_sent:
+        subject: "Your new training program is here"
+        content: "%vendor_name% has sent you a new training program.\n\nYou can download your program by clicking here [%download_url%](here)."
+
+vendor:
+    created:
+        subject: "Welcome to uFit"
+        content: "Welcome to the uFit community! It's great to have you onboard.\n\nYou are almost there. To start selling and grow your business, you need to configure your plans, profile, and connect to the market place.\n\nYou can easily do that by accessing your account."
+    reminder_marketplace_connect:
+        subject: "Reminder - Connect your payment account"
+        content: "We have noticed that you have not yet connected your account to the marketplace.\n\nIn order to monetize your personal trainer service, you have to connect your account.\n\nYou can easily connect by accessing your account.\n\nWhat are you waiting for? Let's start making money!"
+    reminder_plans_creation:
+        subject: "Reminder - Create your plans"
+        content: "We have noticed that you have not yet created your plans.\n\nYou need to define how you will monetize your personal trainer service.\n\nYou can easily create new plans by accessing your account."
+
+subscription:
+    created_customer:
+        subject: "Welcome to uFit"
+        content: "We are thrilled you have joined the uFit community! Welcome!\n\nYour personal trainer, %vendor_name%, will soon get in touch with you to get more information and prepare a training program that best suits your goals."
+    created_vendor:
+        subject: "New Subscription"
+        content: "Good news! You have a new active subscription.\n\n%customer_name% subscribed on %subscription_start% to the plan %plan_name%.\n\nTiming is key! Review your client information, and send the program that best suits the goals informed."
+        cta: "Access Your Account"
+    payment_made_vendor:
+        subject: "New Payment"
+        content: "Good news! A new payment has been made.\n\nYour client %customer_name% has paid %total_amount% for the plan %plan_name%.\n\nWe have already credited %vendor_amount% to your account."
+    payment_overdue_vendor:
+        subject: "Client Payment Overdue"
+        content: "We have noticed a payment overdue.\n\n%customer_name% has not paid the subscription to the plan %plan_name% (%plan_price%).\n\nYou can access your account, and send a friendly reminder."
+    payment_overdue_customer:
+        subject: "Payment Overdue"
+        content: "We recently verified that your subscription fee has not been paid yet. Please verify the payment method you have used and adjust your subscription status."
+
+base:
+    greeting: Hi %greeting_name%,
+    greeting_annonymous: Hi there,
+    signature: "Cheers,\nuFit Team"
+    get_in_touch: To get in touch with us, please send an email to support@uFit.io
+    unsubscribe: This email was sent to %recipient_email%. If you’d rather not receive this kind of email, you can unsubscribe [here](%unsubscribe_url%).

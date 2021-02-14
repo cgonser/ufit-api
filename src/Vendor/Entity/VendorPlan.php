@@ -5,6 +5,7 @@ namespace App\Vendor\Entity;
 use App\Core\Entity\Currency;
 use App\Core\Entity\PaymentMethod;
 use App\Subscription\Entity\Subscription;
+use Decimal\Decimal;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -63,10 +64,10 @@ class VendorPlan
     private ?array $features = null;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="decimal", nullable=false, options={"precision": 11, "scale": 2})
      * @Assert\NotBlank()
      */
-    private int $price;
+    private string $price;
 
     /**
      * @ORM\Column(type="string", nullable=true)
@@ -212,12 +213,12 @@ class VendorPlan
         return $this;
     }
 
-    public function getPrice(): int
+    public function getPrice(): Decimal
     {
-        return $this->price;
+        return new Decimal($this->price);
     }
 
-    public function setPrice(int $price): self
+    public function setPrice(Decimal $price): self
     {
         $this->price = $price;
 

@@ -12,6 +12,7 @@ parameters:
     routing.uuid: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
     customer_photo.s3_bucket: '%env(CUSTOMER_PHOTO_BUCKET_NAME)%'
     vendor_photo.s3_bucket: '%env(VENDOR_PHOTO_BUCKET_NAME)%'
+    program_asset.s3_bucket: '%env(PROGRAM_ASSET_BUCKET_NAME)%'
 
 services:
     # default configuration for services in *this* file
@@ -26,6 +27,9 @@ services:
             $customerPhotoFileSystem: '@customerPhotoFileSystem'
             $vendorPhotoS3Bucket: '%vendor_photo.s3_bucket%'
             $vendorPhotoFileSystem: '@vendorPhotoFileSystem'
+            $programAssetS3Bucket: '%program_asset.s3_bucket%'
+            $programAssetFileSystem: '@programAssetFileSystem'
+            $eventDispatcher: '@event_dispatcher'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
@@ -46,12 +50,12 @@ services:
         resource: '../src/Customer/Controller'
         tags: ['controller.service_arguments']
 
-    App\Vendor\:
-        resource: '../src/Vendor/*'
-        exclude: '../src/Vendor/{DependencyInjection,Entity,Tests,Kernel.php}'
+    App\Program\:
+        resource: '../src/Program/*'
+        exclude: '../src/Program/{DependencyInjection,Entity,Tests,Kernel.php}'
 
-    App\Vendor\Controller\:
-        resource: '../src/Vendor/Controller'
+    App\Program\Controller\:
+        resource: '../src/Program/Controller'
         tags: ['controller.service_arguments']
 
     App\Subscription\:
@@ -60,6 +64,14 @@ services:
 
     App\Subscription\Controller\:
         resource: '../src/Subscription/Controller'
+        tags: ['controller.service_arguments']
+
+    App\Vendor\:
+        resource: '../src/Vendor/*'
+        exclude: '../src/Vendor/{DependencyInjection,Entity,Tests,Kernel.php}'
+
+    App\Vendor\Controller\:
+        resource: '../src/Vendor/Controller'
         tags: ['controller.service_arguments']
 
     #
@@ -73,6 +85,9 @@ services:
     App\Core\ParamConverter\QueryStringConverter:
         tags:
             - { name: request.param_converter, converter: querystring }
+
+    App\Core\Twig\MailtoExtension:
+        tags: ['twig.extension']
 
     Aws\S3\S3Client:
         arguments:

@@ -37,7 +37,7 @@ class VendorPlanRequest
      * @OA\Property()
      * @Assert\Positive()
      */
-    public ?int $price = null;
+    public ?string $price = null;
 
     /**
      * @OA\Property(type="array", @OA\Items(type="string"))

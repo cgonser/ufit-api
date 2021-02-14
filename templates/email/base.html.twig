@@ -1,0 +1,153 @@
+{% trans_default_domain 'email' %}
+
+{% apply inline_css %}
+
+    <!DOCTYPE html>
+    <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <meta name="x-apple-disable-message-reformatting">
+        <title>{% block title %}{{ subject }}{% endblock %}</title>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300;400;500;600;700&display=swap"
+              rel="stylesheet" type="text/css">
+        <!--[if mso]>
+        <style>
+            table {
+                border-collapse: collapse;
+                border-spacing: 0;
+                border: none;
+                margin: 0;
+            }
+
+            div, td {
+                padding: 0;
+            }
+
+            div {
+                margin: 0 !important;
+            }
+        </style>
+        <noscript>
+            <xml>
+                <o:OfficeDocumentSettings>
+                    <o:PixelsPerInch>96</o:PixelsPerInch>
+                </o:OfficeDocumentSettings>
+            </xml>
+        </noscript>
+        <![endif]-->
+        <style>
+            table,
+            td,
+            div,
+            h1,
+            p,
+            button,
+            span {
+                font-family: Fira Sans, sans-serif;
+            }
+        </style>
+    </head>
+
+    <body style="margin:0;padding:0;word-spacing:normal;background-color:#F2F5F8;">
+    <div role="article" aria-roledescription="email" lang="en"
+         style="text-size-adjust:100%;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;background-color:#F2F5F8;">
+        <table role="presentation" style="width:100%;border:none;border-spacing:0;">
+            <tr>
+                <td align="center" style="padding:0;">
+                    <!--[if mso]>
+                    <table role="presentation" align="center" style="width:600px;">
+                        <tr>
+                            <td>
+                    <![endif]-->
+                    <table role="presentation"
+                           style="width:94%;max-width:600px;border:none;border-spacing:0;text-align:left;font-family:Arial,sans-serif;font-size:16px;line-height:22px;color:#363636;">
+                        <tr>
+                            <td style="padding:32px 16px 16px 8px;font-size:24px;font-weight:bold;">
+                                <a href="https://ufit.io/" style="text-decoration:none;"><img
+                                            src="http://static-eu.ufit.io.s3-website.eu-central-1.amazonaws.com/email-logo.png"
+                                            width="42" alt="uFit"
+                                            style="width:80%;max-width:42px;height:auto;border:none;text-decoration:none;color:#ffffff;"></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:16px 16px 16px 16px;background-color:#ffffff;">
+                                {% block greeting %}
+                                    {% if greeting_name is defined %}
+                                        {{ 'base.greeting'|trans({'%greeting_name%': greeting_name}) }}
+                                    {% else %}
+                                        {{ 'base.greeting_annonymous'|trans }}
+                                    {% endif %}
+                                {% endblock %}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding:8px 16px 16px 16px;background-color:#ffffff;">
+                                {% block content %}
+                                    {{ content|trans|markdown_to_html }}
+                                {% endblock %}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding:8px 16px 0 16px;background-color:#ffffff;">
+                                {% block signature %}
+                                    {{ 'base.signature'|trans|nl2br }}
+                                {% endblock %}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding:8px 16px 16px 16px;background-color:#ffffff;">
+                                {% block cta %}
+                                    {% if ctaLink is defined and ctaText is defined %}
+                                        <a
+                                                href="{{ ctaLink }}"
+                                                style="padding: 8px 16px 8px 16px;width: 160px;height: 32px;background: #2B2D42;box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.043);border-radius: 2px;border:unset;color:#ffffff;font-style:normal;font-weight: normal;font-size: 14px; line-height: 22px;">
+                                            {{ ctaText|trans }}
+                                        </a>
+                                    {% endif %}
+                                {% endblock %}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding:8px 16px 16px 32px;background-color:#F7F9FC;">
+                                {% block getintouch %}
+                                    {{ 'base.get_in_touch'|trans|nl2br|mailto }}
+                                {% endblock %}
+
+                                {% block unsubscribe %}
+                                    {{ 'base.unsubscribe'|trans({
+                                        '%recipient_email%': recipient_email,
+                                        '%unsubscribe_url%': unsubscribe_url
+                                    })|markdown_to_html }}
+                                {% endblock %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:8px 16px 16px 32px;background-color:#F7F9FC;text-align:center">
+
+                                <a href="https://ufit.io" style="margin-right:8px;"><img
+                                            src="http://static-eu.ufit.io.s3-website.eu-central-1.amazonaws.com/email-instagram.png"/></a>
+                                <a href="https://ufit.io"><img
+                                            src="http://static-eu.ufit.io.s3-website.eu-central-1.amazonaws.com/email-facebook.png"></a>
+                            </td>
+                        </tr>
+                    </table>
+                    <!--[if mso]>
+                    </td>
+                    </tr>
+                    </table>
+                    <![endif]-->
+                </td>
+            </tr>
+        </table>
+    </div>
+    </body>
+
+    </html>
+
+{% endapply %}

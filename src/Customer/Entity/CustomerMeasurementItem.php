@@ -2,6 +2,7 @@
 
 namespace App\Customer\Entity;
 
+use Decimal\Decimal;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
@@ -33,9 +34,9 @@ class CustomerMeasurementItem
     private MeasurementType $measurementType;
 
     /**
-     * @ORM\Column()
+     * @ORM\Column(type="decimal", nullable=false, options={"precision": 11, "scale": 2})
      */
-    private int $measurement;
+    private string $measurement;
 
     /**
      * @ORM\Column()
@@ -71,12 +72,12 @@ class CustomerMeasurementItem
         return $this;
     }
 
-    public function getMeasurement(): int
+    public function getMeasurement(): Decimal
     {
-        return $this->measurement;
+        return new Decimal($this->measurement);
     }
 
-    public function setMeasurement(int $measurement): self
+    public function setMeasurement(Decimal $measurement): self
     {
         $this->measurement = $measurement;
 

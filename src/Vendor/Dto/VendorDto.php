@@ -21,9 +21,22 @@ class VendorDto
 
     public ?string $biography;
 
+    public ?string $country;
+
+    public ?string $locale;
+
+    public ?string $timezone;
+
+    public ?bool $allowEmailMarketing;
+
     /**
      * @var VendorPlanDto[]
      * @OA\Property(type="array", @OA\Items(ref=@Model(type=VendorPlanDto::class)))
      */
     public ?array $plans;
+
+    /**
+     * @OA\Property(type="array", @OA\Items(type="array", @OA\Items(type="string")))
+     */
+    public ?array $socialLinks;
 }

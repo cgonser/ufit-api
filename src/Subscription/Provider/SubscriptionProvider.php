@@ -25,6 +25,18 @@ class SubscriptionProvider
         ]);
     }
 
+    public function getById(UuidInterface $id): Subscription
+    {
+        /** @var Subscription|null $subscription */
+        $subscription = $this->subscriptionRepository->find($id);
+
+        if (!$subscription) {
+            throw new SubscriptionNotFoundException();
+        }
+
+        return $subscription;
+    }
+
     public function getByCustomerAndId(Customer $customer, UuidInterface $subscriptionId): Subscription
     {
         /** @var Subscription|null $subscription */

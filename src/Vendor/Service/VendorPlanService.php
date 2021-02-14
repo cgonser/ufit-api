@@ -13,6 +13,7 @@ use App\Vendor\Provider\VendorPlanProvider;
 use App\Vendor\Provider\VendorProvider;
 use App\Vendor\Repository\VendorPlanRepository;
 use App\Vendor\Request\VendorPlanRequest;
+use Decimal\Decimal;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
@@ -92,7 +93,7 @@ class VendorPlanService
         }
 
         if (null !== $vendorPlanRequest->price) {
-            $vendorPlan->setPrice($vendorPlanRequest->price);
+            $vendorPlan->setPrice(new Decimal($vendorPlanRequest->price));
         }
 
         if (null !== $vendorPlanRequest->currency) {

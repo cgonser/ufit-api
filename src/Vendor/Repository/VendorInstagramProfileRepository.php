@@ -2,8 +2,8 @@
 
 namespace App\Vendor\Repository;
 
+use App\Core\Repository\BaseRepository;
 use App\Vendor\Entity\VendorInstagramProfile;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -12,22 +12,10 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method VendorInstagramProfile[]    findAll()
  * @method VendorInstagramProfile[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class VendorInstagramProfileRepository extends ServiceEntityRepository
+class VendorInstagramProfileRepository extends BaseRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, VendorInstagramProfile::class);
-    }
-
-    public function save(VendorInstagramProfile $VendorInstagramProfile)
-    {
-        $this->getEntityManager()->persist($VendorInstagramProfile);
-        $this->getEntityManager()->flush();
-    }
-
-    public function delete(VendorInstagramProfile $VendorInstagramProfile)
-    {
-        $this->getEntityManager()->remove($VendorInstagramProfile);
-        $this->getEntityManager()->flush();
     }
 }

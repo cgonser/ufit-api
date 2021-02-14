@@ -5,11 +5,14 @@ namespace App\Subscription\Service;
 use App\Customer\Entity\Customer;
 use App\Customer\Provider\CustomerProvider;
 use App\Subscription\Entity\Subscription;
+use App\Subscription\Message\SubscriptionCreatedEvent;
 use App\Subscription\Repository\SubscriptionRepository;
 use App\Subscription\Request\SubscriptionRequest;
 use App\Subscription\Request\SubscriptionReviewRequest;
+use App\Subscription\ResponseMapper\SubscriptionResponseMapper;
 use App\Vendor\Provider\VendorPlanProvider;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class SubscriptionService
 {
@@ -19,14 +22,22 @@ class SubscriptionService
 
     private SubscriptionRepository $subscriptionRepository;
 
+    private MessageBusInterface $messageBus;
+
+    private SubscriptionResponseMapper $subscriptionResponseMapper;
+
     public function __construct(
         CustomerProvider $customerProvider,
         VendorPlanProvider $vendorPlanProvider,
-        SubscriptionRepository $subscriptionRepository
+        SubscriptionRepository $subscriptionRepository,
+        SubscriptionResponseMapper $subscriptionResponseMapper,
+        MessageBusInterface $messageBus
     ) {
         $this->subscriptionRepository = $subscriptionRepository;
         $this->customerProvider = $customerProvider;
         $this->vendorPlanProvider = $vendorPlanProvider;
+        $this->messageBus = $messageBus;
+        $this->subscriptionResponseMapper = $subscriptionResponseMapper;
     }
 
     public function createFromCustomerRequest(Customer $customer, SubscriptionRequest $subscriptionRequest): Subscription
@@ -37,6 +48,7 @@ class SubscriptionService
             ->setCustomer($customer)
             ->setVendorPlan($vendorPlan)
             ->setIsRecurring($vendorPlan->isRecurring())
+            ->setPrice($vendorPlan->getPrice())
         ;
 
         $this->subscriptionRepository->save($subscription);
@@ -44,6 +56,8 @@ class SubscriptionService
         if (!$vendorPlan->isApprovalRequired()) {
             $this->approve($subscription);
         }
+
+        $this->messageBus->dispatch(new SubscriptionCreatedEvent($subscription->getId()));
 
         return $subscription;
     }
@@ -72,6 +86,7 @@ class SubscriptionService
     {
         $subscription->setIsApproved(true);
         $subscription->setReviewNotes($reviewNotes);
+        $subscription->setValidFrom(new \DateTime());
 
         $this->calculateExpiration($subscription);
     }
@@ -80,6 +95,7 @@ class SubscriptionService
     {
         if (null === $subscription->getVendorPlan()->getDuration()) {
             $subscription->setExpiresAt(null);
+
             return;
         }
 

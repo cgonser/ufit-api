@@ -101,6 +101,18 @@ class CustomerService
         if ($customer->isNew() || 0 == count($customer->getRoles())) {
             $customer->setRoles(['ROLE_CUSTOMER']);
         }
+
+        if (null !== $customerRequest->country) {
+            $customer->setCountry($customerRequest->country);
+        }
+
+        if (null !== $customerRequest->locale) {
+            $customer->setLocale($customerRequest->locale);
+        }
+
+        if (null !== $customerRequest->timezone) {
+            $customer->setTimezone($customerRequest->timezone);
+        }
     }
 
     public function isEmailAddressInUse(string $emailAddress, ?UuidInterface $customerId = null): bool

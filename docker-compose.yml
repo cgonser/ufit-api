@@ -31,16 +31,20 @@ services:
         volumes:
             - dbdata:/var/lib/postgresql/data
 
-    caddy:
-        container_name: ufit-caddy
-        image: "abiosoft/caddy:latest"
-        volumes:
-            - ./docker/caddy/certs:/root/certs
-            - ./docker/caddy/Caddyfile:/etc/Caddyfile
-        ports:
-            - "443:2015"
-        depends_on:
-            - nginx
+    rabbitmq:
+        container_name: ufit-queue
+        image: rabbitmq:3-alpine
+
+#    caddy:
+#        container_name: ufit-caddy
+#        image: "abiosoft/caddy:latest"
+#        volumes:
+#            - ./docker/caddy/certs:/root/certs
+#            - ./docker/caddy/Caddyfile:/etc/Caddyfile
+#        ports:
+#            - "443:2015"
+#        depends_on:
+#            - nginx
 
 volumes:
     dbdata:

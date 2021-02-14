@@ -4,6 +4,9 @@ namespace App\Subscription\Entity;
 
 use App\Customer\Entity\Customer;
 use App\Vendor\Entity\VendorPlan;
+use Decimal\Decimal;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
@@ -37,6 +40,11 @@ class Subscription
     private VendorPlan $vendorPlan;
 
     /**
+     * @ORM\OneToMany(targetEntity="SubscriptionCycle", mappedBy="subscription", cascade={"persist"})
+     */
+    private Collection $cycles;
+
+    /**
      * @ORM\Column(type="boolean", nullable=true)
      */
     private ?bool $isApproved = null;
@@ -52,9 +60,19 @@ class Subscription
     private ?\DateTimeInterface $reviewedAt = null;
 
     /**
+     * @ORM\Column(name="valid_from", type="datetime", nullable=true)
+     */
+    private ?\DateTimeInterface $validFrom = null;
+
+    /**
      * @ORM\Column(name="expires_at", type="datetime", nullable=true)
      */
     private ?\DateTimeInterface $expiresAt = null;
+
+    /**
+     * @ORM\Column(type="decimal", nullable=false, options={"precision": 11, "scale": 2})
+     */
+    private string $price;
 
     /**
      * @ORM\Column(type="boolean", nullable=false, options={"default": true})
@@ -90,6 +108,11 @@ class Subscription
      * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
      */
     private ?\DateTimeInterface $deletedAt = null;
+
+    public function __construct()
+    {
+        $this->cycles = new ArrayCollection();
+    }
 
     public function getId(): UuidInterface
     {
@@ -156,6 +179,18 @@ class Subscription
         return $this;
     }
 
+    public function getValidFrom(): ?\DateTimeInterface
+    {
+        return $this->validFrom;
+    }
+
+    public function setValidFrom(?\DateTimeInterface $validFrom): self
+    {
+        $this->validFrom = $validFrom;
+
+        return $this;
+    }
+
     public function getExpiresAt(): ?\DateTimeInterface
     {
         return $this->expiresAt;
@@ -164,6 +199,18 @@ class Subscription
     public function setExpiresAt(?\DateTimeInterface $expiresAt): self
     {
         $this->expiresAt = $expiresAt;
+
+        return $this;
+    }
+
+    public function getPrice(): Decimal
+    {
+        return new Decimal($this->price);
+    }
+
+    public function setPrice(Decimal $price): self
+    {
+        $this->price = $price;
 
         return $this;
     }

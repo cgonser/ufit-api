@@ -33,6 +33,11 @@ class VendorResponseMapper
         $vendorDto->slug = $vendor->getSlug();
         $vendorDto->biography = $vendor->getBiography();
         $vendorDto->email = $vendor->getEmail();
+        $vendorDto->allowEmailMarketing = $vendor->allowEmailMarketing();
+        $vendorDto->socialLinks = $vendor->getSocialLinks();
+        $vendorDto->country = $vendor->getCountry();
+        $vendorDto->locale = $vendor->getLocale();
+        $vendorDto->timezone = $vendor->getTImezone();
 
         if (null != $vendor->getPhoto()) {
             $vendorDto->photo = $this->s3Client->getObjectUrl($this->vendorPhotoS3Bucket, $vendor->getPhoto());

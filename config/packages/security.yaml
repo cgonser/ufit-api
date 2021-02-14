@@ -57,7 +57,7 @@ security:
             anonymous: true
 
         vendor:
-            pattern: ^/(vendors|questionnaires)
+            pattern: ^/(vendors|questionnaires|programs)
             stateless: true
             anonymous: true
             guard:
@@ -90,6 +90,8 @@ security:
         - { path: ^/questionnaires, roles: IS_AUTHENTICATED_FULLY }
 
         - { path: ^/subscriptions, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/programs, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/payments, roles: IS_AUTHENTICATED_FULLY }
 
         - { path: ^/health, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/doc, roles: IS_AUTHENTICATED_ANONYMOUSLY }

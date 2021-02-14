@@ -90,7 +90,7 @@ class VendorPlanUpdateController extends AbstractController
             $this->vendorPlanService->update($vendorPlan, $vendorPlanRequest);
 
             return new ApiJsonResponse(
-                Response::HTTP_CREATED,
+                Response::HTTP_OK,
                 $this->vendorPlanResponseMapper->map($vendorPlan)
             );
         } catch (VendorPlanNotFoundException $e) {

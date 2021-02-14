@@ -70,9 +70,34 @@ class Vendor implements UserInterface, \Serializable
     private array $roles = [];
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="json", nullable=false, options={"default": "{}"})
+     */
+    private array $socialLinks = [];
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
      */
     private ?string $slug = null;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private ?string $country = null;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private ?string $locale = null;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private ?string $timezone = null;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=false, options={"default": true})
+     */
+    private bool $allowEmailMarketing = true;
 
     /**
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
@@ -178,6 +203,34 @@ class Vendor implements UserInterface, \Serializable
         return $this;
     }
 
+    public function getSocialLinks(): array
+    {
+        return $this->socialLinks;
+    }
+
+    public function getSocialLink(string $network): ?string
+    {
+        return $this->socialLinks[$network] ?? null;
+    }
+
+    public function setSocialLink(string $network, ?string $link): self
+    {
+        if (null !== $link) {
+            $this->socialLinks[$network] = $link;
+        } elseif (array_key_exists($network, $this->socialLinks)) {
+            unset($this->socialLinks[$network]);
+        }
+
+        return $this;
+    }
+
+    public function setSocialLinks(array $socialLinks): self
+    {
+        $this->socialLinks = $socialLinks;
+
+        return $this;
+    }
+
     /**
      * Returns the roles or permissions granted to the user for security.
      */
@@ -208,6 +261,42 @@ class Vendor implements UserInterface, \Serializable
     public function setSlug(?string $slug): self
     {
         $this->slug = $slug;
+
+        return $this;
+    }
+
+    public function getCountry(): ?string
+    {
+        return $this->country;
+    }
+
+    public function setCountry(?string $country): self
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    public function getLocale(): ?string
+    {
+        return $this->locale;
+    }
+
+    public function setLocale(?string $locale): self
+    {
+        $this->locale = $locale;
+
+        return $this;
+    }
+
+    public function getTimezone(): ?string
+    {
+        return $this->timezone;
+    }
+
+    public function setTimezone(?string $timezone): self
+    {
+        $this->timezone = $timezone;
 
         return $this;
     }
@@ -246,6 +335,18 @@ class Vendor implements UserInterface, \Serializable
         $vendorPlan->setVendor($this);
 
         $this->plans[] = $vendorPlan;
+
+        return $this;
+    }
+
+    public function allowEmailMarketing(): bool
+    {
+        return $this->allowEmailMarketing;
+    }
+
+    public function setAllowEmailMarketing(bool $allowEmailMarketing): self
+    {
+        $this->allowEmailMarketing = $allowEmailMarketing;
 
         return $this;
     }

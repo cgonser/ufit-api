@@ -20,6 +20,9 @@ class CustomerResponseMapper
             ? $customer->getBirthDate()->format('Y-m-d')
             : null;
         $customerDto->goals = $customer->getGoals();
+        $customerDto->country = $customer->getCountry();
+        $customerDto->locale = $customer->getLocale();
+        $customerDto->timezone = $customer->getTimezone();
 
         return $customerDto;
     }

@@ -1,0 +1,10 @@
+{% trans_default_domain 'email' %}
+
+{% extends "email/base.html.twig" %}
+
+{% block content %}
+    {{ 'customer.program_sent.content'|trans({
+        '%vendor_name%': vendor_name,
+        '%download_url%': download_url
+    })|markdown_to_html }}
+{% endblock %}

@@ -55,4 +55,19 @@ class CustomerRequest
      * @OA\Property(type="array", @OA\Items(type="string"))
      */
     public ?array $goals = null;
+
+    /**
+     * @OA\Property()
+     */
+    public ?string $country = null;
+
+    /**
+     * @OA\Property()
+     */
+    public ?string $locale = null;
+
+    /**
+     * @OA\Property()
+     */
+    public ?string $timezone = null;
 }

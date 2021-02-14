@@ -1,0 +1,10 @@
+{% trans_default_domain 'email' %}
+
+{% extends "email/base.html.twig" %}
+
+{% block content %}
+    {{ 'vendor.reminder_marketplace_connect.content'|trans|markdown_to_html }}
+{% endblock %}
+
+{% set ctaLink = 'https://ufit.io/vendor/login' %}
+{% set ctaText = 'subscription.created_vendor.cta'|trans|nl2br %}

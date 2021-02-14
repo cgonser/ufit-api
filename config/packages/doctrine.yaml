@@ -32,6 +32,20 @@ doctrine:
                 prefix: 'App\Customer\Entity'
                 alias: AppCustomer
 
+            App\Payment:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/src/Payment/Entity'
+                prefix: 'App\Payment\Entity'
+                alias: AppPayment
+
+            App\Program:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/src/Program/Entity'
+                prefix: 'App\Program\Entity'
+                alias: AppProgram
+
             App\Vendor:
                 is_bundle: false
                 type: annotation

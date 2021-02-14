@@ -2,9 +2,8 @@
 
 namespace App\Vendor\Repository;
 
-use App\Vendor\Entity\Vendor;
+use App\Core\Repository\BaseRepository;
 use App\Vendor\Entity\VendorPlan;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -13,22 +12,10 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method VendorPlan[]    findAll()
  * @method VendorPlan[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class VendorPlanRepository extends ServiceEntityRepository
+class VendorPlanRepository extends BaseRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, VendorPlan::class);
-    }
-
-    public function save(VendorPlan $vendorPlan)
-    {
-        $this->getEntityManager()->persist($vendorPlan);
-        $this->getEntityManager()->flush();
-    }
-
-    public function delete(VendorPlan $vendorPlan)
-    {
-        $this->getEntityManager()->remove($vendorPlan);
-        $this->getEntityManager()->flush();
     }
 }

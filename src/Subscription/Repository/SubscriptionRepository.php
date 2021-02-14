@@ -2,14 +2,14 @@
 
 namespace App\Subscription\Repository;
 
+use App\Core\Repository\BaseRepository;
 use App\Customer\Entity\Customer;
 use App\Subscription\Entity\Subscription;
 use App\Vendor\Entity\Vendor;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Ramsey\Uuid\UuidInterface;
 
-class SubscriptionRepository extends ServiceEntityRepository
+class SubscriptionRepository extends BaseRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -118,17 +118,5 @@ class SubscriptionRepository extends ServiceEntityRepository
             ->orderBy('s.id', 'ASC')
             ->getQuery()
             ->getOneOrNullResult();
-    }
-
-    public function save(Subscription $subscription)
-    {
-        $this->getEntityManager()->persist($subscription);
-        $this->getEntityManager()->flush();
-    }
-
-    public function delete(Subscription $subscription)
-    {
-        $this->getEntityManager()->remove($subscription);
-        $this->getEntityManager()->flush();
     }
 }

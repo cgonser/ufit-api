@@ -11,22 +11,43 @@ RUN set -e; \
          apk add --no-cache \
                 acl \
                 coreutils \
+                curl-dev \
                 freetype-dev \
+                git \
+                icu \
+                icu-dev \
+                imap-dev \
+                jpeg-dev \
+                libgcrypt-dev \
                 libintl \
                 libjpeg-turbo-dev \
                 libjpeg-turbo \
                 libpng-dev \
-                libzip-dev \
-                jpeg-dev \
-                git \
-                icu \
-                icu-dev \
-                zlib-dev \
-                curl-dev \
-                imap-dev \
                 libxslt-dev libxml2-dev \
+                libzip-dev \
                 postgresql-dev \
-                libgcrypt-dev
+                zlib-dev
+
+RUN docker-php-ext-install sockets \
+    && apk add --no-cache --update rabbitmq-c-dev \
+    && apk add --no-cache --update --virtual .phpize-deps $PHPIZE_DEPS \
+    && pecl install -o -f amqp \
+    && docker-php-ext-enable amqp
+
+ARG MPDECIMAL_VERSION=2.5.1
+
+RUN set -eux; \
+	cd /tmp/; \
+		curl -sSL -O https://www.bytereef.org/software/mpdecimal/releases/mpdecimal-${MPDECIMAL_VERSION}.tar.gz; \
+		tar -xzf mpdecimal-${MPDECIMAL_VERSION}.tar.gz; \
+			cd mpdecimal-${MPDECIMAL_VERSION}; \
+			./configure; \
+			make; \
+			make install
+
+RUN pecl install decimal \
+    && docker-php-ext-enable decimal \
+    && apk del .phpize-deps
 
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 

@@ -13,8 +13,7 @@ class ApiJsonInputValidationException extends ApiJsonException
         string $message = null,
         int $statusCode = Response::HTTP_BAD_REQUEST,
         \Throwable $previous = null
-    )
-    {
+    ) {
         parent::__construct($statusCode, $message, $this->extractValidationMessages($validationErrors), $previous);
     }
 

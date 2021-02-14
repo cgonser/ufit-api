@@ -3,6 +3,7 @@
 namespace App\Customer\Request;
 
 use OpenApi\Annotations as OA;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @OA\RequestBody(
@@ -23,8 +24,9 @@ class CustomerMeasurementItemRequest
 
     /**
      * @OA\Property()
+     * @Assert\Positive()
      */
-    public int $measurement;
+    public string $measurement;
 
     /**
      * @OA\Property()

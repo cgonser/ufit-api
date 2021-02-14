@@ -53,6 +53,21 @@ class Customer implements UserInterface, \Serializable
     /**
      * @ORM\Column(nullable=true)
      */
+    private ?string $country = null;
+
+    /**
+     * @ORM\Column(nullable=true)
+     */
+    private ?string $locale = null;
+
+    /**
+     * @ORM\Column(nullable=true)
+     */
+    private ?string $timezone = null;
+
+    /**
+     * @ORM\Column(nullable=true)
+     */
     private ?string $phone = null;
 
     /**
@@ -100,7 +115,7 @@ class Customer implements UserInterface, \Serializable
         return $this->id;
     }
 
-    public function setName(string $name): void
+    public function setName(string $name): self
     {
         $this->name = $name;
     }
@@ -115,7 +130,7 @@ class Customer implements UserInterface, \Serializable
         return $this->email;
     }
 
-    public function setUsername(string $username): void
+    public function setUsername(string $username): self
     {
         $this->email = $username;
     }
@@ -125,7 +140,7 @@ class Customer implements UserInterface, \Serializable
         return $this->email;
     }
 
-    public function setEmail(string $email): void
+    public function setEmail(string $email): self
     {
         $this->email = $email;
     }
@@ -135,9 +150,45 @@ class Customer implements UserInterface, \Serializable
         return $this->password;
     }
 
-    public function setPassword(string $password): void
+    public function setPassword(string $password): self
     {
         $this->password = $password;
+    }
+
+    public function getCountry(): ?string
+    {
+        return $this->country;
+    }
+
+    public function setCountry(?string $country): self
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    public function getLocale(): ?string
+    {
+        return $this->locale;
+    }
+
+    public function setLocale(?string $locale): self
+    {
+        $this->locale = $locale;
+
+        return $this;
+    }
+
+    public function getTimezone(): ?string
+    {
+        return $this->timezone;
+    }
+
+    public function setTimezone(?string $timezone): self
+    {
+        $this->timezone = $timezone;
+
+        return $this;
     }
 
     public function getGoals(): ?array
@@ -164,7 +215,7 @@ class Customer implements UserInterface, \Serializable
         return $this;
     }
 
-    public function getBirthDate(): ?\DateTime
+    public function getBirthDate(): ?\DateTimeInterface
     {
         return $this->birthDate;
     }
@@ -215,7 +266,7 @@ class Customer implements UserInterface, \Serializable
         return array_unique($roles);
     }
 
-    public function setRoles(array $roles): void
+    public function setRoles(array $roles): self
     {
         $this->roles = $roles;
     }

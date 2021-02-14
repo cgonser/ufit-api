@@ -53,6 +53,10 @@
           "value": "ufit-vendor-photos"
         },
         {
+          "name": "PROGRAM_ASSET_BUCKET_NAME",
+          "value": "ufit-program-assets"
+        },
+        {
           "name": "FACEBOOK_APP_ID",
           "value": "2972239403014236"
         },
@@ -76,13 +80,13 @@
       "secrets": [
         {
           "name": "DATABASE_URL",
-          "valueFrom": "arn:aws:ssm:eu-central-1:590392040163:parameter/production/database/url"
+          "valueFrom": "arn:aws:ssm:eu-central-1:590392040163:parameter/stg/database/url"
         }
       ],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "prod/ecs/api",
+          "awslogs-group": "api-stg",
           "awslogs-region": "eu-central-1",
           "awslogs-stream-prefix": "php-fpm"
         }
@@ -97,7 +101,7 @@
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "prod/ecs/api",
+          "awslogs-group": "api-stg",
           "awslogs-region": "eu-central-1",
           "awslogs-stream-prefix": "nginx"
         }

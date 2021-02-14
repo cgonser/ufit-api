@@ -1,0 +1,14 @@
+{% trans_default_domain 'email' %}
+
+{% extends "email/base.html.twig" %}
+
+{% block content %}
+    {{ 'subscription.payment_overdue_vendor.content'|trans({
+        '%customer_name%': customer_name,
+        '%plan_name%': plan_name,
+        '%plan_price%': plan_price
+    })|nl2br|markdown_to_html }}
+{% endblock %}
+
+{% set ctaLink = 'https://ufit.io/vendor/login' %}
+{% set ctaText = 'subscription.created_vendor.cta'|trans|nl2br %}

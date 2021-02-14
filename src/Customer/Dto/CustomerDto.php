@@ -33,4 +33,10 @@ class CustomerDto
      * @OA\Property(type="array", @OA\Items(ref=@Model(type=SubscriptionDto::class)))
      */
     public ?array $subscriptions;
+
+    public ?string $country;
+
+    public ?string $locale;
+
+    public ?string $timezone;
 }

@@ -14,6 +14,7 @@ use App\Customer\Repository\CustomerMeasurementItemRepository;
 use App\Customer\Repository\CustomerMeasurementRepository;
 use App\Customer\Request\CustomerMeasurementItemRequest;
 use App\Customer\Request\CustomerMeasurementRequest;
+use Decimal\Decimal;
 
 class CustomerMeasurementService
 {
@@ -103,7 +104,7 @@ class CustomerMeasurementService
                 $customerMeasurementItem->setMeasurementType($measurementType);
             }
 
-            $customerMeasurementItem->setMeasurement($customerMeasurementItemRequest->measurement);
+            $customerMeasurementItem->setMeasurement(new Decimal($customerMeasurementItemRequest->measurement));
 
             if (!$measurementType->isUnitValid($customerMeasurementItemRequest->unit)) {
                 throw new CustomerMeasurementItemInvalidUnitException();
