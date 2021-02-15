@@ -152,7 +152,7 @@ class VendorPlanService
         }
     }
 
-    private function prepareDuration(string $durationMonths, string $durationDays): \DateInterval
+    private function prepareDuration(?string $durationMonths, ?string $durationDays): \DateInterval
     {
         $durationString = 'P';
 

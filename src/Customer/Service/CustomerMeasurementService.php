@@ -7,6 +7,7 @@ use App\Customer\Entity\CustomerMeasurement;
 use App\Customer\Entity\CustomerMeasurementItem;
 use App\Customer\Exception\CustomerMeasurementInvalidTakenAtException;
 use App\Customer\Exception\CustomerMeasurementItemInvalidUnitException;
+use App\Customer\Exception\MeasurementTypeNotFoundException;
 use App\Customer\Provider\CustomerMeasurementItemProvider;
 use App\Customer\Provider\CustomerMeasurementProvider;
 use App\Customer\Provider\MeasurementTypeProvider;
@@ -15,6 +16,7 @@ use App\Customer\Repository\CustomerMeasurementRepository;
 use App\Customer\Request\CustomerMeasurementItemRequest;
 use App\Customer\Request\CustomerMeasurementRequest;
 use Decimal\Decimal;
+use Ramsey\Uuid\Uuid;
 
 class CustomerMeasurementService
 {
@@ -91,9 +93,23 @@ class CustomerMeasurementService
     {
         /** @var CustomerMeasurementItemRequest $customerMeasurementItemRequest */
         foreach ($items as $customerMeasurementItemRequest) {
-            $measurementType = $this->measurementTypeProvider->getBySlug(
-                $customerMeasurementItemRequest->type
-            );
+            $measurementType = null;
+
+            if (null !== $customerMeasurementItemRequest->type) {
+                $measurementType = $this->measurementTypeProvider->getBySlug(
+                    $customerMeasurementItemRequest->type
+                );
+            }
+
+            if (null !== $customerMeasurementItemRequest->measurementTypeId) {
+                $measurementType = $this->measurementTypeProvider->get(
+                    Uuid::fromString($customerMeasurementItemRequest->measurementTypeId)
+                );
+            }
+
+            if (null === $measurementType) {
+                throw new MeasurementTypeNotFoundException();
+            }
 
             $customerMeasurementItem = $this->customerMeasurementItemProvider->findOneByCustomerMeasurementAndType(
                 $customerMeasurement, $measurementType
