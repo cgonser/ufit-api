@@ -118,6 +118,8 @@ class Customer implements UserInterface, \Serializable
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
     }
 
     public function getName(): ?string
@@ -133,6 +135,8 @@ class Customer implements UserInterface, \Serializable
     public function setUsername(string $username): self
     {
         $this->email = $username;
+
+        return $this;
     }
 
     public function getEmail(): ?string
@@ -143,6 +147,8 @@ class Customer implements UserInterface, \Serializable
     public function setEmail(string $email): self
     {
         $this->email = $email;
+
+        return $this;
     }
 
     public function getPassword(): ?string
@@ -153,6 +159,8 @@ class Customer implements UserInterface, \Serializable
     public function setPassword(string $password): self
     {
         $this->password = $password;
+
+        return $this;
     }
 
     public function getCountry(): ?string
@@ -269,6 +277,8 @@ class Customer implements UserInterface, \Serializable
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
+
+        return $this;
     }
 
     public function getSubscriptions()
