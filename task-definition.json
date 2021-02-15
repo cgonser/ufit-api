@@ -81,6 +81,18 @@
         {
           "name": "DATABASE_URL",
           "valueFrom": "arn:aws:ssm:eu-central-1:590392040163:parameter/stg/database/url"
+        },
+        {
+          "name": "MESSENGER_TRANSPORT_DSN_VENDOR",
+          "valueFrom": "arn:aws:ssm:eu-central-1:590392040163:parameter/stg/sqs/vendor"
+        },
+        {
+          "name": "MESSENGER_TRANSPORT_DSN_SUBSCRIPTION",
+          "valueFrom": "arn:aws:ssm:eu-central-1:590392040163:parameter/stg/sqs/subscription"
+        },
+        {
+          "name": "MESSENGER_TRANSPORT_DSN_EMAIL",
+          "valueFrom": "arn:aws:ssm:eu-central-1:590392040163:parameter/stg/sqs/email"
         }
       ],
       "logConfiguration": {
