@@ -2,6 +2,7 @@
 
 namespace App\Vendor\DataFixtures;
 
+use App\Core\Provider\CurrencyProvider;
 use App\Vendor\Entity\Vendor;
 use App\Vendor\Provider\VendorProvider;
 use App\Vendor\Request\VendorPlanRequest;
@@ -16,10 +17,16 @@ class VendorPlanFixtures extends Fixture implements DependentFixtureInterface
 
     private VendorPlanService $vendorPlanService;
 
-    public function __construct(VendorProvider $vendorProvider, VendorPlanService $vendorPlanService)
-    {
+    private CurrencyProvider $currencyProvider;
+
+    public function __construct(
+        VendorProvider $vendorProvider,
+        CurrencyProvider $currencyProvider,
+        VendorPlanService $vendorPlanService
+    ) {
         $this->vendorProvider = $vendorProvider;
         $this->vendorPlanService = $vendorPlanService;
+        $this->currencyProvider = $currencyProvider;
     }
 
     public function load(ObjectManager $manager): void
@@ -40,11 +47,15 @@ class VendorPlanFixtures extends Fixture implements DependentFixtureInterface
 
     private function getData(): \Iterator
     {
+        $currencies = $this->currencyProvider->findAll();
+        $currency = $currencies[array_rand($currencies)];
+
         $vendorPlanRequest = new VendorPlanRequest();
         $vendorPlanRequest->name = 'Monthly';
         $vendorPlanRequest->isRecurring = true;
         $vendorPlanRequest->durationMonths = 1;
         $vendorPlanRequest->isVisible = true;
+        $vendorPlanRequest->currency = $currency->getCode();
         $vendorPlanRequest->features = [
             'Photos and videos',
             'Weekly updates',
