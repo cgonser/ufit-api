@@ -75,6 +75,10 @@
         {
           "name": "INSTAGRAM_REDIRECT_URI",
           "value": "https://ufit.io/vendor/instagram-email"
+        },
+        {
+          "name": "MAILER_DSN",
+          "value": "ses://AKIAYS5Q3TLR5JGRX3EG:92AZsSYWc6YqLt78ILK%2FLoHswj%2F%2BNr0DpptqginP@default?region=eu-central-1"
         }
       ],
       "secrets": [
