@@ -7,7 +7,7 @@ use App\Core\Exception\ApiJsonInputValidationException;
 use App\Core\Response\ApiJsonResponse;
 use App\Program\Dto\ProgramAssetDto;
 use App\Vendor\Entity\Vendor;
-use App\Program\Provider\ProgramProvider;
+use App\Program\Provider\VendorProgramProvider;
 use App\Program\Request\ProgramAssetRequest;
 use App\Program\ResponseMapper\ProgramAssetResponseMapper;
 use App\Program\Service\ProgramAssetManager;
@@ -22,14 +22,14 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class ProgramAssetCreateController extends AbstractController
 {
-    private ProgramProvider $programProvider;
+    private VendorProgramProvider $programProvider;
 
     private ProgramAssetResponseMapper $programAssetResponseMapper;
 
     private ProgramAssetManager $programAssetManager;
 
     public function __construct(
-        ProgramProvider $programProvider,
+        VendorProgramProvider $programProvider,
         ProgramAssetResponseMapper $programAssetResponseMapper,
         ProgramAssetManager $programAssetManager
     ) {

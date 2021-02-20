@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Program\Controller\Vendor;
+namespace App\Program\Controller\Customer;
 
 use App\Core\Exception\ApiJsonException;
-use App\Core\Request\SearchRequest;
 use App\Core\Response\ApiJsonResponse;
 use App\Customer\ResponseMapper\CustomerResponseMapper;
 use App\Program\Dto\ProgramDto;
+use App\Program\Request\CustomerProgramSearchRequest;
 use App\Program\ResponseMapper\ProgramResponseMapper;
-use App\Vendor\Entity\Vendor;
-use App\Program\Provider\VendorProgramProvider;
+use App\Customer\Entity\Customer;
+use App\Program\Provider\CustomerProgramProvider;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
@@ -21,14 +21,14 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ProgramController extends AbstractController
 {
-    private VendorProgramProvider $programProvider;
+    private CustomerProgramProvider $programProvider;
 
     private ProgramResponseMapper $programResponseMapper;
 
     private CustomerResponseMapper $customerResponseMapper;
 
     public function __construct(
-        VendorProgramProvider $programProvider,
+        CustomerProgramProvider $programProvider,
         ProgramResponseMapper $programResponseMapper,
         CustomerResponseMapper $customerResponseMapper
     ) {
@@ -38,7 +38,7 @@ class ProgramController extends AbstractController
     }
 
     /**
-     * @Route("/vendors/{vendorId}/programs", methods="GET", name="vendor_programs_find")
+     * @Route("/customers/{customerId}/programs", methods="GET", name="customer_programs_find")
      *
      * @ParamConverter("searchRequest", converter="querystring")
      *
@@ -47,12 +47,12 @@ class ProgramController extends AbstractController
      * @OA\Parameter(
      *     in="query",
      *     name="filters",
-     *     @OA\Schema(ref=@Model(type=SearchRequest::class))
+     *     @OA\Schema(ref=@Model(type=CustomerProgramSearchRequest::class))
      * )
      *
      * @OA\Response(
      *     response=200,
-     *     description="Returns all programs of a given vendor",
+     *     description="Returns all programs of a given customer",
      *     @OA\Header(
      *         header="X-Total-Count",
      *         @OA\Schema(
@@ -67,18 +67,18 @@ class ProgramController extends AbstractController
      *
      * @Security(name="Bearer")
      */
-    public function getPrograms(string $vendorId, SearchRequest $searchRequest): Response
+    public function getPrograms(string $customerId, CustomerProgramSearchRequest $searchRequest): Response
     {
-        if ('current' == $vendorId) {
-            /** @var Vendor $vendor */
-            $vendor = $this->getUser();
+        if ('current' == $customerId) {
+            /** @var Customer $customer */
+            $customer = $this->getUser();
         } else {
-            // vendor fetching not implemented yet; requires also authorization
+            // customer fetching not implemented yet; requires also authorization
             throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
         }
 
-        $programs = $this->programProvider->searchVendorPrograms($vendor, $searchRequest);
-        $count = $this->programProvider->countVendorPrograms($vendor, $searchRequest);
+        $programs = $this->programProvider->searchCustomerPrograms($customer, $searchRequest);
+        $count = $this->programProvider->countCustomerPrograms($customer, $searchRequest);
 
         return new ApiJsonResponse(
             Response::HTTP_OK,
@@ -90,7 +90,7 @@ class ProgramController extends AbstractController
     }
 
     /**
-     * @Route("/vendors/{vendorId}/programs/{programId}", methods="GET", name="vendor_programs_get_one")
+     * @Route("/customers/{customerId}/programs/{programId}", methods="GET", name="customer_programs_get_one")
      *
      * @OA\Tag(name="Program")
      * @OA\Response(
@@ -101,17 +101,17 @@ class ProgramController extends AbstractController
      *
      * @Security(name="Bearer")
      */
-    public function getProgram(string $vendorId, string $programId): Response
+    public function getProgram(string $customerId, string $programId): Response
     {
-        if ('current' == $vendorId) {
-            /** @var Vendor $vendor */
-            $vendor = $this->getUser();
+        if ('current' == $customerId) {
+            /** @var Customer $customer */
+            $customer = $this->getUser();
         } else {
-            // vendor fetching not implemented yet; requires also authorization
+            // customer fetching not implemented yet; requires also authorization
             throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
         }
 
-        $program = $this->programProvider->getByVendorAndId($vendor, Uuid::fromString($programId));
+        $program = $this->programProvider->getByCustomerAndId($customer, Uuid::fromString($programId));
 
         return new ApiJsonResponse(
             Response::HTTP_OK,

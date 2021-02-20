@@ -4,7 +4,7 @@ namespace App\Program\Controller\Vendor;
 
 use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
-use App\Program\Provider\ProgramProvider;
+use App\Program\Provider\VendorProgramProvider;
 use App\Program\Service\ProgramManager;
 use App\Vendor\Entity\Vendor;
 use OpenApi\Annotations as OA;
@@ -17,11 +17,11 @@ class ProgramDeleteController extends AbstractController
 {
     private ProgramManager $programManager;
 
-    private ProgramProvider $programProvider;
+    private VendorProgramProvider $programProvider;
 
     public function __construct(
         ProgramManager $programManager,
-        ProgramProvider $programProvider
+        VendorProgramProvider $programProvider
     ) {
         $this->programManager = $programManager;
         $this->programProvider = $programProvider;

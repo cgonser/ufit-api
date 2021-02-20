@@ -5,7 +5,6 @@ namespace App\Core\Provider;
 use App\Core\Exception\ResourceNotFoundException;
 use App\Core\Request\SearchRequest;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\QueryBuilder;
 use Ramsey\Uuid\UuidInterface;
 

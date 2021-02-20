@@ -5,7 +5,7 @@ namespace App\Program\Controller\Vendor\Asset;
 use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
 use App\Program\Provider\ProgramAssetProvider;
-use App\Program\Provider\ProgramProvider;
+use App\Program\Provider\VendorProgramProvider;
 use App\Program\Service\ProgramAssetManager;
 use App\Vendor\Entity\Vendor;
 use OpenApi\Annotations as OA;
@@ -20,12 +20,12 @@ class ProgramAssetDeleteController extends AbstractController
 
     private ProgramAssetProvider $programAssetProvider;
 
-    private ProgramProvider $programProvider;
+    private VendorProgramProvider $programProvider;
 
     public function __construct(
         ProgramAssetManager $programAssetManager,
         ProgramAssetProvider $programAssetProvider,
-        ProgramProvider $programProvider
+        VendorProgramProvider $programProvider
     ) {
         $this->programAssetManager = $programAssetManager;
         $this->programAssetProvider = $programAssetProvider;

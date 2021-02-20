@@ -2,7 +2,6 @@
 
 namespace App\Program\Message;
 
-use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 class ProgramCreatedEvent

@@ -6,7 +6,7 @@ use App\Core\Exception\ApiJsonException;
 use App\Core\Exception\ApiJsonInputValidationException;
 use App\Core\Response\ApiJsonResponse;
 use App\Program\Dto\ProgramAssignmentDto;
-use App\Program\Provider\ProgramProvider;
+use App\Program\Provider\VendorProgramProvider;
 use App\Program\Request\ProgramAssignmentRequest;
 use App\Program\ResponseMapper\ProgramAssignmentResponseMapper;
 use App\Program\Service\ProgramAssignmentManager;
@@ -22,14 +22,14 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class ProgramAssignmentCreateController extends AbstractController
 {
-    private ProgramProvider $programProvider;
+    private VendorProgramProvider $programProvider;
 
     private ProgramAssignmentResponseMapper $programAssignmentResponseMapper;
 
     private ProgramAssignmentManager $programAssignmentManager;
 
     public function __construct(
-        ProgramProvider $programProvider,
+        VendorProgramProvider $programProvider,
         ProgramAssignmentResponseMapper $programAssignmentResponseMapper,
         ProgramAssignmentManager $programAssignmentManager
     ) {

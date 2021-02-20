@@ -7,7 +7,7 @@ use App\Core\Request\SearchRequest;
 use App\Core\Response\ApiJsonResponse;
 use App\Program\Dto\ProgramDto;
 use App\Program\Provider\ProgramAssignmentProvider;
-use App\Program\Provider\ProgramProvider;
+use App\Program\Provider\VendorProgramProvider;
 use App\Program\ResponseMapper\ProgramAssignmentResponseMapper;
 use App\Vendor\Entity\Vendor;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -25,12 +25,12 @@ class ProgramAssignmentController extends AbstractController
 
     private ProgramAssignmentResponseMapper $programAssignmentResponseMapper;
 
-    private ProgramProvider $programProvider;
+    private VendorProgramProvider $programProvider;
 
     public function __construct(
         ProgramAssignmentProvider $programAssignmentProvider,
         ProgramAssignmentResponseMapper $programAssignmentResponseMapper,
-        ProgramProvider $programProvider
+        VendorProgramProvider $programProvider
     ) {
         $this->programAssignmentProvider = $programAssignmentProvider;
         $this->programAssignmentResponseMapper = $programAssignmentResponseMapper;

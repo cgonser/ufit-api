@@ -152,7 +152,7 @@ class VendorService
             return false;
         }
 
-        if (null !== $vendorId && $existingVendor->getId()->toString() == $vendorId->toString()) {
+        if (null !== $vendorId && $existingVendor->getId()->equals($vendorId)) {
             return false;
         }
 

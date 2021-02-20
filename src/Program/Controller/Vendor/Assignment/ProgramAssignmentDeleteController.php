@@ -5,7 +5,7 @@ namespace App\Program\Controller\Vendor\Assignment;
 use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
 use App\Program\Provider\ProgramAssignmentProvider;
-use App\Program\Provider\ProgramProvider;
+use App\Program\Provider\VendorProgramProvider;
 use App\Program\Service\ProgramAssignmentManager;
 use App\Vendor\Entity\Vendor;
 use OpenApi\Annotations as OA;
@@ -20,12 +20,12 @@ class ProgramAssignmentDeleteController extends AbstractController
 
     private ProgramAssignmentProvider $programAssignmentProvider;
 
-    private ProgramProvider $programProvider;
+    private VendorProgramProvider $programProvider;
 
     public function __construct(
         ProgramAssignmentManager $programAssignmentManager,
         ProgramAssignmentProvider $programAssignmentProvider,
-        ProgramProvider $programProvider
+        VendorProgramProvider $programProvider
     ) {
         $this->programAssignmentManager = $programAssignmentManager;
         $this->programAssignmentProvider = $programAssignmentProvider;
