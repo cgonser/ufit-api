@@ -67,16 +67,10 @@ abstract class VendorBaseTest extends WebTestCase
 
     protected function getVendor(): Vendor
     {
-        if (null === $this->fixtures) {
-            $this->fixtures = $this->loadFixtures(
-                [
-                    'App\Vendor\DataFixtures\VendorFixtures',
-                ]
-            )->getReferenceRepository();
-        }
-
-        /** @var Vendor $vendor */
-        $vendor = $this->fixtures->getReference('vendor1@vendor.com');
+        $vendor = (new Vendor())
+            ->setName('Test Vendor 1')
+            ->setEmail('test-1@ufit.io')
+            ->setPassword(self::DEFAULT_VENDOR_PASSWORD);
 
         return $vendor;
     }

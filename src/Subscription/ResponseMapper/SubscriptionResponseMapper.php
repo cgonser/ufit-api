@@ -66,7 +66,7 @@ class SubscriptionResponseMapper
         foreach ($customers as $customer) {
             $customerDto = $this->customerResponseMapper->map($customer);
 
-            $customerDto->subscriptions = $this->mapMultiple($customer->getSubscriptions()->toArray());
+            $customerDto->subscriptions = $this->mapMultiple($customer->getSubscriptions()->toArray(), true);
 
             $customerDtos[] = $customerDto;
         }

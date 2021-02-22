@@ -10,6 +10,7 @@ use App\Customer\Entity\Customer;
 use App\Customer\Exception\CustomerMeasurementInvalidTakenAtException;
 use App\Customer\Exception\CustomerMeasurementNotFoundException;
 use App\Customer\Provider\CustomerMeasurementProvider;
+use App\Customer\Provider\CustomerProvider;
 use App\Customer\Request\CustomerMeasurementRequest;
 use App\Customer\ResponseMapper\CustomerMeasurementResponseMapper;
 use App\Customer\Service\CustomerMeasurementService;
@@ -30,14 +31,18 @@ class CustomerMeasurementUpdateController extends AbstractController
 
     private CustomerMeasurementResponseMapper $customerMeasurementResponseMapper;
 
+    private CustomerProvider $customerProvider;
+
     public function __construct(
         CustomerMeasurementProvider $customerMeasurementProvider,
         CustomerMeasurementService $customerMeasurementService,
-        CustomerMeasurementResponseMapper $customerMeasurementResponseMapper
+        CustomerMeasurementResponseMapper $customerMeasurementResponseMapper,
+        CustomerProvider $customerProvider
     ) {
         $this->customerMeasurementResponseMapper = $customerMeasurementResponseMapper;
         $this->customerMeasurementProvider = $customerMeasurementProvider;
         $this->customerMeasurementService = $customerMeasurementService;
+        $this->customerProvider = $customerProvider;
     }
 
     /**
@@ -79,8 +84,13 @@ class CustomerMeasurementUpdateController extends AbstractController
                 /** @var Customer $customer */
                 $customer = $this->getUser();
             } else {
-                // customer fetching not implemented yet; requires also authorization
-                throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
+                if ($this->getUser() instanceof Customer) {
+                    // customer fetching not implemented yet; requires also authorization
+                    throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
+                }
+
+                // TODO: implement proper vendor authorization
+                $customer = $this->customerProvider->get(Uuid::fromString($customerId));
             }
 
             $customerMeasurement = $this->customerMeasurementProvider->getByCustomerAndId(

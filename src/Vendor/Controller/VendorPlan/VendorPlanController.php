@@ -8,6 +8,7 @@ use App\Vendor\Dto\VendorPlanDto;
 use App\Vendor\Entity\Vendor;
 use App\Vendor\Exception\VendorPlanNotFoundException;
 use App\Vendor\Provider\VendorPlanProvider;
+use App\Vendor\Provider\VendorProvider;
 use App\Vendor\ResponseMapper\VendorPlanResponseMapper;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
@@ -23,12 +24,16 @@ class VendorPlanController extends AbstractController
 
     private VendorPlanProvider $vendorPlanProvider;
 
+    private VendorProvider $vendorProvider;
+
     public function __construct(
         VendorPlanProvider $vendorPlanProvider,
-        VendorPlanResponseMapper $vendorPlanResponseMapper
+        VendorPlanResponseMapper $vendorPlanResponseMapper,
+        VendorProvider $vendorProvider
     ) {
         $this->vendorPlanResponseMapper = $vendorPlanResponseMapper;
         $this->vendorPlanProvider = $vendorPlanProvider;
+        $this->vendorProvider = $vendorProvider;
     }
 
     /**
@@ -43,8 +48,6 @@ class VendorPlanController extends AbstractController
      *         @OA\Items(ref=@Model(type=VendorPlanDto::class)))
      *     )
      * )
-     *
-     * @Security(name="Bearer")
      */
     public function getVendorPlans(string $vendorId): Response
     {
@@ -52,8 +55,7 @@ class VendorPlanController extends AbstractController
             /** @var Vendor $vendor */
             $vendor = $this->getUser();
         } else {
-            // vendor fetching not implemented yet; requires also authorization
-            throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
+            $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
         }
 
         $vendorPlans = $this->vendorPlanProvider->findVendorPlans($vendor);
@@ -70,25 +72,18 @@ class VendorPlanController extends AbstractController
      *     description="Returns the information about a plan",
      *     @OA\JsonContent(ref=@Model(type=VendorPlanDto::class))
      * )
-     *
-     * @Security(name="Bearer")
      */
     public function getVendorPlan(string $vendorId, string $vendorPlanId): Response
     {
-        try {
-            if ('current' == $vendorId) {
-                /** @var Vendor $vendor */
-                $vendor = $this->getUser();
-            } else {
-                // vendor fetching not implemented yet; requires also authorization
-                throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
-            }
-
-            $vendorPlan = $this->vendorPlanProvider->getByVendorAndId($vendor, Uuid::fromString($vendorPlanId));
-
-            return new ApiJsonResponse(Response::HTTP_OK, $this->vendorPlanResponseMapper->map($vendorPlan));
-        } catch (VendorPlanNotFoundException $e) {
-            throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
+        if ('current' == $vendorId) {
+            /** @var Vendor $vendor */
+            $vendor = $this->getUser();
+        } else {
+            $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
         }
+
+        $vendorPlan = $this->vendorPlanProvider->getByVendorAndId($vendor, Uuid::fromString($vendorPlanId));
+
+        return new ApiJsonResponse(Response::HTTP_OK, $this->vendorPlanResponseMapper->map($vendorPlan));
     }
 }

@@ -11,6 +11,7 @@ use App\Customer\Entity\Customer;
 use App\Customer\Exception\CustomerMeasurementInvalidDurationException;
 use App\Customer\Exception\CustomerMeasurementNotFoundException;
 use App\Customer\Provider\CustomerMeasurementProvider;
+use App\Customer\Provider\CustomerProvider;
 use App\Customer\Request\CustomerMeasurementUpdateRequest;
 use App\Customer\ResponseMapper\CustomerMeasurementResponseMapper;
 use App\Customer\Service\CustomerMeasurementService;
@@ -29,12 +30,16 @@ class CustomerMeasurementDeleteController extends AbstractController
 
     private CustomerMeasurementProvider $customerMeasurementProvider;
 
+    private CustomerProvider $customerProvider;
+
     public function __construct(
         CustomerMeasurementService $customerMeasurementService,
-        CustomerMeasurementProvider $customerMeasurementProvider
+        CustomerMeasurementProvider $customerMeasurementProvider,
+        CustomerProvider $customerProvider
     ) {
         $this->customerMeasurementService = $customerMeasurementService;
         $this->customerMeasurementProvider = $customerMeasurementProvider;
+        $this->customerProvider = $customerProvider;
     }
 
     /**
@@ -59,8 +64,13 @@ class CustomerMeasurementDeleteController extends AbstractController
                 /** @var Customer $customer */
                 $customer = $this->getUser();
             } else {
-                // customer fetching not implemented yet; requires also authorization
-                throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
+                if ($this->getUser() instanceof Customer) {
+                    // customer fetching not implemented yet; requires also authorization
+                    throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
+                }
+
+                // TODO: implement proper vendor authorization
+                $customer = $this->customerProvider->get(Uuid::fromString($customerId));
             }
 
             $customerMeasurement = $this->customerMeasurementProvider->getByCustomerAndId($customer, Uuid::fromString($customerMeasurementId));

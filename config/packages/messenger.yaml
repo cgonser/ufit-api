@@ -9,6 +9,7 @@ framework:
             vendor: '%env(MESSENGER_TRANSPORT_DSN_VENDOR)%'
             # failed: 'doctrine://default?queue_name=failed'
             # sync: 'sync://'
+            void: 'in-memory://'
 
             email:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN_EMAIL)%'
@@ -19,14 +20,14 @@ framework:
                     max_delay: 0
 
         routing:
-            'App\Program\Message\ProgramCreatedEvent': vendor
-            'App\Program\Message\ProgramUpdatedEvent': vendor
-            'App\Program\Message\ProgramDeletedEvent': vendor
-            'App\Program\Message\ProgramAssetCreatedEvent': vendor
-            'App\Program\Message\ProgramAssetDeletedEvent': vendor
-            'App\Program\Message\ProgramAssignmentCreatedEvent': vendor
-            'App\Program\Message\ProgramAssignmentDeletedEvent': vendor
-            'App\Program\Message\ProgramAssignmentExpiredEvent': vendor
+            'App\Program\Message\ProgramCreatedEvent': void
+            'App\Program\Message\ProgramUpdatedEvent': void
+            'App\Program\Message\ProgramDeletedEvent': void
+            'App\Program\Message\ProgramAssetCreatedEvent': void
+            'App\Program\Message\ProgramAssetDeletedEvent': void
+            'App\Program\Message\ProgramAssignmentCreatedEvent': void
+            'App\Program\Message\ProgramAssignmentDeletedEvent': void
+            'App\Program\Message\ProgramAssignmentExpiredEvent': void
 
             'App\Subscription\Message\SubscriptionCreatedEvent': subscription
 

@@ -4,6 +4,7 @@ namespace App\Program\Controller\Customer;
 
 use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
+use App\Customer\Provider\CustomerProvider;
 use App\Customer\ResponseMapper\CustomerResponseMapper;
 use App\Program\Dto\ProgramDto;
 use App\Program\Request\CustomerProgramSearchRequest;
@@ -27,14 +28,18 @@ class ProgramController extends AbstractController
 
     private CustomerResponseMapper $customerResponseMapper;
 
+    private CustomerProvider $customerProvider;
+
     public function __construct(
         CustomerProgramProvider $programProvider,
         ProgramResponseMapper $programResponseMapper,
-        CustomerResponseMapper $customerResponseMapper
+        CustomerResponseMapper $customerResponseMapper,
+        CustomerProvider $customerProvider
     ) {
         $this->programProvider = $programProvider;
         $this->programResponseMapper = $programResponseMapper;
         $this->customerResponseMapper = $customerResponseMapper;
+        $this->customerProvider = $customerProvider;
     }
 
     /**
@@ -73,8 +78,13 @@ class ProgramController extends AbstractController
             /** @var Customer $customer */
             $customer = $this->getUser();
         } else {
-            // customer fetching not implemented yet; requires also authorization
-            throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
+            if ($this->getUser() instanceof Customer) {
+                // customer fetching not implemented yet; requires also authorization
+                throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
+            }
+
+            // TODO: implement proper vendor authorization
+            $customer = $this->customerProvider->get(Uuid::fromString($customerId));
         }
 
         $programs = $this->programProvider->searchCustomerPrograms($customer, $searchRequest);

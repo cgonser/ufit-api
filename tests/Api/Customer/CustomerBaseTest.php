@@ -67,16 +67,17 @@ abstract class CustomerBaseTest extends WebTestCase
 
     protected function getCustomer(): Customer
     {
-        if (null === $this->fixtures) {
-            $this->fixtures = $this->loadFixtures(
-                [
-                    'App\Customer\Data0Fixtures\CustomerFixtures',
-                ]
-            )->getReferenceRepository();
-        }
+//        if (null === $this->fixtures) {
+//            $this->fixtures = $this->loadFixtures(
+//                [
+//                    'App\Customer\Data0Fixtures\CustomerFixtures',
+//                ]
+//            )->getReferenceRepository();
+//        }
 
         /** @var Customer $customer */
-        $customer = $this->fixtures->getReference('customer1@customer.com');
+//        $customer = $this->fixtures->getReference('customer1@customer.com');
+        $customer = new Customer();
 
         return $customer;
     }

@@ -127,8 +127,9 @@ db-recreate:
 test:
 	# here it is useful to add your own customised tests
 	docker-compose -p $(PROJECT_NAME) run --rm $(SERVICE_TARGET) sh -c '\
-		echo "I am `whoami`. My uid is `id -u`." && echo "Docker runs!"' \
-	&& echo success
+		/app/bin/console doctrine:database:create --env=test ; \
+		/app/bin/console doctrine:schema:create --env=test --force ; \
+		/app/bin/phpunit'
 
 aws-push:
 	# ecr login + tag image + push image

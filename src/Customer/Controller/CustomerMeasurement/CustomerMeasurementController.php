@@ -8,6 +8,7 @@ use App\Customer\Dto\CustomerMeasurementDto;
 use App\Customer\Entity\Customer;
 use App\Customer\Exception\CustomerMeasurementNotFoundException;
 use App\Customer\Provider\CustomerMeasurementProvider;
+use App\Customer\Provider\CustomerProvider;
 use App\Customer\ResponseMapper\CustomerMeasurementResponseMapper;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
@@ -23,12 +24,16 @@ class CustomerMeasurementController extends AbstractController
 
     private CustomerMeasurementProvider $customerMeasurementProvider;
 
+    private CustomerProvider $customerProvider;
+
     public function __construct(
         CustomerMeasurementProvider $customerMeasurementProvider,
-        CustomerMeasurementResponseMapper $customerMeasurementResponseMapper
+        CustomerMeasurementResponseMapper $customerMeasurementResponseMapper,
+        CustomerProvider $customerProvider
     ) {
         $this->customerMeasurementResponseMapper = $customerMeasurementResponseMapper;
         $this->customerMeasurementProvider = $customerMeasurementProvider;
+        $this->customerProvider = $customerProvider;
     }
 
     /**
@@ -52,8 +57,13 @@ class CustomerMeasurementController extends AbstractController
             /** @var Customer $customer */
             $customer = $this->getUser();
         } else {
-            // customer fetching not implemented yet; requires also authorization
-            throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
+            if ($this->getUser() instanceof Customer) {
+                // customer fetching not implemented yet; requires also authorization
+                throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
+            }
+
+            // TODO: implement proper vendor authorization
+            $customer = $this->customerProvider->get(Uuid::fromString($customerId));
         }
 
         $customerMeasurements = $this->customerMeasurementProvider->findByCustomer($customer);
@@ -80,8 +90,13 @@ class CustomerMeasurementController extends AbstractController
                 /** @var Customer $customer */
                 $customer = $this->getUser();
             } else {
-                // customer fetching not implemented yet; requires also authorization
-                throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
+                if ($this->getUser() instanceof Customer) {
+                    // customer fetching not implemented yet; requires also authorization
+                    throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
+                }
+
+                // TODO: implement proper vendor authorization
+                $customer = $this->customerProvider->get(Uuid::fromString($customerId));
             }
 
             $customerMeasurement = $this->customerMeasurementProvider->getByCustomerAndId($customer, Uuid::fromString($customerMeasurementId));

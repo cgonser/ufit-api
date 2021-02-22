@@ -15,6 +15,7 @@ use App\Customer\ResponseMapper\CustomerResponseMapper;
 use App\Customer\Service\CustomerService;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
+use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -64,26 +65,25 @@ class CustomerUpdateController extends AbstractController
         CustomerRequest $customerRequest,
         ConstraintViolationListInterface $validationErrors
     ): Response {
-        try {
-            if ($validationErrors->count() > 0) {
-                throw new ApiJsonInputValidationException($validationErrors);
-            }
+        if ($validationErrors->count() > 0) {
+            throw new ApiJsonInputValidationException($validationErrors);
+        }
 
-            if ('current' == $customerId) {
-                /** @var Customer $customer */
-                $customer = $this->getUser();
-            } else {
+        if ('current' == $customerId) {
+            /** @var Customer $customer */
+            $customer = $this->getUser();
+        } else {
+            if ($this->getUser() instanceof Customer) {
                 // customer fetching not implemented yet; requires also authorization
                 throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
             }
 
-            $this->customerService->update($customer, $customerRequest);
-
-            return new ApiJsonResponse(Response::HTTP_OK, $this->customerResponseMapper->map($customer));
-        } catch (CustomerNotFoundException $e) {
-            throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
-        } catch (CustomerEmailAddressInUseException $e) {
-            throw new ApiJsonException(Response::HTTP_BAD_REQUEST, $e->getMessage());
+            // TODO: implement proper vendor authorization
+            $customer = $this->customerProvider->get(Uuid::fromString($customerId));
         }
+
+        $this->customerService->update($customer, $customerRequest);
+
+        return new ApiJsonResponse(Response::HTTP_OK, $this->customerResponseMapper->map($customer));
     }
 }

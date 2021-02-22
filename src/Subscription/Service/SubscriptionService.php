@@ -112,6 +112,13 @@ class SubscriptionService
         $this->subscriptionRepository->save($subscription);
     }
 
+    private function expire(Subscription $subscription)
+    {
+        $subscription->setIsActive(false);
+
+        $this->subscriptionRepository->save($subscription);
+    }
+
     public function customerCancellation(Subscription $subscription)
     {
         $subscription->setCancelledByCustomer(true);

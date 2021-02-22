@@ -8,11 +8,13 @@ use App\Core\Response\ApiJsonResponse;
 use App\Customer\Dto\CustomerMeasurementDto;
 use App\Customer\Entity\Customer;
 use App\Customer\Exception\CustomerMeasurementInvalidTakenAtException;
+use App\Customer\Provider\CustomerProvider;
 use App\Customer\Request\CustomerMeasurementRequest;
 use App\Customer\ResponseMapper\CustomerMeasurementResponseMapper;
 use App\Customer\Service\CustomerMeasurementService;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
+use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,12 +27,16 @@ class CustomerMeasurementCreateController extends AbstractController
 
     private CustomerMeasurementResponseMapper $customerMeasurementResponseMapper;
 
+    private CustomerProvider $customerProvider;
+
     public function __construct(
         CustomerMeasurementService $customerMeasurementService,
-        CustomerMeasurementResponseMapper $customerMeasurementResponseMapper
+        CustomerMeasurementResponseMapper $customerMeasurementResponseMapper,
+        CustomerProvider $customerProvider
     ) {
         $this->customerMeasurementResponseMapper = $customerMeasurementResponseMapper;
         $this->customerMeasurementService = $customerMeasurementService;
+        $this->customerProvider = $customerProvider;
     }
 
     /**
@@ -67,8 +73,13 @@ class CustomerMeasurementCreateController extends AbstractController
                 /** @var Customer $customer */
                 $customer = $this->getUser();
             } else {
-                // customer fetching not implemented yet; requires also authorization
-                throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
+                if ($this->getUser() instanceof Customer) {
+                    // customer fetching not implemented yet; requires also authorization
+                    throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
+                }
+
+                // TODO: implement proper vendor authorization
+                $customer = $this->customerProvider->get(Uuid::fromString($customerId));
             }
 
             $customerMeasurement = $this->customerMeasurementService->create($customer, $customerMeasurementRequest);
