@@ -30,6 +30,8 @@ framework:
             'App\Program\Message\ProgramAssignmentExpiredEvent': void
             'App\Program\Message\ProgramAssignmentUpdatedEvent': void
 
+            'App\Subscription\Message\SubscriptionApprovedEvent': subscription
+            'App\Subscription\Message\SubscriptionRejectedEvent': subscription
             'App\Subscription\Message\SubscriptionCreatedEvent': subscription
 
             'Symfony\Component\Mailer\Messenger\SendEmailMessage': email

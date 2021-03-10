@@ -2,98 +2,79 @@
 
 namespace App\Subscription\Service;
 
-use App\Customer\Entity\Customer;
-use App\Customer\Provider\CustomerProvider;
+use App\Core\Validation\EntityValidator;
+use App\Payment\Service\InvoiceManager;
 use App\Subscription\Entity\Subscription;
 use App\Subscription\Message\SubscriptionApprovedEvent;
 use App\Subscription\Message\SubscriptionCreatedEvent;
+use App\Subscription\Message\SubscriptionRejectedEvent;
 use App\Subscription\Repository\SubscriptionRepository;
-use App\Subscription\Request\SubscriptionRequest;
-use App\Subscription\Request\SubscriptionReviewRequest;
-use App\Subscription\ResponseMapper\SubscriptionResponseMapper;
-use App\Vendor\Entity\VendorPlan;
-use App\Vendor\Provider\VendorPlanProvider;
-use Ramsey\Uuid\Uuid;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class SubscriptionService
+class SubscriptionManager
 {
-    private CustomerProvider $customerProvider;
-
-    private VendorPlanProvider $vendorPlanProvider;
-
     private SubscriptionRepository $subscriptionRepository;
+
+    private InvoiceManager $invoiceManager;
+
+    private EntityValidator $validator;
 
     private MessageBusInterface $messageBus;
 
-    private SubscriptionResponseMapper $subscriptionResponseMapper;
-
     public function __construct(
-        CustomerProvider $customerProvider,
-        VendorPlanProvider $vendorPlanProvider,
         SubscriptionRepository $subscriptionRepository,
-        SubscriptionResponseMapper $subscriptionResponseMapper,
+        InvoiceManager $invoiceManager,
+        EntityValidator $validator,
         MessageBusInterface $messageBus
     ) {
         $this->subscriptionRepository = $subscriptionRepository;
-        $this->customerProvider = $customerProvider;
-        $this->vendorPlanProvider = $vendorPlanProvider;
         $this->messageBus = $messageBus;
-        $this->subscriptionResponseMapper = $subscriptionResponseMapper;
+        $this->validator = $validator;
+        $this->invoiceManager = $invoiceManager;
     }
 
-    public function createFromCustomerRequest(Customer $customer, SubscriptionRequest $subscriptionRequest): Subscription
+    public function create(Subscription $subscription)
     {
-        $vendorPlan = $this->vendorPlanProvider->get(Uuid::fromString($subscriptionRequest->vendorPlanId));
+        $vendorPlan = $subscription->getVendorPlan();
 
-        return $this->create($customer, $vendorPlan);
-    }
-
-    public function create(Customer $customer, VendorPlan $vendorPlan): Subscription
-    {
-        $subscription = (new Subscription())
-            ->setCustomer($customer)
-            ->setVendorPlan($vendorPlan)
+        $subscription
             ->setIsRecurring($vendorPlan->isRecurring())
             ->setPrice($vendorPlan->getPrice())
         ;
+
+        $this->validator->validate($subscription);
 
         $this->subscriptionRepository->save($subscription);
 
         $this->messageBus->dispatch(new SubscriptionCreatedEvent($subscription->getId()));
 
+        if (1 === $vendorPlan->getPrice()->compareTo(0)) {
+            $this->generateInvoice($subscription);
+        }
+
         if ($vendorPlan->getPrice()->equals(0) && !$vendorPlan->isApprovalRequired()) {
             $this->approve($subscription);
         }
-
-        return $subscription;
     }
 
-    public function review(Subscription $subscription, SubscriptionReviewRequest $subscriptionReviewRequest)
-    {
-        if (true === $subscriptionReviewRequest->isApproved) {
-            $this->approve($subscription);
-        } else {
-            $this->reject($subscription);
-        }
-
-        $subscription->setReviewNotes($subscriptionReviewRequest->reviewNotes);
-        $subscription->setReviewedAt(new \DateTime());
-
-        $this->subscriptionRepository->save($subscription);
-    }
-
-    public function reject(Subscription $subscription)
+    public function reject(Subscription $subscription, ?string $reviewNotes = null)
     {
         $subscription->setIsApproved(false);
         $subscription->setExpiresAt(new \DateTime());
+        $subscription->setReviewNotes($reviewNotes);
+        $subscription->setReviewedAt(new \DateTime());
+
+        $this->subscriptionRepository->save($subscription);
+
+        $this->messageBus->dispatch(new SubscriptionRejectedEvent($subscription->getId()));
     }
 
     public function approve(Subscription $subscription, ?string $reviewNotes = null)
     {
         $subscription->setIsApproved(true);
-        $subscription->setReviewNotes($reviewNotes);
         $subscription->setValidFrom(new \DateTime());
+        $subscription->setReviewNotes($reviewNotes);
+        $subscription->setReviewedAt(new \DateTime());
 
         $this->calculateExpiration($subscription);
 
@@ -126,6 +107,7 @@ class SubscriptionService
     private function expire(Subscription $subscription)
     {
         $subscription->setIsActive(false);
+        $subscription->setExpiresAt(new \DateTime());
 
         $this->subscriptionRepository->save($subscription);
     }
@@ -142,5 +124,10 @@ class SubscriptionService
         $subscription->setCancelledByVendor(true);
 
         $this->cancel($subscription);
+    }
+
+    public function generateInvoice(Subscription $subscription)
+    {
+        $this->invoiceManager->createFromSubscription($subscription);
     }
 }

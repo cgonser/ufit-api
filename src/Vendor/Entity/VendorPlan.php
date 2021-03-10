@@ -10,6 +10,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -18,10 +20,13 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="App\Vendor\Repository\VendorPlanRepository")
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="vendor_plan")
- * @Gedmo\SoftDeleteable(fieldName="deletedAt")
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
  */
 class VendorPlan
 {
+    use TimestampableEntity;
+    use SoftDeleteableEntity;
+
     /**
      * @ORM\Id
      * @ORM\Column(type="uuid", unique=true)
@@ -110,21 +115,6 @@ class VendorPlan
      * @ORM\Column(type="boolean", nullable=false, options={"default": true})
      */
     private bool $isRecurring = true;
-
-    /**
-     * @ORM\Column(name="created_at", type="datetime", nullable=true)
-     */
-    private ?\DateTimeInterface $createdAt = null;
-
-    /**
-     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
-     */
-    private ?\DateTimeInterface $updatedAt = null;
-
-    /**
-     * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
-     */
-    private ?\DateTimeInterface $deletedAt = null;
 
     public function __construct()
     {
@@ -321,66 +311,8 @@ class VendorPlan
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(?\DateTimeInterface $createdAt = null): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeInterface
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTimeInterface $updatedAt = null): self
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-    public function getDeletedAt(): ?\DateTimeInterface
-    {
-        return $this->deletedAt;
-    }
-
-    public function setDeletedAt(?\DateTimeInterface $deletedAt): self
-    {
-        $this->deletedAt = $deletedAt;
-
-        return $this;
-    }
-
     public function isNew(): bool
     {
         return !isset($this->id);
-    }
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function prePersist()
-    {
-        if (!$this->getCreatedAt()) {
-            $this->setCreatedAt(new \DateTime());
-        }
-
-        if (!$this->getUpdatedAt()) {
-            $this->setUpdatedAt(new \DateTime());
-        }
-    }
-
-    /**
-     * @ORM\PreUpdate
-     */
-    public function preUpdate()
-    {
-        $this->setUpdatedAt(new \DateTime());
     }
 }

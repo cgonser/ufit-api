@@ -5,6 +5,8 @@ namespace App\Program\Entity;
 use App\Customer\Entity\Customer;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
 
@@ -12,10 +14,13 @@ use Ramsey\Uuid\UuidInterface;
  * @ORM\Entity(repositoryClass="App\Program\Repository\ProgramAssignmentRepository")
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="program_assignment")
- * @Gedmo\SoftDeleteable(fieldName="deletedAt")
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
  */
 class ProgramAssignment
 {
+    use TimestampableEntity;
+    use SoftDeleteableEntity;
+
     /**
      * @ORM\Id
      * @ORM\Column(type="uuid", unique=true)
@@ -52,19 +57,9 @@ class ProgramAssignment
     private bool $isActive = true;
 
     /**
-     * @ORM\Column(name="assigned_at", type="datetime", nullable=true)
-     */
-    private ?\DateTimeInterface $assignedAt = null;
-
-    /**
      * @ORM\Column(name="expires_at", type="datetime", nullable=true)
      */
     private ?\DateTimeInterface $expiresAt = null;
-
-    /**
-     * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
-     */
-    private ?\DateTimeInterface $deletedAt = null;
 
     public function getId(): UuidInterface
     {
@@ -131,18 +126,6 @@ class ProgramAssignment
         return $this;
     }
 
-    public function getAssignedAt(): ?\DateTimeInterface
-    {
-        return $this->assignedAt;
-    }
-
-    public function setAssignedAt(?\DateTimeInterface $assignedAt): self
-    {
-        $this->assignedAt = $assignedAt;
-
-        return $this;
-    }
-
     public function getExpiresAt(): ?\DateTimeInterface
     {
         return $this->expiresAt;
@@ -153,27 +136,5 @@ class ProgramAssignment
         $this->expiresAt = $expiresAt;
 
         return $this;
-    }
-
-    public function getDeletedAt(): ?\DateTimeInterface
-    {
-        return $this->deletedAt;
-    }
-
-    public function setDeletedAt(?\DateTimeInterface $deletedAt): self
-    {
-        $this->deletedAt = $deletedAt;
-
-        return $this;
-    }
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function prePersist()
-    {
-        if (!$this->getAssignedAt()) {
-            $this->setAssignedAt(new \DateTime());
-        }
     }
 }

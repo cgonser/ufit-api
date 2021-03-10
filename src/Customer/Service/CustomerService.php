@@ -2,8 +2,8 @@
 
 namespace App\Customer\Service;
 
+use App\Core\Validation\EntityValidator;
 use App\Customer\Entity\Customer;
-use App\Customer\Exception\CustomerEmailAddressInUseException;
 use App\Customer\Exception\CustomerInvalidBirthDateException;
 use App\Customer\Exception\CustomerInvalidPasswordException;
 use App\Customer\Provider\CustomerProvider;
@@ -21,21 +21,28 @@ class CustomerService
 
     private CustomerProvider $customerProvider;
 
+    private EntityValidator $validator;
+
     public function __construct(
         UserPasswordEncoderInterface $userPasswordEncoder,
         CustomerRepository $customerRepository,
-        CustomerProvider $customerProvider
+        CustomerProvider $customerProvider,
+        EntityValidator $validator
     ) {
         $this->userPasswordEncoder = $userPasswordEncoder;
         $this->customerRepository = $customerRepository;
         $this->customerProvider = $customerProvider;
+        $this->validator = $validator;
     }
 
     public function create(CustomerRequest $customerRequest): Customer
     {
         $customer = new Customer();
+        $customer->setRoles(['ROLE_CUSTOMER']);
 
         $this->mapFromRequest($customer, $customerRequest);
+
+        $this->validator->validate($customer);
 
         $this->customerRepository->save($customer);
 
@@ -46,20 +53,13 @@ class CustomerService
     {
         $this->mapFromRequest($customer, $customerRequest);
 
+        $this->validator->validate($customer);
+
         $this->customerRepository->save($customer);
     }
 
     public function mapFromRequest(Customer $customer, CustomerRequest $customerRequest)
     {
-        $isEmailAddressInUse = $this->isEmailAddressInUse(
-            $customerRequest->email,
-            $customer->isNew() ? null : $customer->getId()
-        );
-
-        if ($isEmailAddressInUse) {
-            throw new CustomerEmailAddressInUseException();
-        }
-
         if (null !== $customerRequest->name) {
             $customer->setName($customerRequest->name);
         }
@@ -100,10 +100,6 @@ class CustomerService
 
         if (null !== $customerRequest->documents) {
             $customer->setDocuments($customerRequest->documents);
-        }
-
-        if ($customer->isNew() || 0 == count($customer->getRoles())) {
-            $customer->setRoles(['ROLE_CUSTOMER']);
         }
 
         if (null !== $customerRequest->country) {

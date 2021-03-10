@@ -9,8 +9,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Subscription\Repository\SubscriptionRepository")
@@ -20,6 +23,9 @@ use Ramsey\Uuid\UuidInterface;
  */
 class Subscription
 {
+    use TimestampableEntity;
+    use SoftDeleteableEntity;
+
     /**
      * @ORM\Id
      * @ORM\Column(type="uuid", unique=true)
@@ -31,13 +37,14 @@ class Subscription
     /**
      * @ORM\Column(type="uuid")
      */
-    private UuidInterface $customerId;
+    private ?UuidInterface $customerId = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Customer\Entity\Customer", inversedBy="subscriptions")
      * @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
+     * @Assert\NotBlank()
      */
-    private Customer $customer;
+    private ?Customer $customer = null;
 
     /**
      * @ORM\Column(type="uuid")
@@ -47,6 +54,7 @@ class Subscription
     /**
      * @ORM\ManyToOne(targetEntity="App\Vendor\Entity\VendorPlan", inversedBy="subscriptions")
      * @ORM\JoinColumn(name="vendor_plan_id", referencedColumnName="id")
+     * @Assert\NotBlank()
      */
     private VendorPlan $vendorPlan;
 
@@ -82,11 +90,13 @@ class Subscription
 
     /**
      * @ORM\Column(type="decimal", nullable=false, options={"precision": 11, "scale": 2})
+     * @Assert\NotBlank()
      */
     private string $price;
 
     /**
      * @ORM\Column(type="boolean", nullable=false, options={"default": true})
+     * @Assert\NotBlank()
      */
     private bool $isRecurring = true;
 
@@ -115,21 +125,6 @@ class Subscription
      */
     private ?\DateTimeInterface $cancelledAt = null;
 
-    /**
-     * @ORM\Column(name="created_at", type="datetime", nullable=true)
-     */
-    private ?\DateTimeInterface $createdAt = null;
-
-    /**
-     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
-     */
-    private ?\DateTimeInterface $updatedAt = null;
-
-    /**
-     * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
-     */
-    private ?\DateTimeInterface $deletedAt = null;
-
     public function __construct()
     {
         $this->cycles = new ArrayCollection();
@@ -140,7 +135,7 @@ class Subscription
         return $this->id;
     }
 
-    public function getCustomerId(): UuidInterface
+    public function getCustomerId(): ?UuidInterface
     {
         return $this->customerId;
     }
@@ -152,7 +147,7 @@ class Subscription
         return $this;
     }
 
-    public function getCustomer(): Customer
+    public function getCustomer(): ?Customer
     {
         return $this->customer;
     }
@@ -343,63 +338,5 @@ class Subscription
         $this->cancelledAt = $cancelledAt;
 
         return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(?\DateTimeInterface $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeInterface
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-    public function getDeletedAt(): ?\DateTimeInterface
-    {
-        return $this->deletedAt;
-    }
-
-    public function setDeletedAt(?\DateTimeInterface $deletedAt): self
-    {
-        $this->deletedAt = $deletedAt;
-
-        return $this;
-    }
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function prePersist()
-    {
-        if (!$this->getCreatedAt()) {
-            $this->setCreatedAt(new \DateTime());
-        }
-
-        if (!$this->getUpdatedAt()) {
-            $this->setUpdatedAt(new \DateTime());
-        }
-    }
-
-    /**
-     * @ORM\PreUpdate
-     */
-    public function preUpdate()
-    {
-        $this->setUpdatedAt(new \DateTime());
     }
 }

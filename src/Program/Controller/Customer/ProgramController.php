@@ -44,33 +44,16 @@ class ProgramController extends AbstractController
 
     /**
      * @Route("/customers/{customerId}/programs", methods="GET", name="customer_programs_find")
-     *
      * @ParamConverter("searchRequest", converter="querystring")
+     * @Security(name="Bearer")
      *
      * @OA\Tag(name="Program")
-     *
-     * @OA\Parameter(
-     *     in="query",
-     *     name="filters",
-     *     @OA\Schema(ref=@Model(type=CustomerProgramSearchRequest::class))
-     * )
-     *
+     * @OA\Parameter(in="query", name="filters", @OA\Schema(ref=@Model(type=CustomerProgramSearchRequest::class)))
      * @OA\Response(
-     *     response=200,
-     *     description="Returns all programs of a given customer",
-     *     @OA\Header(
-     *         header="X-Total-Count",
-     *         @OA\Schema(
-     *             type="int"
-     *         )
-     *     ),
-     *     @OA\JsonContent(
-     *         type="array",
-     *         @OA\Items(ref=@Model(type=ProgramDto::class)))
-     *     )
+     *     response=200, description="Success",
+     *     @OA\Header(header="X-Total-Count", @OA\Schema(type="int")),
+     *     @OA\JsonContent(type="array",@OA\Items(ref=@Model(type=ProgramDto::class))))
      * )
-     *
-     * @Security(name="Bearer")
      */
     public function getPrograms(string $customerId, CustomerProgramSearchRequest $searchRequest): Response
     {
@@ -101,15 +84,10 @@ class ProgramController extends AbstractController
 
     /**
      * @Route("/customers/{customerId}/programs/{programId}", methods="GET", name="customer_programs_get_one")
+     * @Security(name="Bearer")
      *
      * @OA\Tag(name="Program")
-     * @OA\Response(
-     *     response=200,
-     *     description="Returns the information about a program",
-     *     @OA\JsonContent(ref=@Model(type=ProgramDto::class))
-     * )
-     *
-     * @Security(name="Bearer")
+     * @OA\Response(response=200, description="Success", @OA\JsonContent(ref=@Model(type=ProgramDto::class)))
      */
     public function getProgram(string $customerId, string $programId): Response
     {

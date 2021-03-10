@@ -4,6 +4,8 @@ namespace App\Program\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Ramsey\Uuid\UuidInterface;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 
@@ -11,10 +13,13 @@ use Ramsey\Uuid\Doctrine\UuidGenerator;
  * @ORM\Entity(repositoryClass="App\Program\Repository\ProgramAssetRepository")
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="program_asset")
- * @Gedmo\SoftDeleteable(fieldName="deletedAt")
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
  */
 class ProgramAsset
 {
+    use TimestampableEntity;
+    use SoftDeleteableEntity;
+
     /**
      * @ORM\Id
      * @ORM\Column(type="uuid", unique=true)
@@ -43,16 +48,6 @@ class ProgramAsset
      * @ORM\Column(nullable=true)
      */
     private ?string $type = null;
-
-    /**
-     * @ORM\Column(name="created_at", type="datetime", nullable=true)
-     */
-    private ?\DateTimeInterface $createdAt = null;
-
-    /**
-     * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
-     */
-    private ?\DateTimeInterface $deletedAt = null;
 
     public function getId(): UuidInterface
     {
@@ -105,39 +100,5 @@ class ProgramAsset
         $this->type = $type;
 
         return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(?\DateTimeInterface $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getDeletedAt(): ?\DateTimeInterface
-    {
-        return $this->deletedAt;
-    }
-
-    public function setDeletedAt(?\DateTimeInterface $deletedAt): self
-    {
-        $this->deletedAt = $deletedAt;
-
-        return $this;
-    }
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function prePersist()
-    {
-        if (!$this->getCreatedAt()) {
-            $this->setCreatedAt(new \DateTime());
-        }
     }
 }

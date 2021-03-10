@@ -3,15 +3,22 @@
 namespace App\Customer\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Customer\Repository\CustomerPhotoRepository")
  * @ORM\Table(name="customer_photo")
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
  */
 class CustomerPhoto
 {
+    use TimestampableEntity;
+    use SoftDeleteableEntity;
+
     /**
      * @ORM\Id
      * @ORM\Column(type="uuid", unique=true)

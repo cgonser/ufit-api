@@ -7,17 +7,21 @@ use App\Subscription\Entity\Subscription;
 use Decimal\Decimal;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Payment\Repository\InvoiceRepository")
  * @ORM\Table(name="invoice")
- * @ORM\HasLifecycleCallbacks()
- * @Gedmo\SoftDeleteable(fieldName="deletedAt")
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
  */
 class Invoice
 {
+    use TimestampableEntity;
+    use SoftDeleteableEntity;
+
     /**
      * @ORM\Id
      * @ORM\Column(type="uuid", unique=true)
@@ -27,7 +31,7 @@ class Invoice
     private UuidInterface $id;
 
     /**
-     * @ORM\Column(type="uuid", unique=true)
+     * @ORM\Column(type="uuid")
      */
     private UuidInterface $subscriptionId;
 
@@ -43,13 +47,13 @@ class Invoice
     private string $totalAmount;
 
     /**
-     * @ORM\Column(type="uuid", unique=true)
+     * @ORM\Column(type="uuid")
      */
     private UuidInterface $currencyId;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Core\Entity\Currency")
-     * @ORM\JoinColumn(name="curency_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="currency_id", referencedColumnName="id")
      */
     private Currency $currency;
 
@@ -67,21 +71,6 @@ class Invoice
      * @ORM\Column(name="overdue_notification_sent_at", type="datetime", nullable=true)
      */
     private ?\DateTimeInterface $overdueNotificationSentAt = null;
-
-    /**
-     * @ORM\Column(name="created_at", type="datetime", nullable=true)
-     */
-    private ?\DateTimeInterface $createdAt = null;
-
-    /**
-     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
-     */
-    private ?\DateTimeInterface $updatedAt = null;
-
-    /**
-     * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
-     */
-    private ?\DateTimeInterface $deletedAt = null;
 
     public function getId(): UuidInterface
     {
@@ -107,6 +96,7 @@ class Invoice
 
     public function setSubscription(Subscription $subscription): self
     {
+        $this->subscriptionId = $subscription->getId();
         $this->subscription = $subscription;
 
         return $this;
@@ -144,6 +134,7 @@ class Invoice
     public function setCurrency(Currency $currency): self
     {
         $this->currency = $currency;
+        $this->currencyId = $currency->getId();
 
         return $this;
     }
@@ -182,63 +173,5 @@ class Invoice
         $this->overdueNotificationSentAt = $overdueNotificationSentAt;
 
         return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(?\DateTimeInterface $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeInterface
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-    public function getDeletedAt(): ?\DateTimeInterface
-    {
-        return $this->deletedAt;
-    }
-
-    public function setDeletedAt(?\DateTimeInterface $deletedAt): self
-    {
-        $this->deletedAt = $deletedAt;
-
-        return $this;
-    }
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function prePersist()
-    {
-        if (!$this->getCreatedAt()) {
-            $this->setCreatedAt(new \DateTime());
-        }
-
-        if (!$this->getUpdatedAt()) {
-            $this->setUpdatedAt(new \DateTime());
-        }
-    }
-
-    /**
-     * @ORM\PreUpdate
-     */
-    public function preUpdate()
-    {
-        $this->setUpdatedAt(new \DateTime());
     }
 }

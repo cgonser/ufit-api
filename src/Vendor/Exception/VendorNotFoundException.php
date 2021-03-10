@@ -2,14 +2,9 @@
 
 namespace App\Vendor\Exception;
 
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Core\Exception\ResourceNotFoundException;
 
-class VendorNotFoundException extends NotFoundHttpException
+class VendorNotFoundException extends ResourceNotFoundException
 {
     protected $message = 'Vendor not found';
-
-    public function __construct(string $message = null, \Throwable $previous = null, int $code = 0, array $headers = [])
-    {
-        parent::__construct($message ?? $this->message, $previous, $code, $headers);
-    }
 }

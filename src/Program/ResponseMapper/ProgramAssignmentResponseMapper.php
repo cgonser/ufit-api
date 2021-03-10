@@ -27,7 +27,8 @@ class ProgramAssignmentResponseMapper
     ): ProgramAssignmentDto {
         $programAssignmentDto = new ProgramAssignmentDto();
         $programAssignmentDto->id = $programAssignment->getId()->toString();
-        $programAssignmentDto->assignedAt = $programAssignment->getAssignedAt()->format(\DateTimeInterface::ISO8601);
+        $programAssignmentDto->createdAt = $programAssignment->getCreatedAt()->format(\DateTimeInterface::ISO8601);
+        $programAssignmentDto->updatedAt = $programAssignment->getUpdatedAt()->format(\DateTimeInterface::ISO8601);
         $programAssignmentDto->isActive = $programAssignment->isActive();
         $programAssignmentDto->expiresAt = null !== $programAssignment->getExpiresAt()
             ? $programAssignment->getExpiresAt()->format(\DateTimeInterface::ISO8601)

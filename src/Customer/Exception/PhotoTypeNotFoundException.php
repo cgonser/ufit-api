@@ -2,7 +2,9 @@
 
 namespace App\Customer\Exception;
 
-class PhotoTypeNotFoundException extends \Exception
+use App\Core\Exception\ResourceNotFoundException;
+
+class PhotoTypeNotFoundException extends ResourceNotFoundException
 {
     protected $message = 'Photo Type not found';
 }

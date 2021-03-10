@@ -7,7 +7,7 @@ use App\Core\Response\ApiJsonResponse;
 use App\Customer\Entity\Customer;
 use App\Subscription\Exception\SubscriptionNotFoundException;
 use App\Subscription\Provider\SubscriptionProvider;
-use App\Subscription\Service\SubscriptionService;
+use App\Subscription\Service\SubscriptionManager;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
 use Ramsey\Uuid\Uuid;
@@ -19,11 +19,11 @@ class SubscriptionDeleteController extends AbstractController
 {
     private SubscriptionProvider $subscriptionProvider;
 
-    private SubscriptionService $subscriptionService;
+    private SubscriptionManager $subscriptionService;
 
     public function __construct(
         SubscriptionProvider $subscriptionProvider,
-        SubscriptionService $subscriptionService
+        SubscriptionManager $subscriptionService
     ) {
         $this->subscriptionProvider = $subscriptionProvider;
         $this->subscriptionService = $subscriptionService;

@@ -6,7 +6,7 @@ use App\Customer\DataFixtures\CustomerFixtures;
 use App\Customer\Entity\Customer;
 use App\Customer\Provider\CustomerProvider;
 use App\Subscription\Request\SubscriptionRequest;
-use App\Subscription\Service\SubscriptionService;
+use App\Subscription\Service\SubscriptionManager;
 use App\Vendor\DataFixtures\VendorFixtures;
 use App\Vendor\DataFixtures\VendorPlanFixtures;
 use App\Vendor\Entity\Vendor;
@@ -17,7 +17,7 @@ use Doctrine\Persistence\ObjectManager;
 
 class SubscriptionFixtures extends Fixture implements DependentFixtureInterface
 {
-    private SubscriptionService $service;
+    private SubscriptionManager $service;
 
     private CustomerProvider $customerProvider;
 
@@ -26,7 +26,7 @@ class SubscriptionFixtures extends Fixture implements DependentFixtureInterface
     private array $vendors = [];
 
     public function __construct(
-        SubscriptionService $service,
+        SubscriptionManager $service,
         CustomerProvider $customerProvider,
         VendorProvider $vendorProvider
     ) {

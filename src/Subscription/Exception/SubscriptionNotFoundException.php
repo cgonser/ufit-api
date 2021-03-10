@@ -2,14 +2,9 @@
 
 namespace App\Subscription\Exception;
 
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Core\Exception\ResourceNotFoundException;
 
-class SubscriptionNotFoundException extends NotFoundHttpException
+class SubscriptionNotFoundException extends ResourceNotFoundException
 {
     protected $message = 'Subscription not found';
-
-    public function __construct(string $message = null, \Throwable $previous = null, int $code = 0, array $headers = [])
-    {
-        parent::__construct($message ?? $this->message, $previous, $code, $headers);
-    }
 }

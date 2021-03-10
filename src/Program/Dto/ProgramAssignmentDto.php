@@ -18,7 +18,9 @@ class ProgramAssignmentDto
 
     public bool $isActive;
 
-    public string $assignedAt;
+    public string $createdAt;
+
+    public string $updatedAt;
 
     public ?string $expiresAt;
 }

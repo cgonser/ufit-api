@@ -3,6 +3,9 @@
 namespace App\Customer\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -11,9 +14,13 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Entity(repositoryClass="App\Customer\Repository\MeasurementTypeRepository")
  * @ORM\Table(name="measurement_type")
  * @UniqueEntity(fields={"name"})
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
  */
 class MeasurementType
 {
+    use TimestampableEntity;
+    use SoftDeleteableEntity;
+
     public const UNIT_SEPARATOR = ',';
 
     /**

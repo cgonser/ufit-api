@@ -11,7 +11,7 @@ use App\Payment\Repository\PaymentRepository;
 use App\Payment\Request\PaymentRequest;
 use App\Subscription\Entity\SubscriptionCycle;
 use App\Subscription\Request\SubscriptionRequest;
-use App\Subscription\Service\SubscriptionService;
+use App\Subscription\Service\SubscriptionManager;
 use App\Vendor\Provider\VendorPlanProvider;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -22,7 +22,7 @@ class PaymentManager
 
     private CustomerService $customerManager;
 
-    private SubscriptionService $subscriptionService;
+    private SubscriptionManager $subscriptionService;
 
     private MessageBusInterface $messageBus;
 
@@ -31,7 +31,7 @@ class PaymentManager
     public function __construct(
         PaymentRepository $paymentRepository,
         CustomerService $customerManager,
-        SubscriptionService $subscriptionService,
+        SubscriptionManager $subscriptionService,
         VendorPlanProvider $vendorPlanProvider,
         MessageBusInterface $messageBus
     ) {

@@ -2,7 +2,9 @@
 
 namespace App\Customer\Exception;
 
-class MeasurementTypeNotFoundException extends \Exception
+use App\Core\Exception\ResourceNotFoundException;
+
+class MeasurementTypeNotFoundException extends ResourceNotFoundException
 {
     protected $message = "Measurement Type not found";
 }

@@ -5,6 +5,9 @@ namespace App\Vendor\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -15,9 +18,13 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="App\Vendor\Repository\VendorRepository")
  * @ORM\Table(name="vendor")
  * @UniqueEntity(fields={"email"})
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
  */
 class Vendor implements UserInterface, \Serializable
 {
+    use TimestampableEntity;
+    use SoftDeleteableEntity;
+
     /**
      * @ORM\Id
      * @ORM\Column(type="uuid", unique=true)
@@ -98,16 +105,6 @@ class Vendor implements UserInterface, \Serializable
      * @ORM\Column(type="boolean", nullable=false, options={"default": true})
      */
     private bool $allowEmailMarketing = true;
-
-    /**
-     * @ORM\Column(name="created_at", type="datetime", nullable=true)
-     */
-    private ?\DateTimeInterface $createdAt = null;
-
-    /**
-     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
-     */
-    private ?\DateTimeInterface $updatedAt = null;
 
     public function __construct()
     {
@@ -301,30 +298,6 @@ class Vendor implements UserInterface, \Serializable
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(?\DateTimeInterface $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeInterface
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
     public function getPlans(): Collection
     {
         return $this->plans;
@@ -392,28 +365,6 @@ class Vendor implements UserInterface, \Serializable
     {
         // add $this->salt too if you don't use Bcrypt or Argon2i
         [$this->id, $this->email, $this->password] = unserialize($serialized, ['allowed_classes' => false]);
-    }
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function prePersist()
-    {
-        if (!$this->getCreatedAt()) {
-            $this->setCreatedAt(new \DateTime());
-        }
-
-        if (!$this->getUpdatedAt()) {
-            $this->setUpdatedAt(new \DateTime());
-        }
-    }
-
-    /**
-     * @ORM\PreUpdate
-     */
-    public function preUpdate()
-    {
-        $this->setUpdatedAt(new \DateTime());
     }
 
     public function isNew(): bool

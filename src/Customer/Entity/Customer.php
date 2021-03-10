@@ -6,6 +6,9 @@ use App\Subscription\Entity\Subscription;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -16,9 +19,13 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="App\Customer\Repository\CustomerRepository")
  * @ORM\Table(name="customer")
  * @UniqueEntity(fields={"email"})
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
  */
 class Customer implements UserInterface, \Serializable
 {
+    use TimestampableEntity;
+    use SoftDeleteableEntity;
+
     /**
      * @ORM\Id
      * @ORM\Column(type="uuid", unique=true)
@@ -28,17 +35,17 @@ class Customer implements UserInterface, \Serializable
     private UuidInterface $id;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=false)
      * @Assert\NotBlank()
      */
-    private string $name;
+    private ?string $name = null;
 
     /**
-     * @ORM\Column(type="string", unique=true)
+     * @ORM\Column(type="string", unique=true, nullable=false)
      * @Assert\NotBlank()
      * @Assert\Email()
      */
-    private string $email;
+    private ?string $email = null;
 
     /**
      * @ORM\Column(type="string", nullable=true)
@@ -94,16 +101,6 @@ class Customer implements UserInterface, \Serializable
      * @ORM\Column(type="json", nullable=true)
      */
     private ?array $documents = [];
-
-    /**
-     * @ORM\Column(name="created_at", type="datetime", nullable=true)
-     */
-    private ?\DateTimeInterface $createdAt = null;
-
-    /**
-     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
-     */
-    private ?\DateTimeInterface $updatedAt = null;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Subscription\Entity\Subscription", mappedBy="customer")
@@ -310,30 +307,6 @@ class Customer implements UserInterface, \Serializable
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(?\DateTimeInterface $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeInterface
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
     /**
      * Returns the salt that was originally used to encode the password.
      *
@@ -375,28 +348,6 @@ class Customer implements UserInterface, \Serializable
     {
         // add $this->salt too if you don't use Bcrypt or Argon2i
         [$this->id, $this->email, $this->password] = unserialize($serialized, ['allowed_classes' => false]);
-    }
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function prePersist()
-    {
-        if (!$this->getCreatedAt()) {
-            $this->setCreatedAt(new \DateTime());
-        }
-
-        if (!$this->getUpdatedAt()) {
-            $this->setUpdatedAt(new \DateTime());
-        }
-    }
-
-    /**
-     * @ORM\PreUpdate
-     */
-    public function preUpdate()
-    {
-        $this->setUpdatedAt(new \DateTime());
     }
 
     public function isNew(): bool
