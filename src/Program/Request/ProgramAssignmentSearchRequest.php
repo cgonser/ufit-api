@@ -2,14 +2,15 @@
 
 namespace App\Program\Request;
 
+use App\Core\Request\SearchRequest;
 use OpenApi\Annotations as OA;
 
 /**
  * @OA\RequestBody(
- *     request="ProgramAssignmentRequest"
+ *     request="ProgramAssignmentSearchRequest"
  * )
  */
-class ProgramAssignmentRequest
+class ProgramAssignmentSearchRequest extends SearchRequest
 {
     /**
      * @OA\Property()
@@ -19,10 +20,5 @@ class ProgramAssignmentRequest
     /**
      * @OA\Property()
      */
-    public ?bool $isActive = null;
-
-    /**
-     * @OA\Property()
-     */
-    public ?string $expiresAt = null;
+    public ?string $programId = null;
 }

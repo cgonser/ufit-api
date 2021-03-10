@@ -46,4 +46,17 @@ class ProgramAssignmentProvider extends AbstractProvider
     {
         return $this->count($searchRequest, ['program' => $program]);
     }
+
+    protected function getSearchableFields(): array
+    {
+        return [];
+    }
+
+    protected function getFilterableFields(): array
+    {
+        return [
+            'customerId',
+            'programId',
+        ];
+    }
 }

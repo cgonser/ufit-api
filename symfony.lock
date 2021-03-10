@@ -248,6 +248,9 @@
             "config/packages/oneup_flysystem.yaml"
         ]
     },
+    "pagarme/pagarme-php": {
+        "version": "v4.1.2"
+    },
     "php": {
         "version": "7.4"
     },

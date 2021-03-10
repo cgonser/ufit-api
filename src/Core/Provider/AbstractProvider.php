@@ -31,7 +31,7 @@ abstract class AbstractProvider
         return $object;
     }
 
-    public function search(SearchRequest $searchRequest, ?array $filters = []): array
+    public function search(SearchRequest $searchRequest, ?array $filters = null): array
     {
         $orderExpression = 'root.'.($searchRequest->orderProperty ?: 'id');
         $orderDirection = $searchRequest->orderDirection ?: 'DESC';
@@ -49,7 +49,7 @@ abstract class AbstractProvider
             ->getResult();
     }
 
-    public function count(SearchRequest $searchRequest, ?array $filters = []): int
+    public function count(SearchRequest $searchRequest, ?array $filters = null): int
     {
         $queryBuilder = $this->buildSearchQueryBuilder($searchRequest, $filters);
 
@@ -67,11 +67,32 @@ abstract class AbstractProvider
             $this->addSearchClause($queryBuilder, $searchRequest->search);
         }
 
+        if (null === $filters) {
+            $filters = $this->prepareFilters($searchRequest);
+        }
+
         if (!empty($filters)) {
             $this->addFilters($queryBuilder, $filters);
         }
 
         return $queryBuilder;
+    }
+
+    protected function prepareFilters(SearchRequest $searchRequest): array
+    {
+        $filters = [];
+
+        foreach ($this->getFilterableFields() as $fieldName) {
+            if (!property_exists($searchRequest, $fieldName)) {
+                continue;
+            }
+
+            if (null !== $searchRequest->$fieldName) {
+                $filters[$fieldName] = $searchRequest->$fieldName;
+            }
+        }
+
+        return $filters;
     }
 
     protected function addFilters(QueryBuilder $queryBuilder, array $filters)
@@ -107,6 +128,11 @@ abstract class AbstractProvider
     }
 
     protected function getSearchableFields(): array
+    {
+        return [];
+    }
+
+    protected function getFilterableFields(): array
     {
         return [];
     }

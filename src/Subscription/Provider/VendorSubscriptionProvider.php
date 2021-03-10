@@ -2,6 +2,8 @@
 
 namespace App\Subscription\Provider;
 
+use App\Customer\Entity\Customer;
+use App\Customer\Exception\CustomerNotFoundException;
 use App\Subscription\Entity\Subscription;
 use App\Subscription\Exception\SubscriptionNotFoundException;
 use App\Subscription\Repository\SubscriptionRepository;
@@ -49,8 +51,19 @@ class VendorSubscriptionProvider
         return $subscription;
     }
 
-    public function findByVendor(Vendor $vendor): array
+    public function findCustomersByVendor(Vendor $vendor): array
     {
         return $this->subscriptionRepository->findCustomersByVendor($vendor);
+    }
+
+    public function getVendorCustomer(Vendor $vendor, UuidInterface $customerId): Customer
+    {
+        $customer = $this->subscriptionRepository->findOneVendorCustomer($vendor, $customerId);
+
+        if (null === $customer) {
+            throw new CustomerNotFoundException();
+        }
+
+        return $customer;
     }
 }

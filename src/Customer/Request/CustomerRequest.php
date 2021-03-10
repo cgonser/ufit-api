@@ -57,6 +57,11 @@ class CustomerRequest
     public ?array $goals = null;
 
     /**
+     * @OA\Property(type="array", @OA\Items(type="object"))
+     */
+    public ?array $documents = null;
+
+    /**
      * @OA\Property()
      */
     public ?string $country = null;

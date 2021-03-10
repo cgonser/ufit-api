@@ -15,6 +15,7 @@ use Ramsey\Uuid\UuidInterface;
 /**
  * @ORM\Entity(repositoryClass="App\Subscription\Repository\SubscriptionRepository")
  * @ORM\Table(name="subscription")
+ * @ORM\HasLifecycleCallbacks()
  * @Gedmo\SoftDeleteable(fieldName="deletedAt")
  */
 class Subscription
@@ -28,10 +29,20 @@ class Subscription
     private UuidInterface $id;
 
     /**
+     * @ORM\Column(type="uuid")
+     */
+    private UuidInterface $customerId;
+
+    /**
      * @ORM\ManyToOne(targetEntity="App\Customer\Entity\Customer", inversedBy="subscriptions")
      * @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
      */
     private Customer $customer;
+
+    /**
+     * @ORM\Column(type="uuid")
+     */
+    private UuidInterface $vendorPlanId;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Vendor\Entity\VendorPlan", inversedBy="subscriptions")
@@ -105,6 +116,16 @@ class Subscription
     private ?\DateTimeInterface $cancelledAt = null;
 
     /**
+     * @ORM\Column(name="created_at", type="datetime", nullable=true)
+     */
+    private ?\DateTimeInterface $createdAt = null;
+
+    /**
+     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
+     */
+    private ?\DateTimeInterface $updatedAt = null;
+
+    /**
      * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
      */
     private ?\DateTimeInterface $deletedAt = null;
@@ -119,6 +140,18 @@ class Subscription
         return $this->id;
     }
 
+    public function getCustomerId(): UuidInterface
+    {
+        return $this->customerId;
+    }
+
+    public function setCustomerId(UuidInterface $customerId): self
+    {
+        $this->customerId = $customerId;
+
+        return $this;
+    }
+
     public function getCustomer(): Customer
     {
         return $this->customer;
@@ -127,6 +160,32 @@ class Subscription
     public function setCustomer(Customer $customer): self
     {
         $this->customer = $customer;
+
+        return $this;
+    }
+
+    public function getVendorPlanId(): UuidInterface
+    {
+        return $this->vendorPlanId;
+    }
+
+    public function setVendorPlanId(UuidInterface $vendorPlanId): self
+    {
+        $this->vendorPlanId = $vendorPlanId;
+
+        return $this;
+    }
+
+    public function getCycles()
+    {
+        return $this->cycles;
+    }
+
+    public function addCycle(SubscriptionCycle $cycle): self
+    {
+        $cycle->setSubscription($this);
+
+        $this->cycles[] = $cycle;
 
         return $this;
     }
@@ -286,6 +345,30 @@ class Subscription
         return $this;
     }
 
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
     public function getDeletedAt(): ?\DateTimeInterface
     {
         return $this->deletedAt;
@@ -296,5 +379,27 @@ class Subscription
         $this->deletedAt = $deletedAt;
 
         return $this;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function prePersist()
+    {
+        if (!$this->getCreatedAt()) {
+            $this->setCreatedAt(new \DateTime());
+        }
+
+        if (!$this->getUpdatedAt()) {
+            $this->setUpdatedAt(new \DateTime());
+        }
+    }
+
+    /**
+     * @ORM\PreUpdate
+     */
+    public function preUpdate()
+    {
+        $this->setUpdatedAt(new \DateTime());
     }
 }

@@ -6,16 +6,20 @@ customer_controllers:
     resource: '../../src/Customer/Controller/'
     type: annotation
 
+payment_controllers:
+    resource: '../../src/Payment/Controller/'
+    type: annotation
+
 program_controllers:
     resource: '../../src/Program/Controller/'
     type: annotation
 
-vendor_controllers:
-    resource: '../../src/Vendor/Controller/'
-    type: annotation
-
 subscription_controllers:
     resource: '../../src/Subscription/Controller/'
+    type: annotation
+
+vendor_controllers:
+    resource: '../../src/Vendor/Controller/'
     type: annotation
 
 kernel:

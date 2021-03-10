@@ -44,9 +44,9 @@ class ProgramManager
     {
         $this->mapFromRequest($program, $programRequest);
 
-        $this->messageBus->dispatch(new ProgramUpdatedEvent($program->getId()));
-
         $this->programRepository->save($program);
+
+        $this->messageBus->dispatch(new ProgramUpdatedEvent($program->getId()));
     }
 
     public function delete(Program $program)

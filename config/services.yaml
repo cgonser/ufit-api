@@ -13,6 +13,15 @@ parameters:
     customer_photo.s3_bucket: '%env(CUSTOMER_PHOTO_BUCKET_NAME)%'
     vendor_photo.s3_bucket: '%env(VENDOR_PHOTO_BUCKET_NAME)%'
     program_asset.s3_bucket: '%env(PROGRAM_ASSET_BUCKET_NAME)%'
+    facebook.app_id: '%env(FACEBOOK_APP_ID)%'
+    facebook.app_secret: '%env(FACEBOOK_APP_SECRET)%'
+    instagram.app_id: '%env(INSTAGRAM_APP_ID)%'
+    instagram.app_secret: '%env(INSTAGRAM_APP_SECRET)%'
+    instagram.redirect_uri: '%env(INSTAGRAM_REDIRECT_URI)%'
+    aws.s3_region: '%env(AWS_S3_REGION)%'
+    aws.s3_access_key_id: '%env(AWS_S3_ACCESS_KEY_ID)%'
+    aws.s3_access_key_secret: '%env(AWS_S3_ACCESS_KEY_SECRET)%'
+    pagarme.api_key: '%env(PAGARME_API_KEY)%'
 
 services:
     # default configuration for services in *this* file
@@ -48,6 +57,14 @@ services:
 
     App\Customer\Controller\:
         resource: '../src/Customer/Controller'
+        tags: ['controller.service_arguments']
+
+    App\Payment\:
+        resource: '../src/Payment/*'
+        exclude: '../src/Payment/{DependencyInjection,Entity,Tests,Kernel.php}'
+
+    App\Payment\Controller\:
+        resource: '../src/Payment/Controller'
         tags: ['controller.service_arguments']
 
     App\Program\:
@@ -93,24 +110,24 @@ services:
         arguments:
             -
                 version: '2006-03-01'
-                region: '%env(AWS_S3_REGION)%'
+                region: '%aws.s3_region%'
                 credentials:
-                    key: '%env(AWS_S3_ACCESS_KEY_ID)%'
-                    secret: '%env(AWS_S3_ACCESS_KEY_SECRET)%'
+                    key: '%aws.s3_access_key_id%'
+                    secret: '%aws.s3_access_key_secret%'
 
     Facebook\Facebook:
         arguments:
             -
-                app_id: '%env(FACEBOOK_APP_ID)%'
-                app_secret: '%env(FACEBOOK_APP_SECRET)%'
+                app_id: '%facebook.app_id%'
+                app_secret: '%facebook.app_secret%'
                 default_graph_version: 'v2.10'
 
     EspressoDev\InstagramBasicDisplay\InstagramBasicDisplay:
         arguments:
             -
-                appId: '%env(INSTAGRAM_APP_ID)%'
-                appSecret: '%env(INSTAGRAM_APP_SECRET)%'
-                redirectUri: '%env(INSTAGRAM_REDIRECT_URI)%'
+                appId: '%instagram.app_id%'
+                appSecret: '%instagram.app_secret%'
+                redirectUri: '%instagram.redirect_uri%'
 
     gesdinet.jwtrefreshtoken.refresh_token_manager:
         class:  App\Core\Doctrine\RefreshTokenManager
@@ -127,3 +144,9 @@ services:
         arguments:
             -
                 '@instagram_scrapper.http_client'
+
+    PagarMe\Client:
+        class: PagarMe\Client
+        arguments:
+            -
+                '%pagarme.api_key%'

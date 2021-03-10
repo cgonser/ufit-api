@@ -98,6 +98,10 @@ class CustomerService
             $customer->setGoals($customerRequest->goals);
         }
 
+        if (null !== $customerRequest->documents) {
+            $customer->setDocuments($customerRequest->documents);
+        }
+
         if ($customer->isNew() || 0 == count($customer->getRoles())) {
             $customer->setRoles(['ROLE_CUSTOMER']);
         }

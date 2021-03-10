@@ -16,9 +16,11 @@ nelmio_api_doc:
             - ^/currencies
             - ^/customers
             - ^/measurement_types
-            - ^/vendors
-            - ^/subscriptions
+            - ^/payments
+            - ^/payment_methods
             - ^/questionnaires
+            - ^/subscriptions
+            - ^/vendors
     models:
         use_jms: false
         names:

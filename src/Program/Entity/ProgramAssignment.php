@@ -5,8 +5,8 @@ namespace App\Program\Entity;
 use App\Customer\Entity\Customer;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Ramsey\Uuid\UuidInterface;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Program\Repository\ProgramAssignmentRepository")
@@ -25,16 +25,31 @@ class ProgramAssignment
     private UuidInterface $id;
 
     /**
+     * @ORM\Column(type="uuid")
+     */
+    private UuidInterface $programId;
+
+    /**
      * @ORM\ManyToOne(targetEntity="App\Program\Entity\Program", inversedBy="assignments")
      * @ORM\JoinColumn(name="program_id", referencedColumnName="id")
      */
     private Program $program;
 
     /**
+     * @ORM\Column(type="uuid")
+     */
+    private UuidInterface $customerId;
+
+    /**
      * @ORM\ManyToOne(targetEntity="App\Customer\Entity\Customer")
      * @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
      */
     private Customer $customer;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=false, options={"default": true})
+     */
+    private bool $isActive = true;
 
     /**
      * @ORM\Column(name="assigned_at", type="datetime", nullable=true)
@@ -56,6 +71,18 @@ class ProgramAssignment
         return $this->id;
     }
 
+    public function getProgramId(): UuidInterface
+    {
+        return $this->programId;
+    }
+
+    public function setProgramId(UuidInterface $programId): self
+    {
+        $this->programId = $programId;
+
+        return $this;
+    }
+
     public function getProgram(): Program
     {
         return $this->program;
@@ -68,6 +95,18 @@ class ProgramAssignment
         return $this;
     }
 
+    public function getCustomerId(): UuidInterface
+    {
+        return $this->customerId;
+    }
+
+    public function setCustomerId(UuidInterface $customerId): self
+    {
+        $this->customerId = $customerId;
+
+        return $this;
+    }
+
     public function getCustomer(): Customer
     {
         return $this->customer;
@@ -76,6 +115,18 @@ class ProgramAssignment
     public function setCustomer(Customer $customer): self
     {
         $this->customer = $customer;
+
+        return $this;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): self
+    {
+        $this->isActive = $isActive;
 
         return $this;
     }

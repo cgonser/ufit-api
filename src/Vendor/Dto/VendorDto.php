@@ -36,7 +36,7 @@ class VendorDto
     public ?array $plans;
 
     /**
-     * @OA\Property(type="array", @OA\Items(type="array", @OA\Items(type="string")))
+     * @OA\Property(type="array", @OA\Items(type="object"))
      */
     public ?array $socialLinks;
 }

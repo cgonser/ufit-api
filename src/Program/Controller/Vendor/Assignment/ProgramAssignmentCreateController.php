@@ -43,7 +43,7 @@ class ProgramAssignmentCreateController extends AbstractController
      *
      * @ParamConverter("programAssignmentRequest", converter="fos_rest.request_body")
      *
-     * @OA\Tag(name="Program")
+     * @OA\Tag(name="Program / Assignment")
      * @OA\RequestBody(
      *     required=true,
      *     @OA\JsonContent(ref=@Model(type=ProgramAssignmentRequest::class))

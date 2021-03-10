@@ -10,17 +10,25 @@ class ProgramAssignmentResponseMapper
 {
     private CustomerResponseMapper $customerResponseMapper;
 
-    public function __construct(CustomerResponseMapper $customerResponseMapper)
-    {
+    private ProgramResponseMapper $programResponseMapper;
+
+    public function __construct(
+        CustomerResponseMapper $customerResponseMapper,
+        ProgramResponseMapper $programResponseMapper
+    ) {
         $this->customerResponseMapper = $customerResponseMapper;
+        $this->programResponseMapper = $programResponseMapper;
     }
 
-    public function map(ProgramAssignment $programAssignment, bool $mapCustomer = true): ProgramAssignmentDto
-    {
+    public function map(
+        ProgramAssignment $programAssignment,
+        bool $mapCustomer = true,
+        bool $mapProgram = false
+    ): ProgramAssignmentDto {
         $programAssignmentDto = new ProgramAssignmentDto();
         $programAssignmentDto->id = $programAssignment->getId()->toString();
-        $programAssignmentDto->programId = $programAssignment->getProgram()->getId()->toString();
         $programAssignmentDto->assignedAt = $programAssignment->getAssignedAt()->format(\DateTimeInterface::ISO8601);
+        $programAssignmentDto->isActive = $programAssignment->isActive();
         $programAssignmentDto->expiresAt = null !== $programAssignment->getExpiresAt()
             ? $programAssignment->getExpiresAt()->format(\DateTimeInterface::ISO8601)
             : null;
@@ -31,15 +39,21 @@ class ProgramAssignmentResponseMapper
             $programAssignmentDto->customerId = $programAssignment->getCustomer()->getId()->toString();
         }
 
+        if ($mapProgram) {
+            $programAssignmentDto->program = $this->programResponseMapper->map($programAssignment->getProgram());
+        } else {
+            $programAssignmentDto->programId = $programAssignment->getProgram()->getId()->toString();
+        }
+
         return $programAssignmentDto;
     }
 
-    public function mapMultiple(array $programAssignments, bool $mapCustomers = true): array
+    public function mapMultiple(array $programAssignments, bool $mapCustomers = true, bool $mapPrograms = false): array
     {
         $dtos = [];
 
         foreach ($programAssignments as $programAssignment) {
-            $dtos[] = $this->map($programAssignment, $mapCustomers);
+            $dtos[] = $this->map($programAssignment, $mapCustomers, $mapPrograms);
         }
 
         return $dtos;

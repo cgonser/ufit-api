@@ -41,9 +41,9 @@ class Customer implements UserInterface, \Serializable
     private string $email;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      */
-    private ?string $password;
+    private ?string $password = null;
 
     /**
      * @ORM\Column(type="json")
@@ -89,6 +89,11 @@ class Customer implements UserInterface, \Serializable
      * @ORM\Column(type="json", nullable=true)
      */
     private ?array $goals = [];
+
+    /**
+     * @ORM\Column(type="json", nullable=true)
+     */
+    private ?array $documents = [];
 
     /**
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
@@ -207,6 +212,18 @@ class Customer implements UserInterface, \Serializable
     public function setGoals(?array $goals): self
     {
         $this->goals = $goals;
+
+        return $this;
+    }
+
+    public function getDocuments(): ?array
+    {
+        return $this->documents;
+    }
+
+    public function setDocuments(?array $documents): self
+    {
+        $this->documents = $documents;
 
         return $this;
     }

@@ -35,6 +35,23 @@ class SubscriptionRepository extends BaseRepository
         return $query->getQuery()->getResult();
     }
 
+    public function findOneVendorCustomer(Vendor $vendor, UuidInterface $customerId): Customer
+    {
+        $query = $this->getEntityManager()->createQueryBuilder()
+            ->select('c')
+            ->addSelect('s')
+            ->from(Customer::class, 'c')
+            ->innerJoin('c.subscriptions', 's')
+            ->innerJoin('s.vendorPlan', 'vp')
+            ->andWhere('vp.vendor = :vendor')
+            ->andWhere('c.id = :customerId')
+            ->setParameter('vendor', $vendor)
+            ->setParameter('customerId', $customerId)
+            ->orderBy('c.id', 'ASC');
+
+        return $query->getQuery()->getOneOrNullResult();
+    }
+
     public function findActiveSubscriptionsByCustomer(Customer $customer)
     {
         $expiresAt = new \DateTime();

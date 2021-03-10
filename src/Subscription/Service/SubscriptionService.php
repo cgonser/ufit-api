@@ -5,11 +5,13 @@ namespace App\Subscription\Service;
 use App\Customer\Entity\Customer;
 use App\Customer\Provider\CustomerProvider;
 use App\Subscription\Entity\Subscription;
+use App\Subscription\Message\SubscriptionApprovedEvent;
 use App\Subscription\Message\SubscriptionCreatedEvent;
 use App\Subscription\Repository\SubscriptionRepository;
 use App\Subscription\Request\SubscriptionRequest;
 use App\Subscription\Request\SubscriptionReviewRequest;
 use App\Subscription\ResponseMapper\SubscriptionResponseMapper;
+use App\Vendor\Entity\VendorPlan;
 use App\Vendor\Provider\VendorPlanProvider;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -44,6 +46,11 @@ class SubscriptionService
     {
         $vendorPlan = $this->vendorPlanProvider->get(Uuid::fromString($subscriptionRequest->vendorPlanId));
 
+        return $this->create($customer, $vendorPlan);
+    }
+
+    public function create(Customer $customer, VendorPlan $vendorPlan): Subscription
+    {
         $subscription = (new Subscription())
             ->setCustomer($customer)
             ->setVendorPlan($vendorPlan)
@@ -53,11 +60,11 @@ class SubscriptionService
 
         $this->subscriptionRepository->save($subscription);
 
-        if (!$vendorPlan->isApprovalRequired()) {
+        $this->messageBus->dispatch(new SubscriptionCreatedEvent($subscription->getId()));
+
+        if ($vendorPlan->getPrice()->equals(0) && !$vendorPlan->isApprovalRequired()) {
             $this->approve($subscription);
         }
-
-        $this->messageBus->dispatch(new SubscriptionCreatedEvent($subscription->getId()));
 
         return $subscription;
     }
@@ -89,11 +96,15 @@ class SubscriptionService
         $subscription->setValidFrom(new \DateTime());
 
         $this->calculateExpiration($subscription);
+
+        $this->subscriptionRepository->save($subscription);
+
+        $this->messageBus->dispatch(new SubscriptionApprovedEvent($subscription->getId()));
     }
 
     private function calculateExpiration(Subscription $subscription)
     {
-        if (null === $subscription->getVendorPlan()->getDuration()) {
+        if ($subscription->getVendorPlan()->isRecurring() || null === $subscription->getVendorPlan()->getDuration()) {
             $subscription->setExpiresAt(null);
 
             return;

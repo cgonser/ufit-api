@@ -8,6 +8,8 @@ use App\Customer\Dto\CustomerDto;
 use App\Customer\Entity\Customer;
 use App\Customer\Provider\CustomerProvider;
 use App\Customer\ResponseMapper\CustomerResponseMapper;
+use App\Subscription\Provider\VendorSubscriptionProvider;
+use App\Vendor\Entity\Vendor;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
@@ -22,12 +24,16 @@ class CustomerController extends AbstractController
 
     private CustomerProvider $customerProvider;
 
+    private VendorSubscriptionProvider $vendorSubscriptionProvider;
+
     public function __construct(
         CustomerProvider $customerProvider,
-        CustomerResponseMapper $customerResponseMapper
+        CustomerResponseMapper $customerResponseMapper,
+        VendorSubscriptionProvider $vendorSubscriptionProvider
     ) {
         $this->customerResponseMapper = $customerResponseMapper;
         $this->customerProvider = $customerProvider;
+        $this->vendorSubscriptionProvider = $vendorSubscriptionProvider;
     }
 
     /**
@@ -68,17 +74,20 @@ class CustomerController extends AbstractController
      */
     public function getCustomer(string $customerId): Response
     {
-        if ('current' == $customerId) {
+        if ($this->getUser() instanceof Customer) {
             /** @var Customer $customer */
             $customer = $this->getUser();
-        } else {
-            if ($this->getUser() instanceof Customer) {
-                // customer fetching not implemented yet; requires also authorization
+
+            if ('current' !== $customerId && !$customer->getId()->equals(Uuid::fromString($customerId))) {
                 throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
             }
+        } elseif ($this->getUser() instanceof Vendor) {
+            /** @var Vendor $vendor */
+            $vendor = $this->getUser();
 
-            // TODO: implement proper vendor authorization
-            $customer = $this->customerProvider->get(Uuid::fromString($customerId));
+            $customer = $this->vendorSubscriptionProvider->getVendorCustomer($vendor, Uuid::fromString($customerId));
+        } else {
+            throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
         }
 
         return new ApiJsonResponse(Response::HTTP_OK, $this->customerResponseMapper->map($customer));

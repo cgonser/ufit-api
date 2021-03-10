@@ -10,9 +10,13 @@ class ProgramAssignmentDto
 
     public string $programId;
 
+    public ?ProgramDto $program;
+
     public ?string $customerId;
 
     public ?CustomerDto $customer;
+
+    public bool $isActive;
 
     public string $assignedAt;
 

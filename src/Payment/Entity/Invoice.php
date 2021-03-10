@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Subscription\Entity;
+namespace App\Payment\Entity;
 
-use App\Payment\Entity\Invoice;
+use App\Core\Entity\Currency;
+use App\Subscription\Entity\Subscription;
 use Decimal\Decimal;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -10,12 +11,12 @@ use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
 
 /**
- * @ORM\Entity(repositoryClass="App\Subscription\Repository\SubscriptionCycleRepository")
- * @ORM\Table(name="subscription_cycle")
+ * @ORM\Entity(repositoryClass="App\Payment\Repository\InvoiceRepository")
+ * @ORM\Table(name="invoice")
  * @ORM\HasLifecycleCallbacks()
  * @Gedmo\SoftDeleteable(fieldName="deletedAt")
  */
-class SubscriptionCycle
+class Invoice
 {
     /**
      * @ORM\Id
@@ -37,30 +38,35 @@ class SubscriptionCycle
     private Subscription $subscription;
 
     /**
-     * @ORM\Column(type="uuid", unique=true)
-     */
-    private UuidInterface $invoiceId;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Payment\Entity\Invoice")
-     * @ORM\JoinColumn(name="invoice_id", referencedColumnName="id")
-     */
-    private Invoice $invoice;
-
-    /**
      * @ORM\Column(type="decimal", nullable=false, options={"precision": 11, "scale": 2})
      */
-    private string $price;
+    private string $totalAmount;
 
     /**
-     * @ORM\Column(name="starts_at", type="datetime", nullable=true)
+     * @ORM\Column(type="uuid", unique=true)
      */
-    private ?\DateTimeInterface $startsAt = null;
+    private UuidInterface $currencyId;
 
     /**
-     * @ORM\Column(name="ends_at", type="datetime", nullable=true)
+     * @ORM\ManyToOne(targetEntity="App\Core\Entity\Currency")
+     * @ORM\JoinColumn(name="curency_id", referencedColumnName="id")
      */
-    private ?\DateTimeInterface $endsAt = null;
+    private Currency $currency;
+
+    /**
+     * @ORM\Column(name="due_date", type="date", nullable=true)
+     */
+    private ?\DateTimeInterface $dueDate = null;
+
+    /**
+     * @ORM\Column(name="paid_at", type="datetime", nullable=true)
+     */
+    private ?\DateTimeInterface $paidAt = null;
+
+    /**
+     * @ORM\Column(name="overdue_notification_sent_at", type="datetime", nullable=true)
+     */
+    private ?\DateTimeInterface $overdueNotificationSentAt = null;
 
     /**
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
@@ -106,38 +112,74 @@ class SubscriptionCycle
         return $this;
     }
 
-    public function getPrice(): Decimal
+    public function getTotalAmount(): Decimal
     {
-        return new Decimal($this->price);
+        return new Decimal($this->totalAmount);
     }
 
-    public function setPrice(Decimal $price): self
+    public function setTotalAmount(Decimal $totalAmount): self
     {
-        $this->price = $price;
+        $this->totalAmount = $totalAmount;
 
         return $this;
     }
 
-    public function getStartsAt(): ?\DateTimeInterface
+    public function getCurrencyId(): UuidInterface
     {
-        return $this->startsAt;
+        return $this->currencyId;
     }
 
-    public function setStartsAt(?\DateTimeInterface $startsAt): self
+    public function setCurrencyId(UuidInterface $currencyId): self
     {
-        $this->startsAt = $startsAt;
+        $this->currencyId = $currencyId;
 
         return $this;
     }
 
-    public function getEndsAt(): ?\DateTimeInterface
+    public function getCurrency(): Currency
     {
-        return $this->endsAt;
+        return $this->currency;
     }
 
-    public function setEndsAt(?\DateTimeInterface $endsAt): self
+    public function setCurrency(Currency $currency): self
     {
-        $this->endsAt = $endsAt;
+        $this->currency = $currency;
+
+        return $this;
+    }
+
+    public function getDueDate(): ?\DateTimeInterface
+    {
+        return $this->dueDate;
+    }
+
+    public function setDueDate(?\DateTimeInterface $dueDate): self
+    {
+        $this->dueDate = $dueDate;
+
+        return $this;
+    }
+
+    public function getPaidAt(): ?\DateTimeInterface
+    {
+        return $this->paidAt;
+    }
+
+    public function setPaidAt(?\DateTimeInterface $paidAt): self
+    {
+        $this->paidAt = $paidAt;
+
+        return $this;
+    }
+
+    public function getOverdueNotificationSentAt(): ?\DateTimeInterface
+    {
+        return $this->overdueNotificationSentAt;
+    }
+
+    public function setOverdueNotificationSentAt(?\DateTimeInterface $overdueNotificationSentAt): self
+    {
+        $this->overdueNotificationSentAt = $overdueNotificationSentAt;
 
         return $this;
     }
