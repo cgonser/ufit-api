@@ -6,7 +6,7 @@ use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
 use App\Customer\Entity\Customer;
 use App\Customer\Provider\CustomerProvider;
-use App\Program\Dto\ProgramDto;
+use App\Program\Dto\ProgramAssignmentDto;
 use App\Program\Provider\ProgramAssignmentProvider;
 use App\Program\Request\CustomerProgramSearchRequest;
 use App\Program\Request\ProgramAssignmentSearchRequest;
@@ -48,7 +48,7 @@ class AssignmentController extends AbstractController
      * @OA\Response(
      *     response=200, description="Success",
      *     @OA\Header(header="X-Total-Count", @OA\Schema(type="int")),
-     *     @OA\JsonContent(type="array", @OA\Items(ref=@Model(type=ProgramDto::class))))
+     *     @OA\JsonContent(type="array", @OA\Items(ref=@Model(type=ProgramAssignmentDto::class))))
      * )
      */
     public function getProgramAssignments(string $customerId, ProgramAssignmentSearchRequest $searchRequest): Response
