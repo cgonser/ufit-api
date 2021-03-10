@@ -35,21 +35,19 @@ class VendorInstagramProfile
     private ?Vendor $vendor = null;
 
     /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank()
+     * @ORM\Column(type="string", nullable=true)
      */
-    private string $instagramId;
+    private ?string $instagramId = null;
 
     /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank()
+     * @ORM\Column(type="string", nullable=true)
      */
-    private string $username;
+    private ?string $username = null;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      */
-    private string $accessToken;
+    private ?string $accessToken = null;
 
     /**
      * @ORM\Column(type="string", nullable=true)
@@ -57,10 +55,10 @@ class VendorInstagramProfile
     private ?string $code = null;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", nullable=true)
      * @Assert\NotBlank()
      */
-    private bool $isBusiness = false;
+    private ?bool $isBusiness = null;
 
     public function getId(): ?UuidInterface
     {
@@ -79,7 +77,7 @@ class VendorInstagramProfile
         return $this;
     }
 
-    public function getInstagramId(): string
+    public function getInstagramId(): ?string
     {
         return $this->instagramId;
     }
@@ -91,7 +89,7 @@ class VendorInstagramProfile
         return $this;
     }
 
-    public function getUsername(): string
+    public function getUsername(): ?string
     {
         return $this->username;
     }
@@ -103,7 +101,7 @@ class VendorInstagramProfile
         return $this;
     }
 
-    public function getAccessToken(): string
+    public function getAccessToken(): ?string
     {
         return $this->accessToken;
     }
@@ -127,7 +125,7 @@ class VendorInstagramProfile
         return $this;
     }
 
-    public function isBusiness(): bool
+    public function isBusiness(): ?bool
     {
         return $this->isBusiness;
     }
