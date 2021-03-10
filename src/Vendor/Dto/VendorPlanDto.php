@@ -2,7 +2,6 @@
 
 namespace App\Vendor\Dto;
 
-use Decimal\Decimal;
 use OpenApi\Annotations as OA;
 
 class VendorPlanDto
@@ -29,7 +28,7 @@ class VendorPlanDto
      */
     public ?array $paymentMethods;
 
-    public ?Decimal $price = null;
+    public ?float $price = null;
 
     public bool $isVisible;
 

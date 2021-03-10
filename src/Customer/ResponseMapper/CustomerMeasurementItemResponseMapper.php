@@ -18,7 +18,7 @@ class CustomerMeasurementItemResponseMapper
     {
         $customerMeasurementItemDto = new CustomerMeasurementItemDto();
         $customerMeasurementItemDto->id = $customerMeasurementItem->getId()->toString();
-        $customerMeasurementItemDto->measurement = $customerMeasurementItem->getMeasurement();
+        $customerMeasurementItemDto->measurement = $customerMeasurementItem->getMeasurement()->toFloat();
         $customerMeasurementItemDto->unit = $customerMeasurementItem->getUnit();
         $customerMeasurementItemDto->measurementType = $this->measurementTypeResponseMapper->map(
             $customerMeasurementItem->getMeasurementType()

@@ -4,7 +4,6 @@ namespace App\Subscription\Dto;
 
 use App\Customer\Dto\CustomerDto;
 use App\Vendor\Dto\VendorPlanDto;
-use Decimal\Decimal;
 
 class SubscriptionDto
 {
@@ -20,7 +19,7 @@ class SubscriptionDto
 
     public ?string $expiresAt;
 
-    public ?Decimal $price;
+    public ?float $price;
 
     public ?string $reviewedAt;
 

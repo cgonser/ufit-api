@@ -46,7 +46,7 @@ class AssignmentController extends AbstractController
      * @OA\Tag(name="Program / Assignments")
      * @OA\Parameter(in="query", name="filters", @OA\Schema(ref=@Model(type=CustomerProgramSearchRequest::class)))
      * @OA\Response(
-     *     response=200,
+     *     response=200, description="Success",
      *     @OA\Header(header="X-Total-Count", @OA\Schema(type="int")),
      *     @OA\JsonContent(type="array", @OA\Items(ref=@Model(type=ProgramDto::class))))
      * )

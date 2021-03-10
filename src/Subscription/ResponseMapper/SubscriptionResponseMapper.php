@@ -29,7 +29,7 @@ class SubscriptionResponseMapper
         $subscriptionDto->expiresAt = $subscription->getExpiresAt()
             ? $subscription->getExpiresAt()->format(\DateTimeInterface::ISO8601)
             : null;
-        $subscriptionDto->price = $subscription->getPrice();
+        $subscriptionDto->price = $subscription->getPrice()->toFloat();
         $subscriptionDto->reviewedAt = $subscription->getReviewedAt()
             ? $subscription->getReviewedAt()->format(\DateTimeInterface::ISO8601)
             : null;
