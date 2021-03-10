@@ -18,6 +18,10 @@ use Ramsey\Uuid\UuidInterface;
  */
 class Payment
 {
+    const STATUS_PENDING = 'pending';
+    const STATUS_PAID = 'paid';
+    const STATUS_REJECTED = 'rejected';
+
     use TimestampableEntity;
     use SoftDeleteableEntity;
 
@@ -30,7 +34,7 @@ class Payment
     private UuidInterface $id;
 
     /**
-     * @ORM\Column(type="uuid", unique=true)
+     * @ORM\Column(type="uuid")
      */
     private UuidInterface $invoiceId;
 
@@ -41,7 +45,7 @@ class Payment
     private Invoice $invoice;
 
     /**
-     * @ORM\Column(type="uuid", unique=true)
+     * @ORM\Column(type="uuid")
      */
     private UuidInterface $paymentMethodId;
 
@@ -54,12 +58,17 @@ class Payment
     /**
      * @ORM\Column(type="string", nullable=true)
      */
-    private string $status;
+    private ?string $status = null;
 
     /**
      * @ORM\Column(type="decimal", nullable=false, options={"precision": 11, "scale": 2})
      */
-    private string $amount;
+    private ?string $amount = null;
+
+    /**
+     * @ORM\Column(type="json", nullable=true)
+     */
+    private ?array $details = null;
 
     /**
      * @ORM\Column(name="due_date", type="date", nullable=true)
@@ -95,6 +104,7 @@ class Payment
 
     public function setInvoice(Invoice $invoice): self
     {
+        $this->invoiceId = $invoice->getId();
         $this->invoice = $invoice;
 
         return $this;
@@ -119,12 +129,13 @@ class Payment
 
     public function setPaymentMethod(PaymentMethod $paymentMethod): self
     {
+        $this->paymentMethodId = $paymentMethod->getId();
         $this->paymentMethod = $paymentMethod;
 
         return $this;
     }
 
-    public function getStatus(): string
+    public function getStatus(): ?string
     {
         return $this->status;
     }
@@ -136,7 +147,7 @@ class Payment
         return $this;
     }
 
-    public function getAmount(): Decimal
+    public function getAmount(): ?Decimal
     {
         return new Decimal($this->amount);
     }
@@ -144,6 +155,18 @@ class Payment
     public function setAmount(Decimal $amount): self
     {
         $this->amount = $amount;
+
+        return $this;
+    }
+
+    public function getDetails(): ?array
+    {
+        return $this->details;
+    }
+
+    public function setDetails(?array $details): self
+    {
+        $this->details = $details;
 
         return $this;
     }

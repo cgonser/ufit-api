@@ -51,29 +51,44 @@ class VendorInstagramManager implements LoggerAwareInterface
     public function prepareVendorFromInstagramCode(string $code, ?string $email = null): Vendor
     {
         try {
-            $temporaryToken = $this->instagramBasicDisplay->getOAuthToken($code, true);
-            $accessToken = $this->instagramBasicDisplay->getLongLivedToken($temporaryToken, true);
+            $vendorInstagramProfile = $this->vendorInstagramProfileRepository->findOneBy(['code' => $code]);
 
-            $this->instagramBasicDisplay->setAccessToken($accessToken);
+            if (!$vendorInstagramProfile) {
+                $vendorInstagramProfile = new VendorInstagramProfile();
+                $vendorInstagramProfile->setCode($code);
+            }
+
+            if (null === $vendorInstagramProfile->getAccessToken()) {
+                $temporaryToken = $this->instagramBasicDisplay->getOAuthToken($code, true);
+                $accessToken = $this->instagramBasicDisplay->getLongLivedToken($temporaryToken, true);
+
+                if (null === $accessToken) {
+                    throw new VendorInstagramLoginFailedException();
+                }
+
+                $vendorInstagramProfile->setAccessToken($accessToken);
+
+                $this->vendorInstagramProfileRepository->save($vendorInstagramProfile);
+            }
+
+            $this->instagramBasicDisplay->setAccessToken($vendorInstagramProfile->getAccessToken());
             $this->instagramBasicDisplay->setUserFields('id,account_type,username');
             $profile = $this->instagramBasicDisplay->getUserProfile();
 
-            $vendorInstagramProfile = $this->vendorInstagramProfileRepository->findOneBy(['instagramId' => $profile->id]);
+            if (null === $vendorInstagramProfile->getInstagramId()) {
+                $vendorInstagramProfile->setInstagramId($profile->id);
+                $vendorInstagramProfile->setUsername($profile->username);
+                $vendorInstagramProfile->setIsBusiness('BUSINESS' == $profile->account_type);
 
-            if (!$vendorInstagramProfile) {
-                if (null === $email) {
-                    throw new VendorInstagramLoginMissingEmailException();
-                }
-
-                $vendorInstagramProfile = $this->createVendorInstagramProfileAndEmail($profile, $accessToken, $email);
+                $this->vendorInstagramProfileRepository->save($vendorInstagramProfile);
             }
 
-            return $vendorInstagramProfile->getVendor();
-        } catch (InstagramBasicDisplayException $e) {
-            $this->logger->alert($e->getMessage());
+            if (null === $email) {
+                throw new VendorInstagramLoginMissingEmailException();
+            }
 
-            throw new VendorInstagramLoginFailedException();
-        } catch (\Exception $e) {
+            return $this->createVendorFromInstagramProfileAndEmail($vendorInstagramProfile, $email);
+        } catch (\Exception | InstagramBasicDisplayException $e) {
             $this->logger->error($e->getMessage());
 
             throw new VendorInstagramLoginFailedException();
@@ -96,19 +111,24 @@ class VendorInstagramManager implements LoggerAwareInterface
         $this->vendorService->update($vendorInstagramProfile->getVendor(), $vendorRequest);
 
         if ($accountData->getProfilePicUrlHd()) {
-            $this->vendorPhotoService->uploadFromUrl($vendorInstagramProfile->getVendor(), $accountData->getProfilePicUrlHd());
+            $this->vendorPhotoService->uploadFromUrl(
+                $vendorInstagramProfile->getVendor(),
+                $accountData->getProfilePicUrlHd()
+            );
         }
     }
 
-    private function createVendorInstagramProfileAndEmail(\stdClass $profile, string $accessToken, string $email): VendorInstagramProfile
-    {
+    private function createVendorFromInstagramProfileAndEmail(
+        VendorInstagramProfile $vendorInstagramProfile,
+        string $email
+    ): Vendor {
         $vendorRequest = new VendorRequest();
-        $vendorRequest->name = $profile->username;
+        $vendorRequest->name = $vendorInstagramProfile->getUsername();
         $vendorRequest->email = $email;
-        $vendorRequest->slug = $profile->username;
+        $vendorRequest->slug = $vendorInstagramProfile->getUsername();
 
         try {
-            $accountData = $this->instagramScrapper->getAccount($profile->username);
+            $accountData = $this->instagramScrapper->getAccount($vendorInstagramProfile->getUsername());
 
             $vendorRequest->name = $accountData->getFullName();
             $vendorRequest->displayName = $accountData->getFullName();
@@ -131,11 +151,18 @@ class VendorInstagramManager implements LoggerAwareInterface
             $this->vendorPhotoService->uploadFromUrl($vendor, $photoUrl);
         }
 
-        return $this->createVendorInstagramProfile($profile, $accessToken, $vendor);
+        $vendorInstagramProfile->setVendor($vendor);
+
+        $this->vendorInstagramProfileRepository->save($vendorInstagramProfile);
+
+        return $vendor;
     }
 
-    private function createVendorInstagramProfile(\stdClass $profile, string $accessToken, Vendor $vendor): VendorInstagramProfile
-    {
+    private function createVendorInstagramProfile(
+        \stdClass $profile,
+        string $accessToken,
+        Vendor $vendor
+    ): VendorInstagramProfile {
         $vendorInstagramProfile = (new VendorInstagramProfile())
             ->setVendor($vendor)
             ->setInstagramId($profile->id)

@@ -67,7 +67,8 @@ RUN set -eux; \
 RUN rm -rf /app/var/* ; \
 	mkdir -p /app/var/cache /app/var/log ; \
 	setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX /app/var ; \
-	setfacl -dR -m u:www-data:rwX -m u:"$(whoami)":rwX /app/var
+	setfacl -dR -m u:www-data:rwX -m u:"$(whoami)":rwX /app/var ; \
+	chmod 777 /app/var -R
 
 VOLUME /app
 

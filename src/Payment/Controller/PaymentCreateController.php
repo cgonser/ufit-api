@@ -7,7 +7,7 @@ use App\Core\Response\ApiJsonResponse;
 use App\Payment\Dto\PaymentDto;
 use App\Payment\Request\PaymentRequest;
 use App\Payment\ResponseMapper\PaymentResponseMapper;
-use App\Payment\Service\PaymentManager;
+use App\Payment\Service\PaymentRequestManager;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -18,12 +18,12 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class PaymentCreateController extends AbstractController
 {
-    private PaymentManager $paymentManager;
+    private PaymentRequestManager $paymentManager;
 
     private PaymentResponseMapper $paymentResponseMapper;
 
     public function __construct(
-        PaymentManager $paymentManager,
+        PaymentRequestManager $paymentManager,
         PaymentResponseMapper $paymentResponseMapper
     ) {
         $this->paymentResponseMapper = $paymentResponseMapper;
@@ -32,23 +32,16 @@ class PaymentCreateController extends AbstractController
 
     /**
      * @Route("/payments", methods="POST", name="payments_create")
-     *
      * @ParamConverter("paymentRequest", converter="fos_rest.request_body")
      *
      * @OA\Tag(name="Payment")
-     * @OA\RequestBody(
-     *     required=true,
-     *     @OA\JsonContent(ref=@Model(type=PaymentRequest::class))
-     * )
+     * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=PaymentRequest::class)))
      * @OA\Response(
      *     response=201,
      *     description="Creates a new payment",
      *     @OA\JsonContent(ref=@Model(type=PaymentDto::class))
      * )
-     * @OA\Response(
-     *     response=400,
-     *     description="Invalid input"
-     * )
+     * @OA\Response(response=400, description="Invalid input")
      */
     public function create(
         PaymentRequest $paymentRequest,

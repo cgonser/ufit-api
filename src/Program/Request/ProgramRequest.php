@@ -35,4 +35,9 @@ class ProgramRequest
      * @OA\Property()
      */
     public ?bool $isTemplate = null;
+
+    /**
+     * @OA\Property()
+     */
+    public ?bool $isActive = null;
 }

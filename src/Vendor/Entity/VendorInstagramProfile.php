@@ -30,9 +30,9 @@ class VendorInstagramProfile
 
     /**
      * @ORM\ManyToOne(targetEntity="Vendor")
-     * @ORM\JoinColumn(name="vendor_id", referencedColumnName="id", nullable=false)
+     * @ORM\JoinColumn(name="vendor_id", referencedColumnName="id", nullable=true)
      */
-    private Vendor $vendor;
+    private ?Vendor $vendor = null;
 
     /**
      * @ORM\Column(type="string")
@@ -52,6 +52,11 @@ class VendorInstagramProfile
     private string $accessToken;
 
     /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private ?string $code = null;
+
+    /**
      * @ORM\Column(type="boolean")
      * @Assert\NotBlank()
      */
@@ -62,7 +67,7 @@ class VendorInstagramProfile
         return $this->id;
     }
 
-    public function getVendor(): Vendor
+    public function getVendor(): ?Vendor
     {
         return $this->vendor;
     }
@@ -106,6 +111,18 @@ class VendorInstagramProfile
     public function setAccessToken(string $accessToken): self
     {
         $this->accessToken = $accessToken;
+
+        return $this;
+    }
+
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
+
+    public function setCode(?string $code): self
+    {
+        $this->code = $code;
 
         return $this;
     }

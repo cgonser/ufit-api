@@ -58,6 +58,11 @@ class Program
     private bool $isTemplate = false;
 
     /**
+     * @ORM\Column(type="boolean", nullable=false, options={"default": true})
+     */
+    private bool $isActive = true;
+
+    /**
      * @ORM\OneToMany(targetEntity="ProgramAsset", mappedBy="program", cascade={"persist"})
      */
     private Collection $assets;
@@ -162,6 +167,18 @@ class Program
     public function setIsTemplate(bool $isTemplate): self
     {
         $this->isTemplate = $isTemplate;
+
+        return $this;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): self
+    {
+        $this->isActive = $isActive;
 
         return $this;
     }

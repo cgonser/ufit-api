@@ -22,6 +22,8 @@ class ProgramDto
 
     public bool $isTemplate;
 
+    public bool $isActive;
+
     /**
      * @var ProgramAssetDto[]
      *

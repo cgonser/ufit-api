@@ -31,10 +31,9 @@ class VendorInstagramController extends AbstractController
 
     /**
      * @Route("/vendors/login/instagram", methods="POST", name="vendor_instagram_login")
+     * @ParamConverter("vendorInstagramLoginRequest", converter="fos_rest.request_body")
      *
      * @OA\Tag(name="Vendor")
-     *
-     * @ParamConverter("vendorInstagramLoginRequest", converter="fos_rest.request_body")
      */
     public function login(VendorInstagramLoginRequest $vendorInstagramLoginRequest): Response
     {

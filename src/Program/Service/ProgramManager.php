@@ -66,12 +66,16 @@ class ProgramManager
             $program->setLevel($programRequest->level);
         }
 
+        if (null !== $programRequest->goals) {
+            $program->setGoals($programRequest->goals);
+        }
+
         if (null !== $programRequest->isTemplate) {
             $program->setIsTemplate($programRequest->isTemplate);
         }
 
-        if (null !== $programRequest->goals) {
-            $program->setGoals($programRequest->goals);
+        if (null !== $programRequest->isActive) {
+            $program->setIsActive($programRequest->isActive);
         }
     }
 }

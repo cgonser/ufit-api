@@ -2,8 +2,8 @@
 
 namespace App\Payment\Request;
 
-use App\Customer\Request\CustomerRequest;
 use OpenApi\Annotations as OA;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @OA\RequestBody(
@@ -14,31 +14,18 @@ class PaymentRequest
 {
     /**
      * @OA\Property()
+     * @Assert\NotNull
      */
-    public ?string $subscriptionCycleId = null;
+    public ?string $invoiceId = null;
 
     /**
      * @OA\Property()
-     */
-    public ?string $vendorPlanId = null;
-
-    /**
-     * @OA\Property()
-     */
-    public ?CustomerRequest $customer = null;
-
-    /**
-     * @OA\Property()
-     */
-    public ?string $customerId = null;
-
-    /**
-     * @OA\Property()
+     * @Assert\NotNull
      */
     public ?string $paymentMethodId = null;
 
     /**
      * @OA\Property(type="array", @OA\Items(type="object"))
      */
-    public ?array $paymentDetails = null;
+    public ?array $details = null;
 }
