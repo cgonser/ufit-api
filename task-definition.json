@@ -1,5 +1,5 @@
 {
-  "family": "api",
+  "family": "api-stg",
   "executionRoleArn": "arn:aws:iam::590392040163:role/ecs-task-execution-role",
   "containerDefinitions": [
     {
