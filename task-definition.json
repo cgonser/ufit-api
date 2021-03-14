@@ -79,6 +79,10 @@
         {
           "name": "MAILER_DSN",
           "value": "ses://AKIAYS5Q3TLR5JGRX3EG:92AZsSYWc6YqLt78ILK%2FLoHswj%2F%2BNr0DpptqginP@default?region=eu-central-1"
+        },
+        {
+          "name": "PAGARME_API_KEY",
+          "value": ""
         }
       ],
       "secrets": [
