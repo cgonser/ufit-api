@@ -47,4 +47,14 @@ class PaymentManager
 
 //        $this->messageBus->dispatch(new PaymentDeletedEvent($payment->getId()));
     }
+
+    public function markAsPaid(Payment $payment, \DateTime $paidAt)
+    {
+        $payment->setStatus(Payment::STATUS_PAID);
+        $payment->setPaidAt($paidAt);
+
+        $this->paymentRepository->save($payment);
+
+        $this->messageBus->dispatch(new InvoicePaidEvent($payment->getInvoiceId()));
+    }
 }

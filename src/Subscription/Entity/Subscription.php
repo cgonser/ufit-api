@@ -18,8 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass="App\Subscription\Repository\SubscriptionRepository")
  * @ORM\Table(name="subscription")
- * @ORM\HasLifecycleCallbacks()
- * @Gedmo\SoftDeleteable(fieldName="deletedAt")
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
  */
 class Subscription
 {
@@ -42,7 +41,7 @@ class Subscription
     /**
      * @ORM\ManyToOne(targetEntity="App\Customer\Entity\Customer", inversedBy="subscriptions")
      * @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
-     * @Assert\NotBlank()
+     * @Assert\NotNull()
      */
     private ?Customer $customer = null;
 
@@ -54,7 +53,7 @@ class Subscription
     /**
      * @ORM\ManyToOne(targetEntity="App\Vendor\Entity\VendorPlan", inversedBy="subscriptions")
      * @ORM\JoinColumn(name="vendor_plan_id", referencedColumnName="id")
-     * @Assert\NotBlank()
+     * @Assert\NotNull()
      */
     private VendorPlan $vendorPlan;
 
@@ -90,13 +89,13 @@ class Subscription
 
     /**
      * @ORM\Column(type="decimal", nullable=false, options={"precision": 11, "scale": 2})
-     * @Assert\NotBlank()
+     * @Assert\NotNull()
      */
     private string $price;
 
     /**
      * @ORM\Column(type="boolean", nullable=false, options={"default": true})
-     * @Assert\NotBlank()
+     * @Assert\NotNull()
      */
     private bool $isRecurring = true;
 

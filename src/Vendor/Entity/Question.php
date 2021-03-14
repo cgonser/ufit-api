@@ -11,7 +11,6 @@ use Ramsey\Uuid\UuidInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Vendor\Repository\QuestionRepository")
- * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="question")
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
  */

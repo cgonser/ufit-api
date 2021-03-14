@@ -12,7 +12,6 @@ use Ramsey\Uuid\UuidInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Program\Repository\ProgramAssignmentRepository")
- * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="program_assignment")
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
  */

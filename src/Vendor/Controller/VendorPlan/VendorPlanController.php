@@ -39,7 +39,7 @@ class VendorPlanController extends AbstractController
     /**
      * @Route("/vendors/{vendorId}/plans", methods="GET", name="vendors_plans_get")
      *
-     * @OA\Tag(name="VendorPlan")
+     * @OA\Tag(name="Vendor / Plan")
      * @OA\Response(
      *     response=200,
      *     description="Returns the information about a vendor plans",

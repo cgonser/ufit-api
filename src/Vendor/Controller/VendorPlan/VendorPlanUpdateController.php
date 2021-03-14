@@ -47,7 +47,7 @@ class VendorPlanUpdateController extends AbstractController
      *
      * @ParamConverter("vendorPlanRequest", converter="fos_rest.request_body")
      *
-     * @OA\Tag(name="VendorPlan")
+     * @OA\Tag(name="Vendor / Plan")
      * @OA\RequestBody(
      *     required=true,
      *     @OA\JsonContent(ref=@Model(type=VendorPlanRequest::class))

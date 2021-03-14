@@ -18,7 +18,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Vendor\Repository\VendorPlanRepository")
- * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="vendor_plan")
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
  */

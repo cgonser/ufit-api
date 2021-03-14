@@ -82,9 +82,5 @@ class SubscriptionRequestManager
         $subscription->setVendorPlan(
             $this->vendorPlanProvider->get(Uuid::fromString($subscriptionRequest->vendorPlanId))
         );
-
-        if (null === $subscription->getCustomer()) {
-            throw new SubscriptionMissingCustomerException();
-        }
     }
 }

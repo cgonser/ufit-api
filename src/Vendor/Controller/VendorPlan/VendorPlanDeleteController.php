@@ -31,7 +31,7 @@ class VendorPlanDeleteController extends AbstractController
     /**
      * @Route("/vendors/{vendorId}/plans/{vendorPlanId}", methods="DELETE", name="vendors_plans_delete")
      *
-     * @OA\Tag(name="VendorPlan")
+     * @OA\Tag(name="Vendor / Plan")
      * @OA\Response(
      *     response=204,
      *     description="Deletes a plan"

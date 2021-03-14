@@ -13,7 +13,6 @@ use Ramsey\Uuid\UuidInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Vendor\Repository\QuestionnaireRepository")
- * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="questionnaire")
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
  */

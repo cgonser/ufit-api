@@ -11,7 +11,6 @@ use Ramsey\Uuid\Doctrine\UuidGenerator;
 
 /**
  * @ORM\Entity(repositoryClass="App\Program\Repository\ProgramAssetRepository")
- * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="program_asset")
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
  */

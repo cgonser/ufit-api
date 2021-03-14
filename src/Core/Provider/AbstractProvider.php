@@ -33,7 +33,7 @@ abstract class AbstractProvider
 
     public function search(SearchRequest $searchRequest, ?array $filters = null): array
     {
-        $orderExpression = 'root.'.($searchRequest->orderProperty ?: 'id');
+        $orderExpression = 'root.' . ($searchRequest->orderProperty ?: 'createdAt');
         $orderDirection = $searchRequest->orderDirection ?: 'DESC';
 
         $limit = $searchRequest->resultsPerPage ?: self::RESULTS_PER_PAGE;
@@ -53,15 +53,20 @@ abstract class AbstractProvider
     {
         $queryBuilder = $this->buildSearchQueryBuilder($searchRequest, $filters);
 
-        return (int) $queryBuilder->select('COUNT(root.id)')
+        return (int)$queryBuilder->select('COUNT(root.id)')
             ->getQuery()
             ->useQueryCache(true)
             ->getSingleScalarResult();
     }
 
+    protected function buildQueryBuilder(): QueryBuilder
+    {
+        return $this->repository->createQueryBuilder('root');
+    }
+
     protected function buildSearchQueryBuilder(SearchRequest $searchRequest, ?array $filters = []): QueryBuilder
     {
-        $queryBuilder = $this->repository->createQueryBuilder('root');
+        $queryBuilder = $this->buildQueryBuilder();
 
         if (null !== $searchRequest->search) {
             $this->addSearchClause($queryBuilder, $searchRequest->search);
@@ -83,12 +88,20 @@ abstract class AbstractProvider
         $filters = [];
 
         foreach ($this->getFilterableFields() as $fieldName) {
-            if (!property_exists($searchRequest, $fieldName)) {
+            if (is_array($fieldName)) {
+                $property = array_key_first($fieldName);
+                $entity = $fieldName[$property];
+            } else {
+                $property = $fieldName;
+                $entity = 'root';
+            }
+
+            if (!property_exists($searchRequest, $property)) {
                 continue;
             }
 
-            if (null !== $searchRequest->$fieldName) {
-                $filters[$fieldName] = $searchRequest->$fieldName;
+            if (null !== $searchRequest->$property) {
+                $filters[$entity . '.' . $property] = $searchRequest->$property;
             }
         }
 
@@ -101,8 +114,9 @@ abstract class AbstractProvider
 
         foreach ($filters as $fieldName => $value) {
             ++$i;
-            $queryBuilder->andWhere(sprintf('root.%s = :filter_'.$i, $fieldName))
-                ->setParameter('filter_'.$i, $value);
+
+            $queryBuilder->andWhere(sprintf('%s = :filter_' . $i, $fieldName))
+                ->setParameter('filter_' . $i, $value);
         }
     }
 
@@ -124,7 +138,7 @@ abstract class AbstractProvider
 
         $queryBuilder
             ->andWhere($queryBuilder->expr()->orX(...$searchFields))
-            ->setParameter('searchText', '%'.strtolower($search).'%');
+            ->setParameter('searchText', '%' . strtolower($search) . '%');
     }
 
     protected function getSearchableFields(): array

@@ -3,7 +3,7 @@
 namespace App\Program\DataFixtures;
 
 use App\Customer\Entity\Customer;
-use App\Program\Provider\ProgramProvider;
+use App\Program\Provider\VendorProgramProvider;
 use App\Program\Request\ProgramAssignmentRequest;
 use App\Program\Service\ProgramAssignmentManager;
 use App\Subscription\DataFixtures\SubscriptionFixtures;
@@ -15,14 +15,14 @@ use Doctrine\Persistence\ObjectManager;
 
 class ProgramAssignmentFixtures extends Fixture implements DependentFixtureInterface
 {
-    private ProgramProvider $programProvider;
+    private VendorProgramProvider $programProvider;
 
     private SubscriptionProvider $subscriptionProvider;
 
     private ProgramAssignmentManager $programAssignmentManager;
 
     public function __construct(
-        ProgramProvider $programProvider,
+        VendorProgramProvider $programProvider,
         SubscriptionProvider $subscriptionProvider,
         ProgramAssignmentManager $programAssignmentManager
     ) {
