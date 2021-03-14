@@ -1,5 +1,7 @@
 <?php
 
+umask(0002);
+
 use App\Kernel;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\ErrorHandler\Debug;

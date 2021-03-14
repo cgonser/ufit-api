@@ -59,15 +59,13 @@ COPY . /app
 
 RUN set -eux; \
     composer install --no-dev --no-scripts ; \
-    composer dump-autoload --no-dev --optimize --classmap-authoritative
-    # composer install --no-ansi --no-interaction --no-autoloader --no-scripts; \
-	# composer install --prefer-dist --no-dev --no-scripts --no-progress --no-suggest; \
-	# composer clear-cache
+    composer dump-autoload --no-dev --optimize --classmap-authoritative ; \
+    composer clear-cache
 
 RUN rm -rf /app/var/* ; \
 	mkdir -p /app/var/cache /app/var/log ; \
-	setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX /app/var ; \
-	setfacl -dR -m u:www-data:rwX -m u:"$(whoami)":rwX /app/var ; \
+	setfacl -R -m u:www-data:rwX -m u:root:rwX /app/var ; \
+	setfacl -dR -m u:www-data:rwX -m u:root:rwX /app/var ; \
 	chmod 777 /app/var -R
 
 VOLUME /app
