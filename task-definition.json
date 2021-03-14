@@ -82,7 +82,7 @@
         },
         {
           "name": "PAGARME_API_KEY",
-          "value": ""
+          "value": "1111"
         }
       ],
       "secrets": [
