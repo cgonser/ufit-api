@@ -74,10 +74,10 @@ RUN set -eux; \
 	mkdir -p var/cache var/log; \
 	composer dump-autoload --classmap-authoritative --no-dev; \
 	# composer dump-env prod; \
-	composer run-script --no-dev post-install-cmd; \
+	# composer run-script --no-dev post-install-cmd; \
 	chmod +x bin/console; \
-    bin/console cache:clear; \
     bin/console assets:install; \
+    # bin/console cache:clear; \
 	sync
 
 VOLUME /app
