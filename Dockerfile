@@ -62,7 +62,6 @@ RUN set -eux; \
     composer install --no-dev --no-scripts ; \
     composer clear-cache
 
-COPY .env ./
 COPY bin bin/
 COPY config config/
 COPY docker docker/
