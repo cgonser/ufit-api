@@ -50,29 +50,41 @@ RUN pecl install decimal \
     && apk del .phpize-deps
 
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
-
 RUN docker-php-ext-install gd pdo_pgsql intl exif zip
 
-COPY --from=composer /usr/bin/composer /usr/bin/composer
 WORKDIR /app
-COPY . /app
+ARG APP_ENV=prod
+
+COPY composer.json composer.lock symfony.lock ./
+COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 RUN set -eux; \
     composer install --no-dev --no-scripts ; \
-    composer dump-autoload --no-dev --optimize --classmap-authoritative ; \
     composer clear-cache
 
-RUN rm -rf /app/var/* ; \
-	mkdir -p /app/var/cache /app/var/log ; \
-	setfacl -R -m u:www-data:rwX -m u:root:rwX /app/var ; \
-	setfacl -dR -m u:www-data:rwX -m u:root:rwX /app/var ; \
-	chmod 777 /app/var -R
+COPY .env ./
+COPY bin bin/
+COPY config config/
+COPY docker docker/
+COPY migrations migrations/
+COPY public public/
+COPY src src/
+COPY templates templates/
+
+RUN set -eux; \
+	mkdir -p var/cache var/log; \
+	composer dump-autoload --classmap-authoritative --no-dev; \
+	# composer dump-env prod; \
+	composer run-script --no-dev post-install-cmd; \
+	chmod +x bin/console; \
+    bin/console cache:clear; \
+    bin/console assets:install; \
+	sync
 
 VOLUME /app
 
-CMD composer dump-autoload; \
-    bin/console cache:clear; \
-    bin/console assets:install; \
-    bin/console doctrine:migrations:migrate --no-interaction; \
-    php-fpm
+COPY docker/php/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
+RUN chmod +x /usr/local/bin/docker-entrypoint
 
+ENTRYPOINT ["docker-entrypoint"]
+CMD ["php-fpm"]
