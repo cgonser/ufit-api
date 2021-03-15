@@ -62,6 +62,8 @@ RUN set -eux; \
     composer install --no-dev --no-scripts ; \
     composer clear-cache
 
+COPY .env.dist ./.env
+COPY assets assets/
 COPY bin bin/
 COPY config config/
 COPY docker docker/
@@ -74,15 +76,15 @@ RUN set -eux; \
 	mkdir -p var/cache var/log; \
 	composer dump-autoload --classmap-authoritative --no-dev; \
 	# composer dump-env prod; \
-	# composer run-script --no-dev post-install-cmd; \
+	composer run-script --no-dev post-install-cmd; \
 	chmod +x bin/console; \
+    bin/console cache:clear; \
     bin/console assets:install; \
-    # bin/console cache:clear; \
 	sync
 
 VOLUME /app
 
-COPY docker/php/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
+COPY docker/php-fpm/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint
 
 ENTRYPOINT ["docker-entrypoint"]
