@@ -4,6 +4,7 @@ namespace App\Payment\Dto;
 
 use App\Core\Dto\CurrencyDto;
 use App\Core\Dto\PaymentMethodDto;
+use OpenApi\Annotations as OA;
 
 class PaymentDto
 {
@@ -19,6 +20,9 @@ class PaymentDto
 
     public ?string $amount;
 
+    /**
+     * @OA\Property(type="array", @OA\Items(type="object"))
+     */
     public ?array $details;
 
     public ?string $dueDate;

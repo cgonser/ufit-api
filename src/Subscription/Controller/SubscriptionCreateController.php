@@ -6,7 +6,7 @@ use App\Core\Exception\ApiJsonInputValidationException;
 use App\Core\Response\ApiJsonResponse;
 use App\Payment\Provider\InvoiceProvider;
 use App\Payment\ResponseMapper\InvoiceResponseMapper;
-use App\Subscription\Dto\SubscriptionDto;
+use App\Subscription\Dto\SubscriptionCreateDto;
 use App\Subscription\Request\SubscriptionRequest;
 use App\Subscription\ResponseMapper\SubscriptionResponseMapper;
 use App\Subscription\Service\SubscriptionRequestManager;
@@ -49,7 +49,7 @@ class SubscriptionCreateController extends AbstractController
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=SubscriptionRequest::class)))
      * @OA\Response(response=201,
      *     description="Creates a subscription for a new or existing customer",
-     *     @OA\JsonContent(ref=@Model(type=SubscriptionDto::class))
+     *     @OA\JsonContent(ref=@Model(type=SubscriptionCreateDto::class))
      * )
      * @OA\Response(response=400, description="Invalid input")
      */
