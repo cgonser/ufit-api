@@ -17,8 +17,8 @@ class InvoiceManager
         InvoiceRepository $invoiceRepository,
         MessageBusInterface $messageBus
     ) {
-        $this->messageBus = $messageBus;
         $this->invoiceRepository = $invoiceRepository;
+        $this->messageBus = $messageBus;
     }
 
     public function createFromSubscription(Subscription $subscription): Invoice
@@ -32,5 +32,12 @@ class InvoiceManager
         $this->invoiceRepository->save($invoice);
 
         return $invoice;
+    }
+
+    public function markAsPaid(Invoice $invoice, \DateTimeInterface $paidAt)
+    {
+        $invoice->setPaidAt($paidAt);
+
+        $this->invoiceRepository->save($invoice);
     }
 }

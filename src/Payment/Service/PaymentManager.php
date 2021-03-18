@@ -6,6 +6,8 @@ use App\Payment\Entity\Payment;
 //use App\Payment\Message\PaymentCreatedEvent;
 //use App\Payment\Message\PaymentDeletedEvent;
 //use App\Payment\Message\PaymentUpdatedEvent;
+use App\Payment\Message\PaymentCreatedEvent;
+use App\Payment\Message\PaymentUpdatedEvent;
 use App\Payment\Repository\PaymentRepository;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -31,14 +33,14 @@ class PaymentManager
 
         $this->paymentRepository->save($payment);
 
-//        $this->messageBus->dispatch(new PaymentCreatedEvent($payment->getId()));
+        $this->messageBus->dispatch(new PaymentCreatedEvent($payment->getId()));
     }
 
     public function update(Payment $payment)
     {
         $this->paymentRepository->save($payment);
 
-//        $this->messageBus->dispatch(new PaymentUpdatedEvent($payment->getId()));
+        $this->messageBus->dispatch(new PaymentUpdatedEvent($payment->getId()));
     }
 
     public function delete(Payment $payment)

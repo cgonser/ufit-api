@@ -19,6 +19,8 @@ class PaymentDto
 
     public ?string $amount;
 
+    public ?array $details;
+
     public ?string $dueDate;
 
     public ?string $paidAt;

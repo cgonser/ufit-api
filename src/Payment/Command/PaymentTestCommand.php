@@ -39,9 +39,6 @@ class PaymentTestCommand extends Command
 
     protected function createTransaction()
     {
-
-
-
         $transaction = $this->pagarmeClient->transactions()->create([
             'amount' => 1000,
             'payment_method' => 'credit_card',

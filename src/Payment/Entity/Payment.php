@@ -71,6 +71,11 @@ class Payment
     private ?array $details = null;
 
     /**
+     * @ORM\Column(type="json", nullable=true)
+     */
+    private ?array $gatewayResponse = null;
+
+    /**
      * @ORM\Column(name="due_date", type="date", nullable=true)
      */
     private ?\DateTimeInterface $dueDate = null;
@@ -167,6 +172,18 @@ class Payment
     public function setDetails(?array $details): self
     {
         $this->details = $details;
+
+        return $this;
+    }
+
+    public function getGatewayResponse(): ?array
+    {
+        return $this->gatewayResponse;
+    }
+
+    public function setGatewayResponse(?array $gatewayResponse): Payment
+    {
+        $this->gatewayResponse = $gatewayResponse;
 
         return $this;
     }

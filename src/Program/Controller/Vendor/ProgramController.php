@@ -7,6 +7,7 @@ use App\Core\Request\SearchRequest;
 use App\Core\Response\ApiJsonResponse;
 use App\Customer\ResponseMapper\CustomerResponseMapper;
 use App\Program\Dto\ProgramDto;
+use App\Program\Request\VendorProgramSearchRequest;
 use App\Program\ResponseMapper\ProgramResponseMapper;
 use App\Vendor\Entity\Vendor;
 use App\Program\Provider\VendorProgramProvider;
@@ -47,7 +48,7 @@ class ProgramController extends AbstractController
      * @OA\Parameter(
      *     in="query",
      *     name="filters",
-     *     @OA\Schema(ref=@Model(type=SearchRequest::class))
+     *     @OA\Schema(ref=@Model(type=VendorProgramSearchRequest::class))
      * )
      *
      * @OA\Response(
@@ -67,7 +68,7 @@ class ProgramController extends AbstractController
      *
      * @Security(name="Bearer")
      */
-    public function getPrograms(string $vendorId, SearchRequest $searchRequest): Response
+    public function getPrograms(string $vendorId, VendorProgramSearchRequest $searchRequest): Response
     {
         if ('current' == $vendorId) {
             /** @var Vendor $vendor */
@@ -77,8 +78,10 @@ class ProgramController extends AbstractController
             throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
         }
 
-        $programs = $this->programProvider->searchVendorPrograms($vendor, $searchRequest);
-        $count = $this->programProvider->countVendorPrograms($vendor, $searchRequest);
+        $searchRequest->vendorId = $vendor->getId()->toString();
+
+        $programs = $this->programProvider->search($searchRequest);
+        $count = $this->programProvider->count($searchRequest);
 
         return new ApiJsonResponse(
             Response::HTTP_OK,

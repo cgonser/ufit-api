@@ -31,6 +31,11 @@ class Program
     private UuidInterface $id;
 
     /**
+     * @ORM\Column(type="uuid")
+     */
+    private UuidInterface $vendorId;
+
+    /**
      * @ORM\ManyToOne(targetEntity="App\Vendor\Entity\Vendor")
      * @ORM\JoinColumn(name="vendor_id", referencedColumnName="id")
      */
@@ -80,6 +85,18 @@ class Program
     public function getId(): UuidInterface
     {
         return $this->id;
+    }
+
+    public function getVendorId(): UuidInterface
+    {
+        return $this->vendorId;
+    }
+
+    public function setVendorId(UuidInterface $vendorId): Program
+    {
+        $this->vendorId = $vendorId;
+
+        return $this;
     }
 
     public function getVendor(): Vendor

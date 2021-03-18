@@ -22,6 +22,8 @@ framework:
 
         routing:
             'App\Payment\Message\InvoicePaidEvent': payment
+            'App\Payment\Message\PaymentCreatedEvent': payment
+            'App\Payment\Message\PaymentUpdatedEvent': void
 
             'App\Program\Message\ProgramCreatedEvent': void
             'App\Program\Message\ProgramUpdatedEvent': void

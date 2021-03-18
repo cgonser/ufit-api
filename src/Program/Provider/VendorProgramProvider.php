@@ -29,13 +29,20 @@ class VendorProgramProvider extends ProgramProvider
         return $this->repository->findBy(['vendor' => $vendor]);
     }
 
-    public function searchVendorPrograms(Vendor $vendor, SearchRequest $searchRequest): array
+    public function getSearchableFields(): array
     {
-        return $this->search($searchRequest, ['vendor' => $vendor]);
+        return [
+            'name',
+            'goals',
+        ];
     }
 
-    public function countVendorPrograms(Vendor $vendor, SearchRequest $searchRequest): int
+    public function getFilterableFields(): array
     {
-        return $this->count($searchRequest, ['vendor' => $vendor]);
+        return [
+            'vendorId',
+            'isTemplate',
+            'isActive',
+        ];
     }
 }

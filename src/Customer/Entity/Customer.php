@@ -213,6 +213,11 @@ class Customer implements UserInterface, \Serializable
         return $this;
     }
 
+    public function getDocument(string $documentType): ?string
+    {
+        return $this->documents[$documentType] ?? null;
+    }
+
     public function getDocuments(): ?array
     {
         return $this->documents;

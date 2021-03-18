@@ -24,6 +24,7 @@ class PaymentResponseMapper
         $paymentDto->paymentMethodId = $payment->getPaymentMethodId()->toString();
         $paymentDto->amount = $payment->getAmount();
         $paymentDto->status = $payment->getStatus();
+        $paymentDto->details = $payment->getDetails();
         $paymentDto->dueDate = $payment->getDueDate()->format('Y-m-d');
         $paymentDto->createdAt = $payment->getCreatedAt()->format(\DateTimeInterface::ISO8601);
         $paymentDto->updatedAt = $payment->getUpdatedAt()->format(\DateTimeInterface::ISO8601);
