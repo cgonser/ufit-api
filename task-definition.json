@@ -94,7 +94,7 @@
         },
         {
           "name": "MESSENGER_TRANSPORT_DSN_EMAIL",
-          "value": "sync://"
+          "value": "in-memory://"
         }
       ],
       "secrets": [
