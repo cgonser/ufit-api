@@ -115,6 +115,8 @@ class VendorPlanService
         }
 
         if (null !== $vendorPlanRequest->paymentMethods) {
+            $vendorPlan->getPaymentMethods()->clear();
+
             foreach ($vendorPlanRequest->paymentMethods as $paymentMethodId) {
                 $vendorPlan->addPaymentMethod(
                     $this->paymentMethodProvider->get(Uuid::fromString($paymentMethodId))
