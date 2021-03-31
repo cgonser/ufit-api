@@ -25,7 +25,13 @@ class PaymentRequest
     public ?string $paymentMethodId = null;
 
     /**
-     * @OA\Property(type="object")
+     * @OA\Property(
+     *     type="object",
+     *     @OA\Property(
+     *         property="card_hash",
+     *         type="string"
+     *     )
+     * )
      */
     public ?array $details = null;
 }

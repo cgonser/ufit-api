@@ -16,6 +16,9 @@ class PaymentDto
 
     public ?PaymentMethodDto $paymentMethod;
 
+    /**
+     * @OA\Property(enum={"pending", "paid", "rejected"})
+     */
     public ?string $status;
 
     public ?string $amount;
