@@ -21,7 +21,7 @@ class PaymentDto
     public ?string $amount;
 
     /**
-     * @OA\Property(type="array", @OA\Items(type="object"))
+     * @OA\Property(type="object")
      */
     public ?array $details;
 

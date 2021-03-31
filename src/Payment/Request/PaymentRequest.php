@@ -25,7 +25,7 @@ class PaymentRequest
     public ?string $paymentMethodId = null;
 
     /**
-     * @OA\Property(type="array", @OA\Items(type="object"))
+     * @OA\Property(type="object")
      */
     public ?array $details = null;
 }
