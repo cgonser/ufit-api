@@ -20,6 +20,8 @@ class ProgramDto
      */
     public ?array $goals;
 
+    public ?string $description;
+
     public bool $isTemplate;
 
     public bool $isActive;

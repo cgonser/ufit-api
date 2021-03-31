@@ -70,6 +70,10 @@ class ProgramManager
             $program->setGoals($programRequest->goals);
         }
 
+        if (null !== $programRequest->description) {
+            $program->setDescription($programRequest->description);
+        }
+
         if (null !== $programRequest->isTemplate) {
             $program->setIsTemplate($programRequest->isTemplate);
         }

@@ -22,6 +22,7 @@ class ProgramResponseMapper
         $programDto->name = $program->getName();
         $programDto->level = $program->getLevel();
         $programDto->goals = $program->getGoals();
+        $programDto->description = $program->getDescription();
         $programDto->isTemplate = $program->isTemplate();
         $programDto->isActive = $program->isActive();
         $programDto->createdAt = $program->getCreatedAt()->format(\DateTimeInterface::ISO8601);

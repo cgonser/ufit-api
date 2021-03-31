@@ -34,6 +34,11 @@ class ProgramRequest
     /**
      * @OA\Property()
      */
+    public ?string $description = null;
+
+    /**
+     * @OA\Property()
+     */
     public ?bool $isTemplate = null;
 
     /**

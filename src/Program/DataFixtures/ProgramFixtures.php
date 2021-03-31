@@ -46,6 +46,7 @@ class ProgramFixtures extends Fixture implements DependentFixtureInterface
         $programRequest->goals = ['fat loss'];
         $programRequest->level = 'Beginner';
         $programRequest->name = 'Quick fat loss';
+        $programRequest->description = 'Just eat less';
 
         yield $programRequest;
 
@@ -54,6 +55,7 @@ class ProgramFixtures extends Fixture implements DependentFixtureInterface
         $programRequest->goals = ['strength', 'conditioning'];
         $programRequest->level = 'Advanced';
         $programRequest->name = 'Superman';
+        $programRequest->description = 'Go to Krypton';
 
         yield $programRequest;
     }

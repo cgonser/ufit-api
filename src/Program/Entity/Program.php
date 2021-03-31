@@ -57,6 +57,11 @@ class Program
     private ?array $goals = null;
 
     /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private ?string $description;
+
+    /**
      * @ORM\Column(type="boolean", nullable=false, options={"default": false})
      */
     private bool $isTemplate = false;
@@ -143,6 +148,18 @@ class Program
     public function setGoals(?array $goals): self
     {
         $this->goals = $goals;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
 
         return $this;
     }
