@@ -15,6 +15,7 @@ class VendorInstagramLoginRequest
 {
     /**
      * @OA\Property()
+     * @Assert\NotNull()
      * @Assert\NotBlank()
      */
     public ?string $code = null;
