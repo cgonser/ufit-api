@@ -7,7 +7,7 @@ namespace DoctrineMigrations;
 use App\Core\Doctrine\Migrations\CoreMigration;
 use App\Vendor\Request\VendorPlanRequest;
 use App\Vendor\Request\VendorRequest;
-use App\Vendor\Service\VendorPlanService;
+use App\Vendor\Service\VendorPlanManager;
 use App\Vendor\Service\VendorService;
 use Doctrine\DBAL\Schema\Schema;
 
@@ -42,7 +42,7 @@ final class Version20201119021601 extends CoreMigration
                 $vendorPlanRequest->durationMonths = $plan['durationMonths'];
                 $vendorPlanRequest->isApprovalRequired = $plan['isApprovalRequired'];
 
-                $this->getService(VendorPlanService::class)->create($vendor, $vendorPlanRequest);
+                $this->getService(VendorPlanManager::class)->create($vendor, $vendorPlanRequest);
             }
         }
     }

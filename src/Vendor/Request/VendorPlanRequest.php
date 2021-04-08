@@ -16,6 +16,11 @@ class VendorPlanRequest
     /**
      * @OA\Property()
      */
+    public ?string $vendorId = null;
+
+    /**
+     * @OA\Property()
+     */
     public ?string $name = null;
 
     /**

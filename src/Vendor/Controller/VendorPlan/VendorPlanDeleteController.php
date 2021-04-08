@@ -7,7 +7,7 @@ use App\Core\Response\ApiJsonResponse;
 use App\Vendor\Entity\Vendor;
 use App\Vendor\Exception\VendorPlanNotFoundException;
 use App\Vendor\Provider\VendorPlanProvider;
-use App\Vendor\Service\VendorPlanService;
+use App\Vendor\Service\VendorPlanManager;
 use OpenApi\Annotations as OA;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,12 +16,12 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class VendorPlanDeleteController extends AbstractController
 {
-    private VendorPlanService $vendorPlanService;
+    private VendorPlanManager $vendorPlanService;
 
     private VendorPlanProvider $vendorPlanProvider;
 
     public function __construct(
-        VendorPlanService $vendorPlanService,
+        VendorPlanManager $vendorPlanService,
         VendorPlanProvider $vendorPlanProvider
     ) {
         $this->vendorPlanService = $vendorPlanService;
@@ -45,22 +45,18 @@ class VendorPlanDeleteController extends AbstractController
         string $vendorId,
         string $vendorPlanId
     ): Response {
-        try {
-            if ('current' == $vendorId) {
-                /** @var Vendor $vendor */
-                $vendor = $this->getUser();
-            } else {
-                // vendor fetching not implemented yet; requires also authorization
-                throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
-            }
-
-            $vendorPlan = $this->vendorPlanProvider->getByVendorAndId($vendor, Uuid::fromString($vendorPlanId));
-
-            $this->vendorPlanService->delete($vendorPlan);
-
-            return new ApiJsonResponse(Response::HTTP_NO_CONTENT);
-        } catch (VendorPlanNotFoundException $e) {
-            throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
+        if ('current' === $vendorId) {
+            /** @var Vendor $vendor */
+            $vendor = $this->getUser();
+        } else {
+            // vendor fetching not implemented yet; requires also authorization
+            throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
         }
+
+        $vendorPlan = $this->vendorPlanProvider->getByVendorAndId($vendor, Uuid::fromString($vendorPlanId));
+
+        $this->vendorPlanService->delete($vendorPlan);
+
+        return new ApiJsonResponse(Response::HTTP_NO_CONTENT);
     }
 }

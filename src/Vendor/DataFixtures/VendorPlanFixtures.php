@@ -6,7 +6,7 @@ use App\Core\Provider\CurrencyProvider;
 use App\Vendor\Entity\Vendor;
 use App\Vendor\Provider\VendorProvider;
 use App\Vendor\Request\VendorPlanRequest;
-use App\Vendor\Service\VendorPlanService;
+use App\Vendor\Service\VendorPlanManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -15,14 +15,14 @@ class VendorPlanFixtures extends Fixture implements DependentFixtureInterface
 {
     private VendorProvider $vendorProvider;
 
-    private VendorPlanService $vendorPlanService;
+    private VendorPlanManager $vendorPlanService;
 
     private CurrencyProvider $currencyProvider;
 
     public function __construct(
         VendorProvider $vendorProvider,
         CurrencyProvider $currencyProvider,
-        VendorPlanService $vendorPlanService
+        VendorPlanManager $vendorPlanService
     ) {
         $this->vendorProvider = $vendorProvider;
         $this->vendorPlanService = $vendorPlanService;

@@ -2,177 +2,53 @@
 
 namespace App\Vendor\Service;
 
-use App\Core\Provider\CurrencyProvider;
-use App\Core\Provider\PaymentMethodProvider;
-use App\Vendor\Entity\Vendor;
+use App\Core\Validation\EntityValidator;
 use App\Vendor\Entity\VendorPlan;
 use App\Vendor\Exception\VendorPlanInvalidDurationException;
 use App\Vendor\Exception\VendorPlanSlugInUseException;
-use App\Vendor\Provider\QuestionnaireProvider;
 use App\Vendor\Provider\VendorPlanProvider;
-use App\Vendor\Provider\VendorProvider;
 use App\Vendor\Repository\VendorPlanRepository;
-use App\Vendor\Request\VendorPlanRequest;
-use Decimal\Decimal;
-use Ramsey\Uuid\Uuid;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
-class VendorPlanService
+class VendorPlanManager
 {
     private VendorPlanRepository $vendorPlanRepository;
 
     private VendorPlanProvider $vendorPlanProvider;
 
-    private VendorPlanImageService $vendorPlanImageService;
-
-    private VendorProvider $vendorProvider;
-
-    private QuestionnaireProvider $questionnaireProvider;
-
-    private CurrencyProvider $currencyProvider;
-
-    private PaymentMethodProvider $paymentMethodProvider;
+    private EntityValidator $validator;
 
     private SluggerInterface $slugger;
 
     public function __construct(
         VendorPlanRepository $vendorPlanRepository,
         VendorPlanProvider $vendorPlanProvider,
-        VendorPlanImageService $vendorPlanImageService,
-        VendorProvider $vendorProvider,
-        QuestionnaireProvider $questionnaireProvider,
-        CurrencyProvider $currencyProvider,
-        PaymentMethodProvider $paymentMethodProvider,
+        EntityValidator $validator,
         SluggerInterface $slugger
     ) {
         $this->vendorPlanRepository = $vendorPlanRepository;
         $this->vendorPlanProvider = $vendorPlanProvider;
-        $this->vendorPlanImageService = $vendorPlanImageService;
-        $this->vendorProvider = $vendorProvider;
-        $this->questionnaireProvider = $questionnaireProvider;
-        $this->currencyProvider = $currencyProvider;
-        $this->paymentMethodProvider = $paymentMethodProvider;
+        $this->validator = $validator;
         $this->slugger = $slugger;
     }
 
-    public function create(Vendor $vendor, VendorPlanRequest $vendorPlanRequest): VendorPlan
+    public function create(VendorPlan $vendorPlan): void
     {
-        $vendorPlan = new VendorPlan();
-        $vendorPlan->setVendor($vendor);
-
-        $this->mapFromRequest($vendorPlan, $vendorPlanRequest);
+        $this->prepareVendorPlan($vendorPlan);
+        $this->validateVendorPlan($vendorPlan);
 
         $this->vendorPlanRepository->save($vendorPlan);
-
-        return $vendorPlan;
     }
 
-    public function update(VendorPlan $vendorPlan, VendorPlanRequest $vendorPlanRequest)
+    public function update(VendorPlan $vendorPlan): void
     {
-        $this->mapFromRequest($vendorPlan, $vendorPlanRequest);
+        $this->prepareVendorPlan($vendorPlan);
+        $this->validateVendorPlan($vendorPlan);
 
         $this->vendorPlanRepository->save($vendorPlan);
-
-        if (null !== $vendorPlanRequest->imageContents) {
-            $this->vendorPlanImageService->uploadImage($vendorPlan, $vendorPlanRequest->imageContents);
-        }
     }
 
-    private function mapFromRequest(VendorPlan $vendorPlan, VendorPlanRequest $vendorPlanRequest)
-    {
-        if (null !== $vendorPlanRequest->name) {
-            $vendorPlan->setName($vendorPlanRequest->name);
-        }
-
-        if (null !== $vendorPlanRequest->description) {
-            $vendorPlan->setDescription($vendorPlanRequest->description);
-        }
-
-        if (null !== $vendorPlanRequest->features) {
-            $vendorPlan->setFeatures($vendorPlanRequest->features);
-        }
-
-        if (null !== $vendorPlanRequest->price) {
-            $vendorPlan->setPrice(new Decimal($vendorPlanRequest->price));
-        }
-
-        if (null !== $vendorPlanRequest->currency) {
-            $vendorPlan->setCurrency($this->currencyProvider->getByCode($vendorPlanRequest->currency));
-        }
-
-        if (null !== $vendorPlanRequest->isApprovalRequired) {
-            $vendorPlan->setIsApprovalRequired($vendorPlanRequest->isApprovalRequired);
-        }
-
-        if (null !== $vendorPlanRequest->isRecurring) {
-            $vendorPlan->setIsRecurring($vendorPlanRequest->isRecurring);
-        }
-
-        if (null !== $vendorPlanRequest->durationMonths || null !== $vendorPlanRequest->durationDays) {
-            $vendorPlan->setDuration(
-                $this->prepareDuration($vendorPlanRequest->durationMonths, $vendorPlanRequest->durationDays)
-            );
-        }
-
-        if (null !== $vendorPlanRequest->paymentMethods) {
-            $vendorPlan->getPaymentMethods()->clear();
-
-            foreach ($vendorPlanRequest->paymentMethods as $paymentMethodId) {
-                $vendorPlan->addPaymentMethod(
-                    $this->paymentMethodProvider->get(Uuid::fromString($paymentMethodId))
-                );
-            }
-        }
-
-        if ($vendorPlan->isRecurring() && !$vendorPlan->getDuration()) {
-            throw new VendorPlanInvalidDurationException();
-        }
-
-        if (null !== $vendorPlanRequest->isVisible) {
-            $vendorPlan->setIsVisible($vendorPlanRequest->isVisible);
-        }
-
-        if (null !== $vendorPlanRequest->slug) {
-            if (!$this->isSlugUnique($vendorPlan, $vendorPlanRequest->slug)) {
-                throw new VendorPlanSlugInUseException();
-            }
-
-            $vendorPlan->setSlug($vendorPlanRequest->slug);
-        } elseif (null === $vendorPlan->getSlug()) {
-            $vendorPlan->setSlug($this->generateSlug($vendorPlan));
-        }
-
-        if (null !== $vendorPlanRequest->questionnaireId) {
-            $questionnaire = $this->questionnaireProvider->getByVendorAndId(
-                $vendorPlan->getVendor(),
-                Uuid::fromString($vendorPlanRequest->questionnaireId)
-            );
-
-            $vendorPlan->setQuestionnaire($questionnaire);
-        } else {
-            $vendorPlan->setQuestionnaire(null);
-        }
-    }
-
-    private function prepareDuration(?string $durationMonths, ?string $durationDays): \DateInterval
-    {
-        $durationString = 'P';
-
-        if (null !== $durationMonths && $durationMonths > 0) {
-            $durationString .= sprintf('%sM', $durationMonths);
-        }
-        if (null !== $durationDays && $durationDays > 0) {
-            $durationString .= sprintf('%sD', $durationDays);
-        }
-
-        try {
-            return new \DateInterval($durationString);
-        } catch (\Exception $e) {
-            throw new VendorPlanInvalidDurationException();
-        }
-    }
-
-    public function delete(VendorPlan $vendorPlan)
+    public function delete(VendorPlan $vendorPlan): void
     {
         $this->vendorPlanRepository->delete($vendorPlan);
     }
@@ -182,7 +58,7 @@ class VendorPlanService
         $slug = strtolower($this->slugger->slug($vendorPlan->getName()));
 
         if (null !== $suffix) {
-            $slug .= '-'.(string) $suffix;
+            $slug .= '-'.$suffix;
         }
 
         if ($this->isSlugUnique($vendorPlan, $slug)) {
@@ -202,10 +78,30 @@ class VendorPlanService
             return true;
         }
 
-        if (!$vendorPlan->isNew() && $existingVendorPlan->getId()->toString() == $vendorPlan->getId()->toString()) {
+        if (!$vendorPlan->isNew() && $existingVendorPlan->getId()->equals($vendorPlan->getId())) {
             return true;
         }
 
         return false;
+    }
+
+    private function prepareVendorPlan(VendorPlan $vendorPlan)
+    {
+        if (null === $vendorPlan->getSlug() && null !== $vendorPlan->getName()) {
+            $vendorPlan->setSlug($this->generateSlug($vendorPlan));
+        }
+    }
+
+    private function validateVendorPlan(VendorPlan $vendorPlan)
+    {
+        $this->validator->validate($vendorPlan);
+
+        if ($vendorPlan->isRecurring() && !$vendorPlan->getDuration()) {
+            throw new VendorPlanInvalidDurationException();
+        }
+
+        if (null !== $vendorPlan->getSlug() && !$this->isSlugUnique($vendorPlan, $vendorPlan->getSlug())) {
+            throw new VendorPlanSlugInUseException();
+        }
     }
 }
