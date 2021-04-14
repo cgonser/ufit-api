@@ -1,14 +1,11 @@
 <?php
 
-namespace App\Core\Controller\Currency;
+namespace App\Localization\Controller\Currency;
 
-use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
-use App\Core\Dto\CurrencyDto;
-use App\Core\Exception\CurrencyNotFoundException;
-use App\Core\Provider\CurrencyProvider;
-use App\Core\ResponseMapper\CurrencyResponseMapper;
-use App\Core\Service\CurrencyService;
+use App\Localization\Dto\CurrencyDto;
+use App\Localization\Provider\CurrencyProvider;
+use App\Localization\Service\CurrencyService;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Ramsey\Uuid\Uuid;
@@ -20,17 +17,13 @@ class CurrencyDeleteController extends AbstractController
 {
     private CurrencyService $currencyService;
 
-    private CurrencyResponseMapper $currencyResponseMapper;
-
     private CurrencyProvider $currencyProvider;
 
     public function __construct(
         CurrencyService $currencyService,
-        CurrencyProvider $currencyProvider,
-        CurrencyResponseMapper $currencyResponseMapper
+        CurrencyProvider $currencyProvider
     ) {
         $this->currencyService = $currencyService;
-        $this->currencyResponseMapper = $currencyResponseMapper;
         $this->currencyProvider = $currencyProvider;
     }
 
@@ -50,14 +43,10 @@ class CurrencyDeleteController extends AbstractController
      */
     public function delete(string $currencyId): Response
     {
-        try {
-            $currency = $this->currencyProvider->get(Uuid::fromString($currencyId));
+        $currency = $this->currencyProvider->get(Uuid::fromString($currencyId));
 
-            $this->currencyService->delete($currency);
+        $this->currencyService->delete($currency);
 
-            return new ApiJsonResponse(Response::HTTP_NO_CONTENT);
-        } catch (CurrencyNotFoundException $e) {
-            throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
-        }
+        return new ApiJsonResponse(Response::HTTP_NO_CONTENT);
     }
 }

@@ -4,13 +4,12 @@ namespace App\Program\Controller\Vendor;
 
 use App\Core\Exception\ApiJsonException;
 use App\Core\Exception\ApiJsonInputValidationException;
-use App\Core\Exception\CurrencyNotFoundException;
 use App\Core\Response\ApiJsonResponse;
 use App\Program\Dto\ProgramDto;
-use App\Vendor\Entity\Vendor;
 use App\Program\Request\ProgramRequest;
 use App\Program\ResponseMapper\ProgramResponseMapper;
 use App\Program\Service\ProgramManager;
+use App\Vendor\Entity\Vendor;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;

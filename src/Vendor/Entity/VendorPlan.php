@@ -2,7 +2,7 @@
 
 namespace App\Vendor\Entity;
 
-use App\Core\Entity\Currency;
+use App\Localization\Entity\Currency;
 use App\Core\Entity\PaymentMethod;
 use App\Subscription\Entity\Subscription;
 use Decimal\Decimal;
@@ -90,7 +90,7 @@ class VendorPlan
     private Collection $subscriptions;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Core\Entity\Currency")
+     * @ORM\ManyToOne(targetEntity="App\Localization\Entity\Currency")
      * @ORM\JoinColumn(name="currency_id", referencedColumnName="id")
      * @Assert\NotBlank()
      */

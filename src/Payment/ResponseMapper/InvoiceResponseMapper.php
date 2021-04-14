@@ -2,7 +2,7 @@
 
 namespace App\Payment\ResponseMapper;
 
-use App\Core\ResponseMapper\CurrencyResponseMapper;
+use App\Localization\ResponseMapper\CurrencyResponseMapper;
 use App\Payment\Dto\InvoiceDto;
 use App\Payment\Entity\Invoice;
 use App\Subscription\ResponseMapper\SubscriptionResponseMapper;

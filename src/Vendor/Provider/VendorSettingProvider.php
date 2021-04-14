@@ -4,9 +4,9 @@ namespace App\Vendor\Provider;
 
 use App\Core\Provider\AbstractProvider;
 use App\Vendor\Entity\Vendor;
+use App\Vendor\Entity\VendorSetting;
 use App\Vendor\Exception\VendorSettingNotFoundException;
 use App\Vendor\Repository\VendorSettingRepository;
-use App\Vendor\Entity\VendorSetting;
 use Ramsey\Uuid\UuidInterface;
 
 class VendorSettingProvider extends AbstractProvider
@@ -15,6 +15,7 @@ class VendorSettingProvider extends AbstractProvider
     {
         $this->repository = $repository;
     }
+
     public function getByVendorAndId(Vendor $vendor, UuidInterface $vendorSettingId): VendorSetting
     {
         /** @var VendorSetting|null $vendorSetting */

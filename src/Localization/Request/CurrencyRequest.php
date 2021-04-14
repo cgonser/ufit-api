@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Request;
+namespace App\Localization\Request;
 
 use OpenApi\Annotations as OA;
 use Symfony\Component\Validator\Constraints as Assert;

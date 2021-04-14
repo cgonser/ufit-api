@@ -41,7 +41,7 @@ class PhotoTypeController extends AbstractController
      *     @OA\JsonContent(
      *         type="array",
      *         @OA\Items(ref=@Model(type=PhotoTypeDto::class)))
-     *     )*
+     *     )
      * )
      * @Security(name="Bearer")
      */

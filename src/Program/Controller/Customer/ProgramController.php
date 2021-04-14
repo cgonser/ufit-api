@@ -57,7 +57,7 @@ class ProgramController extends AbstractController
      */
     public function getPrograms(string $customerId, CustomerProgramSearchRequest $searchRequest): Response
     {
-        if ('current' == $customerId) {
+        if ('current' === $customerId) {
             /** @var Customer $customer */
             $customer = $this->getUser();
         } else {

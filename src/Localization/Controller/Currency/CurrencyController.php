@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Core\Controller\Currency;
+namespace App\Localization\Controller\Currency;
 
-use App\Core\Dto\CurrencyDto;
-use App\Core\Provider\CurrencyProvider;
+use App\Localization\Dto\CurrencyDto;
+use App\Localization\Provider\CurrencyProvider;
 use App\Core\Response\ApiJsonResponse;
-use App\Core\ResponseMapper\CurrencyResponseMapper;
+use App\Localization\ResponseMapper\CurrencyResponseMapper;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Ramsey\Uuid\Uuid;
@@ -30,11 +30,11 @@ class CurrencyController extends AbstractController
     /**
      * @Route("/currencies", methods="GET", name="currencies_get")
      *
-     * @OA\Tag(name="Currency")
+     * @OA\Tag(name="Localization / Currency")
      * @OA\Response(
      *     response=200,
-     *     description="Returns all available currencies",
-     *     @OA\JsonContent(ref=@Model(type=CurrencyDto::class))
+     *     description="Success",
+     *     @OA\JsonContent(type="array", @OA\Items(ref=@Model(type=CurrencyDto::class))))
      * )
      */
     public function getCurrencies(): Response

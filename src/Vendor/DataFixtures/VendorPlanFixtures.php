@@ -2,7 +2,7 @@
 
 namespace App\Vendor\DataFixtures;
 
-use App\Core\Provider\CurrencyProvider;
+use App\Localization\Provider\CurrencyProvider;
 use App\Vendor\Entity\Vendor;
 use App\Vendor\Provider\VendorProvider;
 use App\Vendor\Request\VendorPlanRequest;

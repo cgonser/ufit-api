@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Core\ResponseMapper;
+namespace App\Localization\ResponseMapper;
 
-use App\Core\Dto\CurrencyDto;
-use App\Core\Entity\Currency;
+use App\Localization\Dto\CurrencyDto;
+use App\Localization\Entity\Currency;
 
 class CurrencyResponseMapper
 {

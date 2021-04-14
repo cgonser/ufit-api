@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Core\Service;
+namespace App\Localization\Service;
 
-use App\Core\Entity\Currency;
-use App\Core\Exception\CurrencyAlreadyExistsException;
-use App\Core\Provider\CurrencyProvider;
-use App\Core\Repository\CurrencyRepository;
-use App\Core\Request\CurrencyRequest;
+use App\Localization\Entity\Currency;
+use App\Localization\Provider\CurrencyProvider;
+use App\Localization\Repository\CurrencyRepository;
+use App\Localization\Request\CurrencyRequest;
 
 class CurrencyService
 {

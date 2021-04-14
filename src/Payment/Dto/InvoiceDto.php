@@ -2,7 +2,7 @@
 
 namespace App\Payment\Dto;
 
-use App\Core\Dto\CurrencyDto;
+use App\Localization\Dto\CurrencyDto;
 use App\Subscription\Dto\SubscriptionDto;
 
 class InvoiceDto

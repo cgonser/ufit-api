@@ -2,7 +2,7 @@
 
 namespace App\Payment\Entity;
 
-use App\Core\Entity\Currency;
+use App\Localization\Entity\Currency;
 use App\Subscription\Entity\Subscription;
 use Decimal\Decimal;
 use Doctrine\ORM\Mapping as ORM;
@@ -52,7 +52,7 @@ class Invoice
     private UuidInterface $currencyId;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Core\Entity\Currency")
+     * @ORM\ManyToOne(targetEntity="App\Localization\Entity\Currency")
      * @ORM\JoinColumn(name="currency_id", referencedColumnName="id")
      */
     private Currency $currency;

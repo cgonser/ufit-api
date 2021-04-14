@@ -59,6 +59,14 @@ services:
         resource: '../src/Customer/Controller'
         tags: ['controller.service_arguments']
 
+    App\Localization\:
+        resource: '../src/Localization/*'
+        exclude: '../src/Localization/{DependencyInjection,Entity,Tests,Kernel.php}'
+
+    App\Localization\Controller\:
+        resource: '../src/Localization/Controller'
+        tags: ['controller.service_arguments']
+
     App\Payment\:
         resource: '../src/Payment/*'
         exclude: '../src/Payment/{DependencyInjection,Entity,Tests,Kernel.php}'

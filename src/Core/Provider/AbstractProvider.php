@@ -33,7 +33,7 @@ abstract class AbstractProvider
 
     public function search(SearchRequest $searchRequest, ?array $filters = null): array
     {
-        $orderExpression = 'root.' . ($searchRequest->orderProperty ?: 'createdAt');
+        $orderExpression = 'root.'.($searchRequest->orderProperty ?: 'createdAt');
         $orderDirection = $searchRequest->orderDirection ?: 'DESC';
 
         $limit = $searchRequest->resultsPerPage ?: self::RESULTS_PER_PAGE;
@@ -53,7 +53,7 @@ abstract class AbstractProvider
     {
         $queryBuilder = $this->buildSearchQueryBuilder($searchRequest, $filters);
 
-        return (int)$queryBuilder->select('COUNT(root.id)')
+        return (int) $queryBuilder->select('COUNT(root.id)')
             ->getQuery()
             ->useQueryCache(true)
             ->getSingleScalarResult();
@@ -101,7 +101,7 @@ abstract class AbstractProvider
             }
 
             if (null !== $searchRequest->$property) {
-                $filters[$entity . '.' . $property] = $searchRequest->$property;
+                $filters[$entity.'.'.$property] = $searchRequest->$property;
             }
         }
 
@@ -115,8 +115,8 @@ abstract class AbstractProvider
         foreach ($filters as $fieldName => $value) {
             ++$i;
 
-            $queryBuilder->andWhere(sprintf('%s = :filter_' . $i, $fieldName))
-                ->setParameter('filter_' . $i, $value);
+            $queryBuilder->andWhere(sprintf('%s = :filter_'.$i, $fieldName))
+                ->setParameter('filter_'.$i, $value);
         }
     }
 
@@ -138,7 +138,7 @@ abstract class AbstractProvider
 
         $queryBuilder
             ->andWhere($queryBuilder->expr()->orX(...$searchFields))
-            ->setParameter('searchText', '%' . strtolower($search) . '%');
+            ->setParameter('searchText', '%'.strtolower($search).'%');
     }
 
     protected function getSearchableFields(): array

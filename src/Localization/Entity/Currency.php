@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Entity;
+namespace App\Localization\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
@@ -9,7 +9,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity(repositoryClass="App\Core\Repository\CurrencyRepository")
+ * @ORM\Entity(repositoryClass="App\Localization\Repository\CurrencyRepository")
  * @ORM\Table(name="currency")
  * @UniqueEntity(fields={"code"})
  */

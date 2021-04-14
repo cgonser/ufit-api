@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Dto;
+namespace App\Localization\Dto;
 
 class CurrencyDto
 {

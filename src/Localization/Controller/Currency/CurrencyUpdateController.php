@@ -1,17 +1,14 @@
 <?php
 
-namespace App\Core\Controller\Currency;
+namespace App\Localization\Controller\Currency;
 
-use App\Core\Dto\CurrencyDto;
-use App\Core\Exception\ApiJsonException;
 use App\Core\Exception\ApiJsonInputValidationException;
-use App\Core\Exception\CurrencyAlreadyExistsException;
-use App\Core\Exception\CurrencyNotFoundException;
-use App\Core\Provider\CurrencyProvider;
-use App\Core\Request\CurrencyRequest;
 use App\Core\Response\ApiJsonResponse;
-use App\Core\ResponseMapper\CurrencyResponseMapper;
-use App\Core\Service\CurrencyService;
+use App\Localization\Dto\CurrencyDto;
+use App\Localization\Provider\CurrencyProvider;
+use App\Localization\Request\CurrencyRequest;
+use App\Localization\ResponseMapper\CurrencyResponseMapper;
+use App\Localization\Service\CurrencyService;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Ramsey\Uuid\Uuid;
@@ -64,23 +61,17 @@ class CurrencyUpdateController extends AbstractController
         CurrencyRequest $currencyRequest,
         ConstraintViolationListInterface $validationErrors
     ): Response {
-        try {
-            if ($validationErrors->count() > 0) {
-                throw new ApiJsonInputValidationException($validationErrors);
-            }
-
-            $currency = $this->currencyProvider->get(Uuid::fromString($currencyId));
-
-            $this->currencyService->update($currency, $currencyRequest);
-
-            return new ApiJsonResponse(
-                Response::HTTP_OK,
-                $this->currencyResponseMapper->map($currency)
-            );
-        } catch (CurrencyNotFoundException $e) {
-            throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
-        } catch (CurrencyAlreadyExistsException $e) {
-            throw new ApiJsonException(Response::HTTP_BAD_REQUEST, $e->getMessage());
+        if ($validationErrors->count() > 0) {
+            throw new ApiJsonInputValidationException($validationErrors);
         }
+
+        $currency = $this->currencyProvider->get(Uuid::fromString($currencyId));
+
+        $this->currencyService->update($currency, $currencyRequest);
+
+        return new ApiJsonResponse(
+            Response::HTTP_OK,
+            $this->currencyResponseMapper->map($currency)
+        );
     }
 }

@@ -1,15 +1,13 @@
 <?php
 
-namespace App\Core\Controller\Currency;
+namespace App\Localization\Controller\Currency;
 
-use App\Core\Exception\ApiJsonException;
 use App\Core\Exception\ApiJsonInputValidationException;
 use App\Core\Response\ApiJsonResponse;
-use App\Core\Dto\CurrencyDto;
-use App\Core\Exception\CurrencyAlreadyExistsException;
-use App\Core\Request\CurrencyRequest;
-use App\Core\ResponseMapper\CurrencyResponseMapper;
-use App\Core\Service\CurrencyService;
+use App\Localization\Dto\CurrencyDto;
+use App\Localization\Request\CurrencyRequest;
+use App\Localization\ResponseMapper\CurrencyResponseMapper;
+use App\Localization\Service\CurrencyService;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -56,19 +54,15 @@ class CurrencyCreateController extends AbstractController
         CurrencyRequest $currencyRequest,
         ConstraintViolationListInterface $validationErrors
     ): Response {
-        try {
-            if ($validationErrors->count() > 0) {
-                throw new ApiJsonInputValidationException($validationErrors);
-            }
-
-            $currency = $this->currencyService->create($currencyRequest);
-
-            return new ApiJsonResponse(
-                Response::HTTP_CREATED,
-                $this->currencyResponseMapper->map($currency)
-            );
-        } catch (CurrencyAlreadyExistsException $e) {
-            throw new ApiJsonException(Response::HTTP_BAD_REQUEST, $e->getMessage());
+        if ($validationErrors->count() > 0) {
+            throw new ApiJsonInputValidationException($validationErrors);
         }
+
+        $currency = $this->currencyService->create($currencyRequest);
+
+        return new ApiJsonResponse(
+            Response::HTTP_CREATED,
+            $this->currencyResponseMapper->map($currency)
+        );
     }
 }

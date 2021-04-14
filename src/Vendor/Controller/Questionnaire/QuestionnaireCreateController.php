@@ -4,7 +4,6 @@ namespace App\Vendor\Controller\Questionnaire;
 
 use App\Core\Exception\ApiJsonException;
 use App\Core\Exception\ApiJsonInputValidationException;
-use App\Core\Exception\CurrencyNotFoundException;
 use App\Core\Response\ApiJsonResponse;
 use App\Vendor\Dto\QuestionnaireDto;
 use App\Vendor\Entity\Vendor;

@@ -38,7 +38,7 @@ class InvoicePaidHandler implements MessageHandlerInterface
             'invoice.paid',
             [
                 'invoiceId' => $event->getInvoiceId(),
-                'paidAt' => $event->getPaidAt()->format(\DateTime::ISO8601)
+                'paidAt' => $event->getPaidAt()->format(\DateTime::ATOM),
             ]
         );
 

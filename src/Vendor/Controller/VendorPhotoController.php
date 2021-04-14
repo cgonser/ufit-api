@@ -4,12 +4,9 @@ namespace App\Vendor\Controller;
 
 use App\Core\Exception\ApiJsonException;
 use App\Core\Exception\ApiJsonInputValidationException;
-use App\Core\Exception\CurrencyNotFoundException;
 use App\Core\Response\ApiJsonResponse;
 use App\Vendor\Entity\Vendor;
-use App\Vendor\Exception\QuestionnaireNotFoundException;
 use App\Vendor\Exception\VendorInvalidPhotoException;
-use App\Vendor\Exception\VendorPlanInvalidDurationException;
 use App\Vendor\Request\VendorPhotoRequest;
 use App\Vendor\Service\VendorPhotoService;
 use Nelmio\ApiDocBundle\Annotation\Model;

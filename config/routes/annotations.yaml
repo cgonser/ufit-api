@@ -6,6 +6,10 @@ customer_controllers:
     resource: '../../src/Customer/Controller/'
     type: annotation
 
+localization_controllers:
+    resource: '../../src/Localization/Controller/'
+    type: annotation
+
 payment_controllers:
     resource: '../../src/Payment/Controller/'
     type: annotation

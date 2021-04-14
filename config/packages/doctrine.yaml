@@ -32,6 +32,13 @@ doctrine:
                 prefix: 'App\Customer\Entity'
                 alias: AppCustomer
 
+            App\Localization:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/src/Localization/Entity'
+                prefix: 'App\Localization\Entity'
+                alias: AppLocalization
+
             App\Payment:
                 is_bundle: false
                 type: annotation

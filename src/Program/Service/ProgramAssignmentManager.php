@@ -70,7 +70,7 @@ class ProgramAssignmentManager
 
         if (null !== $programAssignmentRequest->expiresAt) {
             $programAssignment->setExpiresAt(
-                \DateTime::createFromFormat(\DateTimeInterface::ISO8601, $programAssignmentRequest->expiresAt)
+                \DateTime::createFromFormat(\DateTimeInterface::ATOM, $programAssignmentRequest->expiresAt)
             );
         }
 

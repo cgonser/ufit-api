@@ -2,8 +2,8 @@
 
 namespace App\Vendor\Service;
 
-use App\Core\Provider\CurrencyProvider;
 use App\Core\Provider\PaymentMethodProvider;
+use App\Localization\Provider\CurrencyProvider;
 use App\Vendor\Entity\Vendor;
 use App\Vendor\Entity\VendorPlan;
 use App\Vendor\Exception\VendorPlanInvalidDurationException;

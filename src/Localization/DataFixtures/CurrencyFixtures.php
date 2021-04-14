@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Core\DataFixtures;
+namespace App\Localization\DataFixtures;
 
-use App\Core\Entity\Currency;
+use App\Localization\Entity\Currency;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
