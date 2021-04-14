@@ -1,6 +1,6 @@
 {
   "family": "api-stg",
-  "executionRoleArn": "arn:aws:iam::590392040163:role/ecs-task-execution-role",
+  "executionRoleArn": "arn:aws:iam::590392040163:role/ecs-task-execution-role-api-stg",
   "containerDefinitions": [
     {
       "essential": true,
@@ -14,7 +14,7 @@
         },
         {
           "name": "CORS_ALLOW_ORIGIN",
-          "value": "^https?://(ufit.io|localhost|127\\.0\\.0\\.1)(:[0-9]+)?$"
+          "value": "^https?://(ufit-staging.vercel.app/|ufit-qa.vercel.app|ufit.io|localhost|127\\.0\\.0\\.1)(:[0-9]+)?$"
         },
         {
           "name": "JWT_SECRET_KEY",
@@ -46,15 +46,15 @@
         },
         {
           "name": "CUSTOMER_PHOTO_BUCKET_NAME",
-          "value": "ufit-customer-photos"
+          "value": "ufit-stg-customer-photos"
         },
         {
           "name": "VENDOR_PHOTO_BUCKET_NAME",
-          "value": "ufit-vendor-photos"
+          "value": "ufit-stg-vendor-photos"
         },
         {
           "name": "PROGRAM_ASSET_BUCKET_NAME",
-          "value": "ufit-program-assets"
+          "value": "ufit-stg-program-assets"
         },
         {
           "name": "FACEBOOK_APP_ID",
@@ -74,7 +74,7 @@
         },
         {
           "name": "INSTAGRAM_REDIRECT_URI",
-          "value": "https://ufit.io/vendor/instagram-email"
+          "value": "https://ufit-staging.vercel.app/vendor/instagram-email"
         },
         {
           "name": "MAILER_DSN",
@@ -110,17 +110,17 @@
         },
         {
           "name": "CUSTOMER_PASSWORD_RESET_URL",
-          "value": "https://api.ufit.io/customers/password-reset/%token%"
+          "value": "https://api-stg.ufit.io/customers/password-reset/%token%"
         },
         {
           "name": "VENDOR_PASSWORD_RESET_URL",
-          "value": "https://api.ufit.io/vendors/password-reset/%token%"
+          "value": "https://api-stg.ufit.io/vendors/password-reset/%token%"
         }
       ],
       "secrets": [
         {
           "name": "DATABASE_URL",
-          "valueFrom": "arn:aws:ssm:eu-central-1:590392040163:parameter/stg/database/url"
+          "valueFrom": "arn:aws:ssm:eu-central-1:590392040163:parameter/database/stg/url"
         }
       ],
       "logConfiguration": {
