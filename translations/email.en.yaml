@@ -17,6 +17,9 @@ vendor:
     reminder_plans_creation:
         subject: "Reminder - Create your plans"
         content: "We have noticed that you have not yet created your plans.\n\nYou need to define how you will monetize your personal trainer service.\n\nYou can easily create new plans by accessing your account."
+    password_reset:
+        subject: "uFit password recovery"
+        content: "You requested a reset of your password. Please click on the following link to access the password recovery page."
 
 subscription:
     created_customer:

@@ -9,7 +9,7 @@ use App\Vendor\Dto\VendorDto;
 use App\Vendor\Exception\VendorEmailAddressInUseException;
 use App\Vendor\Request\VendorRequest;
 use App\Vendor\ResponseMapper\VendorResponseMapper;
-use App\Vendor\Service\VendorService;
+use App\Vendor\Service\VendorRequestManager;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -20,15 +20,15 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class VendorCreateController extends AbstractController
 {
-    private VendorService $vendorService;
+    private VendorRequestManager $vendorRequestManager;
 
     private VendorResponseMapper $vendorResponseMapper;
 
     public function __construct(
-        VendorService $vendorService,
+        VendorRequestManager $vendorRequestManager,
         VendorResponseMapper $vendorResponseMapper
     ) {
-        $this->vendorService = $vendorService;
+        $this->vendorRequestManager = $vendorRequestManager;
         $this->vendorResponseMapper = $vendorResponseMapper;
     }
 
@@ -56,16 +56,12 @@ class VendorCreateController extends AbstractController
         VendorRequest $vendorRequest,
         ConstraintViolationListInterface $validationErrors
     ): Response {
-        try {
-            if ($validationErrors->count() > 0) {
-                throw new ApiJsonInputValidationException($validationErrors);
-            }
-
-            $vendor = $this->vendorService->create($vendorRequest);
-
-            return new ApiJsonResponse(Response::HTTP_CREATED, $this->vendorResponseMapper->map($vendor));
-        } catch (VendorEmailAddressInUseException $e) {
-            throw new ApiJsonException(Response::HTTP_BAD_REQUEST, $e->getMessage());
+        if ($validationErrors->count() > 0) {
+            throw new ApiJsonInputValidationException($validationErrors);
         }
+
+        $vendor = $this->vendorRequestManager->createFromRequest($vendorRequest);
+
+        return new ApiJsonResponse(Response::HTTP_CREATED, $this->vendorResponseMapper->map($vendor));
     }
 }

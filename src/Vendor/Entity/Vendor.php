@@ -82,7 +82,7 @@ class Vendor implements UserInterface, \Serializable
     private array $socialLinks = [];
 
     /**
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string", nullable=true, unique=true)
      */
     private ?string $slug = null;
 

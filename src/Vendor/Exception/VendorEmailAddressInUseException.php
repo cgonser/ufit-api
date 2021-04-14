@@ -2,7 +2,9 @@
 
 namespace App\Vendor\Exception;
 
-class VendorEmailAddressInUseException extends \Exception
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+
+class VendorEmailAddressInUseException extends BadRequestHttpException
 {
     protected $message = "E-mail address already in use";
 }

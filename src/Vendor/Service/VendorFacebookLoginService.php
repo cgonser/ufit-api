@@ -17,16 +17,16 @@ class VendorFacebookLoginService
 
     private VendorProvider $vendorProvider;
 
-    private VendorService $vendorService;
+    private VendorRequestManager $vendorRequestManager;
 
     public function __construct(
         Facebook $facebook,
         VendorProvider $vendorProvider,
-        VendorService $vendorService
+        VendorRequestManager $vendorRequestManager
     ) {
         $this->facebook = $facebook;
         $this->vendorProvider = $vendorProvider;
-        $this->vendorService = $vendorService;
+        $this->vendorRequestManager = $vendorRequestManager;
     }
 
     public function prepareVendorFromFacebookToken(string $accessToken): Vendor
@@ -55,6 +55,6 @@ class VendorFacebookLoginService
         $vendorRequest->displayName = $graphUser->getName();
         $vendorRequest->email = $graphUser->getEmail();
 
-        return $this->vendorService->create($vendorRequest);
+        return $this->vendorRequestManager->createFromRequest($vendorRequest);
     }
 }

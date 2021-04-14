@@ -3,7 +3,7 @@
 namespace App\Vendor\DataFixtures;
 
 use App\Vendor\Request\VendorRequest;
-use App\Vendor\Service\VendorService;
+use App\Vendor\Service\VendorRequestManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -25,17 +25,17 @@ class VendorFixtures extends Fixture
         'LU' => 'Europe/Luxembourg',
     ];
 
-    private VendorService $vendorService;
+    private VendorRequestManager $vendorRequestManager;
 
-    public function __construct(VendorService $vendorService)
+    public function __construct(VendorRequestManager $vendorRequestManager)
     {
-        $this->vendorService = $vendorService;
+        $this->vendorRequestManager = $vendorRequestManager;
     }
 
     public function load(ObjectManager $manager): void
     {
         foreach ($this->getData() as $vendorRequest) {
-            $vendor = $this->vendorService->create($vendorRequest);
+            $vendor = $this->vendorRequestManager->createFromRequest($vendorRequest);
 
             $this->addReference('vendor-'.$vendor->getEmail(), $vendor);
         }

@@ -22,7 +22,7 @@ class VendorInstagramManager implements LoggerAwareInterface
 
     private VendorProvider $vendorProvider;
 
-    private VendorService $vendorService;
+    private VendorRequestManager $vendorRequestManager;
 
     private VendorPhotoService $vendorPhotoService;
 
@@ -34,14 +34,14 @@ class VendorInstagramManager implements LoggerAwareInterface
 
     public function __construct(
         VendorProvider $vendorProvider,
-        VendorService $vendorService,
+        VendorRequestManager $vendorRequestManager,
         VendorPhotoService $vendorPhotoService,
         InstagramBasicDisplay $instagramBasicDisplay,
         VendorInstagramProfileRepository $vendorInstagramProfileRepository,
         Instagram $instagramScrapper
     ) {
         $this->vendorProvider = $vendorProvider;
-        $this->vendorService = $vendorService;
+        $this->vendorRequestManager = $vendorRequestManager;
         $this->vendorPhotoService = $vendorPhotoService;
         $this->instagramBasicDisplay = $instagramBasicDisplay;
         $this->vendorInstagramProfileRepository = $vendorInstagramProfileRepository;
@@ -108,7 +108,7 @@ class VendorInstagramManager implements LoggerAwareInterface
         $vendorRequest->displayName = $accountData->getFullName();
         $vendorRequest->biography = $accountData->getBiography();
 
-        $this->vendorService->update($vendorInstagramProfile->getVendor(), $vendorRequest);
+        $this->vendorRequestManager->update($vendorInstagramProfile->getVendor(), $vendorRequest);
 
         if ($accountData->getProfilePicUrlHd()) {
             $this->vendorPhotoService->uploadFromUrl(
@@ -140,11 +140,11 @@ class VendorInstagramManager implements LoggerAwareInterface
         }
 
         try {
-            $vendor = $this->vendorService->create($vendorRequest);
+            $vendor = $this->vendorRequestManager->createFromRequest($vendorRequest);
         } catch (VendorSlugInUseException $e) {
             $vendorRequest->slug = null;
 
-            $vendor = $this->vendorService->create($vendorRequest);
+            $vendor = $this->vendorRequestManager->createFromRequest($vendorRequest);
         }
 
         if (null !== $photoUrl) {

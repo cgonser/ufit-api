@@ -4,7 +4,7 @@ namespace App\Core\Doctrine\Migrations;
 
 use App\Customer\Service\CustomerRequestManager;
 use App\Vendor\Service\VendorPlanManager;
-use App\Vendor\Service\VendorService;
+use App\Vendor\Service\VendorRequestManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\Migrations\AbstractMigration;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,7 +20,7 @@ class MigrationFactory implements \Doctrine\Migrations\Version\MigrationFactory
 
     private CustomerRequestManager $customerRequestManager;
 
-    private VendorService $vendorService;
+    private VendorRequestManager $vendorRequestManager;
 
     private VendorPlanManager $vendorPlanService;
 
@@ -29,13 +29,13 @@ class MigrationFactory implements \Doctrine\Migrations\Version\MigrationFactory
         LoggerInterface $logger,
         EntityManagerInterface $entityManager,
         CustomerRequestManager $customerRequestManager,
-        VendorService $vendorService,
+        VendorRequestManager $vendorRequestManager,
         VendorPlanManager $vendorPlanService
     ) {
         $this->connection = $connection;
         $this->logger = $logger;
         $this->customerRequestManager = $customerRequestManager;
-        $this->vendorService = $vendorService;
+        $this->vendorRequestManager = $vendorRequestManager;
         $this->entityManager = $entityManager;
         $this->vendorPlanService = $vendorPlanService;
     }
@@ -51,7 +51,7 @@ class MigrationFactory implements \Doctrine\Migrations\Version\MigrationFactory
         if ($migration instanceof CoreMigration) {
             $migration->addService(EntityManagerInterface::class, $this->entityManager);
             $migration->addService(CustomerRequestManager::class, $this->customerRequestManager);
-            $migration->addService(VendorService::class, $this->vendorService);
+            $migration->addService(VendorRequestManager::class, $this->vendorRequestManager);
             $migration->addService(VendorPlanManager::class, $this->vendorPlanService);
         }
 
