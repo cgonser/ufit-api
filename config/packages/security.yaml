@@ -77,6 +77,7 @@ security:
         - { path: ^/customers/login/google, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/customers/login/facebook, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/customers/token/refresh$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/customers/password-reset, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/customers$, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
         - { path: ^/customers, roles: IS_AUTHENTICATED_FULLY }
 

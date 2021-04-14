@@ -3,13 +3,13 @@
 namespace App\Customer\Repository;
 
 use App\Core\Repository\BaseRepository;
-use App\Customer\Entity\Customer;
+use App\Customer\Entity\CustomerPasswordResetToken;
 use Doctrine\Persistence\ManagerRegistry;
 
-class CustomerRepository extends BaseRepository
+class CustomerPasswordResetTokenRepository extends BaseRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Customer::class);
+        parent::__construct($registry, CustomerPasswordResetToken::class);
     }
 }

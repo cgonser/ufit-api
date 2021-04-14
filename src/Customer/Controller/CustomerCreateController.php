@@ -9,7 +9,7 @@ use App\Customer\Dto\CustomerDto;
 use App\Customer\Exception\CustomerEmailAddressInUseException;
 use App\Customer\Request\CustomerRequest;
 use App\Customer\ResponseMapper\CustomerResponseMapper;
-use App\Customer\Service\CustomerService;
+use App\Customer\Service\CustomerRequestManager;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -20,15 +20,15 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class CustomerCreateController extends AbstractController
 {
-    private CustomerService $customerService;
+    private CustomerRequestManager $customerRequestManager;
 
     private CustomerResponseMapper $customerResponseMapper;
 
     public function __construct(
-        CustomerService $customerService,
+        CustomerRequestManager $customerRequestManager,
         CustomerResponseMapper $customerResponseMapper
     ) {
-        $this->customerService = $customerService;
+        $this->customerRequestManager = $customerRequestManager;
         $this->customerResponseMapper = $customerResponseMapper;
     }
 
@@ -56,16 +56,12 @@ class CustomerCreateController extends AbstractController
         CustomerRequest $customerRequest,
         ConstraintViolationListInterface $validationErrors
     ): Response {
-        try {
-            if ($validationErrors->count() > 0) {
-                throw new ApiJsonInputValidationException($validationErrors);
-            }
-
-            $customer = $this->customerService->create($customerRequest);
-
-            return new ApiJsonResponse(Response::HTTP_CREATED, $this->customerResponseMapper->map($customer));
-        } catch (CustomerEmailAddressInUseException $e) {
-            throw new ApiJsonException(Response::HTTP_BAD_REQUEST, $e->getMessage());
+        if ($validationErrors->count() > 0) {
+            throw new ApiJsonInputValidationException($validationErrors);
         }
+
+        $customer = $this->customerRequestManager->createFromRequest($customerRequest);
+
+        return new ApiJsonResponse(Response::HTTP_CREATED, $this->customerResponseMapper->map($customer));
     }
 }

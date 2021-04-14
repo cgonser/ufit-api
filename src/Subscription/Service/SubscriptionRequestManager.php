@@ -4,7 +4,7 @@ namespace App\Subscription\Service;
 
 use App\Customer\Entity\Customer;
 use App\Customer\Provider\CustomerProvider;
-use App\Customer\Service\CustomerService;
+use App\Customer\Service\CustomerRequestManager;
 use App\Subscription\Entity\Subscription;
 use App\Subscription\Exception\SubscriptionMissingCustomerException;
 use App\Subscription\Request\SubscriptionRequest;
@@ -18,14 +18,14 @@ class SubscriptionRequestManager
 
     private CustomerProvider $customerProvider;
 
-    private CustomerService $customerManager;
+    private CustomerRequestManager $customerManager;
 
     private VendorPlanProvider $vendorPlanProvider;
 
     public function __construct(
         SubscriptionManager $subscriptionManager,
         CustomerProvider $customerProvider,
-        CustomerService $customerManager,
+        CustomerRequestManager $customerManager,
         VendorPlanProvider $vendorPlanProvider
     ) {
         $this->subscriptionManager = $subscriptionManager;

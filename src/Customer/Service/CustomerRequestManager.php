@@ -2,53 +2,45 @@
 
 namespace App\Customer\Service;
 
-use App\Core\Validation\EntityValidator;
 use App\Customer\Entity\Customer;
 use App\Customer\Exception\CustomerInvalidBirthDateException;
-use App\Customer\Exception\CustomerInvalidPasswordException;
+use App\Customer\Exception\CustomerNotFoundException;
 use App\Customer\Provider\CustomerProvider;
-use App\Customer\Repository\CustomerRepository;
 use App\Customer\Request\CustomerPasswordChangeRequest;
+use App\Customer\Request\CustomerPasswordResetRequest;
+use App\Customer\Request\CustomerPasswordResetTokenRequest;
 use App\Customer\Request\CustomerRequest;
-use Ramsey\Uuid\UuidInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-class CustomerService
+class CustomerRequestManager
 {
-    private UserPasswordEncoderInterface $userPasswordEncoder;
-
-    private CustomerRepository $customerRepository;
+    private CustomerManager $customerManager;
 
     private CustomerProvider $customerProvider;
 
-    private EntityValidator $validator;
-
-    private CustomerManager $customerManager;
+    private CustomerPasswordManager $customerPasswordManager;
 
     public function __construct(
-        UserPasswordEncoderInterface $userPasswordEncoder,
         CustomerManager $customerManager,
-        CustomerRepository $customerRepository,
         CustomerProvider $customerProvider,
-        EntityValidator $validator
+        CustomerPasswordManager $customerPasswordManager
     ) {
-        $this->userPasswordEncoder = $userPasswordEncoder;
         $this->customerManager = $customerManager;
-        $this->customerRepository = $customerRepository;
         $this->customerProvider = $customerProvider;
-        $this->validator = $validator;
+        $this->customerPasswordManager = $customerPasswordManager;
     }
 
-    public function create(CustomerRequest $customerRequest): Customer
+    public function createFromRequest(CustomerRequest $customerRequest): Customer
     {
         $customer = new Customer();
 
         $this->mapFromRequest($customer, $customerRequest);
 
         $this->customerManager->create($customer);
+
+        return $customer;
     }
 
-    public function update(Customer $customer, CustomerRequest $customerRequest)
+    public function updateFromRequest(Customer $customer, CustomerRequest $customerRequest)
     {
         $this->mapFromRequest($customer, $customerRequest);
 
@@ -70,7 +62,7 @@ class CustomerService
         }
 
         if (null !== $customerRequest->password) {
-            $customer->setPassword($this->userPasswordEncoder->encodePassword($customer, $customerRequest->password));
+            $customer->setPassword($this->customerPasswordManager->encodePassword($customer, $customerRequest->password));
         }
 
         if (null !== $customerRequest->height) {
@@ -112,39 +104,36 @@ class CustomerService
         }
     }
 
-    public function isEmailAddressInUse(string $emailAddress, ?UuidInterface $customerId = null): bool
+    public function changePassword(Customer $customer, CustomerPasswordChangeRequest $customerPasswordChangeRequest)
     {
-        /** @var Customer $existingCustomer */
-        $existingCustomer = $this->customerProvider->findOneByEmail($emailAddress);
-
-        if (null === $existingCustomer) {
-            return false;
-        }
-
-        if (null !== $customerId && $existingCustomer->getId()->toString() == $customerId->toString()) {
-            return false;
-        }
-
-        return true;
+        $this->customerPasswordManager->changePassword(
+            $customer,
+            $customerPasswordChangeRequest->currentPassword,
+            $customerPasswordChangeRequest->newPassword
+        );
     }
 
-    public function changePassword(
-        Customer $customer,
-        CustomerPasswordChangeRequest $customerPasswordChangeRequest
-    ) {
-        $isPasswordValid = $this->userPasswordEncoder->isPasswordValid(
-            $customer,
-            $customerPasswordChangeRequest->currentPassword
-        );
+    public function startPasswordReset(CustomerPasswordResetRequest $customerPasswordResetRequest)
+    {
+        $customer = $this->customerProvider->findOneByEmail($customerPasswordResetRequest->emailAddress);
 
-        if (!$isPasswordValid) {
-            throw new CustomerInvalidPasswordException();
+        if (!$customer) {
+            return;
         }
 
-        $customer->setPassword(
-            $this->userPasswordEncoder->encodePassword($customer, $customerPasswordChangeRequest->newPassword)
-        );
+        $this->customerPasswordManager->startPasswordReset($customer);
+    }
 
-        $this->customerRepository->save($customer);
+    public function concludePasswordReset(CustomerPasswordResetTokenRequest $customerPasswordResetTokenRequest)
+    {
+        [$emailAddress, $token] = explode('|', base64_decode($customerPasswordResetTokenRequest->token));
+
+        $customer = $this->customerProvider->findOneByEmail($emailAddress);
+
+        if (!$customer) {
+            throw new CustomerNotFoundException();
+        }
+
+        $this->customerPasswordManager->resetPassword($customer, $token, $customerPasswordResetTokenRequest->password);
     }
 }

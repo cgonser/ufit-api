@@ -12,13 +12,13 @@ use App\Customer\Repository\CustomerPasswordResetTokenRepository;
 use App\Customer\Repository\CustomerRepository;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Security\Core\Encoder\CustomerPasswordEncoderInterface;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class CustomerPasswordManager
 {
     private const TOKEN_VALIDITY = '60 minutes';
 
-    private CustomerPasswordEncoderInterface $customerPasswordEncoder;
+    private UserPasswordEncoderInterface $userPasswordEncoder;
 
     private CustomerRepository $customerRepository;
 
@@ -31,14 +31,14 @@ class CustomerPasswordManager
     private string $customerPasswordResetUrl;
 
     public function __construct(
-        CustomerPasswordEncoderInterface $customerPasswordEncoder,
+        UserPasswordEncoderInterface $userPasswordEncoder,
         CustomerRepository $customerRepository,
         CustomerPasswordResetTokenRepository $customerPasswordResetTokenRepository,
         EmailComposer $emailComposer,
         MailerInterface $mailer,
         string $customerPasswordResetUrl
     ) {
-        $this->customerPasswordEncoder = $customerPasswordEncoder;
+        $this->userPasswordEncoder = $userPasswordEncoder;
         $this->customerRepository = $customerRepository;
         $this->customerPasswordResetTokenRepository = $customerPasswordResetTokenRepository;
         $this->emailComposer = $emailComposer;
@@ -48,14 +48,14 @@ class CustomerPasswordManager
 
     public function changePassword(Customer $customer, string $currentPassword, string $newPassword)
     {
-        $isPasswordValid = $this->customerPasswordEncoder->isPasswordValid($customer, $currentPassword);
+        $isPasswordValid = $this->userPasswordEncoder->isPasswordValid($customer, $currentPassword);
 
         if (!$isPasswordValid) {
             throw new CustomerInvalidPasswordException();
         }
 
         $customer->setPassword(
-            $this->customerPasswordEncoder->encodePassword($customer, $newPassword)
+            $this->userPasswordEncoder->encodePassword($customer, $newPassword)
         );
 
         $this->customerRepository->save($customer);
@@ -63,7 +63,7 @@ class CustomerPasswordManager
 
     public function encodePassword(Customer $customer, string $password): string
     {
-        return $this->customerPasswordEncoder->encodePassword($customer, $password);
+        return $this->userPasswordEncoder->encodePassword($customer, $password);
     }
 
     public function startPasswordReset(Customer $customer): void
@@ -88,7 +88,7 @@ class CustomerPasswordManager
         $resetUrl = strtr(
             $this->customerPasswordResetUrl,
             [
-                '%token%' => base64_encode($customer->getCustomername().'|'.$customerPasswordResetToken->getToken()),
+                '%token%' => base64_encode($customer->getUsername().'|'.$customerPasswordResetToken->getToken()),
             ]
         );
 
@@ -132,7 +132,7 @@ class CustomerPasswordManager
         }
 
         $customer->setPassword(
-            $this->customerPasswordEncoder->encodePassword($customer, $password)
+            $this->userPasswordEncoder->encodePassword($customer, $password)
         );
 
         $this->customerRepository->save($customer);

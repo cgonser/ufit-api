@@ -3,7 +3,7 @@
 namespace App\Customer\DataFixtures;
 
 use App\Customer\Request\CustomerRequest;
-use App\Customer\Service\CustomerService;
+use App\Customer\Service\CustomerRequestManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -25,11 +25,11 @@ class CustomerFixtures extends Fixture
         'LU' => 'Europe/Luxembourg',
     ];
 
-    private CustomerService $customerService;
+    private CustomerRequestManager $customerRequestManager;
 
-    public function __construct(CustomerService $customerService)
+    public function __construct(CustomerRequestManager $customerRequestManager)
     {
-        $this->customerService = $customerService;
+        $this->customerRequestManager = $customerRequestManager;
     }
 
     public function load(ObjectManager $manager): void
@@ -40,7 +40,7 @@ class CustomerFixtures extends Fixture
     private function loadCustomers(ObjectManager $manager): void
     {
         foreach ($this->getData() as $customerRequest) {
-            $customer = $this->customerService->create($customerRequest);
+            $customer = $this->customerRequestManager->create($customerRequest);
 
             $this->addReference('customer-'.$customer->getEmail(), $customer);
         }
