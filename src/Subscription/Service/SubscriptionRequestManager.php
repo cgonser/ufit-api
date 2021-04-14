@@ -67,7 +67,7 @@ class SubscriptionRequestManager
     private function mapDataFromRequest(Subscription $subscription, SubscriptionRequest $subscriptionRequest)
     {
         if (null !== $subscriptionRequest->customer) {
-            $customer = $this->customerManager->create($subscriptionRequest->customer);
+            $customer = $this->customerManager->createFromRequest($subscriptionRequest->customer);
 
             $subscription->setCustomer($customer);
         }
