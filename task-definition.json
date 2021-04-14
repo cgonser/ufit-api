@@ -95,6 +95,18 @@
         {
           "name": "MESSENGER_TRANSPORT_DSN_EMAIL",
           "value": "in-memory://"
+        },
+        {
+          "name": "GOOGLE_API_KEY",
+          "value": ""
+        },
+        {
+          "name": "GOOGLE_CLIENT_ID",
+          "value": "300003549103-bi3c6mrf3jhmotvvpmpjm7ftf2leh3f2.apps.googleusercontent.com"
+        },
+        {
+          "name": "GOOGLE_CLIENT_SECRET",
+          "value": "z1ZzTuDJpYBNBehA4TP49sSs"
         }
       ],
       "secrets": [

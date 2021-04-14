@@ -123,6 +123,9 @@
     "facebook/graph-sdk": {
         "version": "5.7.0"
     },
+    "firebase/php-jwt": {
+        "version": "v5.2.1"
+    },
     "friendsofsymfony/rest-bundle": {
         "version": "2.2",
         "recipe": {
@@ -140,6 +143,24 @@
     },
     "gesdinet/jwt-refresh-token-bundle": {
         "version": "v0.9.1"
+    },
+    "google/apiclient": {
+        "version": "2.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "2.0",
+            "ref": "49c5d7a66d863d28513979bf0666dc77599100c0"
+        },
+        "files": [
+            "config/packages/google_apiclient.yaml"
+        ]
+    },
+    "google/apiclient-services": {
+        "version": "v0.168.0"
+    },
+    "google/auth": {
+        "version": "v1.15.0"
     },
     "guzzlehttp/guzzle": {
         "version": "7.2.0"
@@ -251,6 +272,9 @@
     "pagarme/pagarme-php": {
         "version": "v4.1.2"
     },
+    "paragonie/constant_time_encoding": {
+        "version": "v2.4.0"
+    },
     "php": {
         "version": "7.4"
     },
@@ -262,6 +286,9 @@
     },
     "phpdocumentor/type-resolver": {
         "version": "1.4.0"
+    },
+    "phpseclib/phpseclib": {
+        "version": "3.0.7"
     },
     "psr/cache": {
         "version": "1.0.1"

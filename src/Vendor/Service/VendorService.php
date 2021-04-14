@@ -19,6 +19,8 @@ class VendorService
 {
     private VendorRepository $vendorRepository;
 
+    private VendorManager $vendorManager;
+
     private VendorProvider $vendorProvider;
 
     private VendorPhotoService $vendorPhotoService;
@@ -29,12 +31,14 @@ class VendorService
 
     public function __construct(
         VendorRepository $vendorRepository,
+        VendorManager $vendorManager,
         VendorProvider $vendorProvider,
         VendorPhotoService $vendorPhotoService,
         UserPasswordEncoderInterface $passwordEncoder,
         SluggerInterface $slugger
     ) {
         $this->vendorRepository = $vendorRepository;
+        $this->vendorManager = $vendorManager;
         $this->vendorProvider = $vendorProvider;
         $this->vendorPhotoService = $vendorPhotoService;
         $this->passwordEncoder = $passwordEncoder;
@@ -47,7 +51,7 @@ class VendorService
 
         $this->mapFromRequest($vendor, $vendorRequest);
 
-        $this->vendorRepository->save($vendor);
+        $this->vendorManager->create($vendor);
 
         if (null !== $vendorRequest->photoContents) {
             $this->vendorPhotoService->uploadPhoto(

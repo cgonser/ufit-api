@@ -34,22 +34,10 @@ class VendorFacebookLoginController extends AbstractController
      * @ParamConverter("vendorLoginFacebookRequest", converter="fos_rest.request_body")
      *
      * @OA\Tag(name="Vendor")
-     * @OA\RequestBody(
-     *     required=true,
-     *     @OA\JsonContent(ref=@Model(type=VendorLoginFacebookRequest::class))
-     * )
-     * @OA\Response(
-     *     response=200,
-     *     description="Returns the API access token"
-     * )
-     * @OA\Response(
-     *     response=400,
-     *     description="Invalid input"
-     * )
-     * @OA\Response(
-     *     response=401,
-     *     description="Invalid credentials"
-     * )
+     * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=VendorLoginFacebookRequest::class)))
+     * @OA\Response(response=200, description="Returns the API access token")
+     * @OA\Response(response=400, description="Invalid input")
+     * @OA\Response(response=401, description="Invalid credentials")
      */
     public function facebookLogin(VendorLoginFacebookRequest $vendorLoginFacebookRequest): Response
     {

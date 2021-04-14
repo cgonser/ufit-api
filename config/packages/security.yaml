@@ -79,6 +79,7 @@ security:
         - { path: ^/customers, roles: IS_AUTHENTICATED_FULLY }
 
         - { path: ^/vendors/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/vendors/login/google, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/vendors/login/facebook$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/vendors/login/instagram$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/vendors/token/refresh$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
