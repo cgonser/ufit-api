@@ -51,9 +51,11 @@ class VendorLoginGoogleManager
         $vendor = new Vendor();
         $vendor->setName($payload['name']);
         $vendor->setDisplayName($payload['name']);
-        $vendor->setLocale($payload['picture']);
+        $vendor->setLocale($payload['locale']);
         $vendor->setEmail($payload['email']);
 
         $this->vendorManager->create($vendor);
+
+        return $vendor;
     }
 }

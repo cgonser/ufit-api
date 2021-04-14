@@ -23,13 +23,17 @@ class CustomerService
 
     private EntityValidator $validator;
 
+    private CustomerManager $customerManager;
+
     public function __construct(
         UserPasswordEncoderInterface $userPasswordEncoder,
+        CustomerManager $customerManager,
         CustomerRepository $customerRepository,
         CustomerProvider $customerProvider,
         EntityValidator $validator
     ) {
         $this->userPasswordEncoder = $userPasswordEncoder;
+        $this->customerManager = $customerManager;
         $this->customerRepository = $customerRepository;
         $this->customerProvider = $customerProvider;
         $this->validator = $validator;
@@ -38,24 +42,17 @@ class CustomerService
     public function create(CustomerRequest $customerRequest): Customer
     {
         $customer = new Customer();
-        $customer->setRoles(['ROLE_CUSTOMER']);
 
         $this->mapFromRequest($customer, $customerRequest);
 
-        $this->validator->validate($customer);
-
-        $this->customerRepository->save($customer);
-
-        return $customer;
+        $this->customerManager->create($customer);
     }
 
     public function update(Customer $customer, CustomerRequest $customerRequest)
     {
         $this->mapFromRequest($customer, $customerRequest);
 
-        $this->validator->validate($customer);
-
-        $this->customerRepository->save($customer);
+        $this->customerManager->update($customer);
     }
 
     public function mapFromRequest(Customer $customer, CustomerRequest $customerRequest)

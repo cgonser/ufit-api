@@ -16,7 +16,7 @@
         var accessToken = googleUser.getAuthResponse().id_token;
 
         var apiResponse = await fetch(
-            '{{ path('vendor_google_login') }}',
+            '{{ path('customer_google_login') }}',
             {
                 method: 'POST',
                 headers: {

@@ -29,18 +29,9 @@ class CustomerLoginController extends AbstractController
      *         @OA\Property(property="password", type="string")
      *     )
      * )
-     * @OA\Response(
-     *     response=200,
-     *     description="Provides the authentication token"
-     * )
-     * @OA\Response(
-     *     response=400,
-     *     description="Invalid input"
-     * )
-     * @OA\Response(
-     *     response=401,
-     *     description="Invalid credentials"
-     * )
+     * @OA\Response(response=200, description="Provides the authentication token")
+     * @OA\Response(response=400, description="Invalid input")
+     * @OA\Response(response=401, description="Invalid credentials")
      */
     public function login()
     {
@@ -50,33 +41,16 @@ class CustomerLoginController extends AbstractController
      * @Route("/customers/token/refresh", methods="POST", name="customer_token_refresh")
      *
      * @OA\Tag(name="Customer")
-     *
      * @OA\RequestBody(
      *     required=true,
      *     @OA\MediaType(
      *         mediaType="application/x-www-form-urlencoded",
-     *         @OA\Schema(
-     *             type="object",
-     *             @OA\Property(
-     *                 property="refresh_token",
-     *                 type="string",
-     *             )
-     *         )
+     *         @OA\Schema(type="object", @OA\Property(property="refresh_token", type="string"))
      *     )
      * )
-     *
-     * @OA\Response(
-     *     response=200,
-     *     description="Provides the refreshed token"
-     * )
-     * @OA\Response(
-     *     response=400,
-     *     description="Invalid input"
-     * )
-     * @OA\Response(
-     *     response=401,
-     *     description="Invalid credentials"
-     * )
+     * @OA\Response(response=200, description="Provides the refreshed token")
+     * @OA\Response(response=400, description="Invalid input")
+     * @OA\Response(response=401, description="Invalid credentials")
      */
     public function tokenRefresh(Request $request)
     {
