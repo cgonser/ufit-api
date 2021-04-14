@@ -29,7 +29,7 @@ final class Version20201118230821 extends CoreMigration
             $customerCreateRequest->email = $email;
             $customerCreateRequest->password = $password;
 
-            $this->getService(CustomerRequestManager::class)->create($customerCreateRequest);
+            $this->getService(CustomerRequestManager::class)->createFromRequest($customerCreateRequest);
         }
     }
 
