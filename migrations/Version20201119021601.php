@@ -8,7 +8,7 @@ use App\Core\Doctrine\Migrations\CoreMigration;
 use App\Vendor\Request\VendorPlanRequest;
 use App\Vendor\Request\VendorRequest;
 use App\Vendor\Service\VendorPlanManager;
-use App\Vendor\Service\VendorService;
+use App\Vendor\Service\VendorRequestManager;
 use Doctrine\DBAL\Schema\Schema;
 
 final class Version20201119021601 extends CoreMigration
@@ -31,7 +31,7 @@ final class Version20201119021601 extends CoreMigration
             $vendorRequest->password = $password;
             $vendorRequest->email = $email;
 
-            $vendor = $this->getService(VendorService::class)->create($vendorRequest);
+            $vendor = $this->getService(VendorRequestManager::class)->create($vendorRequest);
 
             foreach ($plans as $plan) {
                 $vendorPlanRequest = new VendorPlanRequest();

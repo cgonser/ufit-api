@@ -6,7 +6,7 @@ namespace DoctrineMigrations;
 
 use App\Core\Doctrine\Migrations\CoreMigration;
 use App\Customer\Request\CustomerRequest;
-use App\Customer\Service\CustomerService;
+use App\Customer\Service\CustomerRequestManager;
 use Doctrine\DBAL\Schema\Schema;
 
 final class Version20201118230821 extends CoreMigration
@@ -29,7 +29,7 @@ final class Version20201118230821 extends CoreMigration
             $customerCreateRequest->email = $email;
             $customerCreateRequest->password = $password;
 
-            $this->getService(CustomerService::class)->create($customerCreateRequest);
+            $this->getService(CustomerRequestManager::class)->create($customerCreateRequest);
         }
     }
 
