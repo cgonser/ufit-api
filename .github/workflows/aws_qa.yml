@@ -28,7 +28,7 @@ on:
         branches:
             - master
 
-name: Deploy to QA Environment
+name: Deploy to QA
 
 jobs:
     deploy:
