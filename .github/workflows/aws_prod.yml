@@ -24,18 +24,11 @@
 #    and best practices on handling the access key credentials.
 
 on:
-    push:
-        branches:
-            - master
-    pull_request:
-        branches:
-            - master
-    page_build:
     release:
-        types: # This configuration does not affect the page_build event above
+        types:
             - created
 
-name: Deploy to Amazon ECS
+name: Deploy to Production
 
 jobs:
     deploy:
@@ -75,7 +68,7 @@ jobs:
                 id: task-def
                 uses: aws-actions/amazon-ecs-render-task-definition@v1
                 with:
-                    task-definition: task-definition.json
+                    task-definition: task-definition-prod.json
                     container-name: php-fpm
                     image: ${{ steps.build-image.outputs.image }}
 
@@ -83,6 +76,6 @@ jobs:
                 uses: aws-actions/amazon-ecs-deploy-task-definition@v1
                 with:
                     task-definition: ${{ steps.task-def.outputs.task-definition }}
-                    service: api-stg
+                    service: api
                     cluster: ufit
                     wait-for-service-stability: true

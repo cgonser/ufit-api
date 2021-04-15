@@ -7,15 +7,15 @@ oneup_flysystem:
         customer_photo_adapter:
             awss3v3:
                 client: Aws\S3\S3Client
-                bucket: '%customer_photo.s3_bucket%'
+                bucket: '%s3.buckets.customer_photo%'
         program_asset_adapter:
             awss3v3:
                 client: Aws\S3\S3Client
-                bucket: '%program_asset.s3_bucket%'
+                bucket: '%s3.buckets.program_asset%'
         vendor_photo_adapter:
             awss3v3:
                 client: Aws\S3\S3Client
-                bucket: '%vendor_photo.s3_bucket%'
+                bucket: '%s3.buckets.vendor_photo%'
 
     filesystems:
         customer_photo_filesystem:

@@ -10,18 +10,23 @@ parameters:
     app.locales: en|pt_BR
     app.notifications.email_sender: contact@ufit.io
     routing.uuid: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
-    customer_photo.s3_bucket: '%env(CUSTOMER_PHOTO_BUCKET_NAME)%'
-    vendor_photo.s3_bucket: '%env(VENDOR_PHOTO_BUCKET_NAME)%'
-    program_asset.s3_bucket: '%env(PROGRAM_ASSET_BUCKET_NAME)%'
+
     facebook.app_id: '%env(FACEBOOK_APP_ID)%'
     facebook.app_secret: '%env(FACEBOOK_APP_SECRET)%'
+
     instagram.app_id: '%env(INSTAGRAM_APP_ID)%'
     instagram.app_secret: '%env(INSTAGRAM_APP_SECRET)%'
     instagram.redirect_uri: '%env(INSTAGRAM_REDIRECT_URI)%'
-    aws.s3_region: '%env(AWS_S3_REGION)%'
-    aws.s3_access_key_id: '%env(AWS_S3_ACCESS_KEY_ID)%'
-    aws.s3_access_key_secret: '%env(AWS_S3_ACCESS_KEY_SECRET)%'
+
     pagarme.api_key: '%env(PAGARME_API_KEY)%'
+
+    aws.s3_region: '%env(AWS_S3_REGION)%'
+    #aws.s3_access_key_id: '%env(AWS_S3_ACCESS_KEY_ID)%'
+    #aws.s3_access_key_secret: '%env(AWS_S3_ACCESS_KEY_SECRET)%'
+    s3.buckets.customer_photo: '%env(S3_BUCKET_CUSTOMER_PHOTO)%'
+    s3.buckets.vendor_photo: '%env(S3_BUCKET_VENDOR_PHOTO)%'
+    s3.buckets.program_asset: '%env(S3_BUCKET_PROGRAM_ASSET)%'
+
     customer.password_reset_url: '%env(CUSTOMER_PASSWORD_RESET_URL)%'
     vendor.password_reset_url: '%env(VENDOR_PASSWORD_RESET_URL)%'
 
@@ -123,9 +128,9 @@ services:
             -
                 version: '2006-03-01'
                 region: '%aws.s3_region%'
-                credentials:
-                    key: '%aws.s3_access_key_id%'
-                    secret: '%aws.s3_access_key_secret%'
+#                credentials:
+#                    key: '%aws.s3_access_key_id%'
+#                    secret: '%aws.s3_access_key_secret%'
 
     Facebook\Facebook:
         arguments:
