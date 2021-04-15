@@ -52,7 +52,9 @@ jobs:
 
             -   name: Extract tag name
                 id: tag
-                run: echo ::set-output name=RELEASE::$(echo $GITHUB_REF | cut -d / -f 3)
+                env:
+                    RELEASE_FULL_NAME: ${{ github.ref }}
+                run: echo ::set-output name=RELEASE::$(echo $RELEASE_FULL_NAME | cut -d / -f 3)
 
             -   name: Build, tag, and push image to Amazon ECR
                 id: build-image
