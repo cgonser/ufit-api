@@ -64,17 +64,10 @@ jobs:
                     docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
                     echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
-#            -   name: Fill in the new image ID in the Amazon ECS task definition
-#                id: task-def
-#                uses: aws-actions/amazon-ecs-render-task-definition@v1
-#                with:
-#                    task-definition: task-definition-qa.json
-#                    container-name: php-fpm
-#                    image: ${{ steps.build-image.outputs.image }}
-#            -   name: Deploy Amazon ECS task definition
-#                uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-#                with:
-#                    task-definition: ${{ steps.task-def.outputs.task-definition }}
-#                    service: api-qa
-#                    cluster: ufit
-#                    wait-for-service-stability: true
+            -   name: Deploy new image to ECS Service
+                env:
+                    CLUSTER: ufit
+                    SERVICE: api-qa
+                    REGION: eu-central-1
+                run: |
+                    aws ecs update-service --cluster $CLUSTER --service $SERVICE --force-new-deployment --region $REGION
