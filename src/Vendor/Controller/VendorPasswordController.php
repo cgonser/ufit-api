@@ -63,6 +63,8 @@ class VendorPasswordController extends AbstractController
      * @Route("/vendors/password-reset", methods="POST", name="vendor_password_reset")
      *
      * @ParamConverter("vendorPasswordResetRequest", converter="fos_rest.request_body")
+     *
+     * @OA\Tag(name="Customer")
      */
     public function resetPassword(
         VendorPasswordResetRequest $vendorPasswordResetRequest,
@@ -81,6 +83,8 @@ class VendorPasswordController extends AbstractController
      * @Route("/vendors/password-reset/token", methods="POST", name="vendor_password_reset_token")
      *
      * @ParamConverter("vendorPasswordResetTokenRequest", converter="fos_rest.request_body")
+     *
+     * @OA\Tag(name="Customer")
      */
     public function resetPasswordToken(
         VendorPasswordResetTokenRequest $vendorPasswordResetTokenRequest,

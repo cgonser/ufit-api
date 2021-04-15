@@ -25,7 +25,7 @@ nelmio_api_doc:
     models:
         use_jms: false
         names:
-            - { alias: Currency, type: App\Core\Dto\CurrencyDto }
+            - { alias: Currency, type: App\Localization\Dto\CurrencyDto }
             - { alias: Customer, type: App\Customer\Dto\CustomerDto }
             - { alias: CustomerMeasurement, type: App\Customer\Dto\CustomerMeasurementDto }
             - { alias: CustomerMeasurementItem, type: App\Customer\Dto\CustomerMeasurementItemDto }

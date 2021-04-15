@@ -63,6 +63,8 @@ class CustomerPasswordController extends AbstractController
      * @Route("/customers/password-reset", methods="POST", name="customer_password_reset")
      *
      * @ParamConverter("customerPasswordResetRequest", converter="fos_rest.request_body")
+     *
+     * @OA\Tag(name="Customer")
      */
     public function resetPassword(
         CustomerPasswordResetRequest $customerPasswordResetRequest,
@@ -81,6 +83,8 @@ class CustomerPasswordController extends AbstractController
      * @Route("/customers/password-reset/token", methods="POST", name="customer_password_reset_token")
      *
      * @ParamConverter("customerPasswordResetTokenRequest", converter="fos_rest.request_body")
+     *
+     * @OA\Tag(name="Customer")
      */
     public function resetPasswordToken(
         CustomerPasswordResetTokenRequest $customerPasswordResetTokenRequest,
