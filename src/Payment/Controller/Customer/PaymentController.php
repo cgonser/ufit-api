@@ -5,7 +5,6 @@ namespace App\Payment\Controller\Customer;
 use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
 use App\Customer\Provider\CustomerProvider;
-use App\Customer\ResponseMapper\CustomerResponseMapper;
 use App\Payment\Dto\PaymentDto;
 use App\Payment\Request\CustomerPaymentSearchRequest;
 use App\Payment\ResponseMapper\PaymentResponseMapper;
@@ -31,7 +30,6 @@ class PaymentController extends AbstractController
     public function __construct(
         CustomerPaymentProvider $paymentProvider,
         PaymentResponseMapper $paymentResponseMapper,
-        CustomerResponseMapper $customerResponseMapper,
         CustomerProvider $customerProvider
     ) {
         $this->paymentProvider = $paymentProvider;
@@ -54,12 +52,12 @@ class PaymentController extends AbstractController
      */
     public function getPayments(string $customerId, CustomerPaymentSearchRequest $searchRequest): Response
     {
-        if ('current' == $customerId) {
+        if ('current' === $customerId) {
             /** @var Customer $customer */
             $customer = $this->getUser();
         } else {
             // TODO: implement authorization
-            //throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
+            throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
         }
 
         $searchRequest->customerId = $customerId;

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Core\DataFixtures;
+namespace App\Payment\DataFixtures;
 
-use App\Core\Entity\PaymentMethod;
+use App\Payment\Entity\PaymentMethod;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 

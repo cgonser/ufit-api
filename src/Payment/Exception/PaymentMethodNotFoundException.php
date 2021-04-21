@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Core\Exception;
+namespace App\Payment\Exception;
+
+use App\Core\Exception\ResourceNotFoundException;
 
 class PaymentMethodNotFoundException extends ResourceNotFoundException
 {

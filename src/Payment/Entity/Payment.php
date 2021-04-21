@@ -2,7 +2,6 @@
 
 namespace App\Payment\Entity;
 
-use App\Core\Entity\PaymentMethod;
 use Decimal\Decimal;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -50,7 +49,7 @@ class Payment
     private UuidInterface $paymentMethodId;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Core\Entity\PaymentMethod")
+     * @ORM\ManyToOne(targetEntity="App\Payment\Entity\PaymentMethod")
      * @ORM\JoinColumn(name="payment_method_id", referencedColumnName="id")
      */
     private PaymentMethod $paymentMethod;

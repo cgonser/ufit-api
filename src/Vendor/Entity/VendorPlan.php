@@ -3,7 +3,7 @@
 namespace App\Vendor\Entity;
 
 use App\Localization\Entity\Currency;
-use App\Core\Entity\PaymentMethod;
+use App\Payment\Entity\PaymentMethod;
 use App\Subscription\Entity\Subscription;
 use Decimal\Decimal;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -80,7 +80,7 @@ class VendorPlan
     private ?string $image = null;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Core\Entity\PaymentMethod")
+     * @ORM\ManyToMany(targetEntity="App\Payment\Entity\PaymentMethod")
      */
     private Collection $paymentMethods;
 

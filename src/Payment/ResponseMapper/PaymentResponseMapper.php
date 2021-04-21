@@ -2,10 +2,8 @@
 
 namespace App\Payment\ResponseMapper;
 
-use App\Core\ResponseMapper\PaymentMethodResponseMapper;
 use App\Payment\Dto\PaymentDto;
 use App\Payment\Entity\Payment;
-use App\Vendor\ResponseMapper\VendorResponseMapper;
 
 class PaymentResponseMapper
 {
@@ -26,11 +24,11 @@ class PaymentResponseMapper
         $paymentDto->status = $payment->getStatus();
         $paymentDto->details = $payment->getDetails();
         $paymentDto->dueDate = $payment->getDueDate()->format('Y-m-d');
-        $paymentDto->createdAt = $payment->getCreatedAt()->format(\DateTimeInterface::ISO8601);
-        $paymentDto->updatedAt = $payment->getUpdatedAt()->format(\DateTimeInterface::ISO8601);
+        $paymentDto->createdAt = $payment->getCreatedAt()->format(\DateTimeInterface::ATOM);
+        $paymentDto->updatedAt = $payment->getUpdatedAt()->format(\DateTimeInterface::ATOM);
 
         if (null !== $payment->getPaidAt()) {
-            $paymentDto->paidAt = $payment->getPaidAt()->format(\DateTimeInterface::ISO8601);
+            $paymentDto->paidAt = $payment->getPaidAt()->format(\DateTimeInterface::ATOM);
         }
 
         if ($mapPaymentMethod) {

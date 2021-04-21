@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Entity;
+namespace App\Payment\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
@@ -8,7 +8,7 @@ use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity(repositoryClass="App\Core\Repository\PaymentMethodRepository")
+ * @ORM\Entity(repositoryClass="App\Payment\Repository\PaymentMethodRepository")
  * @ORM\Table(name="payment_method")
  */
 class PaymentMethod
@@ -28,12 +28,12 @@ class PaymentMethod
     private string $name;
 
     /**
-     * @ORM\Column(type="json", nullable=true)
+     * @ORM\Column(type="jsonb", nullable=true)
      */
     private ?array $countriesEnabled = null;
 
     /**
-     * @ORM\Column(type="json", nullable=true)
+     * @ORM\Column(type="jsonb", nullable=true)
      */
     private ?array $countriesDisabled = null;
 

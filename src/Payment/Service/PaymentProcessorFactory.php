@@ -2,13 +2,13 @@
 
 namespace App\Payment\Service;
 
-use App\Core\Entity\PaymentMethod;
+use App\Payment\Entity\PaymentMethod;
 use App\Payment\Exception\PaymentProcessorNotFoundException;
 use App\Payment\Service\PaymentProcessor\PaymentProcessorInterface;
 
 class PaymentProcessorFactory
 {
-    /** @var Iterable<App\Payment\Service\PaymentProcessor\PaymentProcessorInterface> */
+    /** @var Iterable<PaymentProcessorInterface> */
     private iterable $processors;
 
     public function __construct(iterable $processors)

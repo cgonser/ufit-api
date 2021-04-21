@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Core\Repository;
+namespace App\Payment\Repository;
 
-use App\Core\Entity\PaymentMethod;
+use App\Payment\Entity\PaymentMethod;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

@@ -2,8 +2,8 @@
 
 namespace App\Payment\Service\PaymentProcessor;
 
-use App\Core\Entity\PaymentMethod;
 use App\Payment\Entity\Payment;
+use App\Payment\Entity\PaymentMethod;
 
 interface PaymentProcessorInterface
 {
