@@ -76,7 +76,7 @@ class VendorRequestManager
             $vendor->setDisplayName($vendor->getName());
         }
 
-        if (null !== $vendorRequest->password) {
+        if (null !== $vendorRequest->password && null === $vendor->getPassword()) {
             $vendor->setPassword($this->vendorPasswordManager->encodePassword($vendor, $vendorRequest->password));
         }
 

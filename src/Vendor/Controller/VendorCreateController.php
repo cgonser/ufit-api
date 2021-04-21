@@ -2,14 +2,11 @@
 
 namespace App\Vendor\Controller;
 
-use App\Core\Exception\ApiJsonException;
+use App\Core\Dto\JWTAuthenticationTokenDto;
 use App\Core\Exception\ApiJsonInputValidationException;
-use App\Core\Response\ApiJsonResponse;
-use App\Vendor\Dto\VendorDto;
-use App\Vendor\Exception\VendorEmailAddressInUseException;
 use App\Vendor\Request\VendorRequest;
-use App\Vendor\ResponseMapper\VendorResponseMapper;
 use App\Vendor\Service\VendorRequestManager;
+use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\AuthenticationSuccessHandler;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -22,35 +19,24 @@ class VendorCreateController extends AbstractController
 {
     private VendorRequestManager $vendorRequestManager;
 
-    private VendorResponseMapper $vendorResponseMapper;
+    private AuthenticationSuccessHandler $authenticationSuccessHandler;
 
     public function __construct(
         VendorRequestManager $vendorRequestManager,
-        VendorResponseMapper $vendorResponseMapper
+        AuthenticationSuccessHandler $authenticationSuccessHandler
     ) {
         $this->vendorRequestManager = $vendorRequestManager;
-        $this->vendorResponseMapper = $vendorResponseMapper;
+        $this->authenticationSuccessHandler = $authenticationSuccessHandler;
     }
 
     /**
      * @Route("/vendors", methods="POST", name="vendors_create")
-     *
      * @ParamConverter("vendorRequest", converter="fos_rest.request_body")
      *
      * @OA\Tag(name="Vendor")
-     * @OA\RequestBody(
-     *     required=true,
-     *     @OA\JsonContent(ref=@Model(type=VendorRequest::class))
-     * )
-     * @OA\Response(
-     *     response=201,
-     *     description="Creates a new vendor",
-     *     @OA\JsonContent(ref=@Model(type=VendorDto::class))
-     * )
-     * @OA\Response(
-     *     response=400,
-     *     description="Invalid input"
-     * )
+     * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=VendorRequest::class)))
+     * @OA\Response(response=201, description="Success", @OA\JsonContent(ref=@Model(type=JWTAuthenticationTokenDto::class)))
+     * @OA\Response(response=400, description="Invalid input")
      */
     public function create(
         VendorRequest $vendorRequest,
@@ -62,6 +48,6 @@ class VendorCreateController extends AbstractController
 
         $vendor = $this->vendorRequestManager->createFromRequest($vendorRequest);
 
-        return new ApiJsonResponse(Response::HTTP_CREATED, $this->vendorResponseMapper->map($vendor));
+        return $this->authenticationSuccessHandler->handleAuthenticationSuccess($vendor);
     }
 }

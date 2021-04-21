@@ -6,6 +6,7 @@ ADD ./docker/nginx/nginx.conf /etc/nginx/nginx.conf
 VOLUME /etc/nginx/conf.d
 
 ADD ./docker/php-fpm/www.conf /usr/local/etc/php-fpm.d/www.conf
+ADD ./docker/php-fpm/xdebug.ini.disabled /usr/local/etc/php/conf.d/xdebug.ini.disabled
 
 RUN set -e; \
          apk add --no-cache \
@@ -31,6 +32,7 @@ RUN set -e; \
 RUN docker-php-ext-install sockets \
     && apk add --no-cache --update rabbitmq-c-dev \
     && apk add --no-cache --update --virtual .phpize-deps $PHPIZE_DEPS \
+    && for i in $(seq 1 3); do echo yes | pecl install -o "xdebug" && s=0 && break || s=$? && sleep 1; done; (exit $s) \
     && pecl install -o -f amqp \
     && docker-php-ext-enable amqp
 
@@ -86,6 +88,6 @@ VOLUME /app
 
 COPY docker/php-fpm/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint
-
 ENTRYPOINT ["docker-entrypoint"]
+
 CMD ["php-fpm"]

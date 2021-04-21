@@ -61,7 +61,7 @@ class CustomerRequestManager
             $customer->setPhone($customerRequest->phone);
         }
 
-        if (null !== $customerRequest->password) {
+        if (null !== $customerRequest->password && null === $customer->getPassword()) {
             $customer->setPassword($this->customerPasswordManager->encodePassword($customer, $customerRequest->password));
         }
 
