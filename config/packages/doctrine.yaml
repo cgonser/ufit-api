@@ -113,13 +113,6 @@ doctrine:
                 enabled: true
 
         mappings:
-            App\Core:
-                is_bundle: false
-                type: annotation
-                dir: '%kernel.project_dir%/src/Core/Entity'
-                prefix: 'App\Core\Entity'
-                alias: AppCore
-
             App\Customer:
                 is_bundle: false
                 type: annotation
