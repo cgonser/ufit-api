@@ -2,9 +2,9 @@
 
 namespace App\Payment\Service;
 
-use App\Core\Provider\PaymentMethodProvider;
 use App\Payment\Entity\Payment;
 use App\Payment\Provider\InvoiceProvider;
+use App\Payment\Provider\PaymentMethodProvider;
 use App\Payment\Request\PaymentRequest;
 use Ramsey\Uuid\Uuid;
 

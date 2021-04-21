@@ -2,10 +2,10 @@
 
 namespace App\Payment\Service\PaymentProcessor;
 
-use App\Core\Entity\PaymentMethod;
 use App\Core\Exception\InvalidInputException;
 use App\Payment\Dto\PagarmeTransactionInputDto;
 use App\Payment\Entity\Payment;
+use App\Payment\Entity\PaymentMethod;
 use App\Payment\Exception\PaymentMissingCreditCardDetailsException;
 use Decimal\Decimal;
 

@@ -2,8 +2,6 @@
 
 namespace App\Payment\Dto;
 
-use App\Localization\Dto\CurrencyDto;
-use App\Core\Dto\PaymentMethodDto;
 use OpenApi\Annotations as OA;
 
 class PaymentDto

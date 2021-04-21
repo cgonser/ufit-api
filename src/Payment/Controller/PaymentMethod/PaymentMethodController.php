@@ -1,14 +1,16 @@
 <?php
 
-namespace App\Core\Controller\PaymentMethod;
+namespace App\Payment\Controller\PaymentMethod;
 
-use App\Core\Dto\PaymentMethodDto;
-use App\Core\Provider\PaymentMethodProvider;
+use App\Payment\Dto\PaymentMethodDto;
+use App\Payment\Provider\PaymentMethodProvider;
+use App\Payment\Request\PaymentMethodSearchRequest;
 use App\Core\Response\ApiJsonResponse;
-use App\Core\ResponseMapper\PaymentMethodResponseMapper;
+use App\Payment\ResponseMapper\PaymentMethodResponseMapper;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Ramsey\Uuid\Uuid;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -29,21 +31,27 @@ class PaymentMethodController extends AbstractController
 
     /**
      * @Route("/payment_methods", methods="GET", name="payment_methods_get")
-     *
+     * @ParamConverter("searchRequest", converter="querystring")
+
      * @OA\Tag(name="PaymentMethod")
+     * @OA\Parameter(in="query", name="filters", @OA\Schema(ref=@Model(type=PaymentMethodSearchRequest::class)))
      * @OA\Response(
-     *     response=200,
-     *     description="Returns all available payment methods",
-     *     @OA\JsonContent(ref=@Model(type=PaymentMethodDto::class))
+     *     response=200, description="Success",
+     *     @OA\Header(header="X-Total-Count", @OA\Schema(type="int")),
+     *     @OA\JsonContent(type="array",@OA\Items(ref=@Model(type=PaymentMethodDto::class))))
      * )
      */
-    public function getPaymentMethods(): Response
+    public function getPaymentMethods(PaymentMethodSearchRequest $searchRequest): Response
     {
-        $paymentMethods = $this->paymentMethodProvider->findAll();
+        $paymentMethods = $this->paymentMethodProvider->search($searchRequest);
+        $count = $this->paymentMethodProvider->count($searchRequest);
 
         return new ApiJsonResponse(
             Response::HTTP_OK,
-            $this->paymentMethodResponseMapper->mapMultiple($paymentMethods)
+            $this->paymentMethodResponseMapper->mapMultiple($paymentMethods),
+            [
+                'X-Total-Count' => $count,
+            ]
         );
     }
 
@@ -51,11 +59,7 @@ class PaymentMethodController extends AbstractController
      * @Route("/payment_methods/{paymentMethodId}", methods="GET", name="payment_methods_get_by_id")
      *
      * @OA\Tag(name="PaymentMethod")
-     * @OA\Response(
-     *     response=200,
-     *     description="Returns one PaymentMethod by ID",
-     *     @OA\JsonContent(ref=@Model(type=PaymentMethodDto::class))
-     * )
+     * @OA\Response(response=200, description="Success", @OA\JsonContent(ref=@Model(type=PaymentMethodDto::class)))
      */
     public function getPaymentMethodById(string $paymentMethodId): Response
     {

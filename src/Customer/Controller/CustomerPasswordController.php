@@ -65,6 +65,9 @@ class CustomerPasswordController extends AbstractController
      * @ParamConverter("customerPasswordResetRequest", converter="fos_rest.request_body")
      *
      * @OA\Tag(name="Customer")
+     * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=CustomerPasswordResetRequest::class)))
+     * @OA\Response(response=200, description="Password change requested")
+     * @OA\Response(response=400, description="Invalid input")
      */
     public function resetPassword(
         CustomerPasswordResetRequest $customerPasswordResetRequest,

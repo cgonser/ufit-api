@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Dto;
+namespace App\Payment\Dto;
 
 use OpenApi\Annotations as OA;
 

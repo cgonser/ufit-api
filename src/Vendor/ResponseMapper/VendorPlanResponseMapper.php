@@ -2,7 +2,7 @@
 
 namespace App\Vendor\ResponseMapper;
 
-use App\Core\ResponseMapper\PaymentMethodResponseMapper;
+use App\Payment\ResponseMapper\PaymentMethodResponseMapper;
 use App\Vendor\Dto\VendorPlanDto;
 use App\Vendor\Entity\VendorPlan;
 use Aws\S3\S3Client;

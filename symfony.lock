@@ -111,6 +111,15 @@
     "doctrine/sql-formatter": {
         "version": "1.1.1"
     },
+    "dunglas/doctrine-json-odm": {
+        "version": "0.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "0.1",
+            "ref": "c2ab78f625df0c89af5908d50a28602ff8c4919f"
+        }
+    },
     "egulias/email-validator": {
         "version": "2.1.23"
     },
@@ -216,6 +225,9 @@
         "files": [
             "config/packages/lexik_jwt_authentication.yaml"
         ]
+    },
+    "martin-georgiev/postgresql-for-doctrine": {
+        "version": "v1.5.2"
     },
     "monolog/monolog": {
         "version": "2.1.1"

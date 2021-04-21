@@ -50,4 +50,14 @@ class CountryManager
 
         $this->countryRepository->save($country);
     }
+
+    public function create(Country $country): void
+    {
+        $this->countryRepository->save($country);
+    }
+
+    public function update(Country $country): void
+    {
+        $this->countryRepository->save($country);
+    }
 }

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Core\ResponseMapper;
+namespace App\Payment\ResponseMapper;
 
-use App\Core\Dto\PaymentMethodDto;
-use App\Core\Entity\PaymentMethod;
+use App\Payment\Dto\PaymentMethodDto;
+use App\Payment\Entity\PaymentMethod;
 
 class PaymentMethodResponseMapper
 {

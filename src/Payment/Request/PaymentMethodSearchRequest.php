@@ -1,21 +1,21 @@
 <?php
 
-namespace App\Localization\Request;
+namespace App\Payment\Request;
 
 use App\Core\Request\SearchRequest;
 use OpenApi\Annotations as OA;
 
 /**
  * @OA\RequestBody(
- *     request="countrySearchRequest"
+ *     request="PaymentMethodSearchRequest"
  * )
  */
-class CountrySearchRequest extends SearchRequest
+class PaymentMethodSearchRequest extends SearchRequest
 {
     /**
      * @OA\Property()
      */
-    public ?string $orderProperty = 'code';
+    public ?string $orderProperty = 'name';
 
     /**
      * @OA\Property()
@@ -25,5 +25,5 @@ class CountrySearchRequest extends SearchRequest
     /**
      * @OA\Property()
      */
-    public ?string $code = null;
+    public ?string $countryCode = null;
 }
