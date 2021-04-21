@@ -53,7 +53,7 @@ class VendorManager
     {
         $this->validator->validate($vendor);
 
-        if (!$this->isSlugUnique($vendor, $vendor->getSlug())) {
+        if (null !== $vendor->getSlug() && !$this->isSlugUnique($vendor, $vendor->getSlug())) {
             throw new VendorSlugInUseException();
         }
     }
@@ -63,7 +63,7 @@ class VendorManager
         $slug = strtolower($this->slugger->slug($vendor->getName()));
 
         if (null !== $suffix) {
-            $slug .= '-'.(string) $suffix;
+            $slug .= '-'.$suffix;
         }
 
         if ($this->isSlugUnique($vendor, $slug)) {

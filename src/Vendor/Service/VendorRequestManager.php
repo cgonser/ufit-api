@@ -86,7 +86,7 @@ class VendorRequestManager
 
         if (null !== $vendorRequest->slug) {
             $vendor->setSlug($vendorRequest->slug);
-        } elseif (null === $vendor->getSlug()) {
+        } elseif (null === $vendor->getSlug() && null !== $vendor->getName()) {
             $vendor->setSlug($this->vendorManager->generateSlug($vendor));
         }
 
