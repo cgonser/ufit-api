@@ -35,8 +35,7 @@ class Customer implements UserInterface, \Serializable
     private UuidInterface $id;
 
     /**
-     * @ORM\Column(type="string", nullable=false)
-     * @Assert\NotBlank()
+     * @ORM\Column(type="string", nullable=true)
      */
     private ?string $name = null;
 

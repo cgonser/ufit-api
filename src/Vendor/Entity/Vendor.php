@@ -39,8 +39,7 @@ class Vendor implements UserInterface, \Serializable
     private Collection $plans;
 
     /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank()
+     * @ORM\Column(type="string", nullable=true)
      */
     private ?string $name = null;
 

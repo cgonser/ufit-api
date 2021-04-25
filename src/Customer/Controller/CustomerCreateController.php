@@ -2,14 +2,11 @@
 
 namespace App\Customer\Controller;
 
-use App\Core\Exception\ApiJsonException;
 use App\Core\Exception\ApiJsonInputValidationException;
-use App\Core\Response\ApiJsonResponse;
-use App\Customer\Dto\CustomerDto;
-use App\Customer\Exception\CustomerEmailAddressInUseException;
+use App\Core\Dto\JWTAuthenticationTokenDto;
 use App\Customer\Request\CustomerRequest;
-use App\Customer\ResponseMapper\CustomerResponseMapper;
 use App\Customer\Service\CustomerRequestManager;
+use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\AuthenticationSuccessHandler;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -22,35 +19,24 @@ class CustomerCreateController extends AbstractController
 {
     private CustomerRequestManager $customerRequestManager;
 
-    private CustomerResponseMapper $customerResponseMapper;
+    private AuthenticationSuccessHandler $authenticationSuccessHandler;
 
     public function __construct(
         CustomerRequestManager $customerRequestManager,
-        CustomerResponseMapper $customerResponseMapper
+        AuthenticationSuccessHandler $authenticationSuccessHandler
     ) {
         $this->customerRequestManager = $customerRequestManager;
-        $this->customerResponseMapper = $customerResponseMapper;
+        $this->authenticationSuccessHandler = $authenticationSuccessHandler;
     }
 
     /**
      * @Route("/customers", methods="POST", name="customers_create")
-     *
      * @ParamConverter("customerRequest", converter="fos_rest.request_body")
      *
      * @OA\Tag(name="Customer")
-     * @OA\RequestBody(
-     *     required=true,
-     *     @OA\JsonContent(ref=@Model(type=CustomerRequest::class))
-     * )
-     * @OA\Response(
-     *     response=201,
-     *     description="Creates a new customer",
-     *     @OA\JsonContent(ref=@Model(type=CustomerDto::class))
-     * )
-     * @OA\Response(
-     *     response=400,
-     *     description="Invalid input"
-     * )
+     * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=CustomerRequest::class)))
+     * @OA\Response(response=201, description="Success", @OA\JsonContent(ref=@Model(type=JWTAuthenticationTokenDto::class)))
+     * @OA\Response(response=400, description="Invalid input")
      */
     public function create(
         CustomerRequest $customerRequest,
@@ -62,6 +48,6 @@ class CustomerCreateController extends AbstractController
 
         $customer = $this->customerRequestManager->createFromRequest($customerRequest);
 
-        return new ApiJsonResponse(Response::HTTP_CREATED, $this->customerResponseMapper->map($customer));
+        return $this->authenticationSuccessHandler->handleAuthenticationSuccess($customer);
     }
 }

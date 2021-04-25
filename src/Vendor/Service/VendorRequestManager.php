@@ -76,7 +76,7 @@ class VendorRequestManager
             $vendor->setDisplayName($vendor->getName());
         }
 
-        if (null !== $vendorRequest->password) {
+        if (null !== $vendorRequest->password && null === $vendor->getPassword()) {
             $vendor->setPassword($this->vendorPasswordManager->encodePassword($vendor, $vendorRequest->password));
         }
 
@@ -86,7 +86,7 @@ class VendorRequestManager
 
         if (null !== $vendorRequest->slug) {
             $vendor->setSlug($vendorRequest->slug);
-        } elseif (null === $vendor->getSlug()) {
+        } elseif (null === $vendor->getSlug() && null !== $vendor->getName()) {
             $vendor->setSlug($this->vendorManager->generateSlug($vendor));
         }
 

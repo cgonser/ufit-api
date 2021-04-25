@@ -6,6 +6,8 @@ services:
         build: .
         image: ufit-api-php-fpm
         env_file: .env
+        environment:
+            ENABLE_XDEBUG: 1
         expose:
             - 9000
         volumes:

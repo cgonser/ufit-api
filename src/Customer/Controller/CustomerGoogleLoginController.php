@@ -20,7 +20,7 @@ class CustomerGoogleLoginController extends AbstractController
 
     public function __construct(
         AuthenticationSuccessHandler $authenticationSuccessHandler,
-        customerLoginGoogleManager $customerLoginGoogleManager
+        CustomerLoginGoogleManager $customerLoginGoogleManager
     ) {
         $this->authenticationSuccessHandler = $authenticationSuccessHandler;
         $this->customerLoginGoogleManager = $customerLoginGoogleManager;
