@@ -35,4 +35,11 @@ class VendorSettingProvider extends AbstractProvider
     {
         throw new VendorSettingNotFoundException();
     }
+
+    protected function getFilterableFields(): array
+    {
+        return [
+            'vendorId',
+        ];
+    }
 }
