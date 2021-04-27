@@ -15,7 +15,6 @@ class VendorPasswordChangeRequest
 {
     /**
      * @OA\Property()
-     * @Assert\NotBlank()
      */
     public ?string $currentPassword = null;
 

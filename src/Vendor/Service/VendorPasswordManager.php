@@ -48,10 +48,12 @@ class VendorPasswordManager
 
     public function changePassword(Vendor $vendor, string $currentPassword, string $newPassword)
     {
-        $isPasswordValid = $this->userPasswordEncoder->isPasswordValid($vendor, $currentPassword);
+        if (null !== $vendor->getPassword()) {
+            $isPasswordValid = $this->userPasswordEncoder->isPasswordValid($vendor, $currentPassword);
 
-        if (!$isPasswordValid) {
-            throw new VendorInvalidPasswordException();
+            if (!$isPasswordValid) {
+                throw new VendorInvalidPasswordException();
+            }
         }
 
         $vendor->setPassword(
