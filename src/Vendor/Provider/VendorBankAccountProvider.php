@@ -34,4 +34,11 @@ class VendorBankAccountProvider extends AbstractProvider
     {
         throw new VendorBankAccountNotFoundException();
     }
+
+    protected function getFilterableFields(): array
+    {
+        return [
+            'vendorId',
+        ];
+    }
 }
