@@ -7,15 +7,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @OA\RequestBody(
- *     request="CustomerPasswordChangeRequest",
- *     required={"email", "password"},
+ *     request="CustomerPasswordChangeRequest"
  * )
  */
 class CustomerPasswordChangeRequest
 {
     /**
      * @OA\Property()
-     * @Assert\NotBlank()
      */
     public ?string $currentPassword = null;
 

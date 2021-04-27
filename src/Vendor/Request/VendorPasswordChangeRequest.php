@@ -7,8 +7,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @OA\RequestBody(
- *     request="VendorPasswordChangeRequest",
- *     required={"email", "password"},
+ *     request="VendorPasswordChangeRequest"
  * )
  */
 class VendorPasswordChangeRequest

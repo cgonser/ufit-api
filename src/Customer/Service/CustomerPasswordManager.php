@@ -48,10 +48,12 @@ class CustomerPasswordManager
 
     public function changePassword(Customer $customer, string $currentPassword, string $newPassword)
     {
-        $isPasswordValid = $this->userPasswordEncoder->isPasswordValid($customer, $currentPassword);
+        if (null !== $customer->getPassword()) {
+            $isPasswordValid = $this->userPasswordEncoder->isPasswordValid($customer, $currentPassword);
 
-        if (!$isPasswordValid) {
-            throw new CustomerInvalidPasswordException();
+            if (!$isPasswordValid) {
+                throw new CustomerInvalidPasswordException();
+            }
         }
 
         $customer->setPassword(
