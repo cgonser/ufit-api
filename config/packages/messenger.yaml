@@ -41,4 +41,8 @@ framework:
             'App\Subscription\Message\SubscriptionRejectedEvent': subscription
             'App\Subscription\Message\SubscriptionCreatedEvent': subscription
 
+            'App\Vendor\Message\VendorBankAccountCreatedEvent': payment
+            'App\Vendor\Message\VendorBankAccountUpdatedEvent': payment
+            'App\Vendor\Message\VendorBankAccountDeletedEvent': void
+
             'Symfony\Component\Mailer\Messenger\SendEmailMessage': email

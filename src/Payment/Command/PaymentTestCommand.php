@@ -2,7 +2,6 @@
 
 namespace App\Payment\Command;
 
-use App\Customer\Entity\Customer;
 use PagarMe\Client;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

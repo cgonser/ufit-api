@@ -3,44 +3,68 @@
 namespace App\Vendor\Service;
 
 use App\Vendor\Entity\VendorSetting;
-//use App\Vendor\Message\VendorSettingCreatedEvent;
-//use App\Vendor\Message\VendorSettingDeletedEvent;
-//use App\Vendor\Message\VendorSettingUpdatedEvent;
+use App\Vendor\Provider\VendorProvider;
 use App\Vendor\Repository\VendorSettingRepository;
-use Symfony\Component\Messenger\MessageBusInterface;
+use Ramsey\Uuid\UuidInterface;
 
 class VendorSettingManager
 {
     private VendorSettingRepository $vendorSettingRepository;
 
-    private MessageBusInterface $messageBus;
+    private VendorProvider $vendorProvider;
 
     public function __construct(
         VendorSettingRepository $vendorSettingRepository,
-        MessageBusInterface $messageBus
+        VendorProvider $vendorProvider
     ) {
         $this->vendorSettingRepository = $vendorSettingRepository;
-        $this->messageBus = $messageBus;
+        $this->vendorProvider = $vendorProvider;
     }
 
     public function create(VendorSetting $vendorSetting)
     {
         $this->vendorSettingRepository->save($vendorSetting);
-
-//        $this->messageBus->dispatch(new VendorSettingCreatedEvent($vendorSetting->getId()));
     }
 
     public function update(VendorSetting $vendorSetting)
     {
         $this->vendorSettingRepository->save($vendorSetting);
-
-//        $this->messageBus->dispatch(new VendorSettingUpdatedEvent($vendorSetting->getId()));
     }
 
     public function delete(VendorSetting $vendorSetting)
     {
         $this->vendorSettingRepository->delete($vendorSetting);
+    }
 
-//        $this->messageBus->dispatch(new VendorSettingDeletedEvent($vendorSetting->getId()));
+    public function set(UuidInterface $vendorId, string $name, string $value): VendorSetting
+    {
+        $vendorSetting = $this->get($vendorId, $name);
+
+        if (!$vendorSetting) {
+            $vendorSetting = new VendorSetting();
+            $vendorSetting->setVendor($this->vendorProvider->get($vendorId));
+            $vendorSetting->setName($name);
+        }
+
+        $vendorSetting->setValue($value);
+
+        $this->vendorSettingRepository->save($vendorSetting);
+
+        return $vendorSetting;
+    }
+
+    public function get(UuidInterface $vendorId, string $name): ?VendorSetting
+    {
+        return $this->vendorSettingRepository->findOneBy([
+            'vendorId' => $vendorId,
+            'name' => $name,
+        ]);
+    }
+
+    public function getValue(UuidInterface $vendorId, string $name, ?string $defaultValue = null): ?string
+    {
+        $vendorSetting = $this->get($vendorId, $name);
+
+        return $vendorSetting ? $vendorSetting->getValue() : $defaultValue;
     }
 }
