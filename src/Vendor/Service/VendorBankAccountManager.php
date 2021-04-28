@@ -32,7 +32,7 @@ class VendorBankAccountManager
         $this->vendorBankAccountRepository->save($vendorBankAccount);
 
         $this->messageBus->dispatch(
-            new VendorBankAccountCreatedEvent($vendorBankAccount->getVendorId(), $vendorBankAccount->getId())
+            new VendorBankAccountCreatedEvent($vendorBankAccount->getVendor()->getId(), $vendorBankAccount->getId())
         );
     }
 
@@ -41,7 +41,7 @@ class VendorBankAccountManager
         $this->vendorBankAccountRepository->save($vendorBankAccount);
 
         $this->messageBus->dispatch(
-            new VendorBankAccountUpdatedEvent($vendorBankAccount->getVendorId(), $vendorBankAccount->getId())
+            new VendorBankAccountUpdatedEvent($vendorBankAccount->getVendor()->getId(), $vendorBankAccount->getId())
         );
     }
 
@@ -50,7 +50,7 @@ class VendorBankAccountManager
         $this->vendorBankAccountRepository->delete($vendorBankAccount);
 
         $this->messageBus->dispatch(
-            new VendorBankAccountDeletedEvent($vendorBankAccount->getVendorId(), $vendorBankAccount->getId())
+            new VendorBankAccountDeletedEvent($vendorBankAccount->getVendor()->getId(), $vendorBankAccount->getId())
         );
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Payment\Service\PaymentProcessor;
+namespace App\Payment\Service\PaymentProcessor\Pagarme;
 
 use App\Payment\Entity\Payment;
 use App\Payment\Message\InvoicePaidEvent;

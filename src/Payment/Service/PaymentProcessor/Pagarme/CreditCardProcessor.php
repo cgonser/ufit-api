@@ -1,41 +1,35 @@
 <?php
 
-namespace App\Payment\Service\PaymentProcessor;
+namespace App\Payment\Service\PaymentProcessor\Pagarme;
 
 use App\Core\Exception\InvalidInputException;
 use App\Payment\Dto\PagarmeTransactionInputDto;
 use App\Payment\Entity\Payment;
 use App\Payment\Entity\PaymentMethod;
 use App\Payment\Exception\PaymentMissingCreditCardDetailsException;
+use App\Payment\Service\PaymentProcessor\PaymentProcessorInterface;
 use Decimal\Decimal;
 
-class BoletoProcessor extends PagarmeProcessor implements PaymentProcessorInterface
+class CreditCardProcessor extends PagarmeProcessor implements PaymentProcessorInterface
 {
     public function prepareTransactionInput(Payment $payment)
     {
-        $customer = $payment->getInvoice()->getSubscription()->getCustomer();
-        $vendorPlan = $payment->getInvoice()->getSubscription()->getVendorPlan();
+        $transactionInput = parent::prepareTransactionInput($payment);
 
-        $transactionInput = new PagarmeTransactionInputDto();
-        $transactionInput->customerId = $customer->getId()->toString();
-        $transactionInput->customerName = $customer->getName();
-        $transactionInput->customerEmail = $customer->getEmail();
-        $transactionInput->customerPhone = $customer->getPhone();
-        $transactionInput->customerDocumentType = 'cpf';
-        $transactionInput->customerDocumentNumber = $customer->getDocument('cpf');
-        $transactionInput->amount = new Decimal($payment->getInvoice()->getTotalAmount());
-        $transactionInput->productId = $vendorPlan->getId()->toString();
-        $transactionInput->productName = $vendorPlan->getName();
+        $details = $payment->getDetails();
+        $transactionInput->cardHash = $details['card_hash'];
 
         return $transactionInput;
     }
 
     protected function validate(Payment $payment)
     {
-        $customer = $payment->getInvoice()->getSubscription()->getCustomer();
+        parent::validate($payment);
 
-        if (null === $customer->getDocument('cpf')) {
-            throw new InvalidInputException("Missing customer CPF");
+        $details = $payment->getDetails();
+
+        if (null === $details || !isset($details['card_hash'])) {
+            throw new PaymentMissingCreditCardDetailsException();
         }
     }
 
@@ -43,7 +37,7 @@ class BoletoProcessor extends PagarmeProcessor implements PaymentProcessorInterf
     {
         return [
             'amount' => $transactionInput->amount->mul(100)->toFixed(0),
-            'payment_method' => 'boleto',
+            'payment_method' => 'credit_card',
             'card_hash' => $transactionInput->cardHash,
             'customer' => [
                 'external_id' => $transactionInput->customerId,
@@ -87,6 +81,6 @@ class BoletoProcessor extends PagarmeProcessor implements PaymentProcessorInterf
 
     public function supports(PaymentMethod $paymentMethod): bool
     {
-        return $paymentMethod->getName() === 'boleto';
+        return $paymentMethod->getName() === 'credit-card';
     }
 }

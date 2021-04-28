@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Payment\Service\PaymentProcessor;
+namespace App\Payment\Service\PaymentProcessor\Pagarme;
 
+use App\Payment\Service\PaymentProcessor\VendorInformationManagerInterface;
 use App\Vendor\Entity\VendorBankAccount;
 use App\Vendor\Provider\VendorBankAccountProvider;
 use App\Vendor\Service\VendorSettingManager;
@@ -35,9 +36,9 @@ class PagarmeVendorInformationManager implements VendorInformationManagerInterfa
 
     public function pushVendorInformation(VendorBankAccount $vendorBankAccount)
     {
-        $pagarmeId = $this->vendorSettingManager->getValue($vendorBankAccount->getVendorId(), 'pagarme_id');
-        $transferInterval = $this->vendorSettingManager->getValue($vendorBankAccount->getVendorId(), 'pagarme_transfer_interval', 'weekly');
-        $transferDay = $this->vendorSettingManager->getValue($vendorBankAccount->getVendorId(), 'pagarme_transfer_day', '1');
+        $pagarmeId = $this->vendorSettingManager->getValue($vendorBankAccount->getVendor()->getId(), 'pagarme_id');
+        $transferInterval = $this->vendorSettingManager->getValue($vendorBankAccount->getVendor()->getId(), 'pagarme_transfer_interval', 'weekly');
+        $transferDay = $this->vendorSettingManager->getValue($vendorBankAccount->getVendor()->getId(), 'pagarme_transfer_day', '1');
 
         $recipientData = [
             'transfer_enabled' => 'true',
@@ -61,7 +62,7 @@ class PagarmeVendorInformationManager implements VendorInformationManagerInterfa
         } else {
             $recipient = $this->pagarmeClient->recipients()->create($recipientData);
 
-            $this->vendorSettingManager->set($vendorBankAccount->getVendorId(), 'pagarme_id', $recipient->id);
+            $this->vendorSettingManager->set($vendorBankAccount->getVendor()->getId(), 'pagarme_id', $recipient->id);
         }
     }
 }

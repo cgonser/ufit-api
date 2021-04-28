@@ -27,10 +27,7 @@ class PaymentRequest
     /**
      * @OA\Property(
      *     type="object",
-     *     @OA\Property(
-     *         property="card_hash",
-     *         type="string"
-     *     )
+     *     @OA\Property(property="card_hash", type="string")
      * )
      */
     public ?array $details = null;
