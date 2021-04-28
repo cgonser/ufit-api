@@ -6,6 +6,14 @@ use Decimal\Decimal;
 
 class PagarmeTransactionInputDto
 {
+    public string $vendorId;
+
+    public string $vendorPlanId;
+
+    public ?int $pagarmePlanId;
+
+    public string $invoiceId;
+
     public string $customerId;
 
     public string $customerName;
@@ -25,4 +33,6 @@ class PagarmeTransactionInputDto
     public string $productId;
 
     public string $productName;
+
+    public bool $isRecurring = false;
 }
