@@ -41,7 +41,7 @@ class PagarmeResponseProcessor
             $gatewayResponse = [];
         }
 
-        $gatewayResponse[date('Ymd-his')] = (array) $response;
+        $gatewayResponse[date('Ymd_his')] = (array) $response;
         $payment->setGatewayResponse($gatewayResponse);
 
         if (method_exists($this, $methodName)) {

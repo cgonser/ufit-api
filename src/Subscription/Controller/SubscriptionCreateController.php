@@ -42,15 +42,11 @@ class SubscriptionCreateController extends AbstractController
 
     /**
      * @Route("/subscriptions", methods="POST", name="subscriptions_create")
-     *
      * @ParamConverter("subscriptionRequest", converter="fos_rest.request_body")
      *
      * @OA\Tag(name="Subscription")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=SubscriptionRequest::class)))
-     * @OA\Response(response=201,
-     *     description="Creates a subscription for a new or existing customer",
-     *     @OA\JsonContent(ref=@Model(type=SubscriptionCreateDto::class))
-     * )
+     * @OA\Response(response=201, description="Success", @OA\JsonContent(ref=@Model(type=SubscriptionCreateDto::class)))
      * @OA\Response(response=400, description="Invalid input")
      */
     public function subscribe(
