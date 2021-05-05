@@ -14,11 +14,9 @@ class VendorBankAccountRequestManager
     private VendorProvider $vendorProvider;
 
     public function __construct(
-        VendorBankAccountManager $vendorBankAccountManager,
-        VendorProvider $vendorProvider
+        VendorBankAccountManager $vendorBankAccountManager
     ) {
         $this->vendorBankAccountManager = $vendorBankAccountManager;
-        $this->vendorProvider = $vendorProvider;
     }
 
     public function createFromRequest(VendorBankAccountRequest $vendorBankAccountRequest): VendorBankAccount
@@ -46,9 +44,7 @@ class VendorBankAccountRequestManager
         VendorBankAccountRequest $vendorBankAccountRequest
     ) {
         if (null !== $vendorBankAccountRequest->vendorId) {
-            $vendor = $this->vendorProvider->get(Uuid::fromString($vendorBankAccountRequest->vendorId));
-
-            $vendorBankAccount->setVendor($vendor);
+            $vendorBankAccount->setVendorId(Uuid::fromString($vendorBankAccountRequest->vendorId));
         }
 
         if (null !== $vendorBankAccountRequest->bankCode) {
