@@ -4,17 +4,23 @@ namespace App\Program\ResponseMapper;
 
 use App\Program\Dto\ProgramDto;
 use App\Program\Entity\Program;
+use App\Vendor\ResponseMapper\VendorResponseMapper;
 
 class ProgramResponseMapper
 {
     private ProgramAssetResponseMapper $programAssetResponseMapper;
 
-    public function __construct(ProgramAssetResponseMapper $programAssetResponseMapper)
-    {
+    private VendorResponseMapper $vendorResponseMapper;
+
+    public function __construct(
+        ProgramAssetResponseMapper $programAssetResponseMapper,
+        VendorResponseMapper $vendorResponseMapper
+    ) {
         $this->programAssetResponseMapper = $programAssetResponseMapper;
+        $this->vendorResponseMapper = $vendorResponseMapper;
     }
 
-    public function map(Program $program, bool $mapAssets = true): ProgramDto
+    public function map(Program $program, bool $mapAssets = true, bool $mapVendor = false): ProgramDto
     {
         $programDto = new ProgramDto();
         $programDto->id = $program->getId()->toString();
@@ -32,15 +38,19 @@ class ProgramResponseMapper
             $programDto->assets = $this->programAssetResponseMapper->mapMultiple($program->getAssets()->toArray());
         }
 
+        if ($mapVendor) {
+            $programDto->vendor = $this->vendorResponseMapper->map($program->getVendor());
+        }
+
         return $programDto;
     }
 
-    public function mapMultiple(array $programs, bool $mapAssets = false): array
+    public function mapMultiple(array $programs, bool $mapAssets = false, bool $mapVendor = false): array
     {
         $programDtos = [];
 
         foreach ($programs as $program) {
-            $programDtos[] = $this->map($program, $mapAssets);
+            $programDtos[] = $this->map($program, $mapAssets, $mapVendor);
         }
 
         return $programDtos;
