@@ -2,9 +2,8 @@
 
 namespace App\Payment\MessageHandler;
 
-use App\Payment\Entity\Payment;
 use App\Payment\Message\PagarmeTransactionResponseReceivedEvent;
-use App\Payment\Service\PaymentProcessor\PagarmeResponseProcessor;
+use App\Payment\Service\PaymentProcessor\Pagarme\PagarmeResponseProcessor;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
@@ -18,8 +17,8 @@ class PagarmeTransactionResponseHandler implements MessageHandlerInterface
         PagarmeResponseProcessor $pagarmeResponseProcessor,
         LoggerInterface $logger
     ) {
-        $this->logger = $logger;
         $this->pagarmeResponseProcessor = $pagarmeResponseProcessor;
+        $this->logger = $logger;
     }
 
     public function __invoke(PagarmeTransactionResponseReceivedEvent $event)

@@ -25,19 +25,19 @@ class SubscriptionEmailManager
         $vendorPlan = $subscription->getVendorPlan();
         $vendor = $vendorPlan->getVendor();
 
-        $this->mailer->send(
-            $this->emailComposer->compose(
-                'subscription.created_customer',
-                [
-                    $customer->getName() => $customer->getEmail(),
-                ],
-                [
-                    'greeting_name' => $customer->getName(),
-                    'vendor_name' => $vendor->getDisplayName(),
-                ],
-                $customer->getLocale()
-            )
-        );
+//        $this->mailer->send(
+//            $this->emailComposer->compose(
+//                'subscription.created_customer',
+//                [
+//                    $customer->getName() => $customer->getEmail(),
+//                ],
+//                [
+//                    'greeting_name' => $customer->getName(),
+//                    'vendor_name' => $vendor->getDisplayName(),
+//                ],
+//                $customer->getLocale()
+//            )
+//        );
 
         $vendorDateFormatter = new \IntlDateFormatter(
             $vendor->getLocale(),
@@ -59,6 +59,42 @@ class SubscriptionEmailManager
                     'plan_name' => $vendorPlan->getName(),
                 ],
                 $vendor->getLocale()
+            )
+        );
+    }
+
+    public function sendApprovedEmail(Subscription $subscription)
+    {
+        $customer = $subscription->getCustomer();
+        $vendorPlan = $subscription->getVendorPlan();
+        $vendor = $vendorPlan->getVendor();
+
+        $this->mailer->send(
+            $this->emailComposer->compose(
+                'subscription.approved_vendor',
+                [
+                    $vendor->getName() => $vendor->getEmail(),
+                ],
+                [
+                    'greeting_name' => $vendor->getName(),
+                    'customer_name' => $customer->getName(),
+                    'plan_name' => $vendorPlan->getName(),
+                ],
+                $vendor->getLocale()
+            )
+        );
+
+        $this->mailer->send(
+            $this->emailComposer->compose(
+                'subscription.approved_customer',
+                [
+                    $customer->getName() => $customer->getEmail(),
+                ],
+                [
+                    'greeting_name' => $customer->getName(),
+                    'vendor_name' => $vendor->getName(),
+                ],
+                $customer->getLocale()
             )
         );
     }

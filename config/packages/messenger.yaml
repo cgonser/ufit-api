@@ -7,10 +7,10 @@ framework:
             # https://symfony.com/doc/current/messenger.html#transport-configuration
             subscription: '%env(MESSENGER_TRANSPORT_DSN_SUBSCRIPTION)%'
             vendor: '%env(MESSENGER_TRANSPORT_DSN_VENDOR)%'
-            # failed: 'doctrine://default?queue_name=failed'
-            payment: 'sync://'
+            payment: '%env(MESSENGER_TRANSPORT_DSN_PAYMENT)%'
             sync: 'sync://'
             void: 'in-memory://'
+            # failed: 'doctrine://default?queue_name=failed'
 
             email:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN_EMAIL)%'
@@ -40,5 +40,9 @@ framework:
             'App\Subscription\Message\SubscriptionApprovedEvent': subscription
             'App\Subscription\Message\SubscriptionRejectedEvent': subscription
             'App\Subscription\Message\SubscriptionCreatedEvent': subscription
+
+            'App\Vendor\Message\VendorBankAccountCreatedEvent': payment
+            'App\Vendor\Message\VendorBankAccountUpdatedEvent': payment
+            'App\Vendor\Message\VendorBankAccountDeletedEvent': void
 
             'Symfony\Component\Mailer\Messenger\SendEmailMessage': email

@@ -21,8 +21,8 @@ parameters:
     pagarme.api_key: '%env(PAGARME_API_KEY)%'
 
     aws.s3_region: '%env(AWS_S3_REGION)%'
-    #aws.s3_access_key_id: '%env(AWS_S3_ACCESS_KEY_ID)%'
-    #aws.s3_access_key_secret: '%env(AWS_S3_ACCESS_KEY_SECRET)%'
+    #aws.s3_access_key_id: '%env(AWS_ACCESS_KEY_ID)%'
+    #aws.s3_access_key_secret: '%env(AWS_SECRET_ACCESS_KEY)%'
     s3.buckets.customer_photo: '%env(S3_BUCKET_CUSTOMER_PHOTO)%'
     s3.buckets.vendor_photo: '%env(S3_BUCKET_VENDOR_PHOTO)%'
     s3.buckets.program_asset: '%env(S3_BUCKET_PROGRAM_ASSET)%'
@@ -107,10 +107,6 @@ services:
     App\Vendor\Controller\:
         resource: '../src/Vendor/Controller'
         tags: ['controller.service_arguments']
-
-    #
-    #    App\Blog\EventSubscriber\CommentNotificationSubscriber:
-    #        $sender: '%app.notifications.email_sender%'
 
     App\Core\ArgumentResolver\UuidValueResolver:
         tags:

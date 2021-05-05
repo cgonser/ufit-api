@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Payment\Service\PaymentProcessor;
+namespace App\Payment\Service\PaymentProcessor\Pagarme;
 
 use App\Payment\Entity\Payment;
 use App\Payment\Message\InvoicePaidEvent;
@@ -22,8 +22,7 @@ class PagarmeResponseProcessor
         PaymentProvider $paymentProvider,
         PaymentManager $paymentManager,
         MessageBusInterface $messageBus
-    )
-    {
+    ) {
         $this->paymentProvider = $paymentProvider;
         $this->paymentManager = $paymentManager;
         $this->messageBus = $messageBus;
@@ -35,14 +34,14 @@ class PagarmeResponseProcessor
         $payment = $this->paymentProvider->get($paymentId);
 
         $status = new UnicodeString($response->status);
-        $methodName = 'process' . ucfirst($status->camel());
+        $methodName = 'process'.ucfirst($status->camel());
 
         $gatewayResponse = $payment->getGatewayResponse();
         if (null === $payment->getGatewayResponse()) {
             $gatewayResponse = [];
         }
 
-        $gatewayResponse[date('Ymd-his')] = (array)$response;
+        $gatewayResponse[date('Ymd_his')] = (array) $response;
         $payment->setGatewayResponse($gatewayResponse);
 
         if (method_exists($this, $methodName)) {

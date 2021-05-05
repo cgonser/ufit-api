@@ -3,12 +3,10 @@
 {% extends "email/base.html.twig" %}
 
 {% block content %}
-    {{ 'subscription.payment_made_vendor.content'|trans({
+    {{ 'subscription.approved_vendor.content'|trans({
         '%customer_name%': customer_name,
-        '%plan_name%': plan_name,
-        '%total_amount%': total_amount,
-        '%vendor_amount%': vendor_amount
-    })|nl2br|markdown_to_html }}
+        '%plan_name%': plan_name
+    })|markdown_to_html }}
 {% endblock %}
 
 {% set ctaLink = 'https://ufit.io/vendor/login' %}
