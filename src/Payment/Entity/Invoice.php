@@ -4,6 +4,7 @@ namespace App\Payment\Entity;
 
 use App\Localization\Entity\Currency;
 use App\Subscription\Entity\Subscription;
+use App\Subscription\Entity\SubscriptionCycle;
 use Decimal\Decimal;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -36,10 +37,21 @@ class Invoice
     private UuidInterface $subscriptionId;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Subscription\Entity\Subscription", inversedBy="cycles")
+     * @ORM\ManyToOne(targetEntity="App\Subscription\Entity\Subscription")
      * @ORM\JoinColumn(name="subscription_id", referencedColumnName="id")
      */
     private Subscription $subscription;
+
+    /**
+     * @ORM\Column(type="uuid", nullable=true)
+     */
+    private ?UuidInterface $subscriptionCycleId = null;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Subscription\Entity\SubscriptionCycle")
+     * @ORM\JoinColumn(name="subscription_cycle_id", referencedColumnName="id")
+     */
+    private SubscriptionCycle $subscriptionCycle;
 
     /**
      * @ORM\Column(type="decimal", nullable=false, options={"precision": 11, "scale": 2})

@@ -3,18 +3,18 @@
 namespace App\Payment\MessageHandler;
 
 use App\Payment\Message\PagarmeTransactionResponseReceivedEvent;
-use App\Payment\Service\PaymentProcessor\Pagarme\PagarmeResponseProcessor;
+use App\Payment\Service\PaymentProcessor\Pagarme\PagarmeTransactionResponseProcessor;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
 class PagarmeTransactionResponseHandler implements MessageHandlerInterface
 {
-    private PagarmeResponseProcessor $pagarmeResponseProcessor;
+    private PagarmeTransactionResponseProcessor $pagarmeResponseProcessor;
 
     private LoggerInterface $logger;
 
     public function __construct(
-        PagarmeResponseProcessor $pagarmeResponseProcessor,
+        PagarmeTransactionResponseProcessor $pagarmeResponseProcessor,
         LoggerInterface $logger
     ) {
         $this->pagarmeResponseProcessor = $pagarmeResponseProcessor;
@@ -28,6 +28,6 @@ class PagarmeTransactionResponseHandler implements MessageHandlerInterface
             (array) $event->getResponse()
         );
 
-        $this->pagarmeResponseProcessor->process($event->getPaymentId(), $event->getResponse());
+        $this->pagarmeResponseProcessor->process($event->getResponse(), $event->getPaymentId());
     }
 }

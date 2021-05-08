@@ -2,58 +2,44 @@
 
 namespace App\Subscription\Provider;
 
+use App\Core\Provider\AbstractProvider;
 use App\Customer\Entity\Customer;
 use App\Subscription\Entity\Subscription;
 use App\Subscription\Exception\SubscriptionNotFoundException;
 use App\Subscription\Repository\SubscriptionRepository;
 use Ramsey\Uuid\UuidInterface;
 
-class SubscriptionProvider
+class SubscriptionProvider extends AbstractProvider
 {
-    private SubscriptionRepository $subscriptionRepository;
-
-    public function __construct(
-        SubscriptionRepository $subscriptionRepository
-    ) {
-        $this->subscriptionRepository = $subscriptionRepository;
+    public function __construct(SubscriptionRepository $repository)
+    {
+        $this->repository = $repository;
     }
 
     public function findByCustomer(Customer $customer): array
     {
-        return $this->subscriptionRepository->findBy([
+        return $this->repository->findBy([
             'customer' => $customer,
         ]);
     }
 
-    public function getById(UuidInterface $id): Subscription
+    public function getByExternalReference(string $externalReference): Subscription
     {
-        /** @var Subscription|null $subscription */
-        $subscription = $this->subscriptionRepository->find($id);
-
-        if (!$subscription) {
-            throw new SubscriptionNotFoundException();
-        }
-
-        return $subscription;
+        return $this->getBy([
+            'externalReference' => $externalReference,
+        ]);
     }
 
     public function getByCustomerAndId(Customer $customer, UuidInterface $subscriptionId): Subscription
     {
-        /** @var Subscription|null $subscription */
-        $subscription = $this->subscriptionRepository->findOneBy([
+        return $this->getBy([
             'id' => $subscriptionId,
             'customer' => $customer,
         ]);
-
-        if (!$subscription) {
-            throw new SubscriptionNotFoundException();
-        }
-
-        return $subscription;
     }
 
-    public function findAll(): array
+    protected function throwNotFoundException()
     {
-        return $this->subscriptionRepository->findAll();
+        throw new SubscriptionNotFoundException();
     }
 }

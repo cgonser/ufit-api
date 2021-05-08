@@ -124,6 +124,11 @@ class Subscription
      */
     private ?\DateTimeInterface $cancelledAt = null;
 
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private ?string $externalReference = null;
+
     public function __construct()
     {
         $this->cycles = new ArrayCollection();
@@ -335,6 +340,18 @@ class Subscription
     public function setCancelledAt(?\DateTimeInterface $cancelledAt): self
     {
         $this->cancelledAt = $cancelledAt;
+
+        return $this;
+    }
+
+    public function getExternalReference(): ?string
+    {
+        return $this->externalReference;
+    }
+
+    public function setExternalReference(?string $externalReference): self
+    {
+        $this->externalReference = $externalReference;
 
         return $this;
     }

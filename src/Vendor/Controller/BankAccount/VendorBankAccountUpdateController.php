@@ -71,7 +71,7 @@ class VendorBankAccountUpdateController extends AbstractController
         }
 
         $vendorBankAccount = $this->vendorBankAccountProvider->getByVendorAndId(
-            $vendor,
+            $vendor->getId(),
             Uuid::fromString($vendorBankAccountId)
         );
 

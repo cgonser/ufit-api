@@ -37,7 +37,7 @@ class SubscriptionCreatedEmailCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $subscription = $this->subscriptionProvider->getById(
+        $subscription = $this->subscriptionProvider->get(
             Uuid::fromString($input->getArgument('subscriptionId'))
         );
 

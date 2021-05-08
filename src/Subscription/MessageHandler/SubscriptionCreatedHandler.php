@@ -28,7 +28,7 @@ class SubscriptionCreatedHandler implements MessageHandlerInterface
 
     public function __invoke(SubscriptionCreatedEvent $subscriptionCreatedEvent)
     {
-        $subscription = $this->subscriptionProvider->getById($subscriptionCreatedEvent->getSubscriptionId());
+        $subscription = $this->subscriptionProvider->get($subscriptionCreatedEvent->getSubscriptionId());
 
         $this->logger->info(
             'subscription.created',

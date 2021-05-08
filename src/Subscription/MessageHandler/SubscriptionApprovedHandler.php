@@ -28,7 +28,7 @@ class SubscriptionApprovedHandler implements MessageHandlerInterface
 
     public function __invoke(SubscriptionApprovedEvent $subscriptionApprovedEvent)
     {
-        $subscription = $this->subscriptionProvider->getById($subscriptionApprovedEvent->getSubscriptionId());
+        $subscription = $this->subscriptionProvider->get($subscriptionApprovedEvent->getSubscriptionId());
 
         $this->logger->info(
             'subscription.approved',

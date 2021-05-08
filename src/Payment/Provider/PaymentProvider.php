@@ -15,6 +15,13 @@ class PaymentProvider extends AbstractProvider
         $this->repository = $repository;
     }
 
+    public function getByExternalReference(string $externalReference): Payment
+    {
+        return $this->getBy([
+            'externalReference' => $externalReference,
+        ]);
+    }
+
     protected function throwNotFoundException()
     {
         throw new PaymentNotFoundException();

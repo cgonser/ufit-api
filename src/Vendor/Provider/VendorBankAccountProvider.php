@@ -16,12 +16,12 @@ class VendorBankAccountProvider extends AbstractProvider
         $this->repository = $repository;
     }
 
-    public function getByVendorAndId(Vendor $vendor, UuidInterface $vendorBankAccountId): VendorBankAccount
+    public function getByVendorAndId(UuidInterface $vendorId, UuidInterface $vendorBankAccountId): VendorBankAccount
     {
         /** @var VendorBankAccount|null $vendorBankAccount */
         $vendorBankAccount = $this->repository->findOneBy([
             'id' => $vendorBankAccountId,
-            'vendor' => $vendor,
+            'vendorId' => $vendorId,
         ]);
 
         if (!$vendorBankAccount) {

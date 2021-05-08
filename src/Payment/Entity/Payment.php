@@ -75,6 +75,11 @@ class Payment
     private ?array $gatewayResponse = null;
 
     /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private ?string $externalReference = null;
+
+    /**
      * @ORM\Column(name="due_date", type="date", nullable=true)
      */
     private ?\DateTimeInterface $dueDate = null;
@@ -183,6 +188,18 @@ class Payment
     public function setGatewayResponse(?array $gatewayResponse): Payment
     {
         $this->gatewayResponse = $gatewayResponse;
+
+        return $this;
+    }
+
+    public function getExternalReference(): ?string
+    {
+        return $this->externalReference;
+    }
+
+    public function setExternalReference(?string $externalReference): self
+    {
+        $this->externalReference = $externalReference;
 
         return $this;
     }
