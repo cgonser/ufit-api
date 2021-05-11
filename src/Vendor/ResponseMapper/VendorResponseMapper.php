@@ -24,7 +24,7 @@ class VendorResponseMapper
         $this->vendorPhotoS3Bucket = $vendorPhotoS3Bucket;
     }
 
-    public function map(Vendor $vendor): VendorDto
+    public function map(Vendor $vendor, bool $mapPlans = true): VendorDto
     {
         $vendorDto = new VendorDto();
         $vendorDto->id = $vendor->getId()->toString();
@@ -39,11 +39,13 @@ class VendorResponseMapper
         $vendorDto->locale = $vendor->getLocale();
         $vendorDto->timezone = $vendor->getTImezone();
 
-        if (null != $vendor->getPhoto()) {
+        if (null !== $vendor->getPhoto()) {
             $vendorDto->photo = $this->s3Client->getObjectUrl($this->vendorPhotoS3Bucket, $vendor->getPhoto());
         }
 
-        $vendorDto->plans = $this->vendorPlanResponseMapper->mapMultiple($vendor->getPlans()->toArray());
+        if ($mapPlans) {
+            $vendorDto->plans = $this->vendorPlanResponseMapper->mapMultiple($vendor->getPlans()->toArray());
+        }
 
         return $vendorDto;
     }

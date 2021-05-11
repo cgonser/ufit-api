@@ -10,8 +10,6 @@ class VendorPlanDto
 
     public ?string $vendorId;
 
-    public ?VendorDto $vendor;
-
     public ?string $questionnaireId;
 
     public ?QuestionnaireDto $questionnaire;
