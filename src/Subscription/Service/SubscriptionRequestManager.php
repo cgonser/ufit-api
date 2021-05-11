@@ -37,8 +37,10 @@ class SubscriptionRequestManager
     public function createFromCustomerRequest(Customer $customer, SubscriptionRequest $subscriptionRequest): Subscription
     {
         $subscription = new Subscription();
-        $subscription->setCustomer($customer);
+
         $this->mapDataFromRequest($subscription, $subscriptionRequest);
+
+        $subscription->setCustomer($customer);
 
         $this->subscriptionManager->create($subscription);
 
@@ -72,7 +74,7 @@ class SubscriptionRequestManager
             $subscription->setCustomer($customer);
         }
 
-        if (null === $subscription->getCustomer() && null !== $subscriptionRequest->customerId) {
+        if (null !== $subscriptionRequest->customerId && null === $subscription->getCustomer()) {
             $customer = $this->customerProvider->get(Uuid::fromString($subscriptionRequest->customerId));
 
             $subscription->setCustomerId($customer->getId());

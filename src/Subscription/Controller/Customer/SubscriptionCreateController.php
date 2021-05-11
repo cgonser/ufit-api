@@ -60,9 +60,11 @@ class SubscriptionCreateController extends AbstractController
             throw new ApiJsonInputValidationException($validationErrors);
         }
 
-        if ('current' == $customerId) {
+        if ('current' === $customerId) {
             /** @var Customer $customer */
             $customer = $this->getUser();
+
+            $subscriptionRequest->customerId = $customer->getId()->toString();
         } else {
             // customer fetching not implemented yet; requires also authorization
             throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
