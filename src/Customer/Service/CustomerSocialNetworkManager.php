@@ -1,29 +1,29 @@
 <?php
 
-namespace App\Vendor\Service;
+namespace App\Customer\Service;
 
 use App\Core\Validation\EntityValidator;
-use App\Vendor\Entity\VendorSocialNetwork;
-use App\Vendor\Repository\VendorSocialNetworkRepository;
+use App\Customer\Entity\CustomerSocialNetwork;
+use App\Customer\Repository\CustomerSocialNetworkRepository;
 
-class VendorSocialNetworkManager
+class CustomerSocialNetworkManager
 {
-    private VendorSocialNetworkRepository $vendorSocialNetworkRepository;
+    private CustomerSocialNetworkRepository $customerSocialNetworkRepository;
 
     private EntityValidator $validator;
 
     public function __construct(
-        VendorSocialNetworkRepository $vendorSocialNetworkRepository,
+        CustomerSocialNetworkRepository $customerSocialNetworkRepository,
         EntityValidator $validator
     ) {
-        $this->vendorSocialNetworkRepository = $vendorSocialNetworkRepository;
+        $this->customerSocialNetworkRepository = $customerSocialNetworkRepository;
         $this->validator = $validator;
     }
 
-    public function save(VendorSocialNetwork $vendorSocialNetwork)
+    public function save(CustomerSocialNetwork $customerSocialNetwork)
     {
-        $this->validator->validate($vendorSocialNetwork);
+        $this->validator->validate($customerSocialNetwork);
 
-        $this->vendorSocialNetworkRepository->save($vendorSocialNetwork);
+        $this->customerSocialNetworkRepository->save($customerSocialNetwork);
     }
 }

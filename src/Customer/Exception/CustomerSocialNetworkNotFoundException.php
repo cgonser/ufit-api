@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Vendor\Exception;
+namespace App\Customer\Exception;
 
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class VendorSocialNetworkNotFoundException extends NotFoundHttpException
+class CustomerSocialNetworkNotFoundException extends NotFoundHttpException
 {
-    protected $message = 'Vendor social network integration not found';
+    protected $message = 'Customer social network integration not found';
 
     public function __construct(string $message = null, \Throwable $previous = null, int $code = 0, array $headers = [])
     {

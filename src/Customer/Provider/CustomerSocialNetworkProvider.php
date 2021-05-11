@@ -1,29 +1,29 @@
 <?php
 
-namespace App\Vendor\Provider;
+namespace App\Customer\Provider;
 
 use App\Core\Provider\AbstractProvider;
-use App\Vendor\Entity\Vendor;
-use App\Vendor\Entity\VendorSocialNetwork;
-use App\Vendor\Exception\VendorSocialNetworkNotFoundException;
-use App\Vendor\Repository\VendorSocialNetworkRepository;
+use App\Customer\Entity\Customer;
+use App\Customer\Entity\CustomerSocialNetwork;
+use App\Customer\Exception\CustomerSocialNetworkNotFoundException;
+use App\Customer\Repository\CustomerSocialNetworkRepository;
 
-class VendorSocialNetworkProvider extends AbstractProvider
+class CustomerSocialNetworkProvider extends AbstractProvider
 {
-    public function __construct(VendorSocialNetworkRepository $repository)
+    public function __construct(CustomerSocialNetworkRepository $repository)
     {
         $this->repository = $repository;
     }
 
-    public function findOneByVendorAndPlatform(Vendor $vendor, string $platform): ?VendorSocialNetwork
+    public function findOneByCustomerAndPlatform(Customer $customer, string $platform): ?CustomerSocialNetwork
     {
         return $this->repository->findOneBy([
-            'vendor' => $vendor,
+            'customer' => $customer,
             'platform' => $platform,
         ]);
     }
 
-    public function findOneByExternalIdAndPlatform(string $externalId, string $platform): ?VendorSocialNetwork
+    public function findOneByExternalIdAndPlatform(string $externalId, string $platform): ?CustomerSocialNetwork
     {
         return $this->repository->findOneBy([
             'externalId' => $externalId,
@@ -31,19 +31,19 @@ class VendorSocialNetworkProvider extends AbstractProvider
         ]);
     }
 
-    public function getByVendorAndPlatform(Vendor $vendor, string $platform): ?VendorSocialNetwork
+    public function getByCustomerAndPlatform(Customer $customer, string $platform): ?CustomerSocialNetwork
     {
-        $vendorSocialNetwork = $this->findOneByVendorAndPlatform($vendor, $platform);
+        $customerSocialNetwork = $this->findOneByCustomerAndPlatform($customer, $platform);
 
-        if (!$vendorSocialNetwork) {
+        if (!$customerSocialNetwork) {
             $this->throwNotFoundException();
         }
 
-        return $vendorSocialNetwork;
+        return $customerSocialNetwork;
     }
 
     protected function throwNotFoundException()
     {
-        throw new VendorSocialNetworkNotFoundException();
+        throw new CustomerSocialNetworkNotFoundException();
     }
 }
