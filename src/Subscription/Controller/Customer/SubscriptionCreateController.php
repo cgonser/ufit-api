@@ -6,6 +6,8 @@ use App\Core\Exception\ApiJsonException;
 use App\Core\Exception\ApiJsonInputValidationException;
 use App\Core\Response\ApiJsonResponse;
 use App\Customer\Entity\Customer;
+use App\Payment\Provider\InvoiceProvider;
+use App\Payment\ResponseMapper\InvoiceResponseMapper;
 use App\Subscription\Dto\SubscriptionDto;
 use App\Subscription\Request\SubscriptionRequest;
 use App\Subscription\ResponseMapper\SubscriptionResponseMapper;
@@ -24,12 +26,20 @@ class SubscriptionCreateController extends AbstractController
 
     private SubscriptionResponseMapper $subscriptionResponseMapper;
 
+    private InvoiceProvider $invoiceProvider;
+    
+    private InvoiceResponseMapper $invoiceResponseMapper;
+
     public function __construct(
         SubscriptionRequestManager $subscriptionManager,
-        SubscriptionResponseMapper $subscriptionResponseMapper
+        SubscriptionResponseMapper $subscriptionResponseMapper,
+        InvoiceProvider $invoiceProvider,
+        InvoiceResponseMapper $invoiceResponseMapper
     ) {
         $this->subscriptionManager = $subscriptionManager;
         $this->subscriptionResponseMapper = $subscriptionResponseMapper;
+        $this->invoiceProvider = $invoiceProvider;
+        $this->invoiceResponseMapper = $invoiceResponseMapper;
     }
 
     /**
@@ -72,9 +82,14 @@ class SubscriptionCreateController extends AbstractController
 
         $subscription = $this->subscriptionManager->createFromCustomerRequest($customer, $subscriptionRequest);
 
+        $invoice = $this->invoiceProvider->getSubscriptionNextDueInvoice($subscription->getId());
+
         return new ApiJsonResponse(
             Response::HTTP_CREATED,
-            $this->subscriptionResponseMapper->map($subscription)
+            [
+                'subscription' => $this->subscriptionResponseMapper->map($subscription),
+                'invoice' => $this->invoiceResponseMapper->map($invoice),
+            ]
         );
     }
 }
