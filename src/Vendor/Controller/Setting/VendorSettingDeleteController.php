@@ -54,7 +54,7 @@ class VendorSettingDeleteController extends AbstractController
         }
 
         $vendorSetting = $this->vendorSettingProvider->getByVendorAndId(
-            $vendor,
+            $vendor->getId(),
             Uuid::fromString($vendorSettingId)
         );
 
