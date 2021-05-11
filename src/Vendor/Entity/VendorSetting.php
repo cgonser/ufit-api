@@ -34,12 +34,6 @@ class VendorSetting
     private ?UuidInterface $vendorId = null;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Vendor")
-     * @ORM\JoinColumn(name="vendor_id", referencedColumnName="id", nullable=true)
-     */
-    private ?Vendor $vendor = null;
-
-    /**
      * @ORM\Column(type="string", nullable=true)
      */
     private ?string $name = null;
@@ -62,18 +56,6 @@ class VendorSetting
     public function setVendorId(?UuidInterface $vendorId): void
     {
         $this->vendorId = $vendorId;
-    }
-
-    public function getVendor(): ?Vendor
-    {
-        return $this->vendor;
-    }
-
-    public function setVendor(Vendor $vendor): self
-    {
-        $this->vendor = $vendor;
-
-        return $this;
     }
 
     public function getName(): ?string

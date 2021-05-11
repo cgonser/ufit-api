@@ -13,6 +13,8 @@ class VendorPlanResponseMapper
 
     private PaymentMethodResponseMapper $paymentMethodResponseMapper;
 
+    private VendorResponseMapper $vendorResponseMapper;
+
     private S3Client $s3Client;
 
     private string $vendorPhotoS3Bucket;
@@ -20,11 +22,13 @@ class VendorPlanResponseMapper
     public function __construct(
         QuestionnaireResponseMapper $questionnaireResponseMapper,
         PaymentMethodResponseMapper $paymentMethodResponseMapper,
+        VendorResponseMapper $vendorResponseMapper,
         S3Client $s3Client,
         string $vendorPhotoS3Bucket
     ) {
         $this->questionnaireResponseMapper = $questionnaireResponseMapper;
         $this->paymentMethodResponseMapper = $paymentMethodResponseMapper;
+        $this->vendorResponseMapper = $vendorResponseMapper;
         $this->s3Client = $s3Client;
         $this->vendorPhotoS3Bucket = $vendorPhotoS3Bucket;
     }
@@ -34,6 +38,7 @@ class VendorPlanResponseMapper
         $vendorPlanDto = new VendorPlanDto();
         $vendorPlanDto->id = $vendorPlan->getId()->toString();
         $vendorPlanDto->vendorId = $vendorPlan->getVendor()->getId()->toString();
+        $vendorPlanDto->vendor = $this->vendorResponseMapper->map($vendorPlan->getVendor());
         $vendorPlanDto->name = $vendorPlan->getName() ?? '';
         $vendorPlanDto->currency = $vendorPlan->getCurrency()->getCode();
         $vendorPlanDto->durationDays = $vendorPlan->getDuration() ? $vendorPlan->getDuration()->d : null;

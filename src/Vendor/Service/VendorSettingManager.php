@@ -3,7 +3,6 @@
 namespace App\Vendor\Service;
 
 use App\Vendor\Entity\VendorSetting;
-use App\Vendor\Provider\VendorProvider;
 use App\Vendor\Repository\VendorSettingRepository;
 use Ramsey\Uuid\UuidInterface;
 
@@ -11,14 +10,10 @@ class VendorSettingManager
 {
     private VendorSettingRepository $vendorSettingRepository;
 
-    private VendorProvider $vendorProvider;
-
     public function __construct(
-        VendorSettingRepository $vendorSettingRepository,
-        VendorProvider $vendorProvider
+        VendorSettingRepository $vendorSettingRepository
     ) {
         $this->vendorSettingRepository = $vendorSettingRepository;
-        $this->vendorProvider = $vendorProvider;
     }
 
     public function create(VendorSetting $vendorSetting)
@@ -42,7 +37,7 @@ class VendorSettingManager
 
         if (!$vendorSetting) {
             $vendorSetting = new VendorSetting();
-            $vendorSetting->setVendor($this->vendorProvider->get($vendorId));
+            $vendorSetting->setVendorId($vendorId);
             $vendorSetting->setName($name);
         }
 

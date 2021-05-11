@@ -76,7 +76,7 @@ abstract class AbstractProvider
         return $this->repository->createQueryBuilder('root');
     }
 
-    protected function buildSearchQueryBuilder(SearchRequest $searchRequest, ?array $filters = []): QueryBuilder
+    protected function buildSearchQueryBuilder(SearchRequest $searchRequest, ?array $filters = null): QueryBuilder
     {
         $queryBuilder = $this->buildQueryBuilder();
 

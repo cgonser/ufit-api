@@ -60,15 +60,15 @@ class VendorRequestManager
 
     public function mapFromRequest(Vendor $vendor, VendorRequest $vendorRequest)
     {
-        if (null !== $vendorRequest->email) {
+        if ($vendorRequest->has('email')) {
             $vendor->setEmail($vendorRequest->email);
         }
 
-        if (null !== $vendorRequest->name) {
+        if ($vendorRequest->has('name')) {
             $vendor->setName($vendorRequest->name);
         }
 
-        if (null !== $vendorRequest->displayName) {
+        if ($vendorRequest->has('displayName')) {
             $vendor->setDisplayName($vendorRequest->displayName);
         }
 
@@ -76,37 +76,37 @@ class VendorRequestManager
             $vendor->setDisplayName($vendor->getName());
         }
 
-        if (null !== $vendorRequest->password && null === $vendor->getPassword()) {
+        if ($vendorRequest->has('password') && null === $vendor->getPassword()) {
             $vendor->setPassword($this->vendorPasswordManager->encodePassword($vendor, $vendorRequest->password));
         }
 
-        if (null !== $vendorRequest->biography) {
+        if ($vendorRequest->has('biography')) {
             $vendor->setBiography($vendorRequest->biography);
         }
 
-        if (null !== $vendorRequest->slug) {
-            $vendor->setSlug($vendorRequest->slug);
-        } elseif (null === $vendor->getSlug() && null !== $vendor->getName()) {
+        if ($vendorRequest->has('slug')) {
+            $vendor->setSlug(strtolower($vendorRequest->slug));
+        } elseif (null === $vendor->getSlug() && $vendor->has('getName')()) {
             $vendor->setSlug($this->vendorManager->generateSlug($vendor));
         }
 
-        if (null !== $vendorRequest->allowEmailMarketing) {
+        if ($vendorRequest->has('allowEmailMarketing')) {
             $vendor->setAllowEmailMarketing($vendorRequest->allowEmailMarketing);
         }
 
-        if (null !== $vendorRequest->socialLinks) {
+        if ($vendorRequest->has('socialLinks')) {
             $vendor->setSocialLinks($vendorRequest->socialLinks);
         }
 
-        if (null !== $vendorRequest->country) {
+        if ($vendorRequest->has('country')) {
             $vendor->setCountry($vendorRequest->country);
         }
 
-        if (null !== $vendorRequest->locale) {
+        if ($vendorRequest->has('locale')) {
             $vendor->setLocale($vendorRequest->locale);
         }
 
-        if (null !== $vendorRequest->timezone) {
+        if ($vendorRequest->has('timezone')) {
             $vendor->setTimezone($vendorRequest->timezone);
         }
     }
