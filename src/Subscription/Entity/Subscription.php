@@ -20,7 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="subscription")
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
  */
-class Subscription
+class   Subscription
 {
     use TimestampableEntity;
     use SoftDeleteableEntity;

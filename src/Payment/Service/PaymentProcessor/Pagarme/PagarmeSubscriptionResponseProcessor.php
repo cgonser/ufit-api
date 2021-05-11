@@ -61,7 +61,9 @@ class PagarmeSubscriptionResponseProcessor
 
     private function processPaid(Subscription $subscription, \stdClass $response)
     {
-        $this->subscriptionManager->approve($subscription);
+        if (!$subscription->isApproved()) {
+            $this->subscriptionManager->approve($subscription);
+        }
     }
 
     private function processPendingPayment(Subscription $subscription, \stdClass $response)
@@ -77,10 +79,12 @@ class PagarmeSubscriptionResponseProcessor
     private function processCanceled(Subscription $subscription, \stdClass $response)
     {
         $this->subscriptionManager->customerCancellation($subscription);
+        // todo: what else to trigger?
     }
 
     private function processEnded(Subscription $subscription, \stdClass $response)
     {
         $this->subscriptionManager->expire($subscription);
+        // todo: what else to trigger?
     }
 }

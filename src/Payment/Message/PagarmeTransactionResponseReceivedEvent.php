@@ -15,8 +15,8 @@ class PagarmeTransactionResponseReceivedEvent
 
     public function __construct(\stdClass $response, ?string $paymentId = null)
     {
-        $this->paymentId = Uuid::fromString($paymentId);
         $this->response = $response;
+        $this->paymentId = null !== $paymentId ? Uuid::fromString($paymentId) : null;
     }
 
     public function getPaymentId(): ?UuidInterface

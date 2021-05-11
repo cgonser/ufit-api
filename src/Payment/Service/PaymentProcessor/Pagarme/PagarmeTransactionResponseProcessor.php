@@ -33,10 +33,10 @@ class PagarmeTransactionResponseProcessor
         if (null !== $paymentId) {
             /** @var Payment $payment */
             $payment = $this->paymentProvider->get($paymentId);
-            $payment->setExternalReference((string) $response->tid);
+            $payment->setExternalReference((string) $response->id);
         } else {
             // todo: fetch by external reference
-            $payment = $this->paymentProvider->getByExternalReference((string) $response->tid);
+            $payment = $this->paymentProvider->getByExternalReference((string) $response->id);
         }
 
         $status = new UnicodeString($response->status);
