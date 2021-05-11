@@ -41,7 +41,7 @@ class VendorRequestManager
 
         $this->vendorManager->create($vendor);
 
-        if (null !== $vendorRequest->photoContents) {
+        if ($vendorRequest->has('photoContents')) {
             $this->vendorPhotoService->uploadPhoto(
                 $vendor,
                 $this->vendorPhotoService->decodePhotoContents($vendorRequest->photoContents)
