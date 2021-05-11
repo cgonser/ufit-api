@@ -84,9 +84,9 @@ class VendorRequestManager
             $vendor->setBiography($vendorRequest->biography);
         }
 
-        if ($vendorRequest->has('slug')) {
+        if ($vendorRequest->has('slug') && null !== $vendorRequest->slug) {
             $vendor->setSlug(strtolower($vendorRequest->slug));
-        } elseif (null === $vendor->getSlug() && null !== $vendor->getName()) {
+        } elseif (null === $vendor->getSlug() && null !== $vendor->getDisplayName()) {
             $vendor->setSlug($this->vendorManager->generateSlug($vendor));
         }
 

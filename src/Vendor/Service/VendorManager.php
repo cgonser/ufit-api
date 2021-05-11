@@ -60,7 +60,7 @@ class VendorManager
 
     public function generateSlug(Vendor $vendor, ?int $suffix = null): string
     {
-        $slug = strtolower($this->slugger->slug($vendor->getName()));
+        $slug = strtolower($this->slugger->slug($vendor->getDisplayName()));
 
         if (null !== $suffix) {
             $slug .= '-'.$suffix;
