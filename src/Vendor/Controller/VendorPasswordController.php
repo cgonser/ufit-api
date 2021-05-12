@@ -30,7 +30,9 @@ class VendorPasswordController extends AbstractController
     /**
      * @Route("/vendors/{vendorId}/password", methods="PUT", name="vendor_password_change")
      *
-     * @ParamConverter("vendorPasswordChangeRequest", converter="fos_rest.request_body")
+     * @ParamConverter("vendorPasswordChangeRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Vendor")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=VendorPasswordChangeRequest::class)))
@@ -62,7 +64,9 @@ class VendorPasswordController extends AbstractController
     /**
      * @Route("/vendors/password-reset", methods="POST", name="vendor_password_reset")
      *
-     * @ParamConverter("vendorPasswordResetRequest", converter="fos_rest.request_body")
+     * @ParamConverter("vendorPasswordResetRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Customer")
      */
@@ -82,7 +86,9 @@ class VendorPasswordController extends AbstractController
     /**
      * @Route("/vendors/password-reset/token", methods="POST", name="vendor_password_reset_token")
      *
-     * @ParamConverter("vendorPasswordResetTokenRequest", converter="fos_rest.request_body")
+     * @ParamConverter("vendorPasswordResetTokenRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Customer")
      */

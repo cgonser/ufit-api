@@ -37,7 +37,9 @@ class CountryUpdateController extends AbstractController
 
     /**
      * @Route("/countries/{code}", methods="PUT", name="countries_update")
-     * @ParamConverter("countryRequest", converter="fos_rest.request_body")
+     * @ParamConverter("countryRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Country")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=CountryRequest::class)))

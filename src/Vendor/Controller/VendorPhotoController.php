@@ -30,7 +30,9 @@ class VendorPhotoController extends AbstractController
     /**
      * @Route("/vendors/{vendorId}/photo", methods="PUT", name="vendors_photo_upload")
      *
-     * @ParamConverter("vendorPhotoRequest", converter="fos_rest.request_body")
+     * @ParamConverter("vendorPhotoRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Vendor")
      * @OA\RequestBody(

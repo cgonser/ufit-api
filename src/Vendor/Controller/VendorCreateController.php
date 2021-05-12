@@ -32,7 +32,9 @@ class VendorCreateController extends AbstractController
 
     /**
      * @Route("/vendors", methods="POST", name="vendors_create")
-     * @ParamConverter("vendorRequest", converter="fos_rest.request_body")
+     * @ParamConverter("vendorRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Vendor")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=VendorRequest::class)))

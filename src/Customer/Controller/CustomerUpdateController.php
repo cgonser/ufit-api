@@ -40,7 +40,9 @@ class CustomerUpdateController extends AbstractController
 
     /**
      * @Route("/customers/{customerId}", methods="PUT", name="customers_update")
-     * @ParamConverter("customerRequest", converter="fos_rest.request_body")
+     * @ParamConverter("customerRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Customer")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=CustomerRequest::class)))

@@ -36,7 +36,9 @@ class QuestionnaireCreateController extends AbstractController
     /**
      * @Route("/questionnaires", methods="POST", name="questionnaires_create")
      *
-     * @ParamConverter("questionnaireRequest", converter="fos_rest.request_body")
+     * @ParamConverter("questionnaireRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Questionnaire")
      * @OA\RequestBody(

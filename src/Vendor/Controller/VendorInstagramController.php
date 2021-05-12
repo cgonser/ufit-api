@@ -31,7 +31,9 @@ class VendorInstagramController extends AbstractController
 
     /**
      * @Route("/vendors/login/instagram", methods="POST", name="vendor_instagram_login")
-     * @ParamConverter("vendorInstagramLoginRequest", converter="fos_rest.request_body")
+     * @ParamConverter("vendorInstagramLoginRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Vendor")
      */

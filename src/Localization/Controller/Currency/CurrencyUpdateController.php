@@ -39,7 +39,9 @@ class CurrencyUpdateController extends AbstractController
     /**
      * @Route("/currencies/{currencyId}", methods="PUT", name="currencies_update")
      *
-     * @ParamConverter("currencyRequest", converter="fos_rest.request_body")
+     * @ParamConverter("currencyRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Currency")
      * @OA\RequestBody(

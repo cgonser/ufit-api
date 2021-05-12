@@ -42,7 +42,9 @@ class QuestionCreateController extends AbstractController
     /**
      * @Route("/questionnaires/{questionnaireId}/questions", methods="POST", name="questionnaires_questions_create")
      *
-     * @ParamConverter("questionRequest", converter="fos_rest.request_body")
+     * @ParamConverter("questionRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Questionnaire")
      * @OA\RequestBody(

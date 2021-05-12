@@ -35,7 +35,9 @@ class VendorBankAccountCreateController extends AbstractController
 
     /**
      * @Route("/vendors/{vendorId}/bank_accounts", methods="POST", name="vendor_bank_accounts_create")
-     * @ParamConverter("vendorBankAccountRequest", converter="fos_rest.request_body")
+     * @ParamConverter("vendorBankAccountRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Vendor / Bank Account")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=VendorBankAccountRequest::class)))

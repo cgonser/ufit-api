@@ -35,7 +35,9 @@ class PhotoTypeCreateController extends AbstractController
     /**
      * @Route("/photo_types", methods="POST", name="photo_types_create")
      *
-     * @ParamConverter("photoTypeRequest", converter="fos_rest.request_body")
+     * @ParamConverter("photoTypeRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="PhotoType")
      * @OA\RequestBody(

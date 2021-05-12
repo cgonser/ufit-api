@@ -37,7 +37,9 @@ class VendorUpdateController extends AbstractController
     /**
      * @Route("/vendors/{vendorId}", methods="PUT", name="vendors_update")
      *
-     * @ParamConverter("vendorRequest", converter="fos_rest.request_body")
+     * @ParamConverter("vendorRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Vendor")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=VendorRequest::class)))

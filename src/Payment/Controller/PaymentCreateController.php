@@ -32,7 +32,9 @@ class PaymentCreateController extends AbstractController
 
     /**
      * @Route("/payments", methods="POST", name="payments_create")
-     * @ParamConverter("paymentRequest", converter="fos_rest.request_body")
+     * @ParamConverter("paymentRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Payment")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=PaymentRequest::class)))

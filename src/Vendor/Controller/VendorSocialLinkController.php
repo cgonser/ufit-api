@@ -27,7 +27,9 @@ class VendorSocialLinkController extends AbstractController
 
     /**
      * @Route("/vendors/{vendorId}/socialLinks", methods="PUT", name="vendors_social_links_put")
-     * @ParamConverter("vendorSocialLinkRequest", converter="fos_rest.request_body")
+     * @ParamConverter("vendorSocialLinkRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Vendor")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=VendorSocialLinkRequest::class)))

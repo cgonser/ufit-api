@@ -37,7 +37,9 @@ class VendorGoogleLoginController extends AbstractController
     /**
      * @Route("/vendors/login/google", methods="POST", name="vendor_google_login")
      *
-     * @ParamConverter("vendorLoginGoogleRequest", converter="fos_rest.request_body")
+     * @ParamConverter("vendorLoginGoogleRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Vendor")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=VendorLoginGoogleRequest::class)))

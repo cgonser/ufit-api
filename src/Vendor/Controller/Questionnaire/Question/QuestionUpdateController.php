@@ -46,7 +46,9 @@ class QuestionUpdateController extends AbstractController
     /**
      * @Route("/questionnaires/{questionnaireId}/questions/{questionId}", methods="PUT", name="questionnaires_questions_update")
      *
-     * @ParamConverter("questionRequest", converter="fos_rest.request_body")
+     * @ParamConverter("questionRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Questionnaire")
      * @OA\RequestBody(

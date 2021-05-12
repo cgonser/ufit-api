@@ -32,7 +32,9 @@ class CustomerCreateController extends AbstractController
 
     /**
      * @Route("/customers", methods="POST", name="customers_create")
-     * @ParamConverter("customerRequest", converter="fos_rest.request_body")
+     * @ParamConverter("customerRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Customer")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=CustomerRequest::class)))

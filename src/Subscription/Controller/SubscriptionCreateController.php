@@ -42,7 +42,9 @@ class SubscriptionCreateController extends AbstractController
 
     /**
      * @Route("/subscriptions", methods="POST", name="subscriptions_create")
-     * @ParamConverter("subscriptionRequest", converter="fos_rest.request_body")
+     * @ParamConverter("subscriptionRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Subscription")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=SubscriptionRequest::class)))

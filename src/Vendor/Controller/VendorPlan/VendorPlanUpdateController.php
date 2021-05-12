@@ -41,7 +41,9 @@ class VendorPlanUpdateController extends AbstractController
     /**
      * @Route("/vendors/{vendorId}/plans/{vendorPlanId}", methods="PUT", name="vendors_plans_update")
      *
-     * @ParamConverter("vendorPlanRequest", converter="fos_rest.request_body")
+     * @ParamConverter("vendorPlanRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Vendor / Plan")
      * @OA\RequestBody(

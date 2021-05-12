@@ -32,7 +32,9 @@ class VendorFacebookLoginController extends AbstractController
     /**
      * @Route("/vendors/login/facebook", methods="POST", name="vendor_facebook_login")
      *
-     * @ParamConverter("vendorLoginFacebookRequest", converter="fos_rest.request_body")
+     * @ParamConverter("vendorLoginFacebookRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Vendor")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=VendorLoginFacebookRequest::class)))

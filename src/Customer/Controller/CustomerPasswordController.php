@@ -30,7 +30,9 @@ class CustomerPasswordController extends AbstractController
     /**
      * @Route("/customers/{customerId}/password", methods="PUT", name="customer_password_change")
      *
-     * @ParamConverter("customerPasswordChangeRequest", converter="fos_rest.request_body")
+     * @ParamConverter("customerPasswordChangeRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Customer")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=CustomerPasswordChangeRequest::class)))
@@ -62,7 +64,9 @@ class CustomerPasswordController extends AbstractController
     /**
      * @Route("/customers/password-reset", methods="POST", name="customer_password_reset")
      *
-     * @ParamConverter("customerPasswordResetRequest", converter="fos_rest.request_body")
+     * @ParamConverter("customerPasswordResetRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Customer")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=CustomerPasswordResetRequest::class)))
@@ -85,7 +89,9 @@ class CustomerPasswordController extends AbstractController
     /**
      * @Route("/customers/password-reset/token", methods="POST", name="customer_password_reset_token")
      *
-     * @ParamConverter("customerPasswordResetTokenRequest", converter="fos_rest.request_body")
+     * @ParamConverter("customerPasswordResetTokenRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Customer")
      */
