@@ -173,3 +173,8 @@ services:
     App\Payment\Service\PaymentProcessorFactory:
         arguments:
             - !tagged_iterator app.payment.processor
+
+    GeoIp2\Database\Reader:
+        arguments:
+            $filename: '%kernel.project_dir%/config/geoip/GeoLite2-Country.mmdb'
+            $locales: [ 'en' ]

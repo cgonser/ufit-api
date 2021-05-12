@@ -11,6 +11,7 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
@@ -40,13 +41,14 @@ class VendorCreateController extends AbstractController
      */
     public function create(
         VendorRequest $vendorRequest,
-        ConstraintViolationListInterface $validationErrors
+        ConstraintViolationListInterface $validationErrors,
+        Request $request
     ): Response {
         if ($validationErrors->count() > 0) {
             throw new ApiJsonInputValidationException($validationErrors);
         }
 
-        $vendor = $this->vendorRequestManager->createFromRequest($vendorRequest);
+        $vendor = $this->vendorRequestManager->createFromRequest($vendorRequest, $request->getClientIp());
 
         return $this->authenticationSuccessHandler->handleAuthenticationSuccess($vendor);
     }

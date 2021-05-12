@@ -23,6 +23,7 @@ class CustomerResponseMapper
         $customerDto->country = $customer->getCountry();
         $customerDto->locale = $customer->getLocale();
         $customerDto->timezone = $customer->getTimezone();
+        $customerDto->documents = $customer->getDocuments();
 
         return $customerDto;
     }

@@ -35,13 +35,13 @@ class VendorFacebookLoginService
         $this->vendorSocialNetworkManager = $vendorSocialNetworkManager;
     }
 
-    public function prepareVendorFromFacebookToken(string $accessToken): Vendor
+    public function prepareVendorFromFacebookToken(string $accessToken, ?string $ipAddress = null): Vendor
     {
         try {
             $response = $this->facebook->get('/me?fields=id,name,email', $accessToken);
 
             $graphUser = $response->getGraphUser();
-            $vendor = $this->createOrUpdateVendorFromGraphUser($graphUser);
+            $vendor = $this->createOrUpdateVendorFromGraphUser($graphUser, $ipAddress);
             $this->createOrUpdateVendorSocialNetwork($vendor, $graphUser, $accessToken);
 
             return $vendor;
@@ -70,7 +70,7 @@ class VendorFacebookLoginService
         $this->vendorSocialNetworkManager->save($vendorSocialNetwork);
     }
 
-    private function createOrUpdateVendorFromGraphUser(GraphUser $graphUser): Vendor
+    private function createOrUpdateVendorFromGraphUser(GraphUser $graphUser, ?string $ipAddress = null): Vendor
     {
         $vendorSocialNetwork = $this->vendorSocialNetworkProvider->findOneByExternalIdAndPlatform(
             $graphUser->getId(),
@@ -86,6 +86,6 @@ class VendorFacebookLoginService
         $vendorRequest->displayName = $graphUser->getName();
         $vendorRequest->email = $graphUser->getEmail();
 
-        return $this->vendorRequestManager->createFromRequest($vendorRequest);
+        return $this->vendorRequestManager->createFromRequest($vendorRequest, $ipAddress);
     }
 }

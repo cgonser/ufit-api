@@ -17,6 +17,9 @@
     "brick/math": {
         "version": "0.9.1"
     },
+    "composer/ca-bundle": {
+        "version": "1.2.9"
+    },
     "composer/package-versions-deprecated": {
         "version": "1.11.99"
     },
@@ -150,6 +153,9 @@
     "gedmo/doctrine-extensions": {
         "version": "v3.0.0"
     },
+    "geoip2/geoip2": {
+        "version": "v2.11.0"
+    },
     "gesdinet/jwt-refresh-token-bundle": {
         "version": "v0.9.1"
     },
@@ -228,6 +234,12 @@
     },
     "martin-georgiev/postgresql-for-doctrine": {
         "version": "v1.5.2"
+    },
+    "maxmind-db/reader": {
+        "version": "v1.10.1"
+    },
+    "maxmind/web-service-common": {
+        "version": "v0.8.1"
     },
     "monolog/monolog": {
         "version": "2.1.1"

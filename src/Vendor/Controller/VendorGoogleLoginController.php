@@ -2,8 +2,6 @@
 
 namespace App\Vendor\Controller;
 
-use App\Core\Exception\ApiJsonException;
-use App\Vendor\Exception\VendorGoogleLoginFailedException;
 use App\Vendor\Request\VendorLoginGoogleRequest;
 use App\Vendor\Service\VendorLoginGoogleManager;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\AuthenticationSuccessHandler;

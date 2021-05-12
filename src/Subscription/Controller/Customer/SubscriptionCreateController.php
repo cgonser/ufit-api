@@ -16,6 +16,7 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
@@ -27,7 +28,7 @@ class SubscriptionCreateController extends AbstractController
     private SubscriptionResponseMapper $subscriptionResponseMapper;
 
     private InvoiceProvider $invoiceProvider;
-    
+
     private InvoiceResponseMapper $invoiceResponseMapper;
 
     public function __construct(
@@ -64,7 +65,8 @@ class SubscriptionCreateController extends AbstractController
     public function subscribe(
         string $customerId,
         SubscriptionRequest $subscriptionRequest,
-        ConstraintViolationListInterface $validationErrors
+        ConstraintViolationListInterface $validationErrors,
+        Request $request
     ) {
         if ($validationErrors->count() > 0) {
             throw new ApiJsonInputValidationException($validationErrors);
@@ -80,7 +82,11 @@ class SubscriptionCreateController extends AbstractController
             throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
         }
 
-        $subscription = $this->subscriptionManager->createFromCustomerRequest($customer, $subscriptionRequest);
+        $subscription = $this->subscriptionManager->createFromCustomerRequest(
+            $customer,
+            $subscriptionRequest,
+            $request->getClientIp()
+        );
 
         $invoice = $this->invoiceProvider->getSubscriptionNextDueInvoice($subscription->getId());
 
