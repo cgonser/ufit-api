@@ -29,12 +29,11 @@ class VendorPasswordController extends AbstractController
 
     /**
      * @Route("/vendors/{vendorId}/password", methods="PUT", name="vendor_password_change")
-     *
      * @ParamConverter("vendorPasswordChangeRequest", converter="fos_rest.request_body", options={
      *     "deserializationContext"= {"allow_extra_attributes"=false}
      * })
      *
-     * @OA\Tag(name="Vendor")
+     * @OA\Tag(name="Vendor / Password")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=VendorPasswordChangeRequest::class)))
      * @OA\Response(response=204, description="Updates the current vendor's password")
      * @OA\Response(response=400, description="Invalid input")
@@ -63,12 +62,11 @@ class VendorPasswordController extends AbstractController
 
     /**
      * @Route("/vendors/password-reset", methods="POST", name="vendor_password_reset")
-     *
      * @ParamConverter("vendorPasswordResetRequest", converter="fos_rest.request_body", options={
      *     "deserializationContext"= {"allow_extra_attributes"=false}
      * })
      *
-     * @OA\Tag(name="Customer")
+     * @OA\Tag(name="Vendor / Password")
      */
     public function resetPassword(
         VendorPasswordResetRequest $vendorPasswordResetRequest,
@@ -85,12 +83,11 @@ class VendorPasswordController extends AbstractController
 
     /**
      * @Route("/vendors/password-reset/token", methods="POST", name="vendor_password_reset_token")
-     *
      * @ParamConverter("vendorPasswordResetTokenRequest", converter="fos_rest.request_body", options={
      *     "deserializationContext"= {"allow_extra_attributes"=false}
      * })
      *
-     * @OA\Tag(name="Customer")
+     * @OA\Tag(name="Vendor / Password")
      */
     public function resetPasswordToken(
         VendorPasswordResetTokenRequest $vendorPasswordResetTokenRequest,
@@ -107,6 +104,8 @@ class VendorPasswordController extends AbstractController
 
     /**
      * @Route("/vendors/password-reset/{token}", methods="GET", name="vendor_password_reset_form")
+     *
+     * @OA\Tag(name="Vendor / Demo")
      */
     public function resetPasswordForm(string $token): Response
     {

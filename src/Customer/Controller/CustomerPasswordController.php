@@ -29,12 +29,11 @@ class CustomerPasswordController extends AbstractController
 
     /**
      * @Route("/customers/{customerId}/password", methods="PUT", name="customer_password_change")
-     *
      * @ParamConverter("customerPasswordChangeRequest", converter="fos_rest.request_body", options={
      *     "deserializationContext"= {"allow_extra_attributes"=false}
      * })
      *
-     * @OA\Tag(name="Customer")
+     * @OA\Tag(name="Customer / Password")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=CustomerPasswordChangeRequest::class)))
      * @OA\Response(response=204, description="Updates the current customer's password")
      * @OA\Response(response=400, description="Invalid input")
@@ -63,12 +62,11 @@ class CustomerPasswordController extends AbstractController
 
     /**
      * @Route("/customers/password-reset", methods="POST", name="customer_password_reset")
-     *
      * @ParamConverter("customerPasswordResetRequest", converter="fos_rest.request_body", options={
      *     "deserializationContext"= {"allow_extra_attributes"=false}
      * })
      *
-     * @OA\Tag(name="Customer")
+     * @OA\Tag(name="Customer / Password")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=CustomerPasswordResetRequest::class)))
      * @OA\Response(response=200, description="Password change requested")
      * @OA\Response(response=400, description="Invalid input")
@@ -88,12 +86,11 @@ class CustomerPasswordController extends AbstractController
 
     /**
      * @Route("/customers/password-reset/token", methods="POST", name="customer_password_reset_token")
-     *
      * @ParamConverter("customerPasswordResetTokenRequest", converter="fos_rest.request_body", options={
      *     "deserializationContext"= {"allow_extra_attributes"=false}
      * })
      *
-     * @OA\Tag(name="Customer")
+     * @OA\Tag(name="Customer / Password")
      */
     public function resetPasswordToken(
         CustomerPasswordResetTokenRequest $customerPasswordResetTokenRequest,
@@ -110,6 +107,8 @@ class CustomerPasswordController extends AbstractController
 
     /**
      * @Route("/customers/password-reset/{token}", methods="GET", name="customer_password_reset_form")
+     *
+     * @OA\Tag(name="Customer / Demo")
      */
     public function resetPasswordForm(string $token): Response
     {

@@ -27,16 +27,7 @@ class VendorGoogleLoginController extends AbstractController
     }
 
     /**
-     * @Route("/vendors/login/google", methods="GET", name="vendor_google_login_form")
-     */
-    public function googleLoginForm(): Response
-    {
-        return $this->render('vendor/login_google.html.twig');
-    }
-
-    /**
      * @Route("/vendors/login/google", methods="POST", name="vendor_google_login")
-     *
      * @ParamConverter("vendorLoginGoogleRequest", converter="fos_rest.request_body", options={
      *     "deserializationContext"= {"allow_extra_attributes"=false}
      * })
@@ -54,5 +45,15 @@ class VendorGoogleLoginController extends AbstractController
         );
 
         return $this->authenticationSuccessHandler->handleAuthenticationSuccess($vendor);
+    }
+
+    /**
+     * @Route("/vendors/login/google", methods="GET", name="vendor_google_login_form")
+     *
+     * @OA\Tag(name="Vendor / Demo")
+     */
+    public function googleLoginForm(): Response
+    {
+        return $this->render('vendor/login_google.html.twig');
     }
 }

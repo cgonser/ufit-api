@@ -30,7 +30,6 @@ class CustomerFacebookLoginController extends AbstractController
 
     /**
      * @Route("/customers/login/facebook", methods="POST", name="customer_facebook_login")
-     *
      * @ParamConverter("customerFacebookLoginRequest", converter="fos_rest.request_body", options={
      *     "deserializationContext"= {"allow_extra_attributes"=false}
      * })
@@ -56,6 +55,8 @@ class CustomerFacebookLoginController extends AbstractController
 
     /**
      * @Route("/customers/login/facebook", methods="GET", name="customer_facebook_login_button")
+     *
+     * @OA\Tag(name="Customer / Demo")
      */
     public function facebookLoginButton(): Response
     {

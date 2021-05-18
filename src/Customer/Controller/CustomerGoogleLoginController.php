@@ -27,14 +27,6 @@ class CustomerGoogleLoginController extends AbstractController
     }
 
     /**
-     * @Route("/customers/login/google", methods="GET", name="customer_google_login_form")
-     */
-    public function googleLoginForm(): Response
-    {
-        return $this->render('customer/login_google.html.twig');
-    }
-
-    /**
      * @Route("/customers/login/google", methods="POST", name="customer_google_login")
      *
      * @ParamConverter("customerLoginGoogleRequest", converter="fos_rest.request_body", options={
@@ -54,5 +46,15 @@ class CustomerGoogleLoginController extends AbstractController
         );
 
         return $this->authenticationSuccessHandler->handleAuthenticationSuccess($customer);
+    }
+
+    /**
+     * @Route("/customers/login/google", methods="GET", name="customer_google_login_form")
+     *
+     * @OA\Tag(name="Customer / Demo")
+     */
+    public function googleLoginForm(): Response
+    {
+        return $this->render('customer/login_google.html.twig');
     }
 }

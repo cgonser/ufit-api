@@ -4,6 +4,7 @@ namespace App\Payment\Controller\Processor;
 
 use App\Payment\Message\PagarmeSubscriptionResponseReceivedEvent;
 use App\Payment\Message\PagarmeTransactionResponseReceivedEvent;
+use OpenApi\Annotations as OA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,6 +28,8 @@ class PagarmeController extends AbstractController
 
     /**
      * @Route("/payments/pagarme/postback", methods="POST", name="payments_pagarme_postback")
+     *
+     * @OA\Tag(name="Payment / Processor / Pagarme")
      */
     public function paymentPostback(Request $request)
     {

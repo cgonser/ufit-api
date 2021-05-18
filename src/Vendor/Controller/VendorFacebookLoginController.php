@@ -31,7 +31,6 @@ class VendorFacebookLoginController extends AbstractController
 
     /**
      * @Route("/vendors/login/facebook", methods="POST", name="vendor_facebook_login")
-     *
      * @ParamConverter("vendorLoginFacebookRequest", converter="fos_rest.request_body", options={
      *     "deserializationContext"= {"allow_extra_attributes"=false}
      * })
