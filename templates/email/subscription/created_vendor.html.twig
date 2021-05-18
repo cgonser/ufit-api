@@ -5,7 +5,7 @@
 {% block content %}
     {{ 'subscription.created_vendor.content'|trans({
         '%customer_name%': customer_name,
-        '%subscription_start%': subscription_start,
+        '%subscription_created_at%': subscription_created_at,
         '%plan_name%': plan_name
     })|markdown_to_html }}
 {% endblock %}
