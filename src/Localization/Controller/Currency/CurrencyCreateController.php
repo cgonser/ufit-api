@@ -37,7 +37,7 @@ class CurrencyCreateController extends AbstractController
      *     "deserializationContext"= {"allow_extra_attributes"=false}
      * })
      *
-     * @OA\Tag(name="Currency")
+     * @OA\Tag(name="Localization / Currency")
      * @OA\RequestBody(
      *     required=true,
      *     @OA\JsonContent(ref=@Model(type=CurrencyRequest::class))
