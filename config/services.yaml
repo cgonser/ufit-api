@@ -20,6 +20,7 @@ parameters:
 
     pagarme.api_key: '%env(PAGARME_API_KEY)%'
     pagarme.postback_url: '%env(PAGARME_POSTBACK_URL)%'
+    pagarme.recebedor_id: '%env(PAGARME_RECEBEDOR_ID)%'
 
     aws.s3_region: '%env(AWS_S3_REGION)%'
     #aws.s3_access_key_id: '%env(AWS_ACCESS_KEY_ID)%'
@@ -50,6 +51,7 @@ services:
             $customerPasswordResetUrl: '%customer.password_reset_url%'
             $vendorPasswordResetUrl: '%vendor.password_reset_url%'
             $pagarmePostbackUrl: '%pagarme.postback_url%'
+            $pagarmeRecebedorId: '%pagarme.recebedor_id%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name

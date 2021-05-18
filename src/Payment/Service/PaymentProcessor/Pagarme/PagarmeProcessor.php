@@ -25,16 +25,20 @@ abstract class PagarmeProcessor
 
     private string $pagarmePostbackUrl;
 
+    private string $pagarmeRecebedorId;
+
     public function __construct(
         VendorSettingManager $vendorSettingManager,
         Client $pagarmeClient,
         MessageBusInterface $messageBus,
-        string $pagarmePostbackUrl
+        string $pagarmePostbackUrl,
+        string $pagarmeRecebedorId
     ) {
         $this->vendorSettingManager = $vendorSettingManager;
         $this->pagarmeClient = $pagarmeClient;
         $this->messageBus = $messageBus;
         $this->pagarmePostbackUrl = $pagarmePostbackUrl;
+        $this->pagarmeRecebedorId = $pagarmeRecebedorId;
     }
 
     public function process(Payment $payment)
@@ -153,7 +157,7 @@ abstract class PagarmeProcessor
 
     protected function appendSplitRules(array &$transactionData, PagarmeTransactionInputDto $transactionInput)
     {
-        $platformPagarmeId = 're_cklii1riy0nqr0h9tq3mvq3ve'; // TODO: change it
+        $platformPagarmeId = $this->pagarmeRecebedorId;
         $vendorPagarmeId = $this->vendorSettingManager->getValue(
             Uuid::fromString($transactionInput->vendorId),
             'pagarme_id'
