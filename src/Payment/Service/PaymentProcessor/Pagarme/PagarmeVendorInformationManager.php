@@ -14,6 +14,8 @@ use Ramsey\Uuid\UuidInterface;
 
 class PagarmeVendorInformationManager implements VendorInformationManagerInterface
 {
+    const PAGARME_ERROR_SAME_DOC = 'ERROR TYPE: invalid_parameter. PARAMETER: bank_account_id. MESSAGE: The new bank account should have the same document number as the previous';
+
     private VendorBankAccountProvider $vendorBankAccountProvider;
 
     private VendorBankAccountManager $vendorBankAccountManager;
@@ -83,6 +85,12 @@ class PagarmeVendorInformationManager implements VendorInformationManagerInterfa
 
             $this->vendorBankAccountManager->markAsValid($vendorBankAccount);
         } catch (PagarMeException $e) {
+            if ($e->getMessage() === self::PAGARME_ERROR_SAME_DOC) {
+                $this->vendorSettingManager->set($vendorBankAccount->getVendorId(), 'pagarme_id', null);
+
+                return $this->pushVendorInformation($vendorBankAccount);
+            }
+
             $this->handlePagarmeException($vendorBankAccount, $e);
         }
     }
