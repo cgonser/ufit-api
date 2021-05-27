@@ -75,7 +75,7 @@ class ProgramController extends AbstractController
 
         return new ApiJsonResponse(
             Response::HTTP_OK,
-            $this->programResponseMapper->mapMultiple($programs, true),
+            $this->programResponseMapper->mapMultiple($programs, true, true),
             [
                 'X-Total-Count' => $count,
             ]

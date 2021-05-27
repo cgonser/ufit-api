@@ -3,7 +3,6 @@
 namespace App\Vendor\Service;
 
 use App\Vendor\Entity\VendorSetting;
-use App\Vendor\Provider\VendorProvider;
 use App\Vendor\Request\VendorSettingRequest;
 use Ramsey\Uuid\Uuid;
 
@@ -11,14 +10,10 @@ class VendorSettingRequestManager
 {
     private VendorSettingManager $vendorSettingManager;
 
-    private VendorProvider $vendorProvider;
-
     public function __construct(
-        VendorSettingManager $vendorSettingManager,
-        VendorProvider $vendorProvider
+        VendorSettingManager $vendorSettingManager
     ) {
         $this->vendorSettingManager = $vendorSettingManager;
-        $this->vendorProvider = $vendorProvider;
     }
 
     public function createFromRequest(VendorSettingRequest $vendorSettingRequest): VendorSetting
@@ -32,30 +27,24 @@ class VendorSettingRequestManager
         return $vendorSetting;
     }
 
-    public function updateFromRequest(
-        VendorSetting $vendorSetting,
-        VendorSettingRequest $vendorSettingRequest
-    ) {
+    public function updateFromRequest(VendorSetting $vendorSetting, VendorSettingRequest $vendorSettingRequest): void
+    {
         $this->mapFromRequest($vendorSetting, $vendorSettingRequest);
 
         $this->vendorSettingManager->update($vendorSetting);
     }
 
-    private function mapFromRequest(
-        VendorSetting $vendorSetting,
-        VendorSettingRequest $vendorSettingRequest
-    ) {
-        if (null !== $vendorSettingRequest->vendorId) {
-            $vendor = $this->vendorProvider->get(Uuid::fromString($vendorSettingRequest->vendorId));
-
-            $vendorSetting->setVendor($vendor);
+    private function mapFromRequest(VendorSetting $vendorSetting, VendorSettingRequest $vendorSettingRequest): void
+    {
+        if ($vendorSettingRequest->has('vendorId')) {
+            $vendorSetting->setVendorId(Uuid::fromString($vendorSettingRequest->vendorId));
         }
 
-        if (null !== $vendorSettingRequest->name) {
+        if ($vendorSettingRequest->has('name')) {
             $vendorSetting->setName($vendorSettingRequest->name);
         }
 
-        if (null !== $vendorSettingRequest->value) {
+        if ($vendorSettingRequest->has('value')) {
             $vendorSetting->setValue($vendorSettingRequest->value);
         }
     }

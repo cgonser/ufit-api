@@ -48,7 +48,9 @@ class VendorBankAccountUpdateController extends AbstractController
      *     methods="PUT",
      *     name="vendor_bank_accounts_update"
      * )
-     * @ParamConverter("vendorBankAccountRequest", converter="fos_rest.request_body")
+     * @ParamConverter("vendorBankAccountRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Vendor / Bank Account")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=VendorBankAccountRequest::class)))
@@ -71,7 +73,7 @@ class VendorBankAccountUpdateController extends AbstractController
         }
 
         $vendorBankAccount = $this->vendorBankAccountProvider->getByVendorAndId(
-            $vendor,
+            $vendor->getId(),
             Uuid::fromString($vendorBankAccountId)
         );
 

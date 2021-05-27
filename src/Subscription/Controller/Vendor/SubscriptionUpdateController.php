@@ -44,7 +44,9 @@ class SubscriptionUpdateController extends AbstractController
      *     methods="POST",
      *     name="vendors_subscriptions_reviews_post"
      * )
-     * @ParamConverter("subscriptionReviewRequest", converter="fos_rest.request_body")
+     * @ParamConverter("subscriptionReviewRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      * @Security(name="Bearer")
      *
      *

@@ -2,57 +2,56 @@
 
 namespace App\Vendor\Request;
 
+use App\Core\Request\AbstractRequest;
 use OpenApi\Annotations as OA;
 
 /**
- * @OA\RequestBody(
- *     request="VendorBankAccountRequest"
- * )
+ * @OA\RequestBody()
  */
-class VendorBankAccountRequest
+class VendorBankAccountRequest extends AbstractRequest
 {
     /**
      * @OA\Property()
      */
-    public ?string $vendorId = null;
+    public ?string $vendorId;
 
     /**
      * @OA\Property()
      */
-    public ?string $description = null;
+    public ?string $description;
 
     /**
      * @OA\Property()
      */
-    public ?string $bankCode = null;
+    public ?string $bankCode;
 
     /**
      * @OA\Property()
      */
-    public ?string $agencyNumber = null;
+    public ?string $agencyNumber;
 
     /**
      * @OA\Property()
      */
-    public ?string $accountNumber = null;
+    public ?string $accountNumber;
 
     /**
      * @OA\Property()
      */
-    public ?string $accountDigit = null;
+    public ?string $accountDigit;
 
     /**
      * @OA\Property()
      */
-    public ?string $ownerName = null;
+    public ?string $ownerName;
 
     /**
      * @OA\Property()
      */
-    public ?string $ownerDocumentType = null;
+    public ?string $ownerDocumentType;
 
     /**
      * @OA\Property()
      */
-    public ?string $ownerDocumentNumber = null;
+    public ?string $ownerDocumentNumber;
 }

@@ -30,7 +30,7 @@ class CurrencyDeleteController extends AbstractController
     /**
      * @Route("/currencies/{currencyId}", methods="DELETE", name="currencies_delete")
      *
-     * @OA\Tag(name="Currency")
+     * @OA\Tag(name="Localization / Currency")
      * @OA\Response(
      *     response=200,
      *     description="Deletes a currency",

@@ -38,7 +38,9 @@ class CustomerPhotoCreateController extends AbstractController
     /**
      * @Route("/customers/{customerId}/photos", methods="POST", name="customers_photos_create")
      *
-     * @ParamConverter("customerPhotoRequest", converter="fos_rest.request_body")
+     * @ParamConverter("customerPhotoRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="CustomerPhoto")
      * @OA\RequestBody(

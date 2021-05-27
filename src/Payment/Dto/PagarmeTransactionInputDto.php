@@ -12,6 +12,10 @@ class PagarmeTransactionInputDto
 
     public ?int $pagarmePlanId;
 
+    public string $subscriptionId;
+
+    public string $paymentId;
+
     public string $invoiceId;
 
     public string $customerId;

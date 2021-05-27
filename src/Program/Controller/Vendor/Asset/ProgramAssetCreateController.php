@@ -41,7 +41,9 @@ class ProgramAssetCreateController extends AbstractController
     /**
      * @Route("/vendors/{vendorId}/programs/{programId}/assets", methods="POST", name="program_assets_create")
      *
-     * @ParamConverter("programAssetRequest", converter="fos_rest.request_body")
+     * @ParamConverter("programAssetRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Program")
      * @OA\RequestBody(

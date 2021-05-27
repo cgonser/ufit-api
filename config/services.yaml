@@ -19,6 +19,8 @@ parameters:
     instagram.redirect_uri: '%env(INSTAGRAM_REDIRECT_URI)%'
 
     pagarme.api_key: '%env(PAGARME_API_KEY)%'
+    pagarme.postback_url: '%env(PAGARME_POSTBACK_URL)%'
+    pagarme.recebedor_id: '%env(PAGARME_RECEBEDOR_ID)%'
 
     aws.s3_region: '%env(AWS_S3_REGION)%'
     #aws.s3_access_key_id: '%env(AWS_ACCESS_KEY_ID)%'
@@ -48,6 +50,8 @@ services:
             $eventDispatcher: '@event_dispatcher'
             $customerPasswordResetUrl: '%customer.password_reset_url%'
             $vendorPasswordResetUrl: '%vendor.password_reset_url%'
+            $pagarmePostbackUrl: '%pagarme.postback_url%'
+            $pagarmeRecebedorId: '%pagarme.recebedor_id%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
@@ -171,3 +175,8 @@ services:
     App\Payment\Service\PaymentProcessorFactory:
         arguments:
             - !tagged_iterator app.payment.processor
+
+    GeoIp2\Database\Reader:
+        arguments:
+            $filename: '%kernel.project_dir%/config/geoip/GeoLite2-Country.mmdb'
+            $locales: [ 'en' ]

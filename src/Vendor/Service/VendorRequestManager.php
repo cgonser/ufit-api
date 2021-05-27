@@ -10,6 +10,8 @@ use App\Vendor\Request\VendorPasswordResetRequest;
 use App\Vendor\Request\VendorPasswordResetTokenRequest;
 use App\Vendor\Request\VendorRequest;
 use App\Vendor\Request\VendorSocialLinkRequest;
+use GeoIp2\Database\Reader;
+use Symfony\Component\Intl\Timezones;
 
 class VendorRequestManager
 {
@@ -21,27 +23,35 @@ class VendorRequestManager
 
     private VendorPasswordManager $vendorPasswordManager;
 
+    private Reader $geoIpReader;
+
     public function __construct(
         VendorManager $vendorManager,
         VendorProvider $vendorProvider,
         VendorPhotoService $vendorPhotoService,
-        VendorPasswordManager $vendorPasswordManager
+        VendorPasswordManager $vendorPasswordManager,
+        Reader $geoIpReader
     ) {
         $this->vendorManager = $vendorManager;
         $this->vendorProvider = $vendorProvider;
         $this->vendorPhotoService = $vendorPhotoService;
         $this->vendorPasswordManager = $vendorPasswordManager;
+        $this->geoIpReader = $geoIpReader;
     }
 
-    public function createFromRequest(VendorRequest $vendorRequest): Vendor
+    public function createFromRequest(VendorRequest $vendorRequest, ?string $ipAddress = null): Vendor
     {
         $vendor = new Vendor();
 
         $this->mapFromRequest($vendor, $vendorRequest);
 
+        if (null !== $ipAddress) {
+            $this->localizeVendor($vendor, $ipAddress);
+        }
+
         $this->vendorManager->create($vendor);
 
-        if (null !== $vendorRequest->photoContents) {
+        if ($vendorRequest->has('photoContents')) {
             $this->vendorPhotoService->uploadPhoto(
                 $vendor,
                 $this->vendorPhotoService->decodePhotoContents($vendorRequest->photoContents)
@@ -60,15 +70,15 @@ class VendorRequestManager
 
     public function mapFromRequest(Vendor $vendor, VendorRequest $vendorRequest)
     {
-        if (null !== $vendorRequest->email) {
+        if ($vendorRequest->has('email')) {
             $vendor->setEmail($vendorRequest->email);
         }
 
-        if (null !== $vendorRequest->name) {
+        if ($vendorRequest->has('name')) {
             $vendor->setName($vendorRequest->name);
         }
 
-        if (null !== $vendorRequest->displayName) {
+        if ($vendorRequest->has('displayName')) {
             $vendor->setDisplayName($vendorRequest->displayName);
         }
 
@@ -76,37 +86,37 @@ class VendorRequestManager
             $vendor->setDisplayName($vendor->getName());
         }
 
-        if (null !== $vendorRequest->password && null === $vendor->getPassword()) {
+        if ($vendorRequest->has('password') && null === $vendor->getPassword()) {
             $vendor->setPassword($this->vendorPasswordManager->encodePassword($vendor, $vendorRequest->password));
         }
 
-        if (null !== $vendorRequest->biography) {
+        if ($vendorRequest->has('biography')) {
             $vendor->setBiography($vendorRequest->biography);
         }
 
-        if (null !== $vendorRequest->slug) {
-            $vendor->setSlug($vendorRequest->slug);
-        } elseif (null === $vendor->getSlug() && null !== $vendor->getName()) {
+        if ($vendorRequest->has('slug') && null !== $vendorRequest->slug) {
+            $vendor->setSlug(strtolower($vendorRequest->slug));
+        } elseif (null === $vendor->getSlug() && null !== $vendor->getDisplayName()) {
             $vendor->setSlug($this->vendorManager->generateSlug($vendor));
         }
 
-        if (null !== $vendorRequest->allowEmailMarketing) {
+        if ($vendorRequest->has('allowEmailMarketing')) {
             $vendor->setAllowEmailMarketing($vendorRequest->allowEmailMarketing);
         }
 
-        if (null !== $vendorRequest->socialLinks) {
+        if ($vendorRequest->has('socialLinks')) {
             $vendor->setSocialLinks($vendorRequest->socialLinks);
         }
 
-        if (null !== $vendorRequest->country) {
+        if ($vendorRequest->has('country')) {
             $vendor->setCountry($vendorRequest->country);
         }
 
-        if (null !== $vendorRequest->locale) {
+        if ($vendorRequest->has('locale')) {
             $vendor->setLocale($vendorRequest->locale);
         }
 
-        if (null !== $vendorRequest->timezone) {
+        if ($vendorRequest->has('timezone')) {
             $vendor->setTimezone($vendorRequest->timezone);
         }
     }
@@ -149,5 +159,22 @@ class VendorRequestManager
         $vendor->setSocialLink($vendorSocialLinkRequest->network, $vendorSocialLinkRequest->link);
 
         $this->vendorManager->update($vendor);
+    }
+
+    private function localizeVendor(Vendor $vendor, string $ipAddress)
+    {
+        try {
+            if (null === $vendor->getCountry()) {
+                $record = $this->geoIpReader->country($ipAddress);
+
+                $vendor->setCountry($record->country->isoCode);
+            }
+
+            if (null === $vendor->getTimezone()) {
+                $vendor->setTimezone(Timezones::forCountryCode($vendor->getCountry())[0]);
+            }
+        } catch (\Exception $e) {
+            // do nothing
+        }
     }
 }

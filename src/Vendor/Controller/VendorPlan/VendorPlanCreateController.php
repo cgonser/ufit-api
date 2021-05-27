@@ -35,7 +35,9 @@ class VendorPlanCreateController extends AbstractController
     /**
      * @Route("/vendors/{vendorId}/plans", methods="POST", name="vendors_plans_create")
      *
-     * @ParamConverter("vendorPlanRequest", converter="fos_rest.request_body")
+     * @ParamConverter("vendorPlanRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Vendor / Plan")
      * @OA\RequestBody(

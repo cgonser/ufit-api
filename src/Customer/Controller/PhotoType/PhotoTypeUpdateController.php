@@ -42,7 +42,9 @@ class PhotoTypeUpdateController extends AbstractController
     /**
      * @Route("/photo_types/{photoTypeId}", methods="PUT", name="photo_types_update")
      *
-     * @ParamConverter("photoTypeRequest", converter="fos_rest.request_body")
+     * @ParamConverter("photoTypeRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="PhotoType")
      * @OA\RequestBody(

@@ -35,7 +35,9 @@ class ProgramCreateController extends AbstractController
     /**
      * @Route("/vendors/{vendorId}/programs", methods="POST", name="vendor_programs_create")
      *
-     * @ParamConverter("programRequest", converter="fos_rest.request_body")
+     * @ParamConverter("programRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Program")
      * @OA\RequestBody(

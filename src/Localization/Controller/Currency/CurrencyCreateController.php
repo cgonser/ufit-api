@@ -33,9 +33,11 @@ class CurrencyCreateController extends AbstractController
     /**
      * @Route("/currencies", methods="POST", name="currencies_create")
      *
-     * @ParamConverter("currencyRequest", converter="fos_rest.request_body")
+     * @ParamConverter("currencyRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
-     * @OA\Tag(name="Currency")
+     * @OA\Tag(name="Localization / Currency")
      * @OA\RequestBody(
      *     required=true,
      *     @OA\JsonContent(ref=@Model(type=CurrencyRequest::class))

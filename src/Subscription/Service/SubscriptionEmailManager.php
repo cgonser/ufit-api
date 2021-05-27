@@ -55,7 +55,7 @@ class SubscriptionEmailManager
                 [
                     'greeting_name' => $vendor->getName(),
                     'customer_name' => $customer->getName(),
-                    'subscription_start' => $vendorDateFormatter->format($subscription->getValidFrom()),
+                    'subscription_created_at' => $vendorDateFormatter->format($subscription->getCreatedAt()),
                     'plan_name' => $vendorPlan->getName(),
                 ],
                 $vendor->getLocale()

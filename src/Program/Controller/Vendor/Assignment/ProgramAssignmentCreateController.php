@@ -41,7 +41,9 @@ class ProgramAssignmentCreateController extends AbstractController
     /**
      * @Route("/vendors/{vendorId}/programs/{programId}/assignments", methods="POST", name="program_assignments_create")
      *
-     * @ParamConverter("programAssignmentRequest", converter="fos_rest.request_body")
+     * @ParamConverter("programAssignmentRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Program / Assignment")
      * @OA\RequestBody(

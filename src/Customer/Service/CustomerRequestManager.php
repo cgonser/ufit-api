@@ -10,6 +10,7 @@ use App\Customer\Request\CustomerPasswordChangeRequest;
 use App\Customer\Request\CustomerPasswordResetRequest;
 use App\Customer\Request\CustomerPasswordResetTokenRequest;
 use App\Customer\Request\CustomerRequest;
+use Symfony\Component\Intl\Timezones;
 
 class CustomerRequestManager
 {
@@ -29,11 +30,15 @@ class CustomerRequestManager
         $this->customerPasswordManager = $customerPasswordManager;
     }
 
-    public function createFromRequest(CustomerRequest $customerRequest): Customer
+    public function createFromRequest(CustomerRequest $customerRequest, ?string $ipAddress = null): Customer
     {
         $customer = new Customer();
 
         $this->mapFromRequest($customer, $customerRequest);
+
+        if (null !== $ipAddress) {
+            $this->localizeCustomer($customer, $ipAddress);
+        }
 
         $this->customerManager->create($customer);
 
@@ -135,5 +140,22 @@ class CustomerRequestManager
         }
 
         $this->customerPasswordManager->resetPassword($customer, $token, $customerPasswordResetTokenRequest->password);
+    }
+
+    public function localizeCustomer(Customer $customer, string $ipAddress)
+    {
+        try {
+            if (null === $customer->getCountry()) {
+                $record = $this->geoIpReader->country($ipAddress);
+
+                $customer->setCountry($record->country->isoCode);
+            }
+
+            if (null === $customer->getTimezone()) {
+                $customer->setTimezone(Timezones::forCountryCode($customer->getCountry())[0]);
+            }
+        } catch (\Exception $e) {
+            // do nothing
+        }
     }
 }

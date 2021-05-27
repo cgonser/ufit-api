@@ -10,7 +10,7 @@ use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\String\UnicodeString;
 
-class PagarmeResponseProcessor
+class PagarmeTransactionResponseProcessor
 {
     private PaymentProvider $paymentProvider;
 
@@ -28,10 +28,16 @@ class PagarmeResponseProcessor
         $this->messageBus = $messageBus;
     }
 
-    public function process(UuidInterface $paymentId, \stdClass $response)
+    public function process(\stdClass $response, ?UuidInterface $paymentId = null)
     {
-        /** @var Payment $payment */
-        $payment = $this->paymentProvider->get($paymentId);
+        if (null !== $paymentId) {
+            /** @var Payment $payment */
+            $payment = $this->paymentProvider->get($paymentId);
+            $payment->setExternalReference((string) $response->id);
+        } else {
+            // todo: fetch by external reference
+            $payment = $this->paymentProvider->getByExternalReference((string) $response->id);
+        }
 
         $status = new UnicodeString($response->status);
         $methodName = 'process'.ucfirst($status->camel());

@@ -2,23 +2,24 @@
 
 namespace App\Payment\Message;
 
+use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 class PagarmeTransactionResponseReceivedEvent
 {
     public const NAME = 'payment.pagarme.transaction.response';
 
-    private UuidInterface $paymentId;
-
     private \stdClass $response;
 
-    public function __construct(UuidInterface $paymentId, \stdClass $response)
+    private ?UuidInterface $paymentId = null;
+
+    public function __construct(\stdClass $response, ?string $paymentId = null)
     {
-        $this->paymentId = $paymentId;
         $this->response = $response;
+        $this->paymentId = null !== $paymentId ? Uuid::fromString($paymentId) : null;
     }
 
-    public function getPaymentId(): UuidInterface
+    public function getPaymentId(): ?UuidInterface
     {
         return $this->paymentId;
     }

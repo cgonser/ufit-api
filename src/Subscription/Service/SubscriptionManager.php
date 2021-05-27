@@ -52,7 +52,7 @@ class SubscriptionManager
             $this->generateInvoice($subscription);
         }
 
-        if ($vendorPlan->getPrice()->equals(0) && !$vendorPlan->isApprovalRequired()) {
+        if (!$vendorPlan->isApprovalRequired() && $vendorPlan->getPrice()->equals(0)) {
             $this->approve($subscription);
         }
     }
@@ -71,6 +71,12 @@ class SubscriptionManager
 
     public function approve(Subscription $subscription, ?string $reviewNotes = null)
     {
+        if ($subscription->isApproved()) {
+            $this->renew($subscription);
+
+            return;
+        }
+
         $subscription->setIsApproved(true);
         $subscription->setValidFrom(new \DateTime());
         $subscription->setReviewNotes($reviewNotes);
@@ -83,7 +89,16 @@ class SubscriptionManager
         $this->messageBus->dispatch(new SubscriptionApprovedEvent($subscription->getId()));
     }
 
-    private function calculateExpiration(Subscription $subscription)
+    public function renew(Subscription $subscription): void
+    {
+        $this->calculateExpiration($subscription);
+
+        $this->subscriptionRepository->save($subscription);
+
+//        $this->messageBus->dispatch(new SubscriptionRenewedEvent($subscription->getId()));
+    }
+
+    private function calculateExpiration(Subscription $subscription): void
     {
         if ($subscription->getVendorPlan()->isRecurring() || null === $subscription->getVendorPlan()->getDuration()) {
             $subscription->setExpiresAt(null);
@@ -100,11 +115,12 @@ class SubscriptionManager
     {
         $subscription->setCancelledAt(new \DateTime());
         $subscription->setIsActive(false);
+        // todo: calculate expiration
 
         $this->subscriptionRepository->save($subscription);
     }
 
-    private function expire(Subscription $subscription)
+    public function expire(Subscription $subscription)
     {
         $subscription->setIsActive(false);
         $subscription->setExpiresAt(new \DateTime());
@@ -129,5 +145,12 @@ class SubscriptionManager
     public function generateInvoice(Subscription $subscription)
     {
         $this->invoiceManager->createFromSubscription($subscription);
+    }
+
+    public function defineExternalRefence(Subscription $subscription, string $externalReference)
+    {
+        $subscription->setExternalReference($externalReference);
+
+        $this->subscriptionRepository->save($subscription);
     }
 }

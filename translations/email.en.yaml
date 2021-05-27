@@ -27,7 +27,7 @@ subscription:
 #        content: "We are thrilled you have joined the uFit community! Welcome!\n\nYour personal trainer, %vendor_name%, will soon get in touch with you to get more information and prepare a training program that best suits your goals."
     created_vendor:
         subject: "New Subscription"
-        content: "Good news! You have a new client!\n\n%customer_name% subscribed on %subscription_start% to the plan %plan_name%.\n\nWe are now waiting for the payment and will let you know as soon as it is confirmed."
+        content: "Good news! You have a new client!\n\n%customer_name% subscribed on %subscription_created_at% to the plan %plan_name%.\n\nWe are now waiting for the payment and will let you know as soon as it is confirmed."
         cta: "Access Your Account"
     approved_customer:
         subject: "Your subscription has been activated"

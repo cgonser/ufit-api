@@ -11,6 +11,7 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -30,8 +31,9 @@ class VendorFacebookLoginController extends AbstractController
 
     /**
      * @Route("/vendors/login/facebook", methods="POST", name="vendor_facebook_login")
-     *
-     * @ParamConverter("vendorLoginFacebookRequest", converter="fos_rest.request_body")
+     * @ParamConverter("vendorLoginFacebookRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Vendor")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=VendorLoginFacebookRequest::class)))
@@ -39,11 +41,12 @@ class VendorFacebookLoginController extends AbstractController
      * @OA\Response(response=400, description="Invalid input")
      * @OA\Response(response=401, description="Invalid credentials")
      */
-    public function facebookLogin(VendorLoginFacebookRequest $vendorLoginFacebookRequest): Response
+    public function facebookLogin(VendorLoginFacebookRequest $vendorLoginFacebookRequest, Request $request): Response
     {
         try {
             $vendor = $this->vendorFacebookLoginService->prepareVendorFromFacebookToken(
-                $vendorLoginFacebookRequest->accessToken
+                $vendorLoginFacebookRequest->accessToken,
+                $request->getClientIp()
             );
 
             return $this->authenticationSuccessHandler->handleAuthenticationSuccess($vendor);

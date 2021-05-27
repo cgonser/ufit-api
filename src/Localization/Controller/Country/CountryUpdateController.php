@@ -37,9 +37,11 @@ class CountryUpdateController extends AbstractController
 
     /**
      * @Route("/countries/{code}", methods="PUT", name="countries_update")
-     * @ParamConverter("countryRequest", converter="fos_rest.request_body")
+     * @ParamConverter("countryRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
-     * @OA\Tag(name="Country")
+     * @OA\Tag(name="Localization / Country")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=CountryRequest::class)))
      * @OA\Response(response=200, description="Updates a country", @OA\JsonContent(ref=@Model(type=CountryDto::class)))
      * @OA\Response(response=400, description="Invalid input")

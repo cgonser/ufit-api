@@ -29,7 +29,7 @@ class ApiExceptionEventSubscriber implements EventSubscriberInterface
             );
         }
 
-        if ($e instanceOf HttpException) {
+        if ($e instanceof HttpException) {
             return new ApiJsonErrorResponse($e->getStatusCode(), $e->getMessage());
         }
 
@@ -43,5 +43,3 @@ class ApiExceptionEventSubscriber implements EventSubscriberInterface
         ];
     }
 }
-
-

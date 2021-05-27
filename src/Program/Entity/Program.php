@@ -49,7 +49,7 @@ class Program
     /**
      * @ORM\Column(type="text", nullable=true)
      */
-    private ?string $level;
+    private ?string $level = null;
 
     /**
      * @ORM\Column(type="json", nullable=true)
@@ -59,7 +59,7 @@ class Program
     /**
      * @ORM\Column(type="text", nullable=true)
      */
-    private ?string $description;
+    private ?string $description = null;
 
     /**
      * @ORM\Column(type="boolean", nullable=false, options={"default": false})

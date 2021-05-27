@@ -48,7 +48,9 @@ class CustomerMeasurementUpdateController extends AbstractController
     /**
      * @Route("/customers/{customerId}/measurements/{customerMeasurementId}", methods="PUT", name="customers_measurements_update")
      *
-     * @ParamConverter("customerMeasurementRequest", converter="fos_rest.request_body")
+     * @ParamConverter("customerMeasurementRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="CustomerMeasurement")
      * @OA\RequestBody(

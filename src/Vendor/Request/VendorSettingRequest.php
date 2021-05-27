@@ -2,27 +2,26 @@
 
 namespace App\Vendor\Request;
 
+use App\Core\Request\AbstractRequest;
 use OpenApi\Annotations as OA;
 
 /**
- * @OA\RequestBody(
- *     request="VendorSettingRequest"
- * )
+ * @OA\RequestBody()
  */
-class VendorSettingRequest
+class VendorSettingRequest extends AbstractRequest
 {
     /**
      * @OA\Property()
      */
-    public ?string $vendorId = null;
+    public ?string $vendorId;
 
     /**
      * @OA\Property()
      */
-    public ?string $name = null;
+    public ?string $name;
 
     /**
      * @OA\Property()
      */
-    public ?string $value = null;
+    public ?string $value;
 }

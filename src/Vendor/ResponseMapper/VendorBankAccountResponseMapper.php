@@ -11,7 +11,7 @@ class VendorBankAccountResponseMapper
     {
         $vendorBankAccountDto = new VendorBankAccountDto();
         $vendorBankAccountDto->id = $vendorBankAccount->getId()->toString();
-        $vendorBankAccountDto->vendorId = $vendorBankAccount->getVendor()->getId()->toString();
+        $vendorBankAccountDto->vendorId = $vendorBankAccount->getVendorId()->toString();
         $vendorBankAccountDto->bankCode = $vendorBankAccount->getBankCode();
         $vendorBankAccountDto->agencyNumber = $vendorBankAccount->getAgencyNumber();
         $vendorBankAccountDto->accountNumber = $vendorBankAccount->getAccountNumber();

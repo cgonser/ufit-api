@@ -55,7 +55,7 @@ class CurrencyController extends AbstractController
      *     requirements={"currencyId"="%routing.uuid%"}
      * )
      *
-     * @OA\Tag(name="Currency")
+     * @OA\Tag(name="Localization / Currency")
      * @OA\Response(
      *     response=200,
      *     description="Returns one currency by ID",
@@ -80,7 +80,7 @@ class CurrencyController extends AbstractController
      *     requirements={"currencyCode"="\w+"}
      * )
      *
-     * @OA\Tag(name="Currency")
+     * @OA\Tag(name="Localization / Currency")
      * @OA\Response(
      *     response=200,
      *     description="Returns one currency by code",

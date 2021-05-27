@@ -20,7 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="subscription")
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
  */
-class Subscription
+class   Subscription
 {
     use TimestampableEntity;
     use SoftDeleteableEntity;
@@ -123,6 +123,11 @@ class Subscription
      * @ORM\Column(name="cancelled_at", type="datetime", nullable=true)
      */
     private ?\DateTimeInterface $cancelledAt = null;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private ?string $externalReference = null;
 
     public function __construct()
     {
@@ -335,6 +340,18 @@ class Subscription
     public function setCancelledAt(?\DateTimeInterface $cancelledAt): self
     {
         $this->cancelledAt = $cancelledAt;
+
+        return $this;
+    }
+
+    public function getExternalReference(): ?string
+    {
+        return $this->externalReference;
+    }
+
+    public function setExternalReference(?string $externalReference): self
+    {
+        $this->externalReference = $externalReference;
 
         return $this;
     }

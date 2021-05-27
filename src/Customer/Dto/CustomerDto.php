@@ -34,6 +34,11 @@ class CustomerDto
      */
     public ?array $subscriptions;
 
+    /**
+     * @OA\Property(type="object")
+     */
+    public ?array $documents;
+
     public ?string $country;
 
     public ?string $locale;

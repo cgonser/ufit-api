@@ -59,41 +59,41 @@ class VendorPlanRequestManager
 
     private function mapFromRequest(VendorPlan $vendorPlan, VendorPlanRequest $vendorPlanRequest): void
     {
-        if (null !== $vendorPlanRequest->name) {
+        if ($vendorPlanRequest->has('name')) {
             $vendorPlan->setName($vendorPlanRequest->name);
         }
 
-        if (null !== $vendorPlanRequest->description) {
+        if ($vendorPlanRequest->has('description')) {
             $vendorPlan->setDescription($vendorPlanRequest->description);
         }
 
-        if (null !== $vendorPlanRequest->features) {
+        if ($vendorPlanRequest->has('features')) {
             $vendorPlan->setFeatures($vendorPlanRequest->features);
         }
 
-        if (null !== $vendorPlanRequest->price) {
+        if ($vendorPlanRequest->has('price')) {
             $vendorPlan->setPrice(new Decimal($vendorPlanRequest->price));
         }
 
-        if (null !== $vendorPlanRequest->currency) {
+        if ($vendorPlanRequest->has('currency')) {
             $vendorPlan->setCurrency($this->currencyProvider->getByCode($vendorPlanRequest->currency));
         }
 
-        if (null !== $vendorPlanRequest->isApprovalRequired) {
+        if ($vendorPlanRequest->has('isApprovalRequired')) {
             $vendorPlan->setIsApprovalRequired($vendorPlanRequest->isApprovalRequired);
         }
 
-        if (null !== $vendorPlanRequest->isRecurring) {
+        if ($vendorPlanRequest->has('isRecurring')) {
             $vendorPlan->setIsRecurring($vendorPlanRequest->isRecurring);
         }
 
-        if (null !== $vendorPlanRequest->durationMonths || null !== $vendorPlanRequest->durationDays) {
+        if ($vendorPlanRequest->has('durationMonths') || $vendorPlanRequest->has('durationDays')) {
             $vendorPlan->setDuration(
                 $this->prepareDuration($vendorPlanRequest->durationMonths, $vendorPlanRequest->durationDays)
             );
         }
 
-        if (null !== $vendorPlanRequest->paymentMethods) {
+        if ($vendorPlanRequest->has('paymentMethods')) {
             $vendorPlan->getPaymentMethods()->clear();
 
             foreach ($vendorPlanRequest->paymentMethods as $paymentMethodId) {
@@ -103,15 +103,15 @@ class VendorPlanRequestManager
             }
         }
 
-        if (null !== $vendorPlanRequest->isVisible) {
+        if ($vendorPlanRequest->has('isVisible')) {
             $vendorPlan->setIsVisible($vendorPlanRequest->isVisible);
         }
 
-        if (null !== $vendorPlanRequest->slug) {
+        if ($vendorPlanRequest->has('slug')) {
             $vendorPlan->setSlug($vendorPlanRequest->slug);
         }
 
-        if (null !== $vendorPlanRequest->questionnaireId) {
+        if ($vendorPlanRequest->has('questionnaireId')) {
             $questionnaire = $this->questionnaireProvider->getByVendorAndId(
                 $vendorPlan->getVendor(),
                 Uuid::fromString($vendorPlanRequest->questionnaireId)
@@ -122,7 +122,7 @@ class VendorPlanRequestManager
             $vendorPlan->setQuestionnaire(null);
         }
 
-        if (null !== $vendorPlanRequest->imageContents) {
+        if ($vendorPlanRequest->has('imageContents')) {
             $this->vendorPlanImageService->uploadImage($vendorPlan, $vendorPlanRequest->imageContents);
         }
     }

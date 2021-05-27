@@ -14,11 +14,9 @@ class VendorBankAccountRequestManager
     private VendorProvider $vendorProvider;
 
     public function __construct(
-        VendorBankAccountManager $vendorBankAccountManager,
-        VendorProvider $vendorProvider
+        VendorBankAccountManager $vendorBankAccountManager
     ) {
         $this->vendorBankAccountManager = $vendorBankAccountManager;
-        $this->vendorProvider = $vendorProvider;
     }
 
     public function createFromRequest(VendorBankAccountRequest $vendorBankAccountRequest): VendorBankAccount
@@ -45,37 +43,35 @@ class VendorBankAccountRequestManager
         VendorBankAccount $vendorBankAccount,
         VendorBankAccountRequest $vendorBankAccountRequest
     ) {
-        if (null !== $vendorBankAccountRequest->vendorId) {
-            $vendor = $this->vendorProvider->get(Uuid::fromString($vendorBankAccountRequest->vendorId));
-
-            $vendorBankAccount->setVendor($vendor);
+        if ($vendorBankAccountRequest->has('vendorId')) {
+            $vendorBankAccount->setVendorId(Uuid::fromString($vendorBankAccountRequest->vendorId));
         }
 
-        if (null !== $vendorBankAccountRequest->bankCode) {
+        if ($vendorBankAccountRequest->has('bankCode')) {
             $vendorBankAccount->setBankCode($vendorBankAccountRequest->bankCode);
         }
 
-        if (null !== $vendorBankAccountRequest->agencyNumber) {
+        if ($vendorBankAccountRequest->has('agencyNumber')) {
             $vendorBankAccount->setAgencyNumber($vendorBankAccountRequest->agencyNumber);
         }
 
-        if (null !== $vendorBankAccountRequest->accountNumber) {
+        if ($vendorBankAccountRequest->has('accountNumber')) {
             $vendorBankAccount->setAccountNumber($vendorBankAccountRequest->accountNumber);
         }
 
-        if (null !== $vendorBankAccountRequest->accountDigit) {
+        if ($vendorBankAccountRequest->has('accountDigit')) {
             $vendorBankAccount->setAccountDigit($vendorBankAccountRequest->accountDigit);
         }
 
-        if (null !== $vendorBankAccountRequest->ownerName) {
+        if ($vendorBankAccountRequest->has('ownerName')) {
             $vendorBankAccount->setOwnerName($vendorBankAccountRequest->ownerName);
         }
 
-        if (null !== $vendorBankAccountRequest->ownerDocumentType) {
+        if ($vendorBankAccountRequest->has('ownerDocumentType')) {
             $vendorBankAccount->setOwnerDocumentType($vendorBankAccountRequest->ownerDocumentType);
         }
 
-        if (null !== $vendorBankAccountRequest->ownerDocumentNumber) {
+        if ($vendorBankAccountRequest->has('ownerDocumentNumber')) {
             $vendorBankAccount->setOwnerDocumentNumber($vendorBankAccountRequest->ownerDocumentNumber);
         }
     }

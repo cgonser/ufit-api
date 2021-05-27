@@ -51,7 +51,7 @@ class VendorPlanController extends AbstractController
      */
     public function getVendorPlans(string $vendorId): Response
     {
-        if ('current' == $vendorId) {
+        if ('current' === $vendorId) {
             /** @var Vendor $vendor */
             $vendor = $this->getUser();
         } else {

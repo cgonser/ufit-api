@@ -16,12 +16,12 @@ class VendorSettingProvider extends AbstractProvider
         $this->repository = $repository;
     }
 
-    public function getByVendorAndId(Vendor $vendor, UuidInterface $vendorSettingId): VendorSetting
+    public function getByVendorAndId(UuidInterface $vendorId, UuidInterface $vendorSettingId): VendorSetting
     {
         /** @var VendorSetting|null $vendorSetting */
         $vendorSetting = $this->repository->findOneBy([
             'id' => $vendorSettingId,
-            'vendor' => $vendor,
+            'vendorId' => $vendorId,
         ]);
 
         if (!$vendorSetting) {

@@ -2,73 +2,71 @@
 
 namespace App\Vendor\Request;
 
+use App\Core\Request\AbstractRequest;
 use OpenApi\Annotations as OA;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @OA\RequestBody(
- *     request="VendorRequest"
- * )
+ * @OA\RequestBody()
  */
-class VendorRequest
+class VendorRequest extends AbstractRequest
 {
     /**
      * @OA\Property()
      */
-    public ?string $name = null;
+    public ?string $name;
 
     /**
      * @OA\Property()
      */
-    public ?string $displayName = null;
+    public ?string $displayName;
 
     /**
      * @OA\Property()
      */
-    public ?string $email = null;
+    public ?string $email;
 
     /**
      * @OA\Property()
      */
-    public ?string $biography = null;
+    public ?string $biography;
 
     /**
      * @OA\Property()
      */
-    public ?string $password = null;
+    public ?string $password;
 
     /**
      * @OA\Property()
      */
-    public ?string $slug = null;
+    public ?string $slug;
 
     /**
      * @OA\Property()
      */
-    public ?string $country = null;
+    public ?string $country;
 
     /**
      * @OA\Property()
      */
-    public ?string $locale = null;
+    public ?string $locale;
 
     /**
      * @OA\Property()
      */
-    public ?string $timezone = null;
+    public ?string $timezone;
 
     /**
      * @OA\Property()
      */
-    public ?string $photoContents = null;
+    public ?string $photoContents;
 
     /**
      * @OA\Property()
      */
-    public ?bool $allowEmailMarketing = null;
+    public ?bool $allowEmailMarketing;
 
     /**
      * @OA\Property(type="array", @OA\Items(type="array", @OA\Items(type="string")))
      */
-    public ?array $socialLinks = null;
+    public ?array $socialLinks;
 }

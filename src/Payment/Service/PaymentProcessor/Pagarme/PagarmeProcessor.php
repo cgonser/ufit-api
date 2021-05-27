@@ -5,6 +5,7 @@ namespace App\Payment\Service\PaymentProcessor\Pagarme;
 use App\Core\Exception\InvalidInputException;
 use App\Payment\Dto\PagarmeTransactionInputDto;
 use App\Payment\Entity\Payment;
+use App\Payment\Message\PagarmeSubscriptionResponseReceivedEvent;
 use App\Payment\Message\PagarmeTransactionResponseReceivedEvent;
 use App\Vendor\Entity\VendorPlan;
 use App\Vendor\Exception\VendorPlanInvalidDurationException;
@@ -22,14 +23,22 @@ abstract class PagarmeProcessor
 
     private MessageBusInterface $messageBus;
 
+    private string $pagarmePostbackUrl;
+
+    private string $pagarmeRecebedorId;
+
     public function __construct(
         VendorSettingManager $vendorSettingManager,
         Client $pagarmeClient,
-        MessageBusInterface $messageBus
+        MessageBusInterface $messageBus,
+        string $pagarmePostbackUrl,
+        string $pagarmeRecebedorId
     ) {
         $this->vendorSettingManager = $vendorSettingManager;
         $this->pagarmeClient = $pagarmeClient;
         $this->messageBus = $messageBus;
+        $this->pagarmePostbackUrl = $pagarmePostbackUrl;
+        $this->pagarmeRecebedorId = $pagarmeRecebedorId;
     }
 
     public function process(Payment $payment)
@@ -40,6 +49,7 @@ abstract class PagarmeProcessor
 
         $transactionData = $this->prepareTransactionData($transactionInput);
 
+        $this->appendPostbackInformation($transactionData, $transactionInput);
         $this->appendCustomerInformation($transactionData, $transactionInput);
         $this->appendBillingInformation($transactionData, $transactionInput);
         $this->appendItems($transactionData, $transactionInput);
@@ -49,13 +59,21 @@ abstract class PagarmeProcessor
             $transactionData['plan_id'] = $transactionInput->pagarmePlanId;
 
             $response = $this->pagarmeClient->subscriptions()->create($transactionData);
+
+            $this->messageBus->dispatch(
+                new PagarmeSubscriptionResponseReceivedEvent(
+                    $response,
+                    $transactionInput->subscriptionId,
+                    $transactionInput->paymentId
+                )
+            );
         } else {
             $response = $this->pagarmeClient->transactions()->create($transactionData);
-        }
 
-        $this->messageBus->dispatch(
-            new PagarmeTransactionResponseReceivedEvent($payment->getId(), $response)
-        );
+            $this->messageBus->dispatch(
+                new PagarmeTransactionResponseReceivedEvent($response, $transactionInput->paymentId)
+            );
+        }
     }
 
     public function prepareTransactionInput(Payment $payment)
@@ -64,6 +82,8 @@ abstract class PagarmeProcessor
         $vendorPlan = $payment->getInvoice()->getSubscription()->getVendorPlan();
 
         $transactionInput = new PagarmeTransactionInputDto();
+        $transactionInput->subscriptionId = $payment->getInvoice()->getSubscription()->getId()->toString();
+        $transactionInput->paymentId = $payment->getId()->toString();
         $transactionInput->vendorId = $vendorPlan->getVendor()->getId()->toString();
         $transactionInput->vendorPlanId = $vendorPlan->getId()->toString();
         $transactionInput->invoiceId = $payment->getInvoiceId()->toString();
@@ -137,7 +157,7 @@ abstract class PagarmeProcessor
 
     protected function appendSplitRules(array &$transactionData, PagarmeTransactionInputDto $transactionInput)
     {
-        $platformPagarmeId = 're_cklii1riy0nqr0h9tq3mvq3ve'; // TODO: change it
+        $platformPagarmeId = $this->pagarmeRecebedorId;
         $vendorPagarmeId = $this->vendorSettingManager->getValue(
             Uuid::fromString($transactionInput->vendorId),
             'pagarme_id'
@@ -157,6 +177,14 @@ abstract class PagarmeProcessor
                 'percentage' => 90,
             ],
         ];
+    }
+
+    protected function appendPostbackInformation(array &$transactionData, PagarmeTransactionInputDto $transactionInput)
+    {
+        $postbackUrl = $this->pagarmePostbackUrl;
+        $postbackUrl .= '?reference='.$transactionInput->paymentId;
+
+        $transactionData['postback_url'] = $postbackUrl;
     }
 
     protected function validate(Payment $payment)

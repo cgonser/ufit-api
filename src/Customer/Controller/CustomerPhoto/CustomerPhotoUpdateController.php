@@ -44,7 +44,9 @@ class CustomerPhotoUpdateController extends AbstractController
     /**
      * @Route("/customers/{customerId}/photos/{customerPhotoId}", methods="PUT", name="customers_photos_update")
      *
-     * @ParamConverter("customerPhotoRequest", converter="fos_rest.request_body")
+     * @ParamConverter("customerPhotoRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="CustomerPhoto")
      *

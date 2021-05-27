@@ -1,0 +1,13 @@
+version: '3.2'
+
+services:
+    ngrok:
+        container_name: ufit-ngrok
+        image: wernight/ngrok
+        ports:
+            -  '4040:4040'
+        depends_on:
+            - nginx
+        command: ngrok http nginx:80
+        environment:
+            NGROK_DEBUG: "true"

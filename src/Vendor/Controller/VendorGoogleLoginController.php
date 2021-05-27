@@ -2,8 +2,6 @@
 
 namespace App\Vendor\Controller;
 
-use App\Core\Exception\ApiJsonException;
-use App\Vendor\Exception\VendorGoogleLoginFailedException;
 use App\Vendor\Request\VendorLoginGoogleRequest;
 use App\Vendor\Service\VendorLoginGoogleManager;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\AuthenticationSuccessHandler;
@@ -29,17 +27,10 @@ class VendorGoogleLoginController extends AbstractController
     }
 
     /**
-     * @Route("/vendors/login/google", methods="GET", name="vendor_google_login_form")
-     */
-    public function googleLoginForm(): Response
-    {
-        return $this->render('vendor/login_google.html.twig');
-    }
-
-    /**
      * @Route("/vendors/login/google", methods="POST", name="vendor_google_login")
-     *
-     * @ParamConverter("vendorLoginGoogleRequest", converter="fos_rest.request_body")
+     * @ParamConverter("vendorLoginGoogleRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Vendor")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=VendorLoginGoogleRequest::class)))
@@ -54,5 +45,15 @@ class VendorGoogleLoginController extends AbstractController
         );
 
         return $this->authenticationSuccessHandler->handleAuthenticationSuccess($vendor);
+    }
+
+    /**
+     * @Route("/vendors/login/google", methods="GET", name="vendor_google_login_form")
+     *
+     * @OA\Tag(name="Vendor / Demo")
+     */
+    public function googleLoginForm(): Response
+    {
+        return $this->render('vendor/login_google.html.twig');
     }
 }

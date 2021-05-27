@@ -35,7 +35,9 @@ class VendorSettingCreateController extends AbstractController
 
     /**
      * @Route("/vendors/{vendorId}/settings", methods="POST", name="vendor_settings_create")
-     * @ParamConverter("vendorSettingRequest", converter="fos_rest.request_body")
+     * @ParamConverter("vendorSettingRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="Vendor / Settings")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=VendorSettingRequest::class)))

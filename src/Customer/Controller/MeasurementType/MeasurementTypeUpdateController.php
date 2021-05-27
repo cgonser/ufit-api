@@ -42,7 +42,9 @@ class MeasurementTypeUpdateController extends AbstractController
     /**
      * @Route("/measurement_types/{measurementTypeId}", methods="PUT", name="measurement_types_update")
      *
-     * @ParamConverter("measurementTypeRequest", converter="fos_rest.request_body")
+     * @ParamConverter("measurementTypeRequest", converter="fos_rest.request_body", options={
+     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     * })
      *
      * @OA\Tag(name="MeasurementType")
      * @OA\RequestBody(

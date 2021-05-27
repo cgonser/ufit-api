@@ -11,7 +11,7 @@ class VendorSettingResponseMapper
     {
         $vendorSettingDto = new VendorSettingDto();
         $vendorSettingDto->id = $vendorSetting->getId()->toString();
-        $vendorSettingDto->vendorId = $vendorSetting->getVendor()->getId()->toString();
+        $vendorSettingDto->vendorId = $vendorSetting->getVendorId()->toString();
         $vendorSettingDto->name = $vendorSetting->getName();
         $vendorSettingDto->value = $vendorSetting->getValue();
 

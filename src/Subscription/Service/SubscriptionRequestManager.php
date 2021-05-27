@@ -6,7 +6,6 @@ use App\Customer\Entity\Customer;
 use App\Customer\Provider\CustomerProvider;
 use App\Customer\Service\CustomerRequestManager;
 use App\Subscription\Entity\Subscription;
-use App\Subscription\Exception\SubscriptionMissingCustomerException;
 use App\Subscription\Request\SubscriptionRequest;
 use App\Subscription\Request\SubscriptionReviewRequest;
 use App\Vendor\Provider\VendorPlanProvider;
@@ -34,11 +33,16 @@ class SubscriptionRequestManager
         $this->vendorPlanProvider = $vendorPlanProvider;
     }
 
-    public function createFromCustomerRequest(Customer $customer, SubscriptionRequest $subscriptionRequest): Subscription
-    {
+    public function createFromCustomerRequest(
+        Customer $customer,
+        SubscriptionRequest $subscriptionRequest,
+        ?string $ipAddress = null
+    ): Subscription {
         $subscription = new Subscription();
-        $subscription->setCustomer($customer);
+
         $this->mapDataFromRequest($subscription, $subscriptionRequest);
+
+        $subscription->setCustomer($customer);
 
         $this->subscriptionManager->create($subscription);
 
@@ -64,15 +68,18 @@ class SubscriptionRequestManager
         }
     }
 
-    private function mapDataFromRequest(Subscription $subscription, SubscriptionRequest $subscriptionRequest)
-    {
+    private function mapDataFromRequest(
+        Subscription $subscription,
+        SubscriptionRequest $subscriptionRequest,
+        ?string $ipAddress = null
+    ): void {
         if (null !== $subscriptionRequest->customer) {
-            $customer = $this->customerManager->createFromRequest($subscriptionRequest->customer);
+            $customer = $this->customerManager->createFromRequest($subscriptionRequest->customer, $ipAddress);
 
             $subscription->setCustomer($customer);
         }
 
-        if (null === $subscription->getCustomer() && null !== $subscriptionRequest->customerId) {
+        if (null !== $subscriptionRequest->customerId && null === $subscription->getCustomer()) {
             $customer = $this->customerProvider->get(Uuid::fromString($subscriptionRequest->customerId));
 
             $subscription->setCustomerId($customer->getId());

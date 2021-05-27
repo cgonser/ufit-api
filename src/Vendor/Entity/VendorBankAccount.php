@@ -29,15 +29,10 @@ class VendorBankAccount
     private UuidInterface $id;
 
     /**
-     * @ORM\Column(type="uuid", nullable=true)
+     * @ORM\Column(type="uuid", nullable=false)
+     * @Assert\NotBlank()
      */
     private ?UuidInterface $vendorId = null;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Vendor")
-     * @ORM\JoinColumn(name="vendor_id", referencedColumnName="id", nullable=true)
-     */
-    private ?Vendor $vendor = null;
 
     /**
      * @ORM\Column(type="string", nullable=true)
@@ -51,6 +46,7 @@ class VendorBankAccount
 
     /**
      * @ORM\Column(type="string", nullable=true)
+     * @Assert\NotBlank()
      */
     private ?string $accountNumber = null;
 
@@ -61,6 +57,7 @@ class VendorBankAccount
 
     /**
      * @ORM\Column(type="string", nullable=true)
+     * @Assert\NotBlank()
      */
     private ?string $ownerName = null;
 
@@ -73,6 +70,11 @@ class VendorBankAccount
      * @ORM\Column(type="string", nullable=true)
      */
     private ?string $ownerDocumentNumber = null;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private ?bool $isValid = null;
 
     public function getId(): ?UuidInterface
     {
@@ -87,18 +89,6 @@ class VendorBankAccount
     public function setVendorId(?UuidInterface $vendorId): void
     {
         $this->vendorId = $vendorId;
-    }
-
-    public function getVendor(): ?Vendor
-    {
-        return $this->vendor;
-    }
-
-    public function setVendor(Vendor $vendor): self
-    {
-        $this->vendor = $vendor;
-
-        return $this;
     }
 
     public function getBankCode(): ?string
@@ -181,6 +171,18 @@ class VendorBankAccount
     public function setOwnerDocumentNumber(?string $ownerDocumentNumber): VendorBankAccount
     {
         $this->ownerDocumentNumber = $ownerDocumentNumber;
+
+        return $this;
+    }
+
+    public function getIsValid(): ?bool
+    {
+        return $this->isValid;
+    }
+
+    public function setIsValid(?bool $isValid): self
+    {
+        $this->isValid = $isValid;
 
         return $this;
     }

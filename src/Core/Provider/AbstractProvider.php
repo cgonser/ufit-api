@@ -21,10 +21,22 @@ abstract class AbstractProvider
 
     public function get(UuidInterface $id): object
     {
-        /** @var object|null $program */
+        /** @var object|null $object */
         $object = $this->repository->find($id);
 
         if (null === $object) {
+            $this->throwNotFoundException();
+        }
+
+        return $object;
+    }
+
+    public function getBy(array $criteria): object
+    {
+        /** @var object|null $object */
+        $object = $this->repository->findOneBy($criteria);
+
+        if (!$object) {
             $this->throwNotFoundException();
         }
 
@@ -64,7 +76,7 @@ abstract class AbstractProvider
         return $this->repository->createQueryBuilder('root');
     }
 
-    protected function buildSearchQueryBuilder(SearchRequest $searchRequest, ?array $filters = []): QueryBuilder
+    protected function buildSearchQueryBuilder(SearchRequest $searchRequest, ?array $filters = null): QueryBuilder
     {
         $queryBuilder = $this->buildQueryBuilder();
 

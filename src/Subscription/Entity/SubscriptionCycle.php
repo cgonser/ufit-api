@@ -2,7 +2,6 @@
 
 namespace App\Subscription\Entity;
 
-use App\Payment\Entity\Invoice;
 use Decimal\Decimal;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -40,17 +39,6 @@ class SubscriptionCycle
      * @ORM\JoinColumn(name="subscription_id", referencedColumnName="id")
      */
     private Subscription $subscription;
-
-    /**
-     * @ORM\Column(type="uuid", unique=true)
-     */
-    private UuidInterface $invoiceId;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Payment\Entity\Invoice")
-     * @ORM\JoinColumn(name="invoice_id", referencedColumnName="id")
-     */
-    private Invoice $invoice;
 
     /**
      * @ORM\Column(type="decimal", nullable=false, options={"precision": 11, "scale": 2})
