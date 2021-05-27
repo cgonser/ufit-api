@@ -71,6 +71,11 @@ class Country
      */
     private bool $customersEnabled = true;
 
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private ?string $documentName = null;
+
     public function getId(): UuidInterface
     {
         return $this->id;
@@ -180,6 +185,18 @@ class Country
     public function setVendorsEnabled(bool $vendorsEnabled): self
     {
         $this->vendorsEnabled = $vendorsEnabled;
+
+        return $this;
+    }
+
+    public function getDocumentName(): ?string
+    {
+        return $this->documentName;
+    }
+
+    public function setDocumentName(?string $documentName): self
+    {
+        $this->documentName = $documentName;
 
         return $this;
     }

@@ -70,5 +70,9 @@ class CountryRequestManager
         if (null !== $countryRequest->customersEnabled) {
             $country->setCustomersEnabled($countryRequest->customersEnabled);
         }
+
+        if (null !== $countryRequest->documentName) {
+            $country->setDocumentName($countryRequest->documentName);
+        }
     }
 }

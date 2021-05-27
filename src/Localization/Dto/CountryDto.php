@@ -24,4 +24,6 @@ class CountryDto
     public ?bool $vendorsEnabled;
 
     public ?bool $customersEnabled;
+
+    public ?string $documentName;
 }
