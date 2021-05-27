@@ -273,7 +273,7 @@ class Customer implements UserInterface, \Serializable
 
     public function getLastWeight(): ?Decimal
     {
-        return new Decimal($this->lastWeight);
+        return null !== $this->lastWeight ? new Decimal($this->lastWeight) : null;
     }
 
     public function setLastWeight(Decimal $lastWeight): self
