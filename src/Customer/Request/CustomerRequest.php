@@ -2,6 +2,7 @@
 
 namespace App\Customer\Request;
 
+use App\Core\Request\AbstractRequest;
 use OpenApi\Annotations as OA;
 
 /**
@@ -9,7 +10,7 @@ use OpenApi\Annotations as OA;
  *     request="CustomerRequest"
  * )
  */
-class CustomerRequest
+class CustomerRequest extends AbstractRequest
 {
     /**
      * @OA\Property()
@@ -35,6 +36,11 @@ class CustomerRequest
      * @OA\Property()
      */
     public ?int $height = null;
+
+    /**
+     * @OA\Property()
+     */
+    public ?int $lastWeight = null;
 
     /**
      * @OA\Property()

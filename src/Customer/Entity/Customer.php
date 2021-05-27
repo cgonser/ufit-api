@@ -3,6 +3,7 @@
 namespace App\Customer\Entity;
 
 use App\Subscription\Entity\Subscription;
+use Decimal\Decimal;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -90,6 +91,11 @@ class Customer implements UserInterface, \Serializable
      * @ORM\Column(nullable=true)
      */
     private ?int $height = null;
+
+    /**
+     * @ORM\Column(type="decimal", nullable=true, options={"precision": 11, "scale": 2})
+     */
+    private ?string $lastWeight = null;
 
     /**
      * @ORM\Column(type="json", nullable=true)
@@ -261,6 +267,18 @@ class Customer implements UserInterface, \Serializable
     public function setHeight(?int $height): self
     {
         $this->height = $height;
+
+        return $this;
+    }
+
+    public function getLastWeight(): ?Decimal
+    {
+        return new Decimal($this->lastWeight);
+    }
+
+    public function setLastWeight(Decimal $lastWeight): self
+    {
+        $this->lastWeight = $lastWeight;
 
         return $this;
     }

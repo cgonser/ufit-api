@@ -29,12 +29,14 @@ class CustomerMeasurementService
     private CustomerMeasurementItemProvider $customerMeasurementItemProvider;
 
     private MeasurementTypeProvider $measurementTypeProvider;
+    private CustomerManager $customerManager;
 
     public function __construct(
         CustomerMeasurementRepository $customerMeasurementRepository,
         CustomerMeasurementProvider $customerMeasurementProvider,
         CustomerMeasurementItemRepository $customerMeasurementItemRepository,
         CustomerMeasurementItemProvider $customerMeasurementItemProvider,
+        CustomerManager $customerManager,
         MeasurementTypeProvider $measurementTypeProvider
     ) {
         $this->customerMeasurementRepository = $customerMeasurementRepository;
@@ -42,6 +44,7 @@ class CustomerMeasurementService
         $this->customerMeasurementItemProvider = $customerMeasurementItemProvider;
         $this->measurementTypeProvider = $measurementTypeProvider;
         $this->customerMeasurementItemRepository = $customerMeasurementItemRepository;
+        $this->customerManager = $customerManager;
     }
 
     public function create(Customer $customer, CustomerMeasurementRequest $customerMeasurementRequest): CustomerMeasurement
@@ -73,7 +76,7 @@ class CustomerMeasurementService
         $customerMeasurement->setNotes($customerMeasurementRequest->notes);
 
         if (null !== $customerMeasurementRequest->takenAt) {
-            $takenAt = \DateTime::createFromFormat(\DateTimeInterface::ISO8601, $customerMeasurementRequest->takenAt);
+            $takenAt = \DateTime::createFromFormat(\DateTimeInterface::ATOM, $customerMeasurementRequest->takenAt);
 
             if (false === $takenAt) {
                 throw new CustomerMeasurementInvalidTakenAtException();
@@ -129,6 +132,13 @@ class CustomerMeasurementService
             $customerMeasurementItem->setUnit($customerMeasurementItemRequest->unit);
 
             $customerMeasurement->addItem($customerMeasurementItem);
+
+            if ('weight' === $measurementType->getSlug()) {
+                $customer = $customerMeasurement->getCustomer();
+                $customer->setLastWeight($customerMeasurementItem->getMeasurement());
+
+                $this->customerManager->update($customer);
+            }
         }
     }
 }

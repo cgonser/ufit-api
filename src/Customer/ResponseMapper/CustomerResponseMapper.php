@@ -16,6 +16,7 @@ class CustomerResponseMapper
         $customerDto->phone = $customer->getPhone();
         $customerDto->gender = $customer->getGender();
         $customerDto->height = $customer->getHeight();
+        $customerDto->lastWeight = $customer->getLastWeight()->toString();
         $customerDto->birthDate = $customer->getBirthDate()
             ? $customer->getBirthDate()->format('Y-m-d')
             : null;
