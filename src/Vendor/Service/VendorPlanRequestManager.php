@@ -9,7 +9,9 @@ use App\Vendor\Entity\VendorPlan;
 use App\Vendor\Exception\VendorPlanInvalidDurationException;
 use App\Vendor\Provider\QuestionnaireProvider;
 use App\Vendor\Request\VendorPlanRequest;
+use DateInterval;
 use Decimal\Decimal;
+use Exception;
 use Ramsey\Uuid\Uuid;
 
 class VendorPlanRequestManager
@@ -87,7 +89,8 @@ class VendorPlanRequestManager
             $vendorPlan->setIsRecurring($vendorPlanRequest->isRecurring);
         }
 
-        if ($vendorPlanRequest->has('durationMonths') || $vendorPlanRequest->has('durationDays')) {
+        if (($vendorPlanRequest->has('durationMonths') && $vendorPlanRequest->durationMonths !== null)
+            || ($vendorPlanRequest->has('durationDays') && $vendorPlanRequest->durationDays !== null)) {
             $vendorPlan->setDuration(
                 $this->prepareDuration($vendorPlanRequest->durationMonths, $vendorPlanRequest->durationDays)
             );
@@ -127,7 +130,7 @@ class VendorPlanRequestManager
         }
     }
 
-    private function prepareDuration(?string $durationMonths, ?string $durationDays): \DateInterval
+    private function prepareDuration(?string $durationMonths, ?string $durationDays): DateInterval
     {
         $durationString = 'P';
 
@@ -139,8 +142,8 @@ class VendorPlanRequestManager
         }
 
         try {
-            return new \DateInterval($durationString);
-        } catch (\Exception $e) {
+            return new DateInterval($durationString);
+        } catch (Exception $e) {
             throw new VendorPlanInvalidDurationException();
         }
     }
