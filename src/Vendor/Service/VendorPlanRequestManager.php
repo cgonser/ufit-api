@@ -92,7 +92,10 @@ class VendorPlanRequestManager
         if (($vendorPlanRequest->has('durationMonths') && $vendorPlanRequest->durationMonths !== null)
             || ($vendorPlanRequest->has('durationDays') && $vendorPlanRequest->durationDays !== null)) {
             $vendorPlan->setDuration(
-                $this->prepareDuration($vendorPlanRequest->durationMonths, $vendorPlanRequest->durationDays)
+                $this->prepareDuration(
+                    $vendorPlanRequest->durationMonths ?? 0,
+                    $vendorPlanRequest->durationDays ?? 0
+                )
             );
         }
 
