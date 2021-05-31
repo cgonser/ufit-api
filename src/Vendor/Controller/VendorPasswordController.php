@@ -67,6 +67,7 @@ class VendorPasswordController extends AbstractController
      * })
      *
      * @OA\Tag(name="Vendor / Password")
+     * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=VendorPasswordResetRequest::class)))
      */
     public function resetPassword(
         VendorPasswordResetRequest $vendorPasswordResetRequest,
@@ -88,6 +89,7 @@ class VendorPasswordController extends AbstractController
      * })
      *
      * @OA\Tag(name="Vendor / Password")
+     * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=VendorPasswordResetTokenRequest::class)))
      */
     public function resetPasswordToken(
         VendorPasswordResetTokenRequest $vendorPasswordResetTokenRequest,
