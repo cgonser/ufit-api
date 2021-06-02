@@ -11,6 +11,7 @@ use App\Customer\Request\CustomerPasswordResetRequest;
 use App\Customer\Request\CustomerPasswordResetTokenRequest;
 use App\Customer\Request\CustomerRequest;
 use Decimal\Decimal;
+use GeoIp2\Database\Reader;
 use Symfony\Component\Intl\Timezones;
 
 class CustomerRequestManager
@@ -21,14 +22,18 @@ class CustomerRequestManager
 
     private CustomerPasswordManager $customerPasswordManager;
 
+    private Reader $geoIpReader;
+
     public function __construct(
         CustomerManager $customerManager,
         CustomerProvider $customerProvider,
-        CustomerPasswordManager $customerPasswordManager
+        CustomerPasswordManager $customerPasswordManager,
+        Reader $geoIpReader
     ) {
         $this->customerManager = $customerManager;
         $this->customerProvider = $customerProvider;
         $this->customerPasswordManager = $customerPasswordManager;
+        $this->geoIpReader = $geoIpReader;
     }
 
     public function createFromRequest(CustomerRequest $customerRequest, ?string $ipAddress = null): Customer
