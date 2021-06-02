@@ -47,7 +47,7 @@ class SubscriptionDeleteController extends AbstractController
     public function cancelSubscription(string $customerId, string $subscriptionId): Response
     {
         try {
-            if ('current' == $customerId) {
+            if ('current' === $customerId) {
                 /** @var Customer $customer */
                 $customer = $this->getUser();
             } else {

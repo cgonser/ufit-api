@@ -72,13 +72,9 @@ class VendorController extends AbstractController
      */
     public function getVendor(string $vendorId): Response
     {
-        try {
-            $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
+        $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
 
-            return new ApiJsonResponse(Response::HTTP_OK, $this->vendorResponseMapper->map($vendor));
-        } catch (VendorNotFoundException $e) {
-            throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
-        }
+        return new ApiJsonResponse(Response::HTTP_OK, $this->vendorResponseMapper->map($vendor));
     }
 
     /**
@@ -93,21 +89,17 @@ class VendorController extends AbstractController
      */
     public function getVendorBySlug(string $slug): Response
     {
-        try {
-            if ('current' == $slug) {
-                /** @var Vendor $vendor */
-                $vendor = $this->getUser();
-            } else {
-                $vendor = $this->vendorProvider->findOneBySlug($slug);
+        if ('current' === $slug) {
+            /** @var Vendor $vendor */
+            $vendor = $this->getUser();
+        } else {
+            $vendor = $this->vendorProvider->findOneBySlug($slug);
 
-                if (null === $vendor) {
-                    throw new VendorNotFoundException();
-                }
+            if (null === $vendor) {
+                throw new VendorNotFoundException();
             }
-
-            return new ApiJsonResponse(Response::HTTP_OK, $this->vendorResponseMapper->map($vendor));
-        } catch (VendorNotFoundException $e) {
-            throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
         }
+
+        return new ApiJsonResponse(Response::HTTP_OK, $this->vendorResponseMapper->map($vendor));
     }
 }

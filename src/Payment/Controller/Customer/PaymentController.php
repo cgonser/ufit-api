@@ -82,7 +82,7 @@ class PaymentController extends AbstractController
      */
     public function getPayment(string $customerId, string $paymentId): Response
     {
-        if ('current' == $customerId) {
+        if ('current' === $customerId) {
             /** @var Customer $customer */
             $customer = $this->getUser();
         } else {

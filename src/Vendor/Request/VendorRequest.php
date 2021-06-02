@@ -4,6 +4,7 @@ namespace App\Vendor\Request;
 
 use App\Core\Request\AbstractRequest;
 use OpenApi\Annotations as OA;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @OA\RequestBody()
@@ -37,6 +38,7 @@ class VendorRequest extends AbstractRequest
 
     /**
      * @OA\Property()
+     * @Assert\Regex(pattern="/^(\w|\-)+$/", match=true)
      */
     public ?string $slug;
 
