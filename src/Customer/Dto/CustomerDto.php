@@ -20,6 +20,8 @@ class CustomerDto
 
     public ?int $height;
 
+    public ?string $lastWeight;
+
     public ?string $gender;
 
     /**

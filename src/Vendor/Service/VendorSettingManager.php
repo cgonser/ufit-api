@@ -31,7 +31,7 @@ class VendorSettingManager
         $this->vendorSettingRepository->delete($vendorSetting);
     }
 
-    public function set(UuidInterface $vendorId, string $name, string $value): VendorSetting
+    public function set(UuidInterface $vendorId, string $name, ?string $value): VendorSetting
     {
         $vendorSetting = $this->get($vendorId, $name);
 

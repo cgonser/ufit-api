@@ -46,4 +46,9 @@ class CountryRequest
      * @OA\Property()
      */
     public ?bool $customersEnabled = null;
+
+    /**
+     * @OA\Property()
+     */
+    public ?string $documentName = null;
 }

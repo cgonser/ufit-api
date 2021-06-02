@@ -10,6 +10,7 @@ use App\Customer\Request\CustomerPasswordChangeRequest;
 use App\Customer\Request\CustomerPasswordResetRequest;
 use App\Customer\Request\CustomerPasswordResetTokenRequest;
 use App\Customer\Request\CustomerRequest;
+use Decimal\Decimal;
 use Symfony\Component\Intl\Timezones;
 
 class CustomerRequestManager
@@ -72,6 +73,10 @@ class CustomerRequestManager
 
         if (null !== $customerRequest->height) {
             $customer->setHeight($customerRequest->height);
+        }
+
+        if (null !== $customerRequest->lastWeight) {
+            $customer->setLastWeight(new Decimal((string) $customerRequest->lastWeight));
         }
 
         if (null !== $customerRequest->birthDate) {

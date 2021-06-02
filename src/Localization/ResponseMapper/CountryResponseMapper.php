@@ -24,6 +24,7 @@ class CountryResponseMapper
         $countryDto->timezones = $country->getTimezones();
         $countryDto->vendorsEnabled = $country->isVendorsEnabled();
         $countryDto->customersEnabled = $country->isCustomersEnabled();
+        $countryDto->documentName = $country->getDocumentName();
 
         if (null !== $country->getCurrency()) {
             $countryDto->currency = $this->currencyResponseMapper->map($country->getCurrency());

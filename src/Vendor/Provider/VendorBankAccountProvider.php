@@ -36,6 +36,8 @@ class VendorBankAccountProvider extends AbstractProvider
         /** @var VendorBankAccount|null $vendorBankAccount */
         $vendorBankAccount = $this->repository->findOneBy([
             'vendorId' => $vendorId,
+        ], [
+            'createdAt' => 'DESC',
         ]);
 
         if (!$vendorBankAccount) {

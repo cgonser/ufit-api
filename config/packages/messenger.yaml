@@ -5,6 +5,7 @@ framework:
 
         transports:
             # https://symfony.com/doc/current/messenger.html#transport-configuration
+            customer: '%env(MESSENGER_TRANSPORT_DSN_CUSTOMER)%'
             subscription: '%env(MESSENGER_TRANSPORT_DSN_SUBSCRIPTION)%'
             vendor: '%env(MESSENGER_TRANSPORT_DSN_VENDOR)%'
             payment: '%env(MESSENGER_TRANSPORT_DSN_PAYMENT)%'
@@ -21,7 +22,7 @@ framework:
                     max_delay: 0
 
         routing:
-            'App\Customer\Message\CustomerCreatedEvent': void
+            'App\Customer\Message\CustomerCreatedEvent': customer
 
             'App\Payment\Message\InvoicePaidEvent': payment
             'App\Payment\Message\PaymentCreatedEvent': payment
@@ -40,6 +41,8 @@ framework:
             'App\Subscription\Message\SubscriptionApprovedEvent': subscription
             'App\Subscription\Message\SubscriptionRejectedEvent': subscription
             'App\Subscription\Message\SubscriptionCreatedEvent': subscription
+
+            'App\Vendor\Message\VendorCreatedEvent': vendor
 
             'App\Vendor\Message\VendorBankAccountCreatedEvent': payment
             'App\Vendor\Message\VendorBankAccountUpdatedEvent': payment

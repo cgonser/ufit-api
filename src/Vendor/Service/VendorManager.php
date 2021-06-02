@@ -5,7 +5,9 @@ namespace App\Vendor\Service;
 use App\Core\Validation\EntityValidator;
 use App\Vendor\Entity\Vendor;
 use App\Vendor\Exception\VendorSlugInUseException;
+use App\Vendor\Message\VendorCreatedEvent;
 use App\Vendor\Repository\VendorRepository;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 class VendorManager
@@ -16,14 +18,18 @@ class VendorManager
 
     private EntityValidator $validator;
 
+    private MessageBusInterface $messageBus;
+
     public function __construct(
         VendorRepository $vendorRepository,
         SluggerInterface $slugger,
-        EntityValidator $validator
+        EntityValidator $validator,
+        MessageBusInterface $messageBus
     ) {
         $this->vendorRepository = $vendorRepository;
         $this->slugger = $slugger;
         $this->validator = $validator;
+        $this->messageBus = $messageBus;
     }
 
     public function create(Vendor $vendor): void
@@ -35,6 +41,8 @@ class VendorManager
         $this->validateVendor($vendor);
 
         $this->vendorRepository->save($vendor);
+
+        $this->messageBus->dispatch(new VendorCreatedEvent($vendor->getId()));
     }
 
     public function update(Vendor $vendor): void

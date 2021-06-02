@@ -60,7 +60,7 @@ class PaymentController extends AbstractController
             throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
         }
 
-        $searchRequest->customerId = $customerId;
+        $searchRequest->customerId = $customer->getId()->toString();
         $payments = $this->paymentProvider->search($searchRequest);
         $count = $this->paymentProvider->count($searchRequest);
 
@@ -82,7 +82,7 @@ class PaymentController extends AbstractController
      */
     public function getPayment(string $customerId, string $paymentId): Response
     {
-        if ('current' == $customerId) {
+        if ('current' === $customerId) {
             /** @var Customer $customer */
             $customer = $this->getUser();
         } else {
