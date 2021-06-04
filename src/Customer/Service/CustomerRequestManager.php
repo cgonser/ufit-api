@@ -68,8 +68,16 @@ class CustomerRequestManager
             $customer->setEmail($customerRequest->email);
         }
 
-        if (null !== $customerRequest->phone) {
-            $customer->setPhone($customerRequest->phone);
+        if (null !== $customerRequest->phoneIntlCode) {
+            $customer->setPhoneIntlCode($customerRequest->phoneIntlCode);
+        }
+
+        if (null !== $customerRequest->phoneAreaCode) {
+            $customer->setPhoneAreaCode($customerRequest->phoneAreaCode);
+        }
+
+        if (null !== $customerRequest->phoneNumber) {
+            $customer->setPhoneNumber($customerRequest->phoneNumber);
         }
 
         if (null !== $customerRequest->password && null === $customer->getPassword()) {

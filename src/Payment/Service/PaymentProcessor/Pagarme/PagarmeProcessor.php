@@ -98,7 +98,9 @@ abstract class PagarmeProcessor
         $transactionInput->customerId = $customer->getId()->toString();
         $transactionInput->customerName = $customer->getName();
         $transactionInput->customerEmail = $customer->getEmail();
-        $transactionInput->customerPhone = $customer->getPhone();
+        $transactionInput->customerPhoneIntlCode = $customer->getPhoneIntlCode();
+        $transactionInput->customerPhoneAreaCode = $customer->getPhoneAreaCode();
+        $transactionInput->customerPhoneNumber = $customer->getPhoneNumber();
         $transactionInput->customerDocumentType = 'cpf';
         $transactionInput->customerDocumentNumber = $customer->getDocument('cpf');
         $transactionInput->amount = new Decimal($payment->getInvoice()->getTotalAmount());
@@ -128,19 +130,26 @@ abstract class PagarmeProcessor
             ],
             'address' => [
                 'country' => 'br',
-                'street' => 'Avenida Brigadeiro Faria Lima',
-                'street_number' => '1811',
+                'street' => 'Avenida Damasceno Vieira',
+                'street_number' => '900',
                 'state' => 'sp',
                 'city' => 'Sao Paulo',
-                'neighborhood' => 'Jardim Paulistano',
-                'zipcode' => '01451001',
-            ],
-            'phone_numbers' => [
-                'ddd' => '11', // $transactionInput->customerPhone ?: '+5511989737737',
-                'number' => '989737737',
+                'neighborhood' => 'Vila Mascote',
+                'zipcode' => '04363040',
             ],
             'email' => $transactionInput->customerEmail,
         ];
+
+        if ($transactionInput->isRecurring) {
+            $transactionData['customer']['phone'] = [
+                'ddd' => ltrim($transactionInput->customerPhoneAreaCode, '0'),
+                'number' => $transactionInput->customerPhoneNumber,
+            ];
+        } else {
+            $transactionData['customer']['phone_numbers'] = [
+                ltrim($transactionInput->customerPhoneAreaCode, '0').$transactionInput->customerPhoneNumber,
+            ];
+        }
     }
 
     protected function appendBillingInformation(array &$transactionData, PagarmeTransactionInputDto $transactionInput)
@@ -149,12 +158,12 @@ abstract class PagarmeProcessor
             'name' => $transactionInput->customerName,
             'address' => [
                 'country' => 'br',
-                'street' => 'Avenida Brigadeiro Faria Lima',
-                'street_number' => '1811',
+                'street' => 'Avenida Damasceno Vieira',
+                'street_number' => '900',
                 'state' => 'sp',
                 'city' => 'Sao Paulo',
-                'neighborhood' => 'Jardim Paulistano',
-                'zipcode' => '01451001',
+                'neighborhood' => 'Vila Mascote',
+                'zipcode' => '04363040',
             ],
         ];
     }

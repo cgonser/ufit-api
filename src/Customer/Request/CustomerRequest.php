@@ -25,7 +25,17 @@ class CustomerRequest extends AbstractRequest
     /**
      * @OA\Property()
      */
-    public ?string $phone = null;
+    public ?string $phoneIntlCode = null;
+
+    /**
+     * @OA\Property()
+     */
+    public ?string $phoneAreaCode = null;
+
+    /**
+     * @OA\Property()
+     */
+    public ?string $phoneNumber = null;
 
     /**
      * @OA\Property()

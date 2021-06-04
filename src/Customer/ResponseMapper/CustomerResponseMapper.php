@@ -13,7 +13,9 @@ class CustomerResponseMapper
         $customerDto->id = $customer->getId();
         $customerDto->name = $customer->getName();
         $customerDto->email = $customer->getEmail();
-        $customerDto->phone = $customer->getPhone();
+        $customerDto->phoneIntlCode = $customer->getPhoneIntlCode();
+        $customerDto->phoneAreaCode = $customer->getPhoneAreaCode();
+        $customerDto->phoneNumber = $customer->getPhoneNumber();
         $customerDto->gender = $customer->getGender();
         $customerDto->height = $customer->getHeight();
         $customerDto->lastWeight = null !== $customer->getLastWeight() ? $customer->getLastWeight()->toString() : null;
@@ -25,6 +27,7 @@ class CustomerResponseMapper
         $customerDto->locale = $customer->getLocale();
         $customerDto->timezone = $customer->getTimezone();
         $customerDto->documents = $customer->getDocuments();
+        $customerDto->isPasswordDefined = null !== $customer->getPassword();
 
         return $customerDto;
     }

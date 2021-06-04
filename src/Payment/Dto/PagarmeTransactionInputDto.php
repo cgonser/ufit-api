@@ -24,7 +24,11 @@ class PagarmeTransactionInputDto
 
     public string $customerEmail;
 
-    public ?string $customerPhone;
+    public ?string $customerPhoneIntlCode;
+
+    public ?string $customerPhoneAreaCode;
+
+    public ?string $customerPhoneNumber;
 
     public string $customerDocumentType;
 
