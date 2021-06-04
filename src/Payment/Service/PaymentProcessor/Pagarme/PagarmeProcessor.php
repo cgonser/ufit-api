@@ -147,8 +147,14 @@ abstract class PagarmeProcessor
             ];
         } else {
             $transactionData['customer']['phone_numbers'] = [
-                ltrim($transactionInput->customerPhoneAreaCode, '0').$transactionInput->customerPhoneNumber,
+                $transactionInput->customerPhoneNumber ?: '+55'.
+                    ltrim($transactionInput->customerPhoneAreaCode, '0').
+                    $transactionInput->customerPhoneNumber,
             ];
+
+            if (0 !== strpos($transactionData['customer']['phone_numbers'], '+')) {
+                $transactionData['customer']['phone_numbers'] = '+' . $transactionData['customer']['phone_numbers'];
+            }
         }
     }
 
