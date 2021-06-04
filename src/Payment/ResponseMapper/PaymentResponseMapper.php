@@ -2,23 +2,29 @@
 
 namespace App\Payment\ResponseMapper;
 
+use App\Localization\ResponseMapper\CurrencyResponseMapper;
 use App\Payment\Dto\PaymentDto;
 use App\Payment\Entity\Payment;
 
 class PaymentResponseMapper
 {
     private PaymentMethodResponseMapper $paymentMethodResponseMapper;
+    private CurrencyResponseMapper $currencyResponseMapper;
 
-    public function __construct(PaymentMethodResponseMapper $paymentMethodResponseMapper)
-    {
+    public function __construct(
+        PaymentMethodResponseMapper $paymentMethodResponseMapper,
+        CurrencyResponseMapper $currencyResponseMapper
+    ) {
         $this->paymentMethodResponseMapper = $paymentMethodResponseMapper;
+        $this->currencyResponseMapper = $currencyResponseMapper;
     }
 
-    public function map(Payment $payment, bool $mapPaymentMethod = true): PaymentDto
+    public function map(Payment $payment, bool $mapPaymentMethod = true, bool $mapCurrency = true): PaymentDto
     {
         $paymentDto = new PaymentDto();
         $paymentDto->id = $payment->getId()->toString();
         $paymentDto->invoiceId = $payment->getInvoiceId()->toString();
+        $paymentDto->currencyId = $payment->getInvoice()->getCurrencyId()->toString();
         $paymentDto->paymentMethodId = $payment->getPaymentMethodId()->toString();
         $paymentDto->amount = $payment->getAmount();
         $paymentDto->status = $payment->getStatus();
@@ -35,10 +41,14 @@ class PaymentResponseMapper
             $paymentDto->paymentMethod = $this->paymentMethodResponseMapper->map($payment->getPaymentMethod());
         }
 
+        if ($mapCurrency) {
+            $paymentDto->currency = $this->currencyResponseMapper->map($payment->getInvoice()->getCurrency());
+        }
+
         return $paymentDto;
     }
 
-    public function mapMultiple(array $payments, bool $mapPaymentMethod = true): array
+    public function mapMultiple(array $payments, bool $mapPaymentMethod = true, bool $mapCurrency = true): array
     {
         $paymentDtos = [];
 

@@ -2,6 +2,7 @@
 
 namespace App\Payment\Dto;
 
+use App\Localization\Dto\CurrencyDto;
 use OpenApi\Annotations as OA;
 
 class PaymentDto
@@ -9,6 +10,10 @@ class PaymentDto
     public ?string $id;
 
     public ?string $invoiceId;
+
+    public ?string $currencyId;
+
+    public ?CurrencyDto $currency;
 
     public ?string $paymentMethodId;
 

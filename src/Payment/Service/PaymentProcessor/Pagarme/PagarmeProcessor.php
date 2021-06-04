@@ -17,6 +17,8 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 abstract class PagarmeProcessor
 {
+    const RESPONSE_TIMEOUT = 5;
+
     private VendorSettingManager $vendorSettingManager;
 
     private Client $pagarmeClient;
@@ -58,7 +60,10 @@ abstract class PagarmeProcessor
         if ($transactionInput->isRecurring) {
             $transactionData['plan_id'] = $transactionInput->pagarmePlanId;
 
-            $response = $this->pagarmeClient->subscriptions()->create($transactionData);
+            $response = $this->refreshResponse(
+                $this->pagarmeClient->subscriptions()->create($transactionData),
+                'subscription'
+            );
 
             $this->messageBus->dispatch(
                 new PagarmeSubscriptionResponseReceivedEvent(
@@ -68,7 +73,10 @@ abstract class PagarmeProcessor
                 )
             );
         } else {
-            $response = $this->pagarmeClient->transactions()->create($transactionData);
+            $response = $this->refreshResponse(
+                $this->pagarmeClient->transactions()->create($transactionData),
+                'transaction'
+            );
 
             $this->messageBus->dispatch(
                 new PagarmeTransactionResponseReceivedEvent($response, $transactionInput->paymentId)
@@ -118,8 +126,18 @@ abstract class PagarmeProcessor
                     'number' => $transactionInput->customerDocumentNumber,
                 ],
             ],
+            'address' => [
+                'country' => 'br',
+                'street' => 'Avenida Brigadeiro Faria Lima',
+                'street_number' => '1811',
+                'state' => 'sp',
+                'city' => 'Sao Paulo',
+                'neighborhood' => 'Jardim Paulistano',
+                'zipcode' => '01451001',
+            ],
             'phone_numbers' => [
-                $transactionInput->customerPhone ?: '+5511989737737',
+                'ddd' => '11', // $transactionInput->customerPhone ?: '+5511989737737',
+                'number' => '989737737',
             ],
             'email' => $transactionInput->customerEmail,
         ];
@@ -215,6 +233,25 @@ abstract class PagarmeProcessor
         ]);
 
         return $plan->id;
+    }
+
+    private function refreshResponse(\stdClass $response, string $type, int $timeout = self::RESPONSE_TIMEOUT): \stdClass
+    {
+        $start = time();
+
+        while ('processing' === $response->status) {
+            if (time() - $start >= $timeout) {
+                break;
+            }
+
+            if ('subscription' === $type) {
+                $response = $this->pagarmeClient->subscriptions()->get(['id' => $response->id]);
+            } else {
+                $response = $this->pagarmeClient->transactions()->get(['id' => $response->id]);
+            }
+        }
+
+        return $response;
     }
 
     abstract protected function prepareTransactionData(PagarmeTransactionInputDto $transactionInput): array;
