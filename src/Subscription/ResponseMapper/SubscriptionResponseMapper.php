@@ -27,11 +27,11 @@ class SubscriptionResponseMapper
         $subscriptionDto = new SubscriptionDto();
         $subscriptionDto->id = $subscription->getId()->toString();
         $subscriptionDto->expiresAt = $subscription->getExpiresAt()
-            ? $subscription->getExpiresAt()->format(\DateTimeInterface::ISO8601)
+            ? $subscription->getExpiresAt()->format(\DateTimeInterface::ATOM)
             : null;
         $subscriptionDto->price = $subscription->getPrice()->toFloat();
         $subscriptionDto->reviewedAt = $subscription->getReviewedAt()
-            ? $subscription->getReviewedAt()->format(\DateTimeInterface::ISO8601)
+            ? $subscription->getReviewedAt()->format(\DateTimeInterface::ATOM)
             : null;
         $subscriptionDto->isApproved = $subscription->isApproved();
         $subscriptionDto->isRecurring = $subscription->isRecurring();
@@ -43,6 +43,10 @@ class SubscriptionResponseMapper
             $subscriptionDto->vendorPlanId = $subscription->getVendorPlan()->getId()->toString();
             $subscriptionDto->customerId = $subscription->getCustomer()->getId()->toString();
         }
+
+        $subscriptionDto->cancelledAt = $subscription->getCancelledAt()
+            ? $subscription->getCancelledAt()->format(\DateTimeInterface::ATOM)
+            : null;
 
         return $subscriptionDto;
     }

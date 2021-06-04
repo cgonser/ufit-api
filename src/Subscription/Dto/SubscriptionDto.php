@@ -26,4 +26,6 @@ class SubscriptionDto
     public ?bool $isApproved;
 
     public ?bool $isRecurring;
+
+    public ?string $cancelledAt;
 }
