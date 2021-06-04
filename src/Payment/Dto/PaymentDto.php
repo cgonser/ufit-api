@@ -3,6 +3,7 @@
 namespace App\Payment\Dto;
 
 use App\Localization\Dto\CurrencyDto;
+use App\Vendor\Dto\VendorPlanDto;
 use OpenApi\Annotations as OA;
 
 class PaymentDto
@@ -18,6 +19,10 @@ class PaymentDto
     public ?string $paymentMethodId;
 
     public ?PaymentMethodDto $paymentMethod;
+
+    public ?string $vendorPlanId;
+
+    public ?VendorPlanDto $vendorPlan;
 
     /**
      * @OA\Property(enum={"pending", "paid", "rejected"})
