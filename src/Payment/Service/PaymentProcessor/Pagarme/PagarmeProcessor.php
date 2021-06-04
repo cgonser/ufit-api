@@ -227,6 +227,8 @@ abstract class PagarmeProcessor
     {
         if (0 !== $vendorPlan->getDuration()->d) {
             $days = $vendorPlan->getDuration()->d;
+        } elseif (12 === $vendorPlan->getDuration()->m) {
+            $days = 365;
         } elseif (0 !== $vendorPlan->getDuration()->m) {
             $days = $vendorPlan->getDuration()->m * 30;
         } elseif (0 !== $vendorPlan->getDuration()->y) {
