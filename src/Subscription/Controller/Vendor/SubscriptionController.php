@@ -4,11 +4,9 @@ namespace App\Subscription\Controller\Vendor;
 
 use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
-use App\Customer\Dto\CustomerDto;
-use App\Customer\ResponseMapper\CustomerResponseMapper;
 use App\Subscription\Dto\SubscriptionDto;
 use App\Subscription\Exception\SubscriptionNotFoundException;
-use App\Subscription\Request\VendorSubscriptionSearchRequest;
+use App\Subscription\Request\SubscriptionSearchRequest;
 use App\Subscription\ResponseMapper\SubscriptionResponseMapper;
 use App\Vendor\Entity\Vendor;
 use App\Subscription\Provider\VendorSubscriptionProvider;
@@ -24,32 +22,27 @@ use Symfony\Component\Routing\Annotation\Route;
 class SubscriptionController extends AbstractController
 {
     private VendorSubscriptionProvider $vendorSubscriptionProvider;
-
     private SubscriptionResponseMapper $subscriptionResponseMapper;
-
-    private CustomerResponseMapper $customerResponseMapper;
 
     public function __construct(
         VendorSubscriptionProvider $vendorSubscriptionProvider,
-        SubscriptionResponseMapper $subscriptionResponseMapper,
-        CustomerResponseMapper $customerResponseMapper
+        SubscriptionResponseMapper $subscriptionResponseMapper
     ) {
         $this->vendorSubscriptionProvider = $vendorSubscriptionProvider;
         $this->subscriptionResponseMapper = $subscriptionResponseMapper;
-        $this->customerResponseMapper = $customerResponseMapper;
     }
 
     /**
      * @Route("/vendors/{vendorId}/subscriptions", methods="GET", name="vendors_subscriptions_get")
      *
-     * @ParamConverter("vendorSubscriptionSearchRequest", converter="querystring")
+     * @ParamConverter("subscriptionSearchRequest", converter="querystring")
      *
      * @OA\Tag(name="Subscription")
      *
      * @OA\Parameter(
      *     in="query",
      *     name="filters",
-     *     @OA\Schema(ref=@Model(type=VendorSubscriptionSearchRequest::class))
+     *     @OA\Schema(ref=@Model(type=SubscriptionSearchRequest::class))
      * )
      *
      * @OA\Response(
@@ -71,9 +64,9 @@ class SubscriptionController extends AbstractController
      */
     public function getSubscriptions(
         string $vendorId,
-        VendorSubscriptionSearchRequest $vendorSubscriptionSearchRequest
+        SubscriptionSearchRequest $subscriptionSearchRequest
     ): Response {
-        if ('current' == $vendorId) {
+        if ('current' === $vendorId) {
             /** @var Vendor $vendor */
             $vendor = $this->getUser();
         } else {
@@ -83,7 +76,7 @@ class SubscriptionController extends AbstractController
 
         $subscriptions = $this->vendorSubscriptionProvider->findWithRequest(
             $vendor,
-            $vendorSubscriptionSearchRequest
+            $subscriptionSearchRequest
         );
 
         $subscriptionsCount = count($subscriptions);
@@ -132,52 +125,5 @@ class SubscriptionController extends AbstractController
         } catch (SubscriptionNotFoundException $e) {
             throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
         }
-    }
-
-
-    /**
-     * @Route("/vendors/{vendorId}/customers", methods="GET", name="vendors_subscriptions_get_customers")
-     *
-     * @OA\Tag(name="Subscription")
-     *
-     * @OA\Response(
-     *     response=200,
-     *     description="Returns all customers with subscriptions for a given vendor",
-     *     @OA\Header(
-     *         header="X-Total-Count",
-     *         @OA\Schema(
-     *             type="int"
-     *         )
-     *     ),
-     *     @OA\JsonContent(
-     *         type="array",
-     *         @OA\Items(ref=@Model(type=CustomerDto::class)))
-     *     )
-     * )
-     *
-     * @Security(name="Bearer")
-     */
-    public function getCustomers(
-        string $vendorId
-    ): Response {
-        if ('current' == $vendorId) {
-            /** @var Vendor $vendor */
-            $vendor = $this->getUser();
-        } else {
-            // vendor fetching not implemented yet; requires also authorization
-            throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
-        }
-
-        $customers = $this->vendorSubscriptionProvider->findCustomersByVendor($vendor);
-
-        $customersCount = count($customers);
-
-        return new ApiJsonResponse(
-            Response::HTTP_OK,
-            $this->subscriptionResponseMapper->mapMultipleCustomers($customers),
-            [
-                'X-Total-Count' => $customersCount,
-            ]
-        );
     }
 }

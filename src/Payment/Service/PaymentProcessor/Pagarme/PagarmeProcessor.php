@@ -128,7 +128,11 @@ abstract class PagarmeProcessor
                     'number' => $transactionInput->customerDocumentNumber,
                 ],
             ],
-            'address' => [
+            'email' => $transactionInput->customerEmail,
+        ];
+
+        if ($transactionInput->isRecurring) {
+            $transactionData['customer']['address'] = [
                 'country' => 'br',
                 'street' => 'Avenida Damasceno Vieira',
                 'street_number' => '900',
@@ -136,25 +140,23 @@ abstract class PagarmeProcessor
                 'city' => 'Sao Paulo',
                 'neighborhood' => 'Vila Mascote',
                 'zipcode' => '04363040',
-            ],
-            'email' => $transactionInput->customerEmail,
-        ];
-
-        if ($transactionInput->isRecurring) {
+            ];
             $transactionData['customer']['phone'] = [
                 'ddd' => ltrim($transactionInput->customerPhoneAreaCode, '0'),
                 'number' => $transactionInput->customerPhoneNumber,
             ];
         } else {
-            $transactionData['customer']['phone_numbers'] = [
-                $transactionInput->customerPhoneNumber ?: '+55'.
+            $phoneNumber = $transactionInput->customerPhoneNumber ?: '+55'.
                     ltrim($transactionInput->customerPhoneAreaCode, '0').
-                    $transactionInput->customerPhoneNumber,
-            ];
+                    $transactionInput->customerPhoneNumber;
 
-            if (0 !== strpos($transactionData['customer']['phone_numbers'], '+')) {
-                $transactionData['customer']['phone_numbers'] = '+' . $transactionData['customer']['phone_numbers'];
+            if (0 !== strpos($phoneNumber, '+')) {
+                $phoneNumber = '+' . $phoneNumber;
             }
+
+            $transactionData['customer']['phone_numbers'] = [
+                $phoneNumber
+            ];
         }
     }
 
