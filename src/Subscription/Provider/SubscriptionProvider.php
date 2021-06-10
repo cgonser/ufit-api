@@ -9,6 +9,7 @@ use App\Customer\Repository\CustomerRepository;
 use App\Subscription\Entity\Subscription;
 use App\Subscription\Exception\SubscriptionNotFoundException;
 use App\Subscription\Repository\SubscriptionRepository;
+use Doctrine\ORM\QueryBuilder;
 use Ramsey\Uuid\UuidInterface;
 
 class SubscriptionProvider extends AbstractProvider
@@ -23,6 +24,25 @@ class SubscriptionProvider extends AbstractProvider
         $this->customerRepository = $customerRepository;
     }
 
+    protected function buildQueryBuilder(): QueryBuilder
+    {
+        return parent::buildQueryBuilder()
+            ->innerJoin('root.vendorPlan', 'vendorPlan');
+    }
+
+    protected function buildCustomerSearchQueryBuilder(SearchRequest $searchRequest, ?array $filters = null): QueryBuilder
+    {
+        $customerIdsQueryBuilder = $this->buildSearchQueryBuilder($searchRequest, $filters)
+            ->select('DISTINCT root.customerId');
+
+        $queryBuilder = $this->customerRepository->createQueryBuilder('customer');
+        $queryBuilder->where(
+            $queryBuilder->expr()->in('customer.id', $customerIdsQueryBuilder->getDQL())
+        );
+
+        return $queryBuilder;
+    }
+
     public function searchCustomers(SearchRequest $searchRequest, ?array $filters = null): array
     {
         $orderExpression = 'customer.'.($searchRequest->orderProperty ?: 'createdAt');
@@ -31,20 +51,13 @@ class SubscriptionProvider extends AbstractProvider
         $limit = $searchRequest->resultsPerPage ?: self::RESULTS_PER_PAGE;
         $offset = ($searchRequest->page - 1) * $limit;
 
-        $customerIdsQueryBuilder = $this->buildSearchQueryBuilder($searchRequest, $filters)
-            ->select('DISTINCT root.customerId')
+        $queryBuilder = $this->buildCustomerSearchQueryBuilder($searchRequest, $filters)
             ->setMaxResults($limit)
-            ->setFirstResult($offset);
-
-        $queryBuilder = $this->customerRepository->createQueryBuilder('customer');
-        $queryBuilder
-            ->where($queryBuilder->expr()->in('customer.id', $customerIdsQueryBuilder->getDQL()))
+            ->setFirstResult($offset)
             ->orderBy($orderExpression, $orderDirection);
-
 
         return $queryBuilder->getQuery()->getResult();
     }
-
 
     public function countCustomers(SearchRequest $searchRequest, ?array $filters = null): int
     {
@@ -92,7 +105,7 @@ class SubscriptionProvider extends AbstractProvider
     protected function getFilterableFields(): array
     {
         return [
-            'vendorId',
+            'vendorId' => 'vendorPlan',
             'customerId',
             'vendorPlanId',
             'isActive',

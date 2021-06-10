@@ -9,7 +9,7 @@ use App\Subscription\Exception\SubscriptionNotFoundException;
 use App\Subscription\Request\SubscriptionSearchRequest;
 use App\Subscription\ResponseMapper\SubscriptionResponseMapper;
 use App\Vendor\Entity\Vendor;
-use App\Subscription\Provider\VendorSubscriptionProvider;
+use App\Subscription\Provider\SubscriptionProvider;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
@@ -21,30 +21,27 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class SubscriptionController extends AbstractController
 {
-    private VendorSubscriptionProvider $vendorSubscriptionProvider;
+    private SubscriptionProvider $subscriptionProvider;
     private SubscriptionResponseMapper $subscriptionResponseMapper;
 
     public function __construct(
-        VendorSubscriptionProvider $vendorSubscriptionProvider,
+        SubscriptionProvider $subscriptionProvider,
         SubscriptionResponseMapper $subscriptionResponseMapper
     ) {
-        $this->vendorSubscriptionProvider = $vendorSubscriptionProvider;
+        $this->subscriptionProvider = $subscriptionProvider;
         $this->subscriptionResponseMapper = $subscriptionResponseMapper;
     }
 
     /**
      * @Route("/vendors/{vendorId}/subscriptions", methods="GET", name="vendors_subscriptions_get")
-     *
      * @ParamConverter("subscriptionSearchRequest", converter="querystring")
      *
      * @OA\Tag(name="Subscription")
-     *
      * @OA\Parameter(
      *     in="query",
      *     name="filters",
      *     @OA\Schema(ref=@Model(type=SubscriptionSearchRequest::class))
      * )
-     *
      * @OA\Response(
      *     response=200,
      *     description="Returns all subscriptions of a given vendor",
@@ -59,7 +56,6 @@ class SubscriptionController extends AbstractController
      *         @OA\Items(ref=@Model(type=SubscriptionDto::class)))
      *     )
      * )
-     *
      * @Security(name="Bearer")
      */
     public function getSubscriptions(
@@ -74,18 +70,15 @@ class SubscriptionController extends AbstractController
             throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
         }
 
-        $subscriptions = $this->vendorSubscriptionProvider->findWithRequest(
-            $vendor,
-            $subscriptionSearchRequest
-        );
-
-        $subscriptionsCount = count($subscriptions);
+        $subscriptionSearchRequest->vendorId = $vendorId;
+        $subscriptions = $this->subscriptionProvider->search($subscriptionSearchRequest);
+        $count = $this->subscriptionProvider->count($subscriptionSearchRequest);
 
         return new ApiJsonResponse(
             Response::HTTP_OK,
             $this->subscriptionResponseMapper->mapMultiple($subscriptions, true),
             [
-                'X-Total-Count' => $subscriptionsCount,
+                'X-Total-Count' => $count,
             ]
         );
     }
