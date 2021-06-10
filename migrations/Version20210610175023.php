@@ -21,6 +21,8 @@ final class Version20210610175023 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE vendor_plan ADD is_active BOOLEAN DEFAULT \'true\' NOT NULL');
+        $this->addSql('UPDATE vendor_plan SET is_active = FALSE WHERE deleted_at IS NOT NULL');
+        $this->addSql('UPDATE vendor_plan SET deleted_at = NULL WHERE is_active = FALSE');
     }
 
     public function down(Schema $schema) : void
