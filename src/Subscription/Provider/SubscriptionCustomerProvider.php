@@ -16,14 +16,9 @@ class SubscriptionCustomerProvider extends AbstractProvider
         $this->repository = $repository;
     }
 
-    public function findCustomersByVendor(Vendor $vendor): array
-    {
-        return $this->subscriptionRepository->findCustomersByVendor($vendor);
-    }
-
     public function getVendorCustomer(Vendor $vendor, UuidInterface $customerId): Customer
     {
-        $customer = $this->subscriptionRepository->findOneVendorCustomer($vendor, $customerId);
+        $customer = $this->repository->findOneVendorCustomer($vendor, $customerId);
 
         if (null === $customer) {
             throw new CustomerNotFoundException();
