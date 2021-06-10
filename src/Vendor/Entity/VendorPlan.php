@@ -114,6 +114,11 @@ class VendorPlan
     /**
      * @ORM\Column(type="boolean", nullable=false, options={"default": true})
      */
+    private bool $isActive = true;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=false, options={"default": true})
+     */
     private bool $isRecurring = true;
 
     public function __construct()
@@ -295,6 +300,18 @@ class VendorPlan
     public function setIsVisible(bool $isVisible): self
     {
         $this->isVisible = $isVisible;
+
+        return $this;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): self
+    {
+        $this->isActive = $isActive;
 
         return $this;
     }

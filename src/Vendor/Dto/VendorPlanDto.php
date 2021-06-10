@@ -34,6 +34,8 @@ class VendorPlanDto
 
     public bool $isRecurring;
 
+    public bool $isActive;
+
     public ?string $currency = null;
 
     public ?string $durationMonths = null;

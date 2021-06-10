@@ -41,6 +41,7 @@ class VendorPlanResponseMapper
         $vendorPlanDto->price = $vendorPlan->getPrice()->toFloat();
         $vendorPlanDto->isVisible = $vendorPlan->isVisible();
         $vendorPlanDto->isRecurring = $vendorPlan->isRecurring();
+        $vendorPlanDto->isActive = $vendorPlan->isActive();
         $vendorPlanDto->description = $vendorPlan->getDescription();
         $vendorPlanDto->features = $vendorPlan->getFeatures();
         $vendorPlanDto->paymentMethods = $this->paymentMethodResponseMapper->mapMultiple(
