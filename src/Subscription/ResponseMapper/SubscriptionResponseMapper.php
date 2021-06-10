@@ -35,6 +35,7 @@ class SubscriptionResponseMapper
             : null;
         $subscriptionDto->isApproved = $subscription->isApproved();
         $subscriptionDto->isRecurring = $subscription->isRecurring();
+        $subscriptionDto->isActive = $subscription->isActive();
 
         if ($mapRelations) {
             $subscriptionDto->vendorPlan = $this->vendorPlanResponseMapper->map($subscription->getVendorPlan());
@@ -70,7 +71,7 @@ class SubscriptionResponseMapper
         foreach ($customers as $customer) {
             $customerDto = $this->customerResponseMapper->map($customer);
 
-            $customerDto->subscriptions = $this->mapMultiple($customer->getSubscriptions()->toArray(), true);
+            $customerDto->subscriptions = $this->mapMultiple($customer->getActiveSubscriptions()->toArray(), true);
 
             $customerDtos[] = $customerDto;
         }

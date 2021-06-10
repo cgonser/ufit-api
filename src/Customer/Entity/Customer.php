@@ -357,9 +357,25 @@ class Customer implements UserInterface, \Serializable
         return $this;
     }
 
-    public function getSubscriptions()
+    public function getSubscriptions(): Collection
     {
         return $this->subscriptions;
+    }
+
+    public function getActiveSubscriptions(): Collection
+    {
+        $subscriptions = new ArrayCollection();
+
+        /** @var Subscription $subscription */
+        foreach ($this->subscriptions as $subscription) {
+            if (!$subscription->isActive()) {
+                continue;
+            }
+
+            $subscriptions->add($subscription);
+        }
+
+        return $subscriptions;
     }
 
     public function addSubscription(Subscription $subscription): self

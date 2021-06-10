@@ -88,4 +88,15 @@ class SubscriptionProvider extends AbstractProvider
     {
         throw new SubscriptionNotFoundException();
     }
+
+    protected function getFilterableFields(): array
+    {
+        return [
+            'vendorId',
+            'customerId',
+            'vendorPlanId',
+            'isActive',
+            'isPending',
+        ];
+    }
 }

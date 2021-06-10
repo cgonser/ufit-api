@@ -33,10 +33,5 @@ class SubscriptionSearchRequest extends SearchRequest
     /**
      * @OA\Property()
      */
-    public ?bool $isInactive = null;
-
-    /**
-     * @OA\Property()
-     */
     public ?bool $isPending = null;
 }
