@@ -305,6 +305,9 @@ abstract class PagarmeProcessor
         $subscription = $payment->getInvoice()->getSubscription();
 
         $customerProperties = [
+            'email' => 'email',
+            'name' => 'name',
+            'document_number' => 'documents',
             'customer[phone][ddd]' => 'phoneAreaCode',
             'customer[phone][number]' => 'phoneNumber',
         ];
@@ -320,6 +323,7 @@ abstract class PagarmeProcessor
         }
 
         $vendorProperties = [
+            ''
         ];
 
         if (isset($vendorProperties[$e->getParameterName()])) {
