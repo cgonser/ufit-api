@@ -74,8 +74,24 @@ class Customer implements UserInterface, \Serializable
 
     /**
      * @ORM\Column(nullable=true)
+     * @Assert\PositiveOrZero()
+     * @Assert\Length(max=3)
      */
-    private ?string $phone = null;
+    private ?string $phoneIntlCode = null;
+
+    /**
+     * @ORM\Column(nullable=true)
+     * @Assert\PositiveOrZero()
+     * @Assert\Length(max=3)
+     */
+    private ?string $phoneAreaCode = null;
+
+    /**
+     * @ORM\Column(nullable=true)
+     * @Assert\PositiveOrZero()
+     * @Assert\Length(max=20)
+     */
+    private ?string $phoneNumber = null;
 
     /**
      * @ORM\Column(name="birth_date", type="datetime", nullable=true)
@@ -235,14 +251,38 @@ class Customer implements UserInterface, \Serializable
         return $this;
     }
 
-    public function getPhone(): ?string
+    public function getPhoneIntlCode(): ?string
     {
-        return $this->phone;
+        return $this->phoneIntlCode;
     }
 
-    public function setPhone(?string $phone): self
+    public function setPhoneIntlCode(?string $phoneIntlCode): self
     {
-        $this->phone = $phone;
+        $this->phoneIntlCode = $phoneIntlCode;
+
+        return $this;
+    }
+
+    public function getPhoneAreaCode(): ?string
+    {
+        return $this->phoneAreaCode;
+    }
+
+    public function setPhoneAreaCode(?string $phoneAreaCode): self
+    {
+        $this->phoneAreaCode = $phoneAreaCode;
+
+        return $this;
+    }
+
+    public function getPhoneNumber(): ?string
+    {
+        return $this->phoneNumber;
+    }
+
+    public function setPhoneNumber(?string $phoneNumber): self
+    {
+        $this->phoneNumber = $phoneNumber;
 
         return $this;
     }
@@ -317,9 +357,25 @@ class Customer implements UserInterface, \Serializable
         return $this;
     }
 
-    public function getSubscriptions()
+    public function getSubscriptions(): Collection
     {
         return $this->subscriptions;
+    }
+
+    public function getActiveSubscriptions(): Collection
+    {
+        $subscriptions = new ArrayCollection();
+
+        /** @var Subscription $subscription */
+        foreach ($this->subscriptions as $subscription) {
+            if (!$subscription->isActive()) {
+                continue;
+            }
+
+            $subscriptions->add($subscription);
+        }
+
+        return $subscriptions;
     }
 
     public function addSubscription(Subscription $subscription): self

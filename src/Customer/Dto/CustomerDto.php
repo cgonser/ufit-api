@@ -14,7 +14,11 @@ class CustomerDto
 
     public ?string $email;
 
-    public ?string $phone;
+    public ?string $phoneIntlCode;
+
+    public ?string $phoneAreaCode;
+
+    public ?string $phoneNumber;
 
     public ?string $birthDate;
 
@@ -46,4 +50,6 @@ class CustomerDto
     public ?string $locale;
 
     public ?string $timezone;
+
+    public ?bool $isPasswordDefined;
 }

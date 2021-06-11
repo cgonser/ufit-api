@@ -88,5 +88,10 @@ class VendorPlanRequest extends AbstractRequest
     /**
      * @OA\Property()
      */
+    public ?bool $isActive;
+
+    /**
+     * @OA\Property()
+     */
     public ?string $imageContents;
 }

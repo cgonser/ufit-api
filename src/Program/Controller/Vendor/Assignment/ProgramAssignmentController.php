@@ -8,6 +8,7 @@ use App\Core\Response\ApiJsonResponse;
 use App\Program\Dto\ProgramAssignmentDto;
 use App\Program\Provider\ProgramAssignmentProvider;
 use App\Program\Provider\VendorProgramProvider;
+use App\Program\Request\ProgramAssignmentSearchRequest;
 use App\Program\ResponseMapper\ProgramAssignmentResponseMapper;
 use App\Vendor\Entity\Vendor;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -47,7 +48,7 @@ class ProgramAssignmentController extends AbstractController
      * @OA\Parameter(
      *     in="query",
      *     name="filters",
-     *     @OA\Schema(ref=@Model(type=SearchRequest::class))
+     *     @OA\Schema(ref=@Model(type=ProgramAssignmentSearchRequest::class))
      * )
      *
      * @OA\Response(
@@ -67,9 +68,9 @@ class ProgramAssignmentController extends AbstractController
      *
      * @Security(name="Bearer")
      */
-    public function getPrograms(string $vendorId, string $programId, SearchRequest $searchRequest): Response
+    public function getPrograms(string $vendorId, string $programId, ProgramAssignmentSearchRequest $searchRequest): Response
     {
-        if ('current' == $vendorId) {
+        if ('current' === $vendorId) {
             /** @var Vendor $vendor */
             $vendor = $this->getUser();
         } else {
@@ -79,6 +80,7 @@ class ProgramAssignmentController extends AbstractController
 
         $program = $this->programProvider->getByVendorAndId($vendor, Uuid::fromString($programId));
 
+        $searchRequest->programId = $programId;
         $programAssignments = $this->programAssignmentProvider->searchProgramAssignments($program, $searchRequest);
         $count = $this->programAssignmentProvider->countProgramAssignments($program, $searchRequest);
 

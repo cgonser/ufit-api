@@ -65,7 +65,7 @@ abstract class AbstractProvider
     {
         $queryBuilder = $this->buildSearchQueryBuilder($searchRequest, $filters);
 
-        return (int) $queryBuilder->select('COUNT(root.id)')
+        return (int)$queryBuilder->select('COUNT(root.id)')
             ->getQuery()
             ->useQueryCache(true)
             ->getSingleScalarResult();
@@ -127,8 +127,8 @@ abstract class AbstractProvider
         foreach ($filters as $fieldName => $value) {
             ++$i;
 
-            $queryBuilder->andWhere(sprintf('%s = :filter_'.$i, $fieldName))
-                ->setParameter('filter_'.$i, $value);
+            $queryBuilder->andWhere(sprintf('%s = :filter_'.md5($fieldName), $fieldName))
+                ->setParameter('filter_'.md5($fieldName), $value);
         }
     }
 
@@ -143,7 +143,8 @@ abstract class AbstractProvider
         foreach ($this->getSearchableFields() as $fieldName => $fieldType) {
             if ('text' === $fieldType) {
                 $searchFields[] = $queryBuilder->expr()->like(
-                    sprintf('LOWER(root.%s)', $fieldName), ':searchText'
+                    sprintf('LOWER(root.%s)', $fieldName),
+                    ':searchText'
                 );
             }
         }

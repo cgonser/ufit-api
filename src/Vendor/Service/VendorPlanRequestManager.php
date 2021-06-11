@@ -89,6 +89,10 @@ class VendorPlanRequestManager
             $vendorPlan->setIsRecurring($vendorPlanRequest->isRecurring);
         }
 
+        if ($vendorPlanRequest->has('isActive')) {
+            $vendorPlan->setIsActive($vendorPlanRequest->isActive);
+        }
+
         if (($vendorPlanRequest->has('durationMonths') && $vendorPlanRequest->durationMonths !== null)
             || ($vendorPlanRequest->has('durationDays') && $vendorPlanRequest->durationDays !== null)) {
             $vendorPlan->setDuration(

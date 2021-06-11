@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Vendor\Exception;
+namespace App\Payment\Exception;
 
 use App\Core\Exception\ApiJsonInputValidationException;
 use App\Vendor\Entity\VendorBankAccount;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
 
-class VendorBankAccountInvalidException extends ApiJsonInputValidationException
+class PagarmeInvalidInputException extends ApiJsonInputValidationException
 {
-    public function __construct(VendorBankAccount $vendorBankAccount, ?string $property = null, ?string $errorMessage = null)
+    public function __construct(object $entity, ?string $property = null, ?string $errorMessage = null)
     {
         parent::__construct(
             new ConstraintViolationList([
@@ -17,7 +17,7 @@ class VendorBankAccountInvalidException extends ApiJsonInputValidationException
                     $errorMessage,
                     $errorMessage,
                     [],
-                    $vendorBankAccount,
+                    $entity,
                     $property,
                     null
                 ),

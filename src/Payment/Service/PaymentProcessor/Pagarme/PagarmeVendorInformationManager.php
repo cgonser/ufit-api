@@ -2,9 +2,9 @@
 
 namespace App\Payment\Service\PaymentProcessor\Pagarme;
 
+use App\Payment\Exception\PagarmeInvalidInputException;
 use App\Payment\Service\PaymentProcessor\VendorInformationManagerInterface;
 use App\Vendor\Entity\VendorBankAccount;
-use App\Vendor\Exception\VendorBankAccountInvalidException;
 use App\Vendor\Provider\VendorBankAccountProvider;
 use App\Vendor\Service\VendorBankAccountManager;
 use App\Vendor\Service\VendorSettingManager;
@@ -110,6 +110,6 @@ class PagarmeVendorInformationManager implements VendorInformationManagerInterfa
 
         $propertyName = $mappedProperties[$e->getParameterName()] ?? $e->getParameterName();
 
-        throw new VendorBankAccountInvalidException($vendorBankAccount, $propertyName, $e->getMessage());
+        throw new PagarmeInvalidInputException($vendorBankAccount, $propertyName, $e->getMessage());
     }
 }

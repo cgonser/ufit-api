@@ -35,6 +35,11 @@ class VendorPlan
     private UuidInterface $id;
 
     /**
+     * @ORM\Column(type="uuid")
+     */
+    private ?UuidInterface $vendorId = null;
+
+    /**
      * @ORM\ManyToOne(targetEntity="Vendor")
      * @ORM\JoinColumn(name="vendor_id", referencedColumnName="id", nullable=false)
      */
@@ -114,6 +119,11 @@ class VendorPlan
     /**
      * @ORM\Column(type="boolean", nullable=false, options={"default": true})
      */
+    private bool $isActive = true;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=false, options={"default": true})
+     */
     private bool $isRecurring = true;
 
     public function __construct()
@@ -125,6 +135,18 @@ class VendorPlan
     public function getId(): ?UuidInterface
     {
         return $this->id;
+    }
+
+    public function getVendorId(): ?UuidInterface
+    {
+        return $this->vendorId;
+    }
+
+    public function setVendorId(?UuidInterface $vendorId): self
+    {
+        $this->vendorId = $vendorId;
+
+        return $this;
     }
 
     public function getVendor(): Vendor
@@ -295,6 +317,18 @@ class VendorPlan
     public function setIsVisible(bool $isVisible): self
     {
         $this->isVisible = $isVisible;
+
+        return $this;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): self
+    {
+        $this->isActive = $isActive;
 
         return $this;
     }

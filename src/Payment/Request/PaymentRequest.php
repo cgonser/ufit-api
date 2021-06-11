@@ -15,6 +15,7 @@ class PaymentRequest
     /**
      * @OA\Property()
      * @Assert\NotNull
+     * @Assert\Uuid()
      */
     public ?string $invoiceId = null;
 

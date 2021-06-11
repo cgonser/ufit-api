@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Messenger\Exception\HandlerFailedException;
 
 class ApiExceptionEventSubscriber implements EventSubscriberInterface
 {
@@ -21,6 +22,10 @@ class ApiExceptionEventSubscriber implements EventSubscriberInterface
 
     private function prepareResponse(\Throwable $e)
     {
+        if ($e instanceof HandlerFailedException) {
+            return $this->prepareResponse($e->getNestedExceptions()[0]);
+        }
+
         if ($e instanceof ApiJsonException) {
             return new ApiJsonErrorResponse(
                 $e->getStatusCode(),

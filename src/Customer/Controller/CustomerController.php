@@ -8,6 +8,7 @@ use App\Customer\Dto\CustomerDto;
 use App\Customer\Entity\Customer;
 use App\Customer\Provider\CustomerProvider;
 use App\Customer\ResponseMapper\CustomerResponseMapper;
+use App\Subscription\Provider\SubscriptionCustomerProvider;
 use App\Subscription\Provider\VendorSubscriptionProvider;
 use App\Vendor\Entity\Vendor;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -24,16 +25,16 @@ class CustomerController extends AbstractController
 
     private CustomerProvider $customerProvider;
 
-    private VendorSubscriptionProvider $vendorSubscriptionProvider;
+    private SubscriptionCustomerProvider $subscriptionCustomerProvider;
 
     public function __construct(
         CustomerProvider $customerProvider,
         CustomerResponseMapper $customerResponseMapper,
-        VendorSubscriptionProvider $vendorSubscriptionProvider
+        SubscriptionCustomerProvider $subscriptionCustomerProvider
     ) {
         $this->customerResponseMapper = $customerResponseMapper;
         $this->customerProvider = $customerProvider;
-        $this->vendorSubscriptionProvider = $vendorSubscriptionProvider;
+        $this->subscriptionCustomerProvider = $subscriptionCustomerProvider;
     }
 
     /**
@@ -85,7 +86,7 @@ class CustomerController extends AbstractController
             /** @var Vendor $vendor */
             $vendor = $this->getUser();
 
-            $customer = $this->vendorSubscriptionProvider->getVendorCustomer($vendor, Uuid::fromString($customerId));
+            $customer = $this->subscriptionCustomerProvider->getVendorCustomer($vendor, Uuid::fromString($customerId));
         } else {
             throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
         }

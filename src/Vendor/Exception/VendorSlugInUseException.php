@@ -2,7 +2,9 @@
 
 namespace App\Vendor\Exception;
 
-class VendorSlugInUseException extends \Exception
+use App\Core\Exception\InvalidInputException;
+
+class VendorSlugInUseException extends InvalidInputException
 {
     protected $message = "Slug already in use";
 }

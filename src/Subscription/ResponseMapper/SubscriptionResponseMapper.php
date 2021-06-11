@@ -27,14 +27,15 @@ class SubscriptionResponseMapper
         $subscriptionDto = new SubscriptionDto();
         $subscriptionDto->id = $subscription->getId()->toString();
         $subscriptionDto->expiresAt = $subscription->getExpiresAt()
-            ? $subscription->getExpiresAt()->format(\DateTimeInterface::ISO8601)
+            ? $subscription->getExpiresAt()->format(\DateTimeInterface::ATOM)
             : null;
         $subscriptionDto->price = $subscription->getPrice()->toFloat();
         $subscriptionDto->reviewedAt = $subscription->getReviewedAt()
-            ? $subscription->getReviewedAt()->format(\DateTimeInterface::ISO8601)
+            ? $subscription->getReviewedAt()->format(\DateTimeInterface::ATOM)
             : null;
         $subscriptionDto->isApproved = $subscription->isApproved();
         $subscriptionDto->isRecurring = $subscription->isRecurring();
+        $subscriptionDto->isActive = $subscription->isActive();
 
         if ($mapRelations) {
             $subscriptionDto->vendorPlan = $this->vendorPlanResponseMapper->map($subscription->getVendorPlan());
@@ -43,6 +44,10 @@ class SubscriptionResponseMapper
             $subscriptionDto->vendorPlanId = $subscription->getVendorPlan()->getId()->toString();
             $subscriptionDto->customerId = $subscription->getCustomer()->getId()->toString();
         }
+
+        $subscriptionDto->cancelledAt = $subscription->getCancelledAt()
+            ? $subscription->getCancelledAt()->format(\DateTimeInterface::ATOM)
+            : null;
 
         return $subscriptionDto;
     }
@@ -66,7 +71,7 @@ class SubscriptionResponseMapper
         foreach ($customers as $customer) {
             $customerDto = $this->customerResponseMapper->map($customer);
 
-            $customerDto->subscriptions = $this->mapMultiple($customer->getSubscriptions()->toArray(), true);
+            $customerDto->subscriptions = $this->mapMultiple($customer->getActiveSubscriptions()->toArray(), true);
 
             $customerDtos[] = $customerDto;
         }

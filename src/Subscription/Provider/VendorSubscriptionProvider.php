@@ -7,7 +7,7 @@ use App\Customer\Exception\CustomerNotFoundException;
 use App\Subscription\Entity\Subscription;
 use App\Subscription\Exception\SubscriptionNotFoundException;
 use App\Subscription\Repository\SubscriptionRepository;
-use App\Subscription\Request\VendorSubscriptionSearchRequest;
+use App\Subscription\Request\SubscriptionSearchRequest;
 use App\Vendor\Entity\Vendor;
 use Ramsey\Uuid\UuidInterface;
 
@@ -22,17 +22,17 @@ class VendorSubscriptionProvider
 
     public function findWithRequest(
         Vendor $vendor,
-        VendorSubscriptionSearchRequest $vendorSubscriptionSearchRequest
+        SubscriptionSearchRequest $subscriptionSearchRequest
     ): array {
-        if (true === $vendorSubscriptionSearchRequest->isActive) {
+        if (true === $subscriptionSearchRequest->isActive) {
             return $this->subscriptionRepository->findActiveByVendor($vendor);
         }
 
-        if (true === $vendorSubscriptionSearchRequest->isInactive) {
+        if (true === $subscriptionSearchRequest->isInactive) {
             return $this->subscriptionRepository->findInactiveByVendor($vendor);
         }
 
-        if (true === $vendorSubscriptionSearchRequest->isPending) {
+        if (true === $subscriptionSearchRequest->isPending) {
             return $this->subscriptionRepository->findPendingByVendor($vendor);
         }
 
@@ -49,21 +49,5 @@ class VendorSubscriptionProvider
         }
 
         return $subscription;
-    }
-
-    public function findCustomersByVendor(Vendor $vendor): array
-    {
-        return $this->subscriptionRepository->findCustomersByVendor($vendor);
-    }
-
-    public function getVendorCustomer(Vendor $vendor, UuidInterface $customerId): Customer
-    {
-        $customer = $this->subscriptionRepository->findOneVendorCustomer($vendor, $customerId);
-
-        if (null === $customer) {
-            throw new CustomerNotFoundException();
-        }
-
-        return $customer;
     }
 }
