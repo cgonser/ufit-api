@@ -35,10 +35,16 @@ class SubscriptionProvider extends AbstractProvider
         $customerIdsQueryBuilder = $this->buildSearchQueryBuilder($searchRequest, $filters)
             ->select('DISTINCT root.customerId');
 
+        $parameters = $customerIdsQueryBuilder->getParameters();
+
         $queryBuilder = $this->customerRepository->createQueryBuilder('customer');
         $queryBuilder->where(
             $queryBuilder->expr()->in('customer.id', $customerIdsQueryBuilder->getDQL())
         );
+
+        foreach ($parameters as $parameter) {
+            $queryBuilder->setParameter($parameter->getName(), $parameter->getValue());
+        }
 
         return $queryBuilder;
     }
@@ -105,7 +111,7 @@ class SubscriptionProvider extends AbstractProvider
     protected function getFilterableFields(): array
     {
         return [
-            'vendorId' => 'vendorPlan',
+            ['vendorId' => 'vendorPlan'],
             'customerId',
             'vendorPlanId',
             'isActive',

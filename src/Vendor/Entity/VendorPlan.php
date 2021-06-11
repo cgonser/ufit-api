@@ -35,6 +35,11 @@ class VendorPlan
     private UuidInterface $id;
 
     /**
+     * @ORM\Column(type="uuid")
+     */
+    private ?UuidInterface $vendorId = null;
+
+    /**
      * @ORM\ManyToOne(targetEntity="Vendor")
      * @ORM\JoinColumn(name="vendor_id", referencedColumnName="id", nullable=false)
      */
@@ -130,6 +135,18 @@ class VendorPlan
     public function getId(): ?UuidInterface
     {
         return $this->id;
+    }
+
+    public function getVendorId(): ?UuidInterface
+    {
+        return $this->vendorId;
+    }
+
+    public function setVendorId(?UuidInterface $vendorId): self
+    {
+        $this->vendorId = $vendorId;
+
+        return $this;
     }
 
     public function getVendor(): Vendor

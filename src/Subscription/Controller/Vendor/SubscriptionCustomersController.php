@@ -59,7 +59,7 @@ class SubscriptionCustomersController extends AbstractController
             throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
         }
 
-        $searchRequest->vendorId = $vendorId;
+        $searchRequest->vendorId = $vendor->getId();
         $customers = $this->subscriptionProvider->searchCustomers($searchRequest);
         $count = $this->subscriptionProvider->countCustomers($searchRequest);
 
