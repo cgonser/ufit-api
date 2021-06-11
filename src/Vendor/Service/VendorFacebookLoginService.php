@@ -50,7 +50,7 @@ class VendorFacebookLoginService
         }
     }
 
-    private function createOrUpdateVendorSocialNetwork(Vendor $vendor, array $graphUser, string $accessToken): void
+    private function createOrUpdateVendorSocialNetwork(Vendor $vendor, GraphUser $graphUser, string $accessToken): void
     {
         $vendorSocialNetwork = $this->vendorSocialNetworkProvider->findOneByVendorAndPlatform(
             $vendor,
@@ -60,12 +60,12 @@ class VendorFacebookLoginService
         if (!$vendorSocialNetwork) {
             $vendorSocialNetwork = new VendorSocialNetwork();
             $vendorSocialNetwork->setVendor($vendor);
-            $vendorSocialNetwork->setExternalId($graphUser['id']);
+            $vendorSocialNetwork->setExternalId($graphUser->getId());
             $vendorSocialNetwork->setPlatform(VendorSocialNetwork::PLATFORM_FACEBOOK);
         }
 
         $vendorSocialNetwork->setAccessToken($accessToken);
-        $vendorSocialNetwork->setDetails($graphUser);
+        $vendorSocialNetwork->setDetails($graphUser->asArray());
 
         $this->vendorSocialNetworkManager->save($vendorSocialNetwork);
     }
