@@ -46,7 +46,7 @@ class CustomerMeasurementCreateController extends AbstractController
      * @Route(
      *     "/vendors/{vendorId}/customers/{customerId}/measurements",
      *     methods="POST",
-     *     name="customers_measurements_create"
+     *     name="vendor_customers_measurements_create"
      * )
      *
      * @ParamConverter("customerMeasurementRequest", converter="fos_rest.request_body", options={

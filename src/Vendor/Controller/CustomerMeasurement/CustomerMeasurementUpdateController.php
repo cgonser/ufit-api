@@ -43,7 +43,7 @@ class CustomerMeasurementUpdateController extends AbstractController
      * @Route(
      *     "/vendors/{vendorId}/customers/{customerId}/measurements/{customerMeasurementId}",
      *     methods="PUT",
-     *     name="customers_measurements_update"
+     *     name="vendor_customers_measurements_update"
      * )
      *
      * @ParamConverter("customerMeasurementRequest", converter="fos_rest.request_body", options={

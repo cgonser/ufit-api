@@ -53,18 +53,8 @@ class CustomerMeasurementController extends AbstractController
      */
     public function getCustomerMeasurements(string $customerId): Response
     {
-        if ('current' == $customerId) {
-            /** @var Customer $customer */
-            $customer = $this->getUser();
-        } else {
-            if ($this->getUser() instanceof Customer) {
-                // customer fetching not implemented yet; requires also authorization
-                throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
-            }
-
-            // TODO: implement proper vendor authorization
-            $customer = $this->customerProvider->get(Uuid::fromString($customerId));
-        }
+        /** @var Customer $customer */
+        $customer = $this->getUser();
 
         $customerMeasurements = $this->customerMeasurementProvider->findByCustomer($customer);
 

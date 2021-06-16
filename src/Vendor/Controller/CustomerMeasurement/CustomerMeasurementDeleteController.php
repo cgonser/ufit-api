@@ -33,7 +33,7 @@ class CustomerMeasurementDeleteController extends AbstractController
      * @Route(
      *     "/vendors/{vendorId}/customers/{customerId}/measurements/{customerMeasurementId}",
      *     methods="DELETE",
-     *     name="customers_measurements_delete"
+     *     name="vendor_customers_measurements_delete"
      * )
      *
      * @OA\Tag(name="Vendor / Customer / Measurement")
