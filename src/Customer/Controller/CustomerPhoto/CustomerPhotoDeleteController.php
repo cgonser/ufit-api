@@ -30,7 +30,7 @@ class CustomerPhotoDeleteController extends AbstractController
     /**
      * @Route("/customers/{customerId}/photos/{customerPhotoId}", methods="DELETE", name="customers_photos_delete")
      *
-     * @OA\Tag(name="CustomerPhoto")
+     * @OA\Tag(name="Customer / Photo")
      * @OA\Response(
      *     response=204,
      *     description="Deletes a photo"

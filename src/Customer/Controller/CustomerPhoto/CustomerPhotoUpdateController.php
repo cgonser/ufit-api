@@ -48,7 +48,7 @@ class CustomerPhotoUpdateController extends AbstractController
      *     "deserializationContext"= {"allow_extra_attributes"=false}
      * })
      *
-     * @OA\Tag(name="CustomerPhoto")
+     * @OA\Tag(name="Customer / Photo")
      *
      * @OA\RequestBody(
      *     required=true,

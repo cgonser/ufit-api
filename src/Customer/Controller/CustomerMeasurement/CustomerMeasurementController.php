@@ -39,7 +39,7 @@ class CustomerMeasurementController extends AbstractController
     /**
      * @Route("/customers/{customerId}/measurements", methods="GET", name="customers_measurements_get")
      *
-     * @OA\Tag(name="CustomerMeasurement")
+     * @OA\Tag(name="Customer / Measurement")
      * @OA\Response(
      *     response=200,
      *     description="Returns the information about a customer measurements",
@@ -74,7 +74,7 @@ class CustomerMeasurementController extends AbstractController
     /**
      * @Route("/customers/{customerId}/measurements/{customerMeasurementId}", methods="GET", name="customers_measurements_get_one")
      *
-     * @OA\Tag(name="CustomerMeasurement")
+     * @OA\Tag(name="Customer / Measurement")
      * @OA\Response(
      *     response=200,
      *     description="Returns the information about a measurement",

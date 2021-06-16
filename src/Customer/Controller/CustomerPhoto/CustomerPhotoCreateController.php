@@ -42,7 +42,7 @@ class CustomerPhotoCreateController extends AbstractController
      *     "deserializationContext"= {"allow_extra_attributes"=false}
      * })
      *
-     * @OA\Tag(name="CustomerPhoto")
+     * @OA\Tag(name="Customer / Photo")
      * @OA\RequestBody(
      *     required=true,
      *     @OA\JsonContent(ref=@Model(type=CustomerPhotoRequest::class))

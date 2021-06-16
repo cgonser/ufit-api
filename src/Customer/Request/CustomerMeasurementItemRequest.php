@@ -16,12 +16,12 @@ class CustomerMeasurementItemRequest extends AbstractRequest
     /**
      * @OA\Property()
      */
-    public ?string $measurementTypeId = null;
+    public ?string $measurementTypeId;
 
     /**
      * @OA\Property()
      */
-    public ?string $type = null;
+    public ?string $type;
 
     /**
      * @OA\Property()
@@ -32,6 +32,6 @@ class CustomerMeasurementItemRequest extends AbstractRequest
     /**
      * @OA\Property()
      */
-    public ?string $unit = null;
+    public ?string $unit;
 
 }

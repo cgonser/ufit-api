@@ -46,7 +46,7 @@ class CustomerMeasurementCreateController extends AbstractController
      *     "deserializationContext"= {"allow_extra_attributes"=false}
      * })
      *
-     * @OA\Tag(name="CustomerMeasurement")
+     * @OA\Tag(name="Customer / Measurement")
      * @OA\RequestBody(
      *     required=true,
      *     @OA\JsonContent(ref=@Model(type=CustomerMeasurementRequest::class))

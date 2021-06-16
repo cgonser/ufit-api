@@ -73,9 +73,11 @@ class CustomerMeasurementService
 
     private function mapFromRequest(CustomerMeasurement $customerMeasurement, CustomerMeasurementRequest $customerMeasurementRequest)
     {
-        $customerMeasurement->setNotes($customerMeasurementRequest->notes);
+        if ($customerMeasurementRequest->has('notes')) {
+            $customerMeasurement->setNotes($customerMeasurementRequest->notes);
+        }
 
-        if (null !== $customerMeasurementRequest->takenAt) {
+        if ($customerMeasurementRequest->has('takenAt')) {
             $takenAt = \DateTime::createFromFormat(\DateTimeInterface::ATOM, $customerMeasurementRequest->takenAt);
 
             if (false === $takenAt) {

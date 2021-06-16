@@ -34,7 +34,7 @@ class CustomerPhotoController extends AbstractController
     /**
      * @Route("/customers/{customerId}/photos", methods="GET", name="customers_photos_get")
      *
-     * @OA\Tag(name="CustomerPhoto")
+     * @OA\Tag(name="Customer / Photo")
      * @OA\Response(
      *     response=200,
      *     description="Returns the information about a customer photos",
@@ -64,7 +64,7 @@ class CustomerPhotoController extends AbstractController
     /**
      * @Route("/customers/{customerId}/photos/{customerPhotoId}", methods="GET", name="customers_photos_get_one")
      *
-     * @OA\Tag(name="CustomerPhoto")
+     * @OA\Tag(name="Customer / Photo")
      * @OA\Response(
      *     response=200,
      *     description="Returns the information about a photo",

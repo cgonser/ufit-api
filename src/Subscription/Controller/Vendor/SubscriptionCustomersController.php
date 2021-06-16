@@ -43,7 +43,7 @@ class SubscriptionCustomersController extends AbstractController
      * @Route("/vendors/{vendorId}/customers", methods="GET", name="vendors_subscriptions_get_customers")
      * @ParamConverter("searchRequest", converter="querystring")
      *
-     * @OA\Tag(name="Vendor / Customers")
+     * @OA\Tag(name="Vendor / Customer")
      * @OA\Parameter(
      *     in="query",
      *     name="filters",
@@ -83,7 +83,7 @@ class SubscriptionCustomersController extends AbstractController
     /**
      * @Route("/vendors/{vendorId}/customers/{customerId}", methods="GET", name="vendors_subscriptions_get_one_customer")
      *
-     * @OA\Tag(name="Vendor / Customers")
+     * @OA\Tag(name="Vendor / Customer")
      * @OA\Response(
      *     response=200,
      *     description="Returns the information about a customer",

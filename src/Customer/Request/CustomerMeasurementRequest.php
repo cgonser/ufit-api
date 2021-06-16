@@ -16,12 +16,12 @@ class CustomerMeasurementRequest extends AbstractRequest
     /**
      * @OA\Property()
      */
-    public ?string $notes = null;
+    public ?string $notes;
 
     /**
      * @OA\Property()
      */
-    public ?string $takenAt = null;
+    public ?string $takenAt;
 
     /**
      * @var CustomerMeasurementItemRequest[]
