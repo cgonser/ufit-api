@@ -77,6 +77,7 @@ class SubscriptionManager
             return;
         }
 
+        $subscription->setIsActive(true);
         $subscription->setIsApproved(true);
         $subscription->setValidFrom(new \DateTime());
         $subscription->setReviewNotes($reviewNotes);
@@ -92,6 +93,8 @@ class SubscriptionManager
     public function renew(Subscription $subscription): void
     {
         $this->calculateExpiration($subscription);
+
+        $subscription->setIsActive(true);
 
         $this->subscriptionRepository->save($subscription);
 
