@@ -39,7 +39,7 @@ class CustomerAssignmentController extends AbstractController
     }
 
     /**
-     * @Route("/vendors/{vendorId}/customers/{customerId}/programs", methods="GET", name="vendor_customer_program_assignments_find")
+     * @Route("/vendors/{vendorId}/customers/{customerId}/program_assignments", methods="GET", name="vendor_customer_program_assignments_find")
      * @ParamConverter("searchRequest", converter="querystring")
      *
      * @OA\Tag(name="Vendor / Customer / Program")
@@ -79,7 +79,7 @@ class CustomerAssignmentController extends AbstractController
 
         return new ApiJsonResponse(
             Response::HTTP_OK,
-            $this->programAssignmentResponseMapper->mapMultiple($programAssignments, true),
+            $this->programAssignmentResponseMapper->mapMultiple($programAssignments, true, true),
             [
                 'X-Total-Count' => $count,
             ]
