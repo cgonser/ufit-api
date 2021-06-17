@@ -18,11 +18,6 @@ class VendorCustomerRequest extends AbstractRequest
     /**
      * @OA\Property()
      */
-    public ?string $email = null;
-
-    /**
-     * @OA\Property()
-     */
     public ?string $phoneIntlCode = null;
 
     /**

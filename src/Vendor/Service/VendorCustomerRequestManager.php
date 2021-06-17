@@ -31,10 +31,6 @@ class VendorCustomerRequestManager
             $customer->setName($customerRequest->name);
         }
 
-        if (null !== $customerRequest->email) {
-            $customer->setEmail($customerRequest->email);
-        }
-
         if (null !== $customerRequest->phoneIntlCode) {
             $customer->setPhoneIntlCode($customerRequest->phoneIntlCode);
         }
