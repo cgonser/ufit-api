@@ -23,22 +23,19 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
-class CustomerMeasurementCreateController extends AbstractController
+class VendorCustomerMeasurementCreateController extends AbstractController
 {
     private CustomerMeasurementService $customerMeasurementService;
     private CustomerMeasurementResponseMapper $customerMeasurementResponseMapper;
-    private CustomerProvider $customerProvider;
     private SubscriptionCustomerProvider $subscriptionCustomerProvider;
 
     public function __construct(
         CustomerMeasurementService $customerMeasurementService,
         CustomerMeasurementResponseMapper $customerMeasurementResponseMapper,
-        CustomerProvider $customerProvider,
         SubscriptionCustomerProvider $subscriptionCustomerProvider
     ) {
         $this->customerMeasurementResponseMapper = $customerMeasurementResponseMapper;
         $this->customerMeasurementService = $customerMeasurementService;
-        $this->customerProvider = $customerProvider;
         $this->subscriptionCustomerProvider = $subscriptionCustomerProvider;
     }
 

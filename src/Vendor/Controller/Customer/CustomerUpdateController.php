@@ -41,7 +41,7 @@ class CustomerUpdateController extends AbstractController
      *     "deserializationContext"= {"allow_extra_attributes"=false}
      * })
      *
-     * @OA\Tag(name="Customer")
+     * @OA\Tag(name="Vendor / Customer")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=VendorCustomerRequest::class)))
      * @OA\Response(response=200, description="Updates a customer", @OA\JsonContent(ref=@Model(type=CustomerDto::class)))
      * @OA\Response(response=400, description="Invalid input")

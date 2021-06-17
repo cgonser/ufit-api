@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
-class CustomerMeasurementUpdateController extends AbstractController
+class VendorCustomerMeasurementUpdateController extends AbstractController
 {
     private CustomerMeasurementProvider $customerMeasurementProvider;
     private CustomerMeasurementService $customerMeasurementService;
@@ -45,7 +45,6 @@ class CustomerMeasurementUpdateController extends AbstractController
      *     methods="PUT",
      *     name="vendor_customers_measurements_update"
      * )
-     *
      * @ParamConverter("customerMeasurementRequest", converter="fos_rest.request_body", options={
      *     "deserializationContext"= {"allow_extra_attributes"=false}
      * })

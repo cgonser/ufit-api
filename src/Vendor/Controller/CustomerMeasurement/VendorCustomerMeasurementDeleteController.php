@@ -13,7 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class CustomerMeasurementDeleteController extends AbstractController
+class VendorCustomerMeasurementDeleteController extends AbstractController
 {
     private CustomerMeasurementService $customerMeasurementService;
     private CustomerMeasurementProvider $customerMeasurementProvider;

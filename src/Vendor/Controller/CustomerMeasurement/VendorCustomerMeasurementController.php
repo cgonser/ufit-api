@@ -20,7 +20,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class CustomerMeasurementController extends AbstractController
+class VendorCustomerMeasurementController extends AbstractController
 {
     private CustomerMeasurementResponseMapper $customerMeasurementResponseMapper;
     private CustomerMeasurementProvider $customerMeasurementProvider;
@@ -46,7 +46,6 @@ class CustomerMeasurementController extends AbstractController
      *     name="vendor_customers_measurements_get"
      * )
      *
-     *
      * @OA\Tag(name="Vendor / Customer / Measurement")
      * @OA\Response(
      *     response=200,
@@ -56,10 +55,9 @@ class CustomerMeasurementController extends AbstractController
      *         @OA\Items(ref=@Model(type=CustomerMeasurementDto::class)))
      *     )
      * )
-     *
      * @Security(name="Bearer")
      */
-    public function getCustomerMeasurements(string $vendorId, string $customerId): Response
+    public function getVendorCustomerMeasurements(string $vendorId, string $customerId): Response
     {
         /** @var Vendor $vendor */
         $vendor = $this->getUser();
@@ -75,7 +73,11 @@ class CustomerMeasurementController extends AbstractController
     }
 
     /**
-     * @Route("/customers/{customerId}/measurements/{customerMeasurementId}", methods="GET", name="vendor_customers_measurements_get_one")
+     * @Route(
+     *     "/vendors/{vendorId}/customers/{customerId}/measurements/{customerMeasurementId}",
+     *     methods="GET",
+     *     name="vendor_customers_measurements_get_one"
+     * )
      *
      * @OA\Tag(name="Vendor / Customer / Measurement")
      * @OA\Response(
@@ -83,7 +85,6 @@ class CustomerMeasurementController extends AbstractController
      *     description="Returns the information about a measurement",
      *     @OA\JsonContent(ref=@Model(type=CustomerMeasurementDto::class))
      * )
-     *
      * @Security(name="Bearer")
      */
     public function getCustomerMeasurement(
