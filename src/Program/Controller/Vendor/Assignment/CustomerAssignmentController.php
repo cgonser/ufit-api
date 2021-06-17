@@ -20,7 +20,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ProgramAssignmentController extends AbstractController
+class CustomerAssignmentController extends AbstractController
 {
     private ProgramAssignmentProvider $programAssignmentProvider;
 
@@ -39,7 +39,7 @@ class ProgramAssignmentController extends AbstractController
     }
 
     /**
-     * @Route("/vendors/{vendorId}/programs/{programId}/assignments", methods="GET", name="vendor_program_assignments_find")
+     * @Route("/vendors/{vendorId}/customers/{customerId}/programs", methods="GET", name="vendor_customer_program_assignments_find")
      * @ParamConverter("searchRequest", converter="querystring")
      *
      * @OA\Tag(name="Program")
@@ -59,8 +59,11 @@ class ProgramAssignmentController extends AbstractController
      * )
      * @Security(name="Bearer")
      */
-    public function getPrograms(string $vendorId, string $programId, ProgramAssignmentSearchRequest $searchRequest): Response
-    {
+    public function getCustomerAssignments(
+        string $vendorId,
+        string $customerId,
+        ProgramAssignmentSearchRequest $searchRequest
+    ): Response {
         if ('current' === $vendorId) {
             /** @var Vendor $vendor */
             $vendor = $this->getUser();
@@ -69,11 +72,10 @@ class ProgramAssignmentController extends AbstractController
             throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
         }
 
-        $program = $this->programProvider->getByVendorAndId($vendor, Uuid::fromString($programId));
-
-        $searchRequest->programId = $programId;
-        $programAssignments = $this->programAssignmentProvider->searchProgramAssignments($program, $searchRequest);
-        $count = $this->programAssignmentProvider->countProgramAssignments($program, $searchRequest);
+        $searchRequest->customerId = $customerId;
+        $searchRequest->vendorId = $vendor->getId();
+        $programAssignments = $this->programAssignmentProvider->search($searchRequest);
+        $count = $this->programAssignmentProvider->count($searchRequest);
 
         return new ApiJsonResponse(
             Response::HTTP_OK,
