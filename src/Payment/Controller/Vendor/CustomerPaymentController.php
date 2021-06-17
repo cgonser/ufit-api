@@ -64,7 +64,7 @@ class CustomerPaymentController extends AbstractController
 
         return new ApiJsonResponse(
             Response::HTTP_OK,
-            $this->paymentResponseMapper->mapMultiple($payments, true),
+            $this->paymentResponseMapper->mapMultiplePublic($payments),
             [
                 'X-Total-Count' => $count,
             ]
