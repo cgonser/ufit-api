@@ -42,7 +42,7 @@ class CustomerAssignmentController extends AbstractController
      * @Route("/vendors/{vendorId}/customers/{customerId}/programs", methods="GET", name="vendor_customer_program_assignments_find")
      * @ParamConverter("searchRequest", converter="querystring")
      *
-     * @OA\Tag(name="Program")
+     * @OA\Tag(name="Vendor / Customer / Program")
      * @OA\Parameter(
      *     in="query",
      *     name="filters",

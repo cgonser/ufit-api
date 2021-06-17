@@ -15,6 +15,11 @@ class CustomerPaymentSearchRequest extends SearchRequest
     /**
      * @OA\Property()
      */
+    public ?string $vendorId = null;
+
+    /**
+     * @OA\Property()
+     */
     public ?string $customerId = null;
 
     /**

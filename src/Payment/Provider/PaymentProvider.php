@@ -6,6 +6,7 @@ use App\Core\Provider\AbstractProvider;
 use App\Payment\Entity\Payment;
 use App\Payment\Exception\PaymentNotFoundException;
 use App\Payment\Repository\PaymentRepository;
+use Doctrine\ORM\QueryBuilder;
 use Ramsey\Uuid\UuidInterface;
 
 class PaymentProvider extends AbstractProvider
@@ -27,9 +28,19 @@ class PaymentProvider extends AbstractProvider
         throw new PaymentNotFoundException();
     }
 
+    protected function buildQueryBuilder(): QueryBuilder
+    {
+        return parent::buildQueryBuilder()
+            ->innerJoin('root.invoice', 'invoice')
+            ->innerJoin('invoice.subscription', 'subscription')
+            ->innerJoin('subscription.vendorPlan', 'vendorPlan');
+    }
+
     protected function getFilterableFields(): array
     {
         return [
+            'customerId' => 'subscription',
+            'vendorId' => 'vendorPlan',
             'invoiceId',
             'paymentMethodId',
             'status',
