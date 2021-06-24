@@ -17,6 +17,8 @@ class SubscriptionDto
 
     public ?VendorPlanDto $vendorPlan;
 
+    public ?string $validFrom;
+
     public ?string $expiresAt;
 
     public ?float $price;

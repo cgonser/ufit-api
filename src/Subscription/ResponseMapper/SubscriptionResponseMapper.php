@@ -29,6 +29,9 @@ class SubscriptionResponseMapper
         $subscriptionDto->expiresAt = $subscription->getExpiresAt()
             ? $subscription->getExpiresAt()->format(\DateTimeInterface::ATOM)
             : null;
+        $subscriptionDto->validFrom = $subscription->getValidFrom()
+            ? $subscription->getValidFrom()->format(\DateTimeInterface::ATOM)
+            : null;
         $subscriptionDto->price = $subscription->getPrice()->toFloat();
         $subscriptionDto->reviewedAt = $subscription->getReviewedAt()
             ? $subscription->getReviewedAt()->format(\DateTimeInterface::ATOM)
