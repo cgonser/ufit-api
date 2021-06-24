@@ -8,11 +8,13 @@ use App\Customer\Entity\Customer;
 use App\Subscription\Dto\SubscriptionDto;
 use App\Subscription\Exception\SubscriptionNotFoundException;
 use App\Subscription\Provider\SubscriptionProvider;
+use App\Subscription\Request\SubscriptionSearchRequest;
 use App\Subscription\ResponseMapper\SubscriptionResponseMapper;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
 use Ramsey\Uuid\Uuid;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -33,8 +35,14 @@ class SubscriptionController extends AbstractController
 
     /**
      * @Route("/customers/{customerId}/subscriptions", methods="GET", name="customers_subscriptions_get")
+     * @ParamConverter("subscriptionSearchRequest", converter="querystring")
      *
      * @OA\Tag(name="Subscription")
+     * @OA\Parameter(
+     *     in="query",
+     *     name="filters",
+     *     @OA\Schema(ref=@Model(type=SubscriptionSearchRequest::class))
+     * )
      * @OA\Response(
      *     response=200,
      *     description="Returns all the subscriptions for a given customer",
@@ -46,7 +54,7 @@ class SubscriptionController extends AbstractController
      *
      * @Security(name="Bearer")
      */
-    public function getSubscriptions(string $customerId): Response
+    public function getSubscriptions(string $customerId, SubscriptionSearchRequest $subscriptionSearchRequest): Response
     {
         if ('current' == $customerId) {
             /** @var Customer $customer */
@@ -56,11 +64,16 @@ class SubscriptionController extends AbstractController
             throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
         }
 
-        $subscriptions = $this->subscriptionProvider->findByCustomer($customer);
+        $subscriptionSearchRequest->customerId = $customer->getId();
+        $subscriptions = $this->subscriptionProvider->search($subscriptionSearchRequest);
+        $count = $this->subscriptionProvider->count($subscriptionSearchRequest);
 
         return new ApiJsonResponse(
             Response::HTTP_OK,
-            $this->subscriptionResponseMapper->mapMultiple($subscriptions, true)
+            $this->subscriptionResponseMapper->mapMultiple($subscriptions, true),
+            [
+                'X-Total-Count' => $count,
+            ]
         );
     }
 

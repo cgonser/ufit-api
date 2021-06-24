@@ -2,6 +2,7 @@
 
 namespace App\Customer\Request;
 
+use App\Core\Request\AbstractRequest;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 
@@ -10,17 +11,17 @@ use OpenApi\Annotations as OA;
  *     request="CustomerMeasurementRequest"
  * )
  */
-class CustomerMeasurementRequest
+class CustomerMeasurementRequest extends AbstractRequest
 {
     /**
      * @OA\Property()
      */
-    public ?string $notes = null;
+    public ?string $notes;
 
     /**
      * @OA\Property()
      */
-    public ?string $takenAt = null;
+    public ?string $takenAt;
 
     /**
      * @var CustomerMeasurementItemRequest[]

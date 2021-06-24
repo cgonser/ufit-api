@@ -6,9 +6,7 @@ use OpenApi\Annotations as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @OA\RequestBody(
- *     request="CustomerPasswordChangeRequest"
- * )
+ * @OA\RequestBody()
  */
 class CustomerPasswordChangeRequest
 {

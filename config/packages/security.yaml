@@ -7,9 +7,6 @@ security:
         App\Customer\Entity\Customer: 'auto'
 
     providers:
-        chained:
-            chain:
-                providers: [vendors, customers]
         vendors:
             entity: { class: App\Vendor\Entity\Vendor, property: email }
         customers:
@@ -36,13 +33,13 @@ security:
             anonymous: true
 
         customer:
-            pattern: ^/(customers|subscriptions)
+            pattern: ^/(customers)
             stateless: true
             anonymous: true
             guard:
                 authenticators:
                     - lexik_jwt_authentication.jwt_token_authenticator
-            provider: chained
+            provider: customers
 
         vendor_login:
             pattern: ^/vendors/login

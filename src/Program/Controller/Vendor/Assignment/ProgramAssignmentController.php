@@ -40,32 +40,23 @@ class ProgramAssignmentController extends AbstractController
 
     /**
      * @Route("/vendors/{vendorId}/programs/{programId}/assignments", methods="GET", name="vendor_program_assignments_find")
-     *
      * @ParamConverter("searchRequest", converter="querystring")
      *
      * @OA\Tag(name="Program")
-     *
      * @OA\Parameter(
      *     in="query",
      *     name="filters",
      *     @OA\Schema(ref=@Model(type=ProgramAssignmentSearchRequest::class))
      * )
-     *
      * @OA\Response(
      *     response=200,
      *     description="Returns all assignments of a given program",
-     *     @OA\Header(
-     *         header="X-Total-Count",
-     *         @OA\Schema(
-     *             type="int"
-     *         )
-     *     ),
+     *     @OA\Header(header="X-Total-Count", @OA\Schema(type="int")),
      *     @OA\JsonContent(
      *         type="array",
      *         @OA\Items(ref=@Model(type=ProgramAssignmentDto::class)))
      *     )
      * )
-     *
      * @Security(name="Bearer")
      */
     public function getPrograms(string $vendorId, string $programId, ProgramAssignmentSearchRequest $searchRequest): Response

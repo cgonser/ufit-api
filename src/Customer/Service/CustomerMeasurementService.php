@@ -73,9 +73,11 @@ class CustomerMeasurementService
 
     private function mapFromRequest(CustomerMeasurement $customerMeasurement, CustomerMeasurementRequest $customerMeasurementRequest)
     {
-        $customerMeasurement->setNotes($customerMeasurementRequest->notes);
+        if ($customerMeasurementRequest->has('notes')) {
+            $customerMeasurement->setNotes($customerMeasurementRequest->notes);
+        }
 
-        if (null !== $customerMeasurementRequest->takenAt) {
+        if ($customerMeasurementRequest->has('takenAt')) {
             $takenAt = \DateTime::createFromFormat(\DateTimeInterface::ATOM, $customerMeasurementRequest->takenAt);
 
             if (false === $takenAt) {
@@ -98,13 +100,13 @@ class CustomerMeasurementService
         foreach ($items as $customerMeasurementItemRequest) {
             $measurementType = null;
 
-            if (null !== $customerMeasurementItemRequest->type) {
+            if ($customerMeasurementItemRequest->has('type')) {
                 $measurementType = $this->measurementTypeProvider->getBySlug(
                     $customerMeasurementItemRequest->type
                 );
             }
 
-            if (null !== $customerMeasurementItemRequest->measurementTypeId) {
+            if ($customerMeasurementItemRequest->has('measurementTypeId')) {
                 $measurementType = $this->measurementTypeProvider->get(
                     Uuid::fromString($customerMeasurementItemRequest->measurementTypeId)
                 );
@@ -123,13 +125,17 @@ class CustomerMeasurementService
                 $customerMeasurementItem->setMeasurementType($measurementType);
             }
 
-            $customerMeasurementItem->setMeasurement(new Decimal($customerMeasurementItemRequest->measurement));
-
-            if (!$measurementType->isUnitValid($customerMeasurementItemRequest->unit)) {
-                throw new CustomerMeasurementItemInvalidUnitException();
+            if ($customerMeasurementItemRequest->has('measurement')) {
+                $customerMeasurementItem->setMeasurement(new Decimal($customerMeasurementItemRequest->measurement));
             }
 
-            $customerMeasurementItem->setUnit($customerMeasurementItemRequest->unit);
+            if ($customerMeasurementItemRequest->has('unit')) {
+                if (!$measurementType->isUnitValid($customerMeasurementItemRequest->unit)) {
+                    throw new CustomerMeasurementItemInvalidUnitException();
+                }
+
+                $customerMeasurementItem->setUnit($customerMeasurementItemRequest->unit);
+            }
 
             $customerMeasurement->addItem($customerMeasurementItem);
 

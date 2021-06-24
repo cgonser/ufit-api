@@ -2,6 +2,7 @@
 
 namespace App\Payment\Entity;
 
+use App\Customer\Entity\BillingInformation;
 use Decimal\Decimal;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -53,6 +54,17 @@ class Payment
      * @ORM\JoinColumn(name="payment_method_id", referencedColumnName="id")
      */
     private PaymentMethod $paymentMethod;
+
+    /**
+     * @ORM\Column(type="uuid", nullable=true)
+     */
+    private ?UuidInterface $billingInformationId = null;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Customer\Entity\BillingInformation")
+     * @ORM\JoinColumn(name="billing_information_id", referencedColumnName="id", nullable=true)
+     */
+    private ?BillingInformation $billingInformation = null;
 
     /**
      * @ORM\Column(type="string", nullable=true)
@@ -115,6 +127,30 @@ class Payment
     {
         $this->invoiceId = $invoice->getId();
         $this->invoice = $invoice;
+
+        return $this;
+    }
+
+    public function getBillingInformationId(): ?UuidInterface
+    {
+        return $this->billingInformationId;
+    }
+
+    public function setBillingInformationId(?UuidInterface $billingInformationId): self
+    {
+        $this->billingInformationId = $billingInformationId;
+
+        return $this;
+    }
+
+    public function getBillingInformation(): ?BillingInformation
+    {
+        return $this->billingInformation;
+    }
+
+    public function setBillingInformation(?BillingInformation $billingInformation): self
+    {
+        $this->billingInformation = $billingInformation;
 
         return $this;
     }

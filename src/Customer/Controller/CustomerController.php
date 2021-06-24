@@ -8,9 +8,6 @@ use App\Customer\Dto\CustomerDto;
 use App\Customer\Entity\Customer;
 use App\Customer\Provider\CustomerProvider;
 use App\Customer\ResponseMapper\CustomerResponseMapper;
-use App\Subscription\Provider\SubscriptionCustomerProvider;
-use App\Subscription\Provider\VendorSubscriptionProvider;
-use App\Vendor\Entity\Vendor;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
@@ -22,19 +19,14 @@ use Symfony\Component\Routing\Annotation\Route;
 class CustomerController extends AbstractController
 {
     private CustomerResponseMapper $customerResponseMapper;
-
     private CustomerProvider $customerProvider;
-
-    private SubscriptionCustomerProvider $subscriptionCustomerProvider;
 
     public function __construct(
         CustomerProvider $customerProvider,
-        CustomerResponseMapper $customerResponseMapper,
-        SubscriptionCustomerProvider $subscriptionCustomerProvider
+        CustomerResponseMapper $customerResponseMapper
     ) {
         $this->customerResponseMapper = $customerResponseMapper;
         $this->customerProvider = $customerProvider;
-        $this->subscriptionCustomerProvider = $subscriptionCustomerProvider;
     }
 
     /**
@@ -75,19 +67,10 @@ class CustomerController extends AbstractController
      */
     public function getCustomer(string $customerId): Response
     {
-        if ($this->getUser() instanceof Customer) {
-            /** @var Customer $customer */
-            $customer = $this->getUser();
+        /** @var Customer $customer */
+        $customer = $this->getUser();
 
-            if ('current' !== $customerId && !$customer->getId()->equals(Uuid::fromString($customerId))) {
-                throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
-            }
-        } elseif ($this->getUser() instanceof Vendor) {
-            /** @var Vendor $vendor */
-            $vendor = $this->getUser();
-
-            $customer = $this->subscriptionCustomerProvider->getVendorCustomer($vendor, Uuid::fromString($customerId));
-        } else {
+        if ('current' !== $customerId && !$customer->getId()->equals(Uuid::fromString($customerId))) {
             throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
         }
 

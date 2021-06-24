@@ -16,11 +16,11 @@ abstract class AbstractRequest
 
     public function __isset(string $property): bool
     {
-        return (new \ReflectionProperty($this, $property))->isInitialized($this);
+        return (new \ReflectionProperty(self::class, $property))->isInitialized($this);
     }
 
     public function has(string $property): bool
     {
-        return $this->__isset($property);
+        return isset($this->{$property});
     }
 }

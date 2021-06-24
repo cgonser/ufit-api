@@ -20,5 +20,10 @@ class ProgramAssignmentSearchRequest extends SearchRequest
     /**
      * @OA\Property()
      */
+    public ?string $vendorId = null;
+
+    /**
+     * @OA\Property()
+     */
     public ?string $programId = null;
 }

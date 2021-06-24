@@ -8,6 +8,7 @@ use App\Program\Entity\Program;
 use App\Program\Entity\ProgramAssignment;
 use App\Program\Exception\ProgramAssignmentNotFoundException;
 use App\Program\Repository\ProgramAssignmentRepository;
+use Doctrine\ORM\QueryBuilder;
 use Ramsey\Uuid\UuidInterface;
 
 class ProgramAssignmentProvider extends AbstractProvider
@@ -20,6 +21,12 @@ class ProgramAssignmentProvider extends AbstractProvider
     protected function throwNotFoundException()
     {
         throw new ProgramAssignmentNotFoundException();
+    }
+
+    protected function buildQueryBuilder(): QueryBuilder
+    {
+        return parent::buildQueryBuilder()
+            ->innerJoin('root.program', 'program');
     }
 
     public function getByProgramAndId(Program $program, UuidInterface $programAssignmentId): ProgramAssignment
@@ -55,6 +62,7 @@ class ProgramAssignmentProvider extends AbstractProvider
     protected function getFilterableFields(): array
     {
         return [
+            'vendorId' => 'program',
             'customerId',
             'programId',
         ];

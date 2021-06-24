@@ -74,7 +74,11 @@ class VendorController extends AbstractController
     {
         $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
 
-        return new ApiJsonResponse(Response::HTTP_OK, $this->vendorResponseMapper->map($vendor));
+        if ($this->getUser() && $this->getUser()->getId()->equals($vendor->getId())) {
+            return new ApiJsonResponse(Response::HTTP_OK, $this->vendorResponseMapper->map($vendor));
+        }
+
+        return new ApiJsonResponse(Response::HTTP_OK, $this->vendorResponseMapper->mapPublic($vendor));
     }
 
     /**
@@ -92,14 +96,20 @@ class VendorController extends AbstractController
         if ('current' === $slug) {
             /** @var Vendor $vendor */
             $vendor = $this->getUser();
+
+            $vendorDto = $this->vendorResponseMapper->map($vendor);
         } else {
             $vendor = $this->vendorProvider->findOneBySlug($slug);
 
             if (null === $vendor) {
                 throw new VendorNotFoundException();
             }
+
+            $vendorDto = $this->getUser() && $this->getUser()->getId()->equals($vendor->getId())
+                ? $this->vendorResponseMapper->map($vendor)
+                : $this->vendorResponseMapper->mapPublic($vendor);
         }
 
-        return new ApiJsonResponse(Response::HTTP_OK, $this->vendorResponseMapper->map($vendor));
+        return new ApiJsonResponse(Response::HTTP_OK, $vendorDto);
     }
 }

@@ -39,7 +39,7 @@ class CustomerMeasurementController extends AbstractController
     /**
      * @Route("/customers/{customerId}/measurements", methods="GET", name="customers_measurements_get")
      *
-     * @OA\Tag(name="CustomerMeasurement")
+     * @OA\Tag(name="Customer / Measurement")
      * @OA\Response(
      *     response=200,
      *     description="Returns the information about a customer measurements",
@@ -53,18 +53,8 @@ class CustomerMeasurementController extends AbstractController
      */
     public function getCustomerMeasurements(string $customerId): Response
     {
-        if ('current' == $customerId) {
-            /** @var Customer $customer */
-            $customer = $this->getUser();
-        } else {
-            if ($this->getUser() instanceof Customer) {
-                // customer fetching not implemented yet; requires also authorization
-                throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
-            }
-
-            // TODO: implement proper vendor authorization
-            $customer = $this->customerProvider->get(Uuid::fromString($customerId));
-        }
+        /** @var Customer $customer */
+        $customer = $this->getUser();
 
         $customerMeasurements = $this->customerMeasurementProvider->findByCustomer($customer);
 
@@ -74,7 +64,7 @@ class CustomerMeasurementController extends AbstractController
     /**
      * @Route("/customers/{customerId}/measurements/{customerMeasurementId}", methods="GET", name="customers_measurements_get_one")
      *
-     * @OA\Tag(name="CustomerMeasurement")
+     * @OA\Tag(name="Customer / Measurement")
      * @OA\Response(
      *     response=200,
      *     description="Returns the information about a measurement",
