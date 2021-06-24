@@ -2,6 +2,8 @@
 
 namespace App\Payment\Service;
 
+use App\Customer\Provider\BillingInformationProvider;
+use App\Customer\Service\BillingInformationRequestManager;
 use App\Payment\Entity\Payment;
 use App\Payment\Provider\InvoiceProvider;
 use App\Payment\Provider\PaymentMethodProvider;
@@ -11,19 +13,23 @@ use Ramsey\Uuid\Uuid;
 class PaymentRequestManager
 {
     private PaymentManager $paymentManager;
-
     private InvoiceProvider $invoiceProvider;
-
     private PaymentMethodProvider $paymentMethodProvider;
+    private BillingInformationProvider $billingInformationProvider;
+    private BillingInformationRequestManager $billingInformationRequestManager;
 
     public function __construct(
         PaymentManager $paymentManager,
         InvoiceProvider $invoiceProvider,
-        PaymentMethodProvider $paymentMethodProvider
+        PaymentMethodProvider $paymentMethodProvider,
+        BillingInformationProvider $billingInformationProvider,
+        BillingInformationRequestManager $billingInformationRequestManager
     ) {
         $this->paymentManager = $paymentManager;
         $this->paymentMethodProvider = $paymentMethodProvider;
         $this->invoiceProvider = $invoiceProvider;
+        $this->billingInformationProvider = $billingInformationProvider;
+        $this->billingInformationRequestManager = $billingInformationRequestManager;
     }
 
     public function createFromRequest(PaymentRequest $paymentRequest): Payment
@@ -44,9 +50,9 @@ class PaymentRequestManager
         $this->paymentManager->update($payment);
     }
 
-    private function mapFromRequest(Payment $payment, PaymentRequest $paymentRequest)
+    private function mapFromRequest(Payment $payment, PaymentRequest $paymentRequest): void
     {
-        if (null !== $paymentRequest->invoiceId) {
+        if ($paymentRequest->has('invoiceId')) {
             $invoice = $this->invoiceProvider->get(Uuid::fromString($paymentRequest->invoiceId));
 
             $payment->setInvoice($invoice);
@@ -54,14 +60,32 @@ class PaymentRequestManager
             $payment->setDueDate($invoice->getDueDate());
         }
 
-        if (null !== $paymentRequest->paymentMethodId) {
+        if ($paymentRequest->has('paymentMethodId')) {
             $payment->setPaymentMethod(
                 $this->paymentMethodProvider->get(Uuid::fromString($paymentRequest->paymentMethodId))
             );
         }
 
-        if (null !== $paymentRequest->details) {
+        if ($paymentRequest->has('details')) {
             $payment->setDetails($paymentRequest->details);
+        }
+
+        if ($paymentRequest->has('billingInformationId')) {
+            $payment->setBillingInformationId(Uuid::fromString($paymentRequest->billingInformationId));
+        }
+
+        if ($paymentRequest->has('billingInformation') && null !== $payment->getInvoice()->getSubscription()) {
+            $paymentRequest->billingInformation->customerId = $payment->getInvoice()
+                ->getSubscription()->getCustomerId();
+
+            if (null === $payment->getBillingInformationId()) {
+                $this->billingInformationRequestManager->createFromRequest($paymentRequest->billingInformation);
+            } else {
+                $this->billingInformationRequestManager->updateFromRequest(
+                    $this->billingInformationProvider->get(Uuid::fromString($paymentRequest->billingInformationId)),
+                    $paymentRequest->billingInformation
+                );
+            }
         }
     }
 }

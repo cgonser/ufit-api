@@ -2,15 +2,16 @@
 
 namespace App\Payment\Request;
 
+use App\Core\Request\AbstractRequest;
+use App\Customer\Request\BillingInformationRequest;
 use OpenApi\Annotations as OA;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @OA\RequestBody(
- *     request="PaymentRequest"
- * )
+ * @OA\RequestBody()
  */
-class PaymentRequest
+class PaymentRequest extends AbstractRequest
 {
     /**
      * @OA\Property()
@@ -24,6 +25,16 @@ class PaymentRequest
      * @Assert\NotNull
      */
     public ?string $paymentMethodId = null;
+
+    /**
+     * @OA\Property()
+     */
+    public ?string $billingInformationId = null;
+
+    /**
+     * @OA\Property(ref=@Model(type=BillingInformationRequest::class))
+     */
+    public ?BillingInformationRequest $billingInformation = null;
 
     /**
      * @OA\Property(
