@@ -8,16 +8,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @OA\RequestBody()
  */
-class CustomerPasswordChangeRequest
+class CustomerEmailChangeRequest
 {
-    /**
-     * @OA\Property()
-     */
-    public ?string $currentPassword = null;
-
     /**
      * @OA\Property()
      * @Assert\NotBlank()
      */
-    public ?string $newPassword = null;
+    public ?string $email = null;
 }

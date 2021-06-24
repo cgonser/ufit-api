@@ -6,6 +6,7 @@ use App\Customer\Entity\Customer;
 use App\Customer\Exception\CustomerInvalidBirthDateException;
 use App\Customer\Exception\CustomerNotFoundException;
 use App\Customer\Provider\CustomerProvider;
+use App\Customer\Request\CustomerEmailChangeRequest;
 use App\Customer\Request\CustomerPasswordChangeRequest;
 use App\Customer\Request\CustomerPasswordResetRequest;
 use App\Customer\Request\CustomerPasswordResetTokenRequest;
@@ -175,5 +176,14 @@ class CustomerRequestManager
         } catch (\Exception $e) {
             // do nothing
         }
+    }
+
+    public function changeEmail(
+        Customer $customer,
+        CustomerEmailChangeRequest $customerEmailChangeRequest
+    ): void {
+        $customer->setEmail($customerEmailChangeRequest->email);
+
+        $this->customerManager->update($customer);
     }
 }
