@@ -16,6 +16,18 @@ class PaymentProvider extends AbstractProvider
         $this->repository = $repository;
     }
 
+    public function getByCustomerAndId(UuidInterface $customerId, UuidInterface $paymentId): Payment
+    {
+        /** @var Payment|null $payment */
+        $payment = $this->get($paymentId);
+
+        if (!$payment->getInvoice()->getSubscription()->getCustomerId()->equals($customerId)) {
+            $this->throwNotFoundException();
+        }
+
+        return $payment;
+    }
+
     public function getByExternalReference(string $externalReference): Payment
     {
         return $this->getBy([
@@ -39,8 +51,9 @@ class PaymentProvider extends AbstractProvider
     protected function getFilterableFields(): array
     {
         return [
-            'customerId' => 'subscription',
-            'vendorId' => 'vendorPlan',
+            ['customerId' => 'subscription'],
+            ['vendorId' => 'vendorPlan'],
+            ['subscriptionId' => 'invoice'],
             'invoiceId',
             'paymentMethodId',
             'status',

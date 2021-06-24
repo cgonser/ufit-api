@@ -6,7 +6,7 @@ use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
 use App\Payment\Dto\PaymentDto;
 use App\Payment\Provider\PaymentProvider;
-use App\Payment\Request\CustomerPaymentSearchRequest;
+use App\Payment\Request\PaymentSearchRequest;
 use App\Payment\ResponseMapper\PaymentResponseMapper;
 use App\Vendor\Entity\Vendor;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -36,7 +36,7 @@ class CustomerPaymentController extends AbstractController
      * @ParamConverter("searchRequest", converter="querystring")
      *
      * @OA\Tag(name="Vendor / Customer / Payment")
-     * @OA\Parameter(in="query", name="filters", @OA\Schema(ref=@Model(type=CustomerPaymentSearchRequest::class)))
+     * @OA\Parameter(in="query", name="filters", @OA\Schema(ref=@Model(type=PaymentSearchRequest::class)))
      * @OA\Response(
      *     response=200, description="Success",
      *     @OA\Header(header="X-Total-Count", @OA\Schema(type="int")),
@@ -47,7 +47,7 @@ class CustomerPaymentController extends AbstractController
     public function getPayments(
         string $vendorId,
         string $customerId,
-        CustomerPaymentSearchRequest $searchRequest
+        PaymentSearchRequest $searchRequest
     ): Response {
         if ('current' === $vendorId) {
             /** @var Vendor $vendor */

@@ -6,11 +6,9 @@ use App\Core\Request\SearchRequest;
 use OpenApi\Annotations as OA;
 
 /**
- * @OA\RequestBody(
- *     request="CustomerPaymentSearchRequest"
- * )
+ * @OA\RequestBody()
  */
-class CustomerPaymentSearchRequest extends SearchRequest
+class PaymentSearchRequest extends SearchRequest
 {
     /**
      * @OA\Property()
