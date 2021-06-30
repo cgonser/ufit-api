@@ -30,13 +30,13 @@ class PagarmeTransactionResponseProcessor
 
     public function process(\stdClass $response, ?UuidInterface $paymentId = null)
     {
+        // todo: handle new recurrence payment
         if (null !== $paymentId) {
             /** @var Payment $payment */
             $payment = $this->paymentProvider->get($paymentId);
             $payment->setExternalReference((string) $response->id);
         } else {
-            // todo: fetch by external reference
-            $payment = $this->paymentProvider->getByExternalReference((string) $response->id);
+            $payment = $this->paymentProvider->getByExternalReference((string) $response->tid);
         }
 
         $status = new UnicodeString($response->status);

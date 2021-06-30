@@ -11,12 +11,20 @@ class PagarmeTransactionResponseReceivedEvent
 
     private \stdClass $response;
 
+    private ?UuidInterface $subscriptionId = null;
+
     private ?UuidInterface $paymentId = null;
 
-    public function __construct(\stdClass $response, ?string $paymentId = null)
+    public function __construct(\stdClass $response, ?string $subscriptionId = null, ?string $paymentId = null)
     {
         $this->response = $response;
+        $this->subscriptionId = null !== $subscriptionId ? Uuid::fromString($subscriptionId) : null;
         $this->paymentId = null !== $paymentId ? Uuid::fromString($paymentId) : null;
+    }
+
+    public function getSubscriptionId(): ?UuidInterface
+    {
+        return $this->subscriptionId;
     }
 
     public function getPaymentId(): ?UuidInterface

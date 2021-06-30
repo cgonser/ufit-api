@@ -44,11 +44,21 @@ class PagarmeController extends AbstractController
         );
 
         if ('subscription' === $payload['object']) {
-            $this->messageBus->dispatch(new PagarmeSubscriptionResponseReceivedEvent((object) $payload['subscription']));
+            $this->messageBus->dispatch(
+                new PagarmeSubscriptionResponseReceivedEvent(
+                    (object) $payload['subscription'],
+                    $request->get('reference')
+                )
+            );
         }
 
         if ('transaction' === $payload['object']) {
-            $this->messageBus->dispatch(new PagarmeTransactionResponseReceivedEvent((object) $payload['transaction']));
+            $this->messageBus->dispatch(
+                new PagarmeTransactionResponseReceivedEvent(
+                    (object) $payload['transaction'],
+                    $request->get('reference')
+                )
+            );
         }
 
         return new Response(null, Response::HTTP_NO_CONTENT);

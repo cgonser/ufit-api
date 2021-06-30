@@ -25,4 +25,14 @@ class SubscriptionCycleManager
 
         $this->subscriptionCycleRepository->save($subscription);
     }
+
+    public function createNext(Subscription $subscription)
+    {
+        $subscriptionCycle = new SubscriptionCycle();
+        $subscriptionCycle->setSubscription($subscription);
+        $subscriptionCycle->setPrice($subscription->getPrice());
+        $subscriptionCycle->setStartsAt(); // todo: to be finished
+
+        $this->subscriptionCycleRepository->save($subscription);
+    }
 }
