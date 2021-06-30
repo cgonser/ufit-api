@@ -4,6 +4,7 @@ namespace App\Payment\Service\PaymentProcessor\Pagarme;
 
 use App\Payment\Entity\Payment;
 use App\Subscription\Entity\Subscription;
+use App\Subscription\Exception\SubscriptionNotFoundException;
 use App\Subscription\Provider\SubscriptionProvider;
 use App\Subscription\Service\SubscriptionManager;
 use Ramsey\Uuid\UuidInterface;
@@ -32,22 +33,31 @@ class PagarmeSubscriptionResponseProcessor
         $this->messageBus = $messageBus;
     }
 
-    public function process(\stdClass $response, ?UuidInterface $subscriptionId = null, ?UuidInterface $paymentId = null)
-    {
+    public function process(
+        \stdClass $response,
+        ?UuidInterface $subscriptionId = null,
+        ?UuidInterface $paymentId = null
+    ) {
         if (null !== $subscriptionId) {
             $subscription = $this->subscriptionProvider->get($subscriptionId);
 
             if (null === $subscription->getExternalReference()) {
-                $this->subscriptionManager->defineExternalRefence($subscription, (string) $response->id);
+                $this->subscriptionManager->defineExternalRefence($subscription, (string)$response->id);
+            } elseif ($response->id !== $subscription->getExternalReference()) {
+                throw new SubscriptionNotFoundException();
             }
         } else {
-            $subscription = $this->subscriptionProvider->getByExternalReference((string) $response->tid);
+            $subscription = $this->subscriptionProvider->getByExternalReference((string)$response->id);
         }
 
         $status = new UnicodeString($response->status);
         $methodName = 'process'.ucfirst($status->camel());
 
-        $this->pagarmeTransactionResponseProcessor->process($response->current_transaction, $paymentId);
+        $this->pagarmeTransactionResponseProcessor->process(
+            json_decode(json_encode($response->current_transaction)),
+            $paymentId,
+            $subscription->getId(),
+        );
 
         if (method_exists($this, $methodName)) {
             $this->$methodName($subscription, $response);

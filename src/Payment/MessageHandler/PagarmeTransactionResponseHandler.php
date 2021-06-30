@@ -25,9 +25,13 @@ class PagarmeTransactionResponseHandler implements MessageHandlerInterface
     {
         $this->logger->info(
             'payment.transaction.response',
-            (array) $event->getResponse()
+            (array)$event->getResponse()
         );
 
-        $this->pagarmeResponseProcessor->process($event->getResponse(), $event->getPaymentId());
+        $this->pagarmeResponseProcessor->process(
+            $event->getResponse(),
+            $event->getPaymentId(),
+            $event->getSubscriptionId()
+        );
     }
 }

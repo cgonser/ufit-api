@@ -38,7 +38,7 @@ class InvoicePaidHandler implements MessageHandlerInterface
             'invoice.paid',
             [
                 'invoiceId' => $event->getInvoiceId(),
-                'paidAt' => $event->getPaidAt()->format(\DateTime::ATOM),
+                'paidAt' => $event->getPaidAt()->format(\DateTimeInterface::ATOM),
             ]
         );
 
@@ -47,6 +47,6 @@ class InvoicePaidHandler implements MessageHandlerInterface
         $this->invoiceManager->markAsPaid($invoice, $event->getPaidAt());
 
         $subscription = $invoice->getSubscription();
-        $this->subscriptionManager->approve($subscription);
+        $this->subscriptionManager->approve($subscription, null, $invoice);
     }
 }

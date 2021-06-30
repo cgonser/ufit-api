@@ -2,10 +2,13 @@
 
 namespace App\Payment\Service;
 
+use App\Payment\Entity\Invoice;
 use App\Payment\Entity\Payment;
 //use App\Payment\Message\PaymentCreatedEvent;
 //use App\Payment\Message\PaymentDeletedEvent;
 //use App\Payment\Message\PaymentUpdatedEvent;
+use App\Payment\Entity\PaymentMethod;
+use App\Payment\Message\InvoicePaidEvent;
 use App\Payment\Message\PaymentCreatedEvent;
 use App\Payment\Message\PaymentUpdatedEvent;
 use App\Payment\Repository\PaymentRepository;
@@ -31,16 +34,21 @@ class PaymentManager
             $payment->setStatus(Payment::STATUS_PENDING);
         }
 
-        $this->paymentRepository->save($payment);
+        $this->save($payment);
 
         $this->messageBus->dispatch(new PaymentCreatedEvent($payment->getId()));
     }
 
     public function update(Payment $payment)
     {
-        $this->paymentRepository->save($payment);
+        $this->save($payment);
 
         $this->messageBus->dispatch(new PaymentUpdatedEvent($payment->getId()));
+    }
+
+    public function save(Payment $payment)
+    {
+        $this->paymentRepository->save($payment);
     }
 
     public function delete(Payment $payment)
@@ -57,6 +65,22 @@ class PaymentManager
 
         $this->paymentRepository->save($payment);
 
-        $this->messageBus->dispatch(new InvoicePaidEvent($payment->getInvoiceId()));
+        $this->messageBus->dispatch(
+            new InvoicePaidEvent($payment->getInvoiceId(), $payment->getPaidAt())
+        );
+    }
+
+    public function createFromInvoice(Invoice $invoice, PaymentMethod $paymentMethod): Payment
+    {
+        $payment = new Payment();
+        $payment->setInvoice($invoice);
+        $payment->setInvoiceId($invoice->getId());
+        $payment->setPaymentMethod($paymentMethod);
+        $payment->setAmount($invoice->getTotalAmount());
+        $payment->setDueDate($invoice->getDueDate());
+
+        $this->save($payment);
+
+        return $payment;
     }
 }

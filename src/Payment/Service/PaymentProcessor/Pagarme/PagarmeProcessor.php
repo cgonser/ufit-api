@@ -93,7 +93,11 @@ abstract class PagarmeProcessor
             }
 
             $this->messageBus->dispatch(
-                new PagarmeTransactionResponseReceivedEvent($response, $transactionInput->paymentId)
+                new PagarmeTransactionResponseReceivedEvent(
+                    $response,
+                    $transactionInput->subscriptionId,
+                    $transactionInput->paymentId
+                )
             );
         }
     }
@@ -231,7 +235,7 @@ abstract class PagarmeProcessor
     protected function appendPostbackInformation(array &$transactionData, PagarmeTransactionInputDto $transactionInput)
     {
         $postbackUrl = $this->pagarmePostbackUrl;
-        $postbackUrl .= '?reference='.$transactionInput->paymentId;
+        $postbackUrl .= '?reference='.$transactionInput->subscriptionId;
 
         $transactionData['postback_url'] = $postbackUrl;
     }

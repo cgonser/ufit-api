@@ -19,6 +19,11 @@ abstract class AbstractProvider
         return $this->repository->findAll();
     }
 
+    public function find(UuidInterface $id): ?object
+    {
+        return $this->repository->find($id);
+    }
+
     public function get(UuidInterface $id): object
     {
         /** @var object|null $object */
