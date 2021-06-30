@@ -3,34 +3,42 @@
 namespace App\Subscription\Service;
 
 use App\Core\Validation\EntityValidator;
+use App\Payment\Entity\Invoice;
+use App\Payment\Exception\InvoiceNotFoundException;
+use App\Payment\Provider\InvoiceProvider;
 use App\Payment\Service\InvoiceManager;
 use App\Subscription\Entity\Subscription;
+use App\Subscription\Entity\SubscriptionCycle;
 use App\Subscription\Message\SubscriptionApprovedEvent;
 use App\Subscription\Message\SubscriptionCreatedEvent;
 use App\Subscription\Message\SubscriptionRejectedEvent;
 use App\Subscription\Repository\SubscriptionRepository;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class SubscriptionManager
 {
     private SubscriptionRepository $subscriptionRepository;
-
+    private InvoiceProvider $invoiceProvider;
     private InvoiceManager $invoiceManager;
-
     private EntityValidator $validator;
-
     private MessageBusInterface $messageBus;
+    private SubscriptionCycleManager $subscriptionCycleManager;
 
     public function __construct(
         SubscriptionRepository $subscriptionRepository,
+        SubscriptionCycleManager $subscriptionCycleManager,
+        InvoiceProvider $invoiceProvider,
         InvoiceManager $invoiceManager,
         EntityValidator $validator,
         MessageBusInterface $messageBus
     ) {
         $this->subscriptionRepository = $subscriptionRepository;
-        $this->messageBus = $messageBus;
-        $this->validator = $validator;
         $this->invoiceManager = $invoiceManager;
+        $this->invoiceProvider = $invoiceProvider;
+        $this->validator = $validator;
+        $this->messageBus = $messageBus;
+        $this->subscriptionCycleManager = $subscriptionCycleManager;
     }
 
     public function create(Subscription $subscription)
@@ -39,8 +47,7 @@ class SubscriptionManager
 
         $subscription
             ->setIsRecurring($vendorPlan->isRecurring())
-            ->setPrice($vendorPlan->getPrice())
-        ;
+            ->setPrice($vendorPlan->getPrice());
 
         $this->validator->validate($subscription);
 
@@ -49,7 +56,7 @@ class SubscriptionManager
         $this->messageBus->dispatch(new SubscriptionCreatedEvent($subscription->getId()));
 
         if (1 === $vendorPlan->getPrice()->compareTo(0)) {
-            $this->generateInvoice($subscription);
+            $this->getOrCreateUnpaidInvoice($subscription->getId());
         }
 
         if (!$vendorPlan->isApprovalRequired() && $vendorPlan->getPrice()->equals(0)) {
@@ -69,10 +76,10 @@ class SubscriptionManager
         $this->messageBus->dispatch(new SubscriptionRejectedEvent($subscription->getId()));
     }
 
-    public function approve(Subscription $subscription, ?string $reviewNotes = null)
+    public function approve(Subscription $subscription, ?string $reviewNotes = null, ?Invoice $invoice = null)
     {
         if ($subscription->isApproved()) {
-            $this->renew($subscription);
+            $this->renew($subscription, $invoice);
 
             return;
         }
@@ -82,36 +89,47 @@ class SubscriptionManager
         $subscription->setValidFrom(new \DateTime());
         $subscription->setReviewNotes($reviewNotes);
         $subscription->setReviewedAt(new \DateTime());
-
-        $this->calculateExpiration($subscription);
+        $subscription->setExpiresAt($this->calculateExpiration($subscription));
 
         $this->subscriptionRepository->save($subscription);
+
+        $this->createCycle($subscription, $subscription->getValidFrom(), $subscription->getExpiresAt(), $invoice);
 
         $this->messageBus->dispatch(new SubscriptionApprovedEvent($subscription->getId()));
     }
 
-    public function renew(Subscription $subscription): void
+    public function renew(Subscription $subscription, ?Invoice $invoice = null): void
     {
-        $this->calculateExpiration($subscription);
+        $previousExpiration = clone $subscription->getExpiresAt();
+
+        $newExpiration = $this->calculateExpiration($subscription)->format(\DateTimeInterface::ATOM);
+        $subscription->setExpiresAt(\DateTime::createFromFormat(\DateTimeInterface::ATOM, $newExpiration));
+        // overcome stupid doctrine bug
 
         $subscription->setIsActive(true);
-
         $this->subscriptionRepository->save($subscription);
+
+        $this->createCycle(
+            $subscription,
+            $previousExpiration ?: new \DateTime(),
+            $subscription->getExpiresAt(),
+            $invoice
+        );
 
 //        $this->messageBus->dispatch(new SubscriptionRenewedEvent($subscription->getId()));
     }
 
-    private function calculateExpiration(Subscription $subscription): void
+    private function calculateExpiration(Subscription $subscription): ?\DateTime
     {
-        if ($subscription->getVendorPlan()->isRecurring() || null === $subscription->getVendorPlan()->getDuration()) {
-            $subscription->setExpiresAt(null);
-
-            return;
+        if (null === $subscription->getVendorPlan()->getDuration()) {
+            return null;
         }
 
-        $subscription->setExpiresAt(
-            (new \DateTime())->add($subscription->getVendorPlan()->getDuration())
-        );
+//        dump($subscription->getVendorPlan()->getDuration());
+//        dump($subscription->getExpiresAt());
+//        dd(($subscription->getExpiresAt() ?: new \DateTime())->add($subscription->getVendorPlan()->getDuration()));
+
+        return ($subscription->getExpiresAt() ?: new \DateTime())->add($subscription->getVendorPlan()->getDuration());
     }
 
     private function cancel(Subscription $subscription)
@@ -145,15 +163,36 @@ class SubscriptionManager
         $this->cancel($subscription);
     }
 
-    public function generateInvoice(Subscription $subscription)
+    public function getOrCreateUnpaidInvoice(UuidInterface $subscriptionId): Invoice
     {
-        $this->invoiceManager->createFromSubscription($subscription);
+        try {
+            return $this->invoiceProvider->getSubscriptionNextDueInvoice($subscriptionId);
+        } catch (InvoiceNotFoundException $e) {
+            return $this->invoiceManager->createFromSubscription(
+                $this->subscriptionRepository->find($subscriptionId)
+            );
+        }
     }
 
-    public function defineExternalRefence(Subscription $subscription, string $externalReference)
+    public function defineExternalRefence(Subscription $subscription, string $externalReference): void
     {
         $subscription->setExternalReference($externalReference);
 
         $this->subscriptionRepository->save($subscription);
+    }
+
+    private function createCycle(
+        Subscription $subscription,
+        \DateTimeInterface $startsAt,
+        \DateTimeInterface $endsAt,
+        ?Invoice $invoice = null
+    ): void {
+        $subscriptionCycle = $this->subscriptionCycleManager->create($subscription, $startsAt, $endsAt);
+
+        if (null !== $invoice) {
+            $invoice->setSubscriptionCycle($subscriptionCycle);
+
+            $this->invoiceManager->save($invoice);
+        }
     }
 }

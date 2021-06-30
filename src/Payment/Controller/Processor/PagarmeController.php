@@ -4,8 +4,11 @@ namespace App\Payment\Controller\Processor;
 
 use App\Payment\Message\PagarmeSubscriptionResponseReceivedEvent;
 use App\Payment\Message\PagarmeTransactionResponseReceivedEvent;
+use App\Payment\Provider\PaymentProvider;
+use App\Subscription\Provider\SubscriptionProvider;
 use OpenApi\Annotations as OA;
 use Psr\Log\LoggerInterface;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,13 +20,19 @@ class PagarmeController extends AbstractController
     private MessageBusInterface $messageBus;
 
     private LoggerInterface $logger;
+    private SubscriptionProvider $subscriptionProvider;
+    private PaymentProvider $paymentProvider;
 
     public function __construct(
+        SubscriptionProvider $subscriptionProvider,
+        PaymentProvider $paymentProvider,
         MessageBusInterface $messageBus,
         LoggerInterface $logger
     ) {
         $this->logger = $logger;
         $this->messageBus = $messageBus;
+        $this->subscriptionProvider = $subscriptionProvider;
+        $this->paymentProvider = $paymentProvider;
     }
 
     /**
@@ -43,11 +52,24 @@ class PagarmeController extends AbstractController
             ]
         );
 
+        try {
+            $subscriptionId = $this->subscriptionProvider->get(Uuid::fromString($request->get('reference')))->getId();
+        } catch (\Exception $e) {
+            $subscriptionId = null;
+        }
+
+        try {
+            $paymentId = $this->paymentProvider->get(Uuid::fromString($request->get('reference')))->getId();
+        } catch (\Exception $e) {
+            $paymentId = null;
+        }
+
         if ('subscription' === $payload['object']) {
             $this->messageBus->dispatch(
                 new PagarmeSubscriptionResponseReceivedEvent(
                     (object) $payload['subscription'],
-                    $request->get('reference')
+                    $subscriptionId,
+                    $paymentId
                 )
             );
         }
@@ -56,7 +78,8 @@ class PagarmeController extends AbstractController
             $this->messageBus->dispatch(
                 new PagarmeTransactionResponseReceivedEvent(
                     (object) $payload['transaction'],
-                    $request->get('reference')
+                    $subscriptionId,
+                    $paymentId
                 )
             );
         }

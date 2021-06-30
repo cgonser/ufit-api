@@ -21,23 +21,32 @@ class InvoiceManager
         $this->messageBus = $messageBus;
     }
 
-    public function createFromSubscription(Subscription $subscription): Invoice
+    public function createFromSubscription(Subscription $subscription, ?\DateTime $dueDate = null): Invoice
     {
+        if (null === $dueDate) {
+            $dueDate = new \DateTime();
+        }
+
         $invoice = new Invoice();
         $invoice->setSubscription($subscription);
         $invoice->setCurrency($subscription->getVendorPlan()->getCurrency());
         $invoice->setTotalAmount($subscription->getPrice());
-        $invoice->setDueDate(new \DateTime());
+        $invoice->setDueDate($dueDate);
 
         $this->invoiceRepository->save($invoice);
 
         return $invoice;
     }
 
-    public function markAsPaid(Invoice $invoice, \DateTimeInterface $paidAt)
+    public function markAsPaid(Invoice $invoice, \DateTimeInterface $paidAt): void
     {
         $invoice->setPaidAt($paidAt);
 
+        $this->invoiceRepository->save($invoice);
+    }
+
+    public function save(Invoice $invoice): void
+    {
         $this->invoiceRepository->save($invoice);
     }
 }

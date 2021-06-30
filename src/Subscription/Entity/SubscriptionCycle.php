@@ -30,7 +30,7 @@ class SubscriptionCycle
     private UuidInterface $id;
 
     /**
-     * @ORM\Column(type="uuid", unique=true)
+     * @ORM\Column(type="uuid")
      */
     private UuidInterface $subscriptionId;
 

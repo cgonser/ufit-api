@@ -114,6 +114,30 @@ class Invoice
         return $this;
     }
 
+    public function getSubscriptionCycleId(): ?UuidInterface
+    {
+        return $this->subscriptionCycleId;
+    }
+
+    public function setSubscriptionCycleId(?UuidInterface $subscriptionCycleId): self
+    {
+        $this->subscriptionCycleId = $subscriptionCycleId;
+
+        return $this;
+    }
+
+    public function getSubscriptionCycle(): SubscriptionCycle
+    {
+        return $this->subscriptionCycle;
+    }
+
+    public function setSubscriptionCycle(SubscriptionCycle $subscriptionCycle): self
+    {
+        $this->subscriptionCycle = $subscriptionCycle;
+
+        return $this;
+    }
+
     public function getTotalAmount(): Decimal
     {
         return new Decimal($this->totalAmount);

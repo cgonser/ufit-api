@@ -55,7 +55,8 @@ class PagarmeSubscriptionResponseProcessor
 
         $this->pagarmeTransactionResponseProcessor->process(
             json_decode(json_encode($response->current_transaction)),
-            $paymentId
+            $paymentId,
+            $subscription->getId(),
         );
 
         if (method_exists($this, $methodName)) {

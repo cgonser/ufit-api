@@ -16,23 +16,19 @@ class SubscriptionCycleManager
         $this->subscriptionCycleRepository = $subscriptionCycleRepository;
     }
 
-    public function createFirst(Subscription $subscription)
-    {
+    public function create(
+        Subscription $subscription,
+        \DateTimeInterface $startsAt,
+        \DateTimeInterface $endsAt
+    ): SubscriptionCycle {
         $subscriptionCycle = new SubscriptionCycle();
         $subscriptionCycle->setSubscription($subscription);
         $subscriptionCycle->setPrice($subscription->getPrice());
-        $subscriptionCycle->setStartsAt(); // todo: to be finished
+        $subscriptionCycle->setStartsAt($startsAt);
+        $subscriptionCycle->setEndsAt($endsAt);
 
-        $this->subscriptionCycleRepository->save($subscription);
-    }
+        $this->subscriptionCycleRepository->save($subscriptionCycle);
 
-    public function createNext(Subscription $subscription)
-    {
-        $subscriptionCycle = new SubscriptionCycle();
-        $subscriptionCycle->setSubscription($subscription);
-        $subscriptionCycle->setPrice($subscription->getPrice());
-        $subscriptionCycle->setStartsAt(); // todo: to be finished
-
-        $this->subscriptionCycleRepository->save($subscription);
+        return $subscriptionCycle;
     }
 }
