@@ -106,6 +106,9 @@ abstract class PagarmeProcessor
         $billingInformation = $payment->getBillingInformation();
         $customer = $payment->getInvoice()->getSubscription()->getCustomer();
 
+        $phoneAreaCode = $customer->getPhoneAreaCode() ?: $billingInformation->getPhoneAreaCode();
+        $phoneNumber = $customer->getPhoneNumber() ?: $billingInformation->getPhoneNumber();
+
         $transactionData['customer'] = [
             'external_id' => $customer->getId()->toString(),
             'name' => $billingInformation->getName() ?: $customer->getName(),
@@ -123,13 +126,13 @@ abstract class PagarmeProcessor
         if ($payment->getInvoice()->getSubscription()->getVendorPlan()->isRecurring()) {
             $transactionData['customer']['address'] = $this->prepareAddressData($billingInformation);
             $transactionData['customer']['phone'] = [
-                'ddd' => ltrim($billingInformation->getPhoneAreaCode(), '0'),
-                'number' => $billingInformation->getPhoneNumber(),
+                'ddd' => ltrim($phoneAreaCode, '0'),
+                'number' => $phoneNumber,
             ];
         } else {
-            $phoneNumber = $billingInformation->getPhoneNumber() ?: '+55'.
-                ltrim($billingInformation->getPhoneAreaCode(), '0').
-                $billingInformation->getPhoneNumber();
+            $phoneNumber = $phoneNumber ?: '+55'.
+                ltrim($phoneAreaCode, '0').
+                $phoneNumber;
 
             if (0 !== strpos($phoneNumber, '+')) {
                 $phoneNumber = '+'.$phoneNumber;
