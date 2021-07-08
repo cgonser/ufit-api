@@ -79,13 +79,21 @@ class PaymentRequestManager
                 ->getSubscription()->getCustomerId();
 
             if (null === $payment->getBillingInformationId()) {
-                $this->billingInformationRequestManager->createFromRequest($paymentRequest->billingInformation);
+                $billingInformation = $this->billingInformationRequestManager->createFromRequest(
+                    $paymentRequest->billingInformation
+                );
             } else {
+                $billingInformation = $this->billingInformationProvider->get(
+                    Uuid::fromString($paymentRequest->billingInformationId)
+                );
+
                 $this->billingInformationRequestManager->updateFromRequest(
-                    $this->billingInformationProvider->get(Uuid::fromString($paymentRequest->billingInformationId)),
+                    $billingInformation,
                     $paymentRequest->billingInformation
                 );
             }
+
+            $payment->setBillingInformation($billingInformation);
         }
     }
 }

@@ -174,7 +174,7 @@ class SubscriptionManager
         }
     }
 
-    public function defineExternalRefence(Subscription $subscription, string $externalReference): void
+    public function defineExternalRefence(Subscription $subscription, ?string $externalReference): void
     {
         $subscription->setExternalReference($externalReference);
 

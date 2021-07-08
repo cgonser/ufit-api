@@ -26,7 +26,7 @@ class BillingInformation
      * @ORM\GeneratedValue(strategy="CUSTOM")
      * @ORM\CustomIdGenerator(class=UuidGenerator::class)
      */
-    private UuidInterface $id;
+    private ?UuidInterface $id = null;
 
     /**
      * @ORM\Column(type="uuid")
@@ -119,7 +119,7 @@ class BillingInformation
      */
     private ?string $addressZipCode = null;
 
-    public function getId(): UuidInterface
+    public function getId(): ?UuidInterface
     {
         return $this->id;
     }

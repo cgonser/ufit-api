@@ -2,13 +2,13 @@
 
 namespace App\Payment\Service\PaymentProcessor\Pagarme;
 
-use App\Payment\Dto\PagarmeTransactionInputDto;
+use App\Payment\Entity\Payment;
 use App\Payment\Entity\PaymentMethod;
 use App\Payment\Service\PaymentProcessor\PaymentProcessorInterface;
 
 class BoletoProcessor extends PagarmeProcessor implements PaymentProcessorInterface
 {
-    protected function prepareTransactionData(PagarmeTransactionInputDto $transactionInput): array
+    protected function prepareTransactionData(Payment $payment): array
     {
         return [
             'payment_method' => 'boleto',
