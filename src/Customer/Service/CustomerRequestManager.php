@@ -2,6 +2,7 @@
 
 namespace App\Customer\Service;
 
+use App\Core\Exception\InvalidEntityException;
 use App\Customer\Entity\Customer;
 use App\Customer\Exception\CustomerInvalidBirthDateException;
 use App\Customer\Exception\CustomerNotFoundException;
@@ -47,7 +48,23 @@ class CustomerRequestManager
             $this->localizeCustomer($customer, $ipAddress);
         }
 
-        $this->customerManager->create($customer);
+        try {
+            $this->customerManager->create($customer);
+        } catch (InvalidEntityException $e) {
+            if (1 === count($e->getErrors())
+                && isset($e->getErrors()[0]['propertyPath'])
+                && 'email' === $e->getErrors()[0]['propertyPath']) {
+                $existingCustomer = $this->customerProvider->findOneByEmail($customerRequest->email);
+
+                if (null !== $existingCustomer
+                    && null === $existingCustomer->getPassword()
+                    && !$customerRequest->has('password')) {
+                    return $existingCustomer;
+                }
+            }
+
+            throw $e;
+        }
 
         return $customer;
     }
@@ -82,7 +99,9 @@ class CustomerRequestManager
         }
 
         if (null !== $customerRequest->password && null === $customer->getPassword()) {
-            $customer->setPassword($this->customerPasswordManager->encodePassword($customer, $customerRequest->password));
+            $customer->setPassword(
+                $this->customerPasswordManager->encodePassword($customer, $customerRequest->password)
+            );
         }
 
         if (null !== $customerRequest->height) {
@@ -90,7 +109,7 @@ class CustomerRequestManager
         }
 
         if (null !== $customerRequest->lastWeight) {
-            $customer->setLastWeight(new Decimal((string) $customerRequest->lastWeight));
+            $customer->setLastWeight(new Decimal((string)$customerRequest->lastWeight));
         }
 
         if (null !== $customerRequest->birthDate) {

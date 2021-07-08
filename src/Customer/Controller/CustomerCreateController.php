@@ -4,6 +4,8 @@ namespace App\Customer\Controller;
 
 use App\Core\Exception\ApiJsonInputValidationException;
 use App\Core\Dto\JWTAuthenticationTokenDto;
+use App\Customer\Provider\CustomerProvider;
+use App\Customer\Request\CustomerCreateRequest;
 use App\Customer\Request\CustomerRequest;
 use App\Customer\Service\CustomerRequestManager;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\AuthenticationSuccessHandler;
@@ -19,14 +21,16 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 class CustomerCreateController extends AbstractController
 {
     private CustomerRequestManager $customerRequestManager;
-
+    private CustomerProvider $customerProvider;
     private AuthenticationSuccessHandler $authenticationSuccessHandler;
 
     public function __construct(
         CustomerRequestManager $customerRequestManager,
+        CustomerProvider $customerProvider,
         AuthenticationSuccessHandler $authenticationSuccessHandler
     ) {
         $this->customerRequestManager = $customerRequestManager;
+        $this->customerProvider = $customerProvider;
         $this->authenticationSuccessHandler = $authenticationSuccessHandler;
     }
 
@@ -37,12 +41,12 @@ class CustomerCreateController extends AbstractController
      * })
      *
      * @OA\Tag(name="Customer")
-     * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=CustomerRequest::class)))
+     * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=CustomerCreateRequest::class)))
      * @OA\Response(response=201, description="Success", @OA\JsonContent(ref=@Model(type=JWTAuthenticationTokenDto::class)))
      * @OA\Response(response=400, description="Invalid input")
      */
     public function create(
-        CustomerRequest $customerRequest,
+        CustomerCreateRequest $customerRequest,
         ConstraintViolationListInterface $validationErrors,
         Request $request
     ): Response {
