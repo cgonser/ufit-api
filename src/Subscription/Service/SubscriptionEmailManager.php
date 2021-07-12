@@ -39,11 +39,15 @@ class SubscriptionEmailManager
 //            )
 //        );
 
+        $vendorTimezone = $vendor->getTimezone()
+            ?: ($vendor->getCountry() ? Timezones::forCountryCode($vendor->getCountry())[0] : null)
+                ?: null;
+
         $vendorDateFormatter = new \IntlDateFormatter(
             $vendor->getLocale(),
             \IntlDateFormatter::FULL,
             \IntlDateFormatter::SHORT,
-            $vendor->getTimezone() ?? Timezones::forCountryCode($vendor->getCountry())[0] ?? null
+            $vendorTimezone
         );
 
         $this->mailer->send(

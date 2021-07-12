@@ -151,6 +151,7 @@ class Payment
     public function setBillingInformation(?BillingInformation $billingInformation): self
     {
         $this->billingInformation = $billingInformation;
+        $this->billingInformationId = null !== $billingInformation ? $billingInformation->getId() : null;
 
         return $this;
     }
