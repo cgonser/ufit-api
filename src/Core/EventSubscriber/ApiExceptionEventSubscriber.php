@@ -38,6 +38,10 @@ class ApiExceptionEventSubscriber implements EventSubscriberInterface
             return new ApiJsonErrorResponse($e->getStatusCode(), $e->getMessage());
         }
 
+        if ($e instanceof \InvalidArgumentException) {
+            return new ApiJsonErrorResponse(400, $e->getMessage());
+        }
+
         return new ApiJsonErrorResponse($e->getCode() ?: Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
     }
 
