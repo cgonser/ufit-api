@@ -19,7 +19,7 @@ class SubscriptionCycleManager
     public function create(
         Subscription $subscription,
         \DateTimeInterface $startsAt,
-        \DateTimeInterface $endsAt
+        ?\DateTimeInterface $endsAt = null
     ): SubscriptionCycle {
         $subscriptionCycle = new SubscriptionCycle();
         $subscriptionCycle->setSubscription($subscription);
