@@ -54,6 +54,22 @@ RUN pecl install decimal \
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN docker-php-ext-install gd pdo_pgsql intl exif zip
 
+RUN mkdir -p /var/log/newrelic /var/run/newrelic && \
+    touch /var/log/newrelic/php_agent.log /var/log/newrelic/newrelic-daemon.log && \
+    chmod -R g+ws /tmp /var/log/newrelic/ /var/run/newrelic/ && \
+    chown -R 1001:0 /tmp /var/log/newrelic/ /var/run/newrelic/ && \
+    rm -rf /etc/dpkg && \
+
+    # Download and install Newrelic binary
+    export NEWRELIC_VERSION=$(curl -sS https://download.newrelic.com/php_agent/release/ | sed -n 's/.*>\(.*linux-musl\).tar.gz<.*/\1/p') && \
+    cd /tmp && curl -sS "https://download.newrelic.com/php_agent/release/${NEWRELIC_VERSION}.tar.gz" | gzip -dc | tar xf - && \
+    cd "${NEWRELIC_VERSION}" && \
+    NR_INSTALL_SILENT=true ./newrelic-install install && \
+    rm -f /var/run/newrelic-daemon.pid && \
+    rm -f /tmp/.newrelic.sock
+
+ADD ./docker/php-fpm/newrelic.ini /usr/local/etc/php/conf.d/newrelic.ini
+
 WORKDIR /app
 ARG APP_ENV=prod
 

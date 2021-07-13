@@ -13,6 +13,16 @@ if [ ! -f ${PHP_INI_DIR}/conf.d/xdebug.ini ] && [ "${ENABLE_XDEBUG}" != "" ]; th
     mv ${PHP_INI_DIR}/conf.d/xdebug.ini.disabled ${PHP_INI_DIR}/conf.d/xdebug.ini
 fi
 
+if [ "${NEW_RELIC_LICENSE_KEY}" != "" ] && [ "${NEW_RELIC_APP_NAME}" != "" ]; then
+    NEW_RELIC_DAEMON_ADDRESS=`ip route | grep default | cut -d ' ' -f 3`
+
+    sed -i \
+        -e "s/newrelic.license =.*/newrelic.license = ${NEW_RELIC_LICENSE_KEY}/" \
+        -e "s/newrelic.appname =.*/newrelic.appname = ${NEW_RELIC_APP_NAME}/" \
+        -e "s/newrelic.daemon.address =.*/newrelic.daemon.address = ${NEW_RELIC_DAEMON_ADDRESS}:31339/" \
+        /usr/local/etc/php/conf.d/newrelic.ini
+fi
+
 if [ "$1" = 'php-fpm' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
 	PHP_INI_RECOMMENDED="$PHP_INI_DIR/php.ini-production"
 	if [ "$APP_ENV" != 'prod' ]; then
