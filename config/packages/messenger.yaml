@@ -22,7 +22,7 @@ framework:
                     max_delay: 0
 
         routing:
-            'App\Customer\Message\CustomerCreatedEvent': customer
+            'App\Customer\Message\CustomerCreatedEvent': void
 
             'App\Payment\Message\InvoicePaidEvent': payment
             'App\Payment\Message\PaymentCreatedEvent': payment

@@ -1,7 +1,7 @@
 customer:
     created:
         subject: "Welcome to uFit"
-        content: "What text goes here?"
+        content: "We are thrilled you have joined the uFit community! Welcome!\n\nYour personal trainer, %vendor_name%, will soon get in touch with you to get more information and prepare a training program that best suits your goals."
 
     program_sent:
         subject: "Your new training program is here"

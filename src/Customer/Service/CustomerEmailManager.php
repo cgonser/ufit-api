@@ -18,7 +18,7 @@ class CustomerEmailManager
         $this->mailer = $mailer;
     }
 
-    public function sendCreatedEmail(Customer $customer)
+    public function sendCreatedEmail(Customer $customer): void
     {
         $this->mailer->send(
             $this->emailComposer->compose(
