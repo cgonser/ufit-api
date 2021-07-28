@@ -172,3 +172,13 @@ jobs:
                     REGION: eu-central-1
                 run: |
                     aws ecs update-service --cluster $CLUSTER --service $SERVICE --force-new-deployment --region $REGION
+
+    clean-up:
+        needs: [deploy-ufit, deploy-uvector]
+        name: Clean up
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Delete API artifact
+                uses: geekyeggo/delete-artifact@v1
+                with:
+                    name: api
