@@ -48,7 +48,7 @@ class CustomerFacebookLoginManager
         }
     }
 
-    private function createOrUpdateCustomerSocialNetwork(Customer $customer, array $graphUser, string $accessToken): void
+    private function createOrUpdateCustomerSocialNetwork(Customer $customer, GraphUser $graphUser, string $accessToken): void
     {
         $customerSocialNetwork = $this->customerSocialNetworkProvider->findOneByCustomerAndPlatform(
             $customer,
@@ -58,12 +58,12 @@ class CustomerFacebookLoginManager
         if (!$customerSocialNetwork) {
             $customerSocialNetwork = new CustomerSocialNetwork();
             $customerSocialNetwork->setCustomer($customer);
-            $customerSocialNetwork->setExternalId($graphUser['id']);
+            $customerSocialNetwork->setExternalId($graphUser->getId());
             $customerSocialNetwork->setPlatform(CustomerSocialNetwork::PLATFORM_FACEBOOK);
         }
 
         $customerSocialNetwork->setAccessToken($accessToken);
-        $customerSocialNetwork->setDetails($graphUser);
+        $customerSocialNetwork->setDetails($graphUser->asArray());
 
         $this->customerSocialNetworkManager->save($customerSocialNetwork);
     }
