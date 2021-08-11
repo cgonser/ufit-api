@@ -5,7 +5,7 @@ customer:
 
     program_sent:
         subject: "Your new training program is here"
-        content: "%vendor_name% has sent you a new training program.\n\nYou can download your program by clicking here [%download_url%](here)."
+        content: "%vendor_name% has sent you a new training program.\n\nYou can download your program by clicking [here](%download_url%)."
 
     password_reset:
         subject: "uFit password recovery"

@@ -33,7 +33,7 @@ framework:
             'App\Program\Message\ProgramDeletedEvent': void
             'App\Program\Message\ProgramAssetCreatedEvent': void
             'App\Program\Message\ProgramAssetDeletedEvent': void
-            'App\Program\Message\ProgramAssignmentCreatedEvent': void
+            'App\Program\Message\ProgramAssignmentCreatedEvent': customer
             'App\Program\Message\ProgramAssignmentDeletedEvent': void
             'App\Program\Message\ProgramAssignmentExpiredEvent': void
             'App\Program\Message\ProgramAssignmentUpdatedEvent': void
