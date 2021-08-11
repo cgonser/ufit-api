@@ -27,7 +27,7 @@ class VendorEmailManager
                     $vendor->getName() => $vendor->getEmail(),
                 ],
                 [
-                    'greeting_name' => $vendor->getName(),
+                    'greeting_name' => $vendor->getName() ?: $vendor->getDisplayName(),
                 ],
                 $vendor->getLocale()
             )
