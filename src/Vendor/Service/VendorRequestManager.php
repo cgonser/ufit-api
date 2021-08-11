@@ -71,7 +71,7 @@ class VendorRequestManager
     public function mapFromRequest(Vendor $vendor, VendorRequest $vendorRequest)
     {
         if ($vendorRequest->has('email')) {
-            $vendor->setEmail($vendorRequest->email);
+            $vendor->setEmail(strtolower($vendorRequest->email));
         }
 
         if ($vendorRequest->has('name')) {

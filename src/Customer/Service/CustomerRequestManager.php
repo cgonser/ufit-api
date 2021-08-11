@@ -83,7 +83,7 @@ class CustomerRequestManager
         }
 
         if (null !== $customerRequest->email) {
-            $customer->setEmail($customerRequest->email);
+            $customer->setEmail(strtolower($customerRequest->email));
         }
 
         if (null !== $customerRequest->phoneIntlCode) {
