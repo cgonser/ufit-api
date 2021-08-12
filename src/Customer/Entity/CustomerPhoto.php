@@ -35,24 +35,24 @@ class CustomerPhoto
 
     /**
      * @ORM\ManyToOne(targetEntity="PhotoType")
-     * @ORM\JoinColumn(name="photo_type_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="photo_type_id", referencedColumnName="id", nullable=true)
      */
-    private PhotoType $photoType;
+    private ?PhotoType $photoType = null;
 
     /**
      * @ORM\Column(nullable=true)
      */
-    private ?string $title;
+    private ?string $title = null;
 
     /**
      * @ORM\Column(type="text", nullable=true)
      */
-    private ?string $description;
+    private ?string $description = null;
 
     /**
      * @ORM\Column(nullable=true)
      */
-    private ?string $filename;
+    private ?string $filename = null;
 
     /**
      * @ORM\Column(name="taken_at", type="datetime", nullable=true)
@@ -76,7 +76,7 @@ class CustomerPhoto
         return $this;
     }
 
-    public function getPhotoType(): PhotoType
+    public function getPhotoType(): ?PhotoType
     {
         return $this->photoType;
     }

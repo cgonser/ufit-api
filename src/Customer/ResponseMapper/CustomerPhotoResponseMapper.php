@@ -27,16 +27,17 @@ class CustomerPhotoResponseMapper
         $customerPhotoDto->customerId = $customerPhoto->getCustomer()->getId()->toString();
         $customerPhotoDto->title = $customerPhoto->getTitle() ?? '';
         $customerPhotoDto->description = $customerPhoto->getDescription() ?? '';
-        $customerPhotoDto->takenAt = $customerPhoto->getTakenAt()->format(\DateTimeInterface::ISO8601);
+        $customerPhotoDto->takenAt = $customerPhoto->getTakenAt()->format(\DateTimeInterface::ATOM);
 
-        $cmd = $this->s3Client->getCommand('GetObject', [
-            'Bucket' => $this->customerPhotoS3Bucket,
-            'Key' => $customerPhoto->getFilename(),
-        ]);
+        if (null !== $customerPhoto->getFilename()) {
+            $cmd = $this->s3Client->getCommand('GetObject', [
+                'Bucket' => $this->customerPhotoS3Bucket,
+                'Key' => $customerPhoto->getFilename(),
+            ]);
 
-        $request = $this->s3Client->createPresignedRequest($cmd, '+15 minutes');
-
-        $customerPhotoDto->url = (string) $request->getUri();
+            $request = $this->s3Client->createPresignedRequest($cmd, '+15 minutes');
+            $customerPhotoDto->url = (string) $request->getUri();
+        }
 
         return $customerPhotoDto;
     }

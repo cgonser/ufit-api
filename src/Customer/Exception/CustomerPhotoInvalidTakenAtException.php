@@ -2,7 +2,9 @@
 
 namespace App\Customer\Exception;
 
-class CustomerPhotoInvalidTakenAtException extends \Exception
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+
+class CustomerPhotoInvalidTakenAtException extends BadRequestHttpException
 {
     protected $message = "Invalid takenAt value";
 }
