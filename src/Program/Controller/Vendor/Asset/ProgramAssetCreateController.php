@@ -40,29 +40,15 @@ class ProgramAssetCreateController extends AbstractController
 
     /**
      * @Route("/vendors/{vendorId}/programs/{programId}/assets", methods="POST", name="program_assets_create")
-     *
      * @ParamConverter("programAssetRequest", converter="fos_rest.request_body", options={
-     *     "deserializationContext"= {"allow_extra_attributes"=false}
+     *     "deserializationContext"={"allow_extra_attributes"=false}
      * })
      *
      * @OA\Tag(name="Program")
-     * @OA\RequestBody(
-     *     required=true,
-     *     @OA\JsonContent(ref=@Model(type=ProgramAssetRequest::class))
-     * )
-     * @OA\Response(
-     *     response=201,
-     *     description="Creates a new program asset",
-     *     @OA\JsonContent(ref=@Model(type=ProgramAssetDto::class))
-     * )
-     * @OA\Response(
-     *     response=400,
-     *     description="Invalid input"
-     * )
-     * @OA\Response(
-     *     response=404,
-     *     description="Program not found"
-     * )
+     * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=ProgramAssetRequest::class)))
+     * @OA\Response(response=201, description="Success", @OA\JsonContent(ref=@Model(type=ProgramAssetDto::class)))
+     * @OA\Response(response=400, description="Invalid input")
+     * @OA\Response(response=404, description="Program not found")
      */
     public function create(
         string $vendorId,
@@ -74,7 +60,7 @@ class ProgramAssetCreateController extends AbstractController
             throw new ApiJsonInputValidationException($validationErrors);
         }
 
-        if ('current' == $vendorId) {
+        if ('current' === $vendorId) {
             /** @var Vendor $vendor */
             $vendor = $this->getUser();
         } else {

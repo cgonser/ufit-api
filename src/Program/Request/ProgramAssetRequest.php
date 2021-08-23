@@ -5,17 +5,10 @@ namespace App\Program\Request;
 use OpenApi\Annotations as OA;
 
 /**
- * @OA\RequestBody(
- *     request="ProgramAssetRequest"
- * )
+ * @OA\RequestBody()
  */
 class ProgramAssetRequest
 {
-    /**
-     * @OA\Property()
-     */
-    public string $contents;
-
     /**
      * @OA\Property()
      */

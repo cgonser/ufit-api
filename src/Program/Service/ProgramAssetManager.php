@@ -44,40 +44,27 @@ class ProgramAssetManager
 
         $this->programAssetRepository->save($programAsset);
 
-        $this->persistAsset(
-            $programAsset,
-            $programAssetRequest->filename,
-            $this->decodeFileContents($programAssetRequest->contents)
-        );
-
         $this->messageBus->dispatch(new ProgramAssetCreatedEvent($programAsset->getId()));
 
         return $programAsset;
     }
 
-    public function delete(ProgramAsset $programAsset)
+    public function delete(ProgramAsset $programAsset): void
     {
         $this->programAssetRepository->delete($programAsset);
 
         $this->messageBus->dispatch(new ProgramAssetDeletedEvent($programAsset->getId()));
     }
 
-    private function persistAsset(ProgramAsset $programAsset, string $filename, string $contents)
+    public function uploadAsset(ProgramAsset $programAsset, string $contents): void
     {
-        $extension = pathinfo($filename, PATHINFO_EXTENSION);
+        $extension = pathinfo($programAsset->getFilename(), PATHINFO_EXTENSION);
         $filename = $programAsset->getId()->toString().'.'.$extension;
 
-        $this->filesystem->write($filename, $contents);
+        $this->filesystem->put($filename, $contents);
 
         $programAsset->setFilename($filename);
 
         $this->programAssetRepository->save($programAsset);
-    }
-
-    public function decodeFileContents(string $contents): ?string
-    {
-        return null !== $contents
-            ? base64_decode($contents)
-            : null;
     }
 }

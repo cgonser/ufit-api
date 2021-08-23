@@ -58,11 +58,4 @@ class CustomerPhotoManager
 
         $this->customerPhotoRepository->save($customerPhoto);
     }
-
-    public function decodePhotoContents(string $photoContents): ?string
-    {
-        return null !== $photoContents
-            ? base64_decode($photoContents)
-            : null;
-    }
 }
