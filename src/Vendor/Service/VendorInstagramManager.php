@@ -24,7 +24,7 @@ class VendorInstagramManager implements LoggerAwareInterface
 
     private VendorRequestManager $vendorRequestManager;
 
-    private VendorPhotoService $vendorPhotoService;
+    private VendorPhotoManager $vendorPhotoManager;
 
     private InstagramBasicDisplay $instagramBasicDisplay;
 
@@ -35,14 +35,14 @@ class VendorInstagramManager implements LoggerAwareInterface
     public function __construct(
         VendorProvider $vendorProvider,
         VendorRequestManager $vendorRequestManager,
-        VendorPhotoService $vendorPhotoService,
+        VendorPhotoManager $vendorPhotoManager,
         InstagramBasicDisplay $instagramBasicDisplay,
         VendorInstagramProfileRepository $vendorInstagramProfileRepository,
         Instagram $instagramScrapper
     ) {
         $this->vendorProvider = $vendorProvider;
         $this->vendorRequestManager = $vendorRequestManager;
-        $this->vendorPhotoService = $vendorPhotoService;
+        $this->vendorPhotoManager = $vendorPhotoManager;
         $this->instagramBasicDisplay = $instagramBasicDisplay;
         $this->vendorInstagramProfileRepository = $vendorInstagramProfileRepository;
         $this->instagramScrapper = $instagramScrapper;
@@ -111,7 +111,7 @@ class VendorInstagramManager implements LoggerAwareInterface
         $this->vendorRequestManager->update($vendorInstagramProfile->getVendor(), $vendorRequest);
 
         if ($accountData->getProfilePicUrlHd()) {
-            $this->vendorPhotoService->uploadFromUrl(
+            $this->vendorPhotoManager->uploadFromUrl(
                 $vendorInstagramProfile->getVendor(),
                 $accountData->getProfilePicUrlHd()
             );
@@ -148,7 +148,7 @@ class VendorInstagramManager implements LoggerAwareInterface
         }
 
         if (null !== $photoUrl) {
-            $this->vendorPhotoService->uploadFromUrl($vendor, $photoUrl);
+            $this->vendorPhotoManager->uploadFromUrl($vendor, $photoUrl);
         }
 
         $vendorInstagramProfile->setVendor($vendor);

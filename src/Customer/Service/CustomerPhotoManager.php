@@ -51,10 +51,7 @@ class CustomerPhotoManager
 
         $this->filesystem->put(
             $filename,
-            $image->encode('png'),
-            [
-
-            ]
+            $image->encode('png')
         );
 
         $customerPhoto->setFilename($filename);

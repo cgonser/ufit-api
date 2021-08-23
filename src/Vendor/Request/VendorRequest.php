@@ -60,11 +60,6 @@ class VendorRequest extends AbstractRequest
     /**
      * @OA\Property()
      */
-    public ?string $photoContents;
-
-    /**
-     * @OA\Property()
-     */
     public ?bool $allowEmailMarketing;
 
     /**
