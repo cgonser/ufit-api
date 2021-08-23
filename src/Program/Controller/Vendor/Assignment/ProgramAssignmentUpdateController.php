@@ -68,7 +68,7 @@ class ProgramAssignmentUpdateController extends AbstractController
      *     description="Program not found"
      * )
      */
-    public function delete(
+    public function update(
         string $vendorId,
         string $programId,
         string $programAssignmentId,

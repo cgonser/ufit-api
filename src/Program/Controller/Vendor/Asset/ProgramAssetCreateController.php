@@ -10,7 +10,7 @@ use App\Vendor\Entity\Vendor;
 use App\Program\Provider\VendorProgramProvider;
 use App\Program\Request\ProgramAssetRequest;
 use App\Program\ResponseMapper\ProgramAssetResponseMapper;
-use App\Program\Service\ProgramAssetManager;
+use App\Program\Service\ProgramAssetRequestManager;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Ramsey\Uuid\Uuid;
@@ -26,16 +26,16 @@ class ProgramAssetCreateController extends AbstractController
 
     private ProgramAssetResponseMapper $programAssetResponseMapper;
 
-    private ProgramAssetManager $programAssetManager;
+    private ProgramAssetRequestManager $programAssetRequestManager;
 
     public function __construct(
         VendorProgramProvider $programProvider,
         ProgramAssetResponseMapper $programAssetResponseMapper,
-        ProgramAssetManager $programAssetManager
+        ProgramAssetRequestManager $programAssetRequestManager
     ) {
         $this->programProvider = $programProvider;
         $this->programAssetResponseMapper = $programAssetResponseMapper;
-        $this->programAssetManager = $programAssetManager;
+        $this->programAssetRequestManager = $programAssetRequestManager;
     }
 
     /**
@@ -70,7 +70,7 @@ class ProgramAssetCreateController extends AbstractController
 
         $program = $this->programProvider->getByVendorAndId($vendor, Uuid::fromString($programId));
 
-        $programAsset = $this->programAssetManager->createFromRequest($program, $programAssetRequest);
+        $programAsset = $this->programAssetRequestManager->createFromRequest($program, $programAssetRequest);
 
         return new ApiJsonResponse(
             Response::HTTP_CREATED,

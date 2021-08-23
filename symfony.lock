@@ -781,6 +781,9 @@
     "willdurand/negotiation": {
         "version": "v2.3.1"
     },
+    "xantios/mimey": {
+        "version": "v2.2.0"
+    },
     "zircote/swagger-php": {
         "version": "3.1.0"
     }

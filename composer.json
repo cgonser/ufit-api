@@ -63,7 +63,8 @@
         "twig/cssinliner-extra": "^3.3",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/markdown-extra": "^3.3",
-        "twig/twig": "^2.12|^3.0"
+        "twig/twig": "^2.12|^3.0",
+        "xantios/mimey": "^2.2"
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.3",
