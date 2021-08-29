@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Dto;
 
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -9,34 +11,34 @@ class VendorDto
 {
     public string $id;
 
-    public ?string $name;
+    public ?string $name = null;
 
-    public ?string $displayName;
+    public ?string $displayName = null;
 
-    public ?string $email;
+    public ?string $email = null;
 
-    public ?string $slug;
+    public ?string $slug = null;
 
-    public ?string $photo;
+    public ?string $photo = null;
 
-    public ?string $biography;
+    public ?string $biography = null;
 
-    public ?string $country;
+    public ?string $country = null;
 
-    public ?string $locale;
+    public ?string $locale = null;
 
-    public ?string $timezone;
+    public ?string $timezone = null;
 
-    public ?bool $allowEmailMarketing;
+    public ?bool $allowEmailMarketing = null;
 
     /**
      * @var VendorPlanDto[]
      * @OA\Property(type="array", @OA\Items(ref=@Model(type=VendorPlanDto::class)))
      */
-    public ?array $plans;
+    public ?array $plans = [];
 
     /**
      * @OA\Property(type="array", @OA\Items(type="object"))
      */
-    public ?array $socialLinks;
+    public ?array $socialLinks = null;
 }

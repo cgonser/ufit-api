@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Service;
 
 use App\Core\Service\EmailComposer;
@@ -21,7 +23,8 @@ class ProgramEmailManager
     public function sendAssignedEmail(ProgramAssignment $programAssignment): void
     {
         $customer = $programAssignment->getCustomer();
-        $vendor = $programAssignment->getProgram()->getVendor();
+        $vendor = $programAssignment->getProgram()
+            ->getVendor();
 
         $this->mailer->send(
             $this->emailComposer->compose(

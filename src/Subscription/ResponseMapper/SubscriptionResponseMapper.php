@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\ResponseMapper;
 
 use App\Customer\Entity\Customer;
@@ -25,16 +27,21 @@ class SubscriptionResponseMapper
     public function map(Subscription $subscription, bool $mapRelations = false): SubscriptionDto
     {
         $subscriptionDto = new SubscriptionDto();
-        $subscriptionDto->id = $subscription->getId()->toString();
+        $subscriptionDto->id = $subscription->getId()
+            ->toString();
         $subscriptionDto->expiresAt = $subscription->getExpiresAt()
-            ? $subscription->getExpiresAt()->format(\DateTimeInterface::ATOM)
+            ? $subscription->getExpiresAt()
+                ->format(\DateTimeInterface::ATOM)
             : null;
         $subscriptionDto->validFrom = $subscription->getValidFrom()
-            ? $subscription->getValidFrom()->format(\DateTimeInterface::ATOM)
+            ? $subscription->getValidFrom()
+                ->format(\DateTimeInterface::ATOM)
             : null;
-        $subscriptionDto->price = $subscription->getPrice()->toFloat();
+        $subscriptionDto->price = $subscription->getPrice()
+            ->toFloat();
         $subscriptionDto->reviewedAt = $subscription->getReviewedAt()
-            ? $subscription->getReviewedAt()->format(\DateTimeInterface::ATOM)
+            ? $subscription->getReviewedAt()
+                ->format(\DateTimeInterface::ATOM)
             : null;
         $subscriptionDto->isApproved = $subscription->isApproved();
         $subscriptionDto->isRecurring = $subscription->isRecurring();
@@ -44,12 +51,17 @@ class SubscriptionResponseMapper
             $subscriptionDto->vendorPlan = $this->vendorPlanResponseMapper->map($subscription->getVendorPlan());
             $subscriptionDto->customer = $this->customerResponseMapper->map($subscription->getCustomer());
         } else {
-            $subscriptionDto->vendorPlanId = $subscription->getVendorPlan()->getId()->toString();
-            $subscriptionDto->customerId = $subscription->getCustomer()->getId()->toString();
+            $subscriptionDto->vendorPlanId = $subscription->getVendorPlan()
+                ->getId()
+                ->toString();
+            $subscriptionDto->customerId = $subscription->getCustomer()
+                ->getId()
+                ->toString();
         }
 
         $subscriptionDto->cancelledAt = $subscription->getCancelledAt()
-            ? $subscription->getCancelledAt()->format(\DateTimeInterface::ATOM)
+            ? $subscription->getCancelledAt()
+                ->format(\DateTimeInterface::ATOM)
             : null;
 
         return $subscriptionDto;

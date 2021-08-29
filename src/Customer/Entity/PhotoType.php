@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -46,6 +48,6 @@ class PhotoType
 
     public function isNew(): bool
     {
-        return !isset($this->id);
+        return ! isset($this->id);
     }
 }

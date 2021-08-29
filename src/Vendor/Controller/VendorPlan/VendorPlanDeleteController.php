@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Controller\VendorPlan;
 
 use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
+use App\Core\Security\AuthorizationVoterInterface;
 use App\Vendor\Entity\Vendor;
-use App\Vendor\Exception\VendorPlanNotFoundException;
 use App\Vendor\Provider\VendorPlanProvider;
+use App\Vendor\Provider\VendorProvider;
 use App\Vendor\Service\VendorPlanManager;
 use OpenApi\Annotations as OA;
 use Ramsey\Uuid\Uuid;
@@ -14,48 +17,29 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route(path: '/vendors/{vendorId}/plans')]
 class VendorPlanDeleteController extends AbstractController
 {
-    private VendorPlanManager $vendorPlanService;
-
-    private VendorPlanProvider $vendorPlanProvider;
-
     public function __construct(
-        VendorPlanManager $vendorPlanService,
-        VendorPlanProvider $vendorPlanProvider
+        private VendorPlanManager $vendorPlanManager,
+        private VendorPlanProvider $vendorPlanProvider,
+        private VendorProvider $vendorProvider,
     ) {
-        $this->vendorPlanService = $vendorPlanService;
-        $this->vendorPlanProvider = $vendorPlanProvider;
     }
 
     /**
-     * @Route("/vendors/{vendorId}/plans/{vendorPlanId}", methods="DELETE", name="vendors_plans_delete")
-     *
      * @OA\Tag(name="Vendor / Plan")
-     * @OA\Response(
-     *     response=204,
-     *     description="Deletes a plan"
-     * )
-     * @OA\Response(
-     *     response=404,
-     *     description="Plan not found"
-     * )
+     * @OA\Response(response=204, description="Deletes a plan")
+     * @OA\Response(response=404, description="Plan not found")
      */
-    public function create(
-        string $vendorId,
-        string $vendorPlanId
-    ): Response {
-        if ('current' === $vendorId) {
-            /** @var Vendor $vendor */
-            $vendor = $this->getUser();
-        } else {
-            // vendor fetching not implemented yet; requires also authorization
-            throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
-        }
+    #[Route(path: '/{vendorPlanId}', name: 'vendors_plans_delete', methods: 'DELETE')]
+    public function create(string $vendorId, string $vendorPlanId): ApiJsonResponse
+    {
+        $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
+        $this->denyAccessUnlessGranted(AuthorizationVoterInterface::UPDATE, $vendor);
 
         $vendorPlan = $this->vendorPlanProvider->getByVendorAndId($vendor, Uuid::fromString($vendorPlanId));
-
-        $this->vendorPlanService->delete($vendorPlan);
+        $this->vendorPlanManager->delete($vendorPlan);
 
         return new ApiJsonResponse(Response::HTTP_NO_CONTENT);
     }

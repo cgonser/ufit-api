@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Controller\CustomerMeasurement;
 
 use App\Core\Exception\ApiJsonException;
@@ -58,7 +60,9 @@ class CustomerMeasurementController extends AbstractController
 
         $customerMeasurements = $this->customerMeasurementProvider->findByCustomer($customer);
 
-        return new ApiJsonResponse(Response::HTTP_OK, $this->customerMeasurementResponseMapper->mapMultiple($customerMeasurements));
+        return new ApiJsonResponse(Response::HTTP_OK, $this->customerMeasurementResponseMapper->mapMultiple(
+            $customerMeasurements
+        ));
     }
 
     /**
@@ -76,7 +80,7 @@ class CustomerMeasurementController extends AbstractController
     public function getCustomerMeasurement(string $customerId, string $customerMeasurementId): Response
     {
         try {
-            if ('current' == $customerId) {
+            if ('current' === $customerId) {
                 /** @var Customer $customer */
                 $customer = $this->getUser();
             } else {
@@ -89,9 +93,14 @@ class CustomerMeasurementController extends AbstractController
                 $customer = $this->customerProvider->get(Uuid::fromString($customerId));
             }
 
-            $customerMeasurement = $this->customerMeasurementProvider->getByCustomerAndId($customer, Uuid::fromString($customerMeasurementId));
+            $customerMeasurement = $this->customerMeasurementProvider->getByCustomerAndId(
+                $customer,
+                Uuid::fromString($customerMeasurementId)
+            );
 
-            return new ApiJsonResponse(Response::HTTP_OK, $this->customerMeasurementResponseMapper->map($customerMeasurement));
+            return new ApiJsonResponse(Response::HTTP_OK, $this->customerMeasurementResponseMapper->map(
+                $customerMeasurement
+            ));
         } catch (CustomerMeasurementNotFoundException $e) {
             throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
         }

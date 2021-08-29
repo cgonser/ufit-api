@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Controller\PhotoType;
 
 use App\Core\Exception\ApiJsonException;
@@ -75,10 +77,7 @@ class PhotoTypeUpdateController extends AbstractController
 
             $this->photoTypeService->update($photoType, $photoTypeRequest);
 
-            return new ApiJsonResponse(
-                Response::HTTP_OK,
-                $this->photoTypeResponseMapper->map($photoType)
-            );
+            return new ApiJsonResponse(Response::HTTP_OK, $this->photoTypeResponseMapper->map($photoType));
         } catch (PhotoTypeNotFoundException $e) {
             throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
         } catch (PhotoTypeAlreadyExistsException $e) {

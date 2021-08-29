@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\MessageHandler;
 
 use App\Payment\Message\PagarmeSubscriptionResponseReceivedEvent;
@@ -23,11 +25,12 @@ class PagarmeSubscriptionResponseHandler implements MessageHandlerInterface
 
     public function __invoke(PagarmeSubscriptionResponseReceivedEvent $event)
     {
-        $this->logger->info(
-            'payment.subscription.response',
-            (array) $event->getResponse()
-        );
+        $this->logger->info('payment.subscription.response', (array) $event->getResponse());
 
-        $this->pagarmeResponseProcessor->process($event->getResponse(), $event->getSubscriptionId(), $event->getPaymentId());
+        $this->pagarmeResponseProcessor->process(
+            $event->getResponse(),
+            $event->getSubscriptionId(),
+            $event->getPaymentId()
+        );
     }
 }

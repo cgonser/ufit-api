@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Localization\Controller\Country;
 
 use App\Core\Exception\ApiJsonInputValidationException;
@@ -59,9 +61,6 @@ class CountryUpdateController extends AbstractController
 
         $this->countryRequestManager->updateFromRequest($country, $countryRequest);
 
-        return new ApiJsonResponse(
-            Response::HTTP_OK,
-            $this->countryResponseMapper->map($country)
-        );
+        return new ApiJsonResponse(Response::HTTP_OK, $this->countryResponseMapper->map($country));
     }
 }

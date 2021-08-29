@@ -1,59 +1,48 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Controller\CustomerMeasurement;
 
 use App\Core\Response\ApiJsonResponse;
+use App\Core\Security\AuthorizationVoterInterface;
 use App\Customer\Provider\CustomerMeasurementProvider;
 use App\Customer\Service\CustomerMeasurementService;
 use App\Subscription\Provider\SubscriptionCustomerProvider;
 use App\Vendor\Entity\Vendor;
+use App\Vendor\Provider\VendorProvider;
 use OpenApi\Annotations as OA;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route(path: '/vendors/{vendorId}/customers/{customerId}/measurements')]
 class VendorCustomerMeasurementDeleteController extends AbstractController
 {
-    private CustomerMeasurementService $customerMeasurementService;
-    private CustomerMeasurementProvider $customerMeasurementProvider;
-    private SubscriptionCustomerProvider $subscriptionCustomerProvider;
-
     public function __construct(
-        CustomerMeasurementService $customerMeasurementService,
-        CustomerMeasurementProvider $customerMeasurementProvider,
-        SubscriptionCustomerProvider $subscriptionCustomerProvider
+        private CustomerMeasurementService $customerMeasurementService,
+        private CustomerMeasurementProvider $customerMeasurementProvider,
+        private SubscriptionCustomerProvider $subscriptionCustomerProvider,
+        private VendorProvider $vendorProvider,
     ) {
-        $this->customerMeasurementService = $customerMeasurementService;
-        $this->customerMeasurementProvider = $customerMeasurementProvider;
-        $this->subscriptionCustomerProvider = $subscriptionCustomerProvider;
     }
 
     /**
-     * @Route(
-     *     "/vendors/{vendorId}/customers/{customerId}/measurements/{customerMeasurementId}",
-     *     methods="DELETE",
-     *     name="vendor_customers_measurements_delete"
-     * )
-     *
      * @OA\Tag(name="Vendor / Customer / Measurement")
-     * @OA\Response(
-     *     response=204,
-     *     description="Deletes a measurement"
-     * )
-     * @OA\Response(
-     *     response=404,
-     *     description="Measurement not found"
-     * )
+     * @OA\Response(response=204, description="Deletes a measurement")
+     * @OA\Response(response=404, description="Measurement not found")
      */
+    #[Route(path: '/{customerMeasurementId}', name: 'vendor_customers_measurements_delete', methods: 'DELETE')]
     public function create(
         string $customerId,
+        string $vendorId,
         string $customerMeasurementId
-    ): Response {
-        /** @var Vendor $vendor */
-        $vendor = $this->getUser();
-        $customer = $this->subscriptionCustomerProvider->getVendorCustomer($vendor, Uuid::fromString($customerId));
+    ): ApiJsonResponse {
+        $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
+        $this->denyAccessUnlessGranted(AuthorizationVoterInterface::UPDATE, $vendor);
 
+        $customer = $this->subscriptionCustomerProvider->getVendorCustomer($vendor, Uuid::fromString($customerId));
         $customerMeasurement = $this->customerMeasurementProvider->getByCustomerAndId(
             $customer,
             Uuid::fromString($customerMeasurementId)

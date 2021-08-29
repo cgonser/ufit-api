@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Provider;
 
 use App\Core\Provider\AbstractProvider;
-use App\Vendor\Entity\Vendor;
 use App\Vendor\Entity\VendorBankAccount;
 use App\Vendor\Exception\VendorBankAccountNotFoundException;
 use App\Vendor\Repository\VendorBankAccountRepository;
@@ -11,12 +12,12 @@ use Ramsey\Uuid\UuidInterface;
 
 class VendorBankAccountProvider extends AbstractProvider
 {
-    public function __construct(VendorBankAccountRepository $repository)
+    public function __construct(VendorBankAccountRepository $vendorBankAccountRepository)
     {
-        $this->repository = $repository;
+        $this->repository = $vendorBankAccountRepository;
     }
 
-    public function getByVendorAndId(UuidInterface $vendorId, UuidInterface $vendorBankAccountId): VendorBankAccount
+    public function getByVendorAndId(UuidInterface $vendorId, UuidInterface $vendorBankAccountId): ?VendorBankAccount
     {
         /** @var VendorBankAccount|null $vendorBankAccount */
         $vendorBankAccount = $this->repository->findOneBy([
@@ -24,14 +25,14 @@ class VendorBankAccountProvider extends AbstractProvider
             'vendorId' => $vendorId,
         ]);
 
-        if (!$vendorBankAccount) {
+        if (null === $vendorBankAccount) {
             $this->throwNotFoundException();
         }
 
         return $vendorBankAccount;
     }
 
-    public function getOneByVendorId(UuidInterface $vendorId)
+    public function getOneByVendorId(UuidInterface $vendorId): ?VendorBankAccount
     {
         /** @var VendorBankAccount|null $vendorBankAccount */
         $vendorBankAccount = $this->repository->findOneBy([
@@ -40,22 +41,23 @@ class VendorBankAccountProvider extends AbstractProvider
             'createdAt' => 'DESC',
         ]);
 
-        if (!$vendorBankAccount) {
+        if (null === $vendorBankAccount) {
             $this->throwNotFoundException();
         }
 
         return $vendorBankAccount;
     }
 
-    protected function throwNotFoundException()
+    protected function throwNotFoundException(): void
     {
         throw new VendorBankAccountNotFoundException();
     }
 
+    /**
+     * @return string[]
+     */
     protected function getFilterableFields(): array
     {
-        return [
-            'vendorId',
-        ];
+        return ['vendorId'];
     }
 }

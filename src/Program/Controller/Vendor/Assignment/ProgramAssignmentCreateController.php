@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Controller\Vendor\Assignment;
 
 use App\Core\Exception\ApiJsonException;
@@ -74,7 +76,7 @@ class ProgramAssignmentCreateController extends AbstractController
             throw new ApiJsonInputValidationException($validationErrors);
         }
 
-        if ('current' == $vendorId) {
+        if ('current' === $vendorId) {
             /** @var Vendor $vendor */
             $vendor = $this->getUser();
         } else {

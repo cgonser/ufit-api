@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Request;
 
 use App\Core\Request\SearchRequest;

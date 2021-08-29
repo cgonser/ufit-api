@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Provider;
 
 use App\Vendor\Entity\Vendor;
@@ -10,11 +12,9 @@ use Ramsey\Uuid\UuidInterface;
 
 class VendorPlanProvider
 {
-    private VendorPlanRepository $vendorPlanRepository;
-
-    public function __construct(VendorPlanRepository $vendorPlanRepository)
-    {
-        $this->vendorPlanRepository = $vendorPlanRepository;
+    public function __construct(
+        private VendorPlanRepository $vendorPlanRepository
+    ) {
     }
 
     public function get(UuidInterface $vendorPlanId): VendorPlan
@@ -22,7 +22,7 @@ class VendorPlanProvider
         /** @var VendorPlan|null $vendorPlan */
         $vendorPlan = $this->vendorPlanRepository->find($vendorPlanId);
 
-        if (!$vendorPlan) {
+        if (null === $vendorPlan) {
             throw new VendorPlanNotFoundException();
         }
 
@@ -37,16 +37,21 @@ class VendorPlanProvider
             'vendor' => $vendor,
         ]);
 
-        if (!$vendorPlan) {
+        if (null === $vendorPlan) {
             throw new VendorPlanNotFoundException();
         }
 
         return $vendorPlan;
     }
 
+    /**
+     * @return VendorPlan[]
+     */
     public function findVendorPlans(Vendor $vendor): array
     {
-        return $this->vendorPlanRepository->findBy(['vendor' => $vendor]);
+        return $this->vendorPlanRepository->findBy([
+            'vendor' => $vendor,
+        ]);
     }
 
     public function findOneByVendorAndSlug(Vendor $vendor, string $slug): ?VendorPlan

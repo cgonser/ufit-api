@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -89,14 +91,11 @@ class MeasurementType
 
     public function isNew(): bool
     {
-        return !isset($this->id);
+        return ! isset($this->id);
     }
 
     public function isUnitValid(string $unit): bool
     {
-        return in_array(
-            $unit,
-            explode(self::UNIT_SEPARATOR, $this->getUnits())
-        );
+        return in_array($unit, explode(self::UNIT_SEPARATOR, $this->getUnits()), true);
     }
 }

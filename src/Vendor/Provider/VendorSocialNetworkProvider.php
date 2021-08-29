@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Provider;
 
 use App\Core\Provider\AbstractProvider;
@@ -10,9 +12,9 @@ use App\Vendor\Repository\VendorSocialNetworkRepository;
 
 class VendorSocialNetworkProvider extends AbstractProvider
 {
-    public function __construct(VendorSocialNetworkRepository $repository)
+    public function __construct(VendorSocialNetworkRepository $vendorSocialNetworkRepository)
     {
-        $this->repository = $repository;
+        $this->repository = $vendorSocialNetworkRepository;
     }
 
     public function findOneByVendorAndPlatform(Vendor $vendor, string $platform): ?VendorSocialNetwork
@@ -35,14 +37,14 @@ class VendorSocialNetworkProvider extends AbstractProvider
     {
         $vendorSocialNetwork = $this->findOneByVendorAndPlatform($vendor, $platform);
 
-        if (!$vendorSocialNetwork) {
+        if (null === $vendorSocialNetwork) {
             $this->throwNotFoundException();
         }
 
         return $vendorSocialNetwork;
     }
 
-    protected function throwNotFoundException()
+    protected function throwNotFoundException(): void
     {
         throw new VendorSocialNetworkNotFoundException();
     }

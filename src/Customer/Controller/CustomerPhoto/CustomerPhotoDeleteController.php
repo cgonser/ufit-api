@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Controller\CustomerPhoto;
 
 use App\Core\Exception\ApiJsonException;

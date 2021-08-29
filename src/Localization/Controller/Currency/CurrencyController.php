@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Localization\Controller\Currency;
 
+use App\Core\Response\ApiJsonResponse;
 use App\Localization\Dto\CurrencyDto;
 use App\Localization\Provider\CurrencyProvider;
-use App\Core\Response\ApiJsonResponse;
 use App\Localization\ResponseMapper\CurrencyResponseMapper;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
@@ -41,10 +43,7 @@ class CurrencyController extends AbstractController
     {
         $currencies = $this->currencyProvider->findAll();
 
-        return new ApiJsonResponse(
-            Response::HTTP_OK,
-            $this->currencyResponseMapper->mapMultiple($currencies)
-        );
+        return new ApiJsonResponse(Response::HTTP_OK, $this->currencyResponseMapper->mapMultiple($currencies));
     }
 
     /**
@@ -66,10 +65,7 @@ class CurrencyController extends AbstractController
     {
         $currency = $this->currencyProvider->get(Uuid::fromString($currencyId));
 
-        return new ApiJsonResponse(
-            Response::HTTP_OK,
-            $this->currencyResponseMapper->map($currency)
-        );
+        return new ApiJsonResponse(Response::HTTP_OK, $this->currencyResponseMapper->map($currency));
     }
 
     /**
@@ -91,9 +87,6 @@ class CurrencyController extends AbstractController
     {
         $currency = $this->currencyProvider->getByCode($currencyCode);
 
-        return new ApiJsonResponse(
-            Response::HTTP_OK,
-            $this->currencyResponseMapper->map($currency)
-        );
+        return new ApiJsonResponse(Response::HTTP_OK, $this->currencyResponseMapper->map($currency));
     }
 }

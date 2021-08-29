@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Controller\Vendor;
 
 use App\Core\Exception\ApiJsonException;
@@ -23,10 +25,8 @@ class CustomerPaymentController extends AbstractController
 
     private PaymentResponseMapper $paymentResponseMapper;
 
-    public function __construct(
-        PaymentProvider $paymentProvider,
-        PaymentResponseMapper $paymentResponseMapper
-    ) {
+    public function __construct(PaymentProvider $paymentProvider, PaymentResponseMapper $paymentResponseMapper)
+    {
         $this->paymentProvider = $paymentProvider;
         $this->paymentResponseMapper = $paymentResponseMapper;
     }
@@ -57,7 +57,8 @@ class CustomerPaymentController extends AbstractController
             throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
         }
 
-        $searchRequest->vendorId = $vendor->getId()->toString();
+        $searchRequest->vendorId = $vendor->getId()
+            ->toString();
         $searchRequest->customerId = $customerId;
         $payments = $this->paymentProvider->search($searchRequest);
         $count = $this->paymentProvider->count($searchRequest);

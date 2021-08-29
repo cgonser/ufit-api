@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Provider;
 
 use App\Customer\Entity\Customer;
@@ -21,9 +23,10 @@ class CustomerProgramProvider extends ProgramProvider
             ->setMaxResults(1);
 
         /** @var Program|null $program */
-        $program = $queryBuilder->getQuery()->getOneOrNullResult();
+        $program = $queryBuilder->getQuery()
+            ->getOneOrNullResult();
 
-        if (!$program) {
+        if (! $program) {
             $this->throwNotFoundException();
         }
 
@@ -32,12 +35,16 @@ class CustomerProgramProvider extends ProgramProvider
 
     public function searchCustomerPrograms(Customer $customer, CustomerProgramSearchRequest $searchRequest): array
     {
-        return $this->search($searchRequest, ['customer' => $customer]);
+        return $this->search($searchRequest, [
+            'customer' => $customer,
+        ]);
     }
 
     public function countCustomerPrograms(Customer $customer, CustomerProgramSearchRequest $searchRequest): int
     {
-        return $this->count($searchRequest, ['customer' => $customer]);
+        return $this->count($searchRequest, [
+            'customer' => $customer,
+        ]);
     }
 
     protected function addFilters(QueryBuilder $queryBuilder, array $filters)

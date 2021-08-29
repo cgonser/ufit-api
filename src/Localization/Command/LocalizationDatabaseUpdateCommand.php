@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Localization\Command;
 
 use App\Localization\Service\CountryManager;
@@ -13,9 +15,8 @@ class LocalizationDatabaseUpdateCommand extends Command
 
     private CountryManager $countryManager;
 
-    public function __construct(
-        CountryManager $countryManager
-    ) {
+    public function __construct(CountryManager $countryManager)
+    {
         parent::__construct();
 
         $this->countryManager = $countryManager;

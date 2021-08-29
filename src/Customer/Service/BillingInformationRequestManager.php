@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Service;
 
-use App\Customer\Exception\CustomerInvalidBirthDateException;
 use App\Customer\Entity\BillingInformation;
+use App\Customer\Exception\CustomerInvalidBirthDateException;
 use App\Customer\Request\BillingInformationRequest;
 use Ramsey\Uuid\Uuid;
 
@@ -11,9 +13,8 @@ class BillingInformationRequestManager
 {
     private BillingInformationManager $billingInformationManager;
 
-    public function __construct(
-        BillingInformationManager $billingInformationManager
-    ) {
+    public function __construct(BillingInformationManager $billingInformationManager)
+    {
         $this->billingInformationManager = $billingInformationManager;
     }
 

@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Service\PaymentProcessor\Pagarme;
 
-use App\Payment\Entity\Payment;
 use App\Subscription\Entity\Subscription;
 use App\Subscription\Exception\SubscriptionNotFoundException;
 use App\Subscription\Provider\SubscriptionProvider;
@@ -42,12 +43,12 @@ class PagarmeSubscriptionResponseProcessor
             $subscription = $this->subscriptionProvider->get($subscriptionId);
 
             if (null === $subscription->getExternalReference()) {
-                $this->subscriptionManager->defineExternalRefence($subscription, (string)$response->id);
+                $this->subscriptionManager->defineExternalRefence($subscription, (string) $response->id);
             } elseif ($response->id !== $subscription->getExternalReference()) {
                 throw new SubscriptionNotFoundException();
             }
         } else {
-            $subscription = $this->subscriptionProvider->getByExternalReference((string)$response->id);
+            $subscription = $this->subscriptionProvider->getByExternalReference((string) $response->id);
         }
 
         $status = new UnicodeString($response->status);
@@ -60,7 +61,7 @@ class PagarmeSubscriptionResponseProcessor
         );
 
         if (method_exists($this, $methodName)) {
-            $this->$methodName($subscription, $response);
+            $this->{$methodName}($subscription, $response);
         }
     }
 
@@ -71,7 +72,7 @@ class PagarmeSubscriptionResponseProcessor
 
     private function processPaid(Subscription $subscription, \stdClass $response)
     {
-        if (!$subscription->isApproved()) {
+        if (! $subscription->isApproved()) {
             $this->subscriptionManager->approve($subscription);
         }
     }

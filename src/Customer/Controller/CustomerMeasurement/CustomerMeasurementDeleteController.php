@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Controller\CustomerMeasurement;
 
 use App\Core\Exception\ApiJsonException;
@@ -45,10 +47,8 @@ class CustomerMeasurementDeleteController extends AbstractController
      *     description="Measurement not found"
      * )
      */
-    public function create(
-        string $customerId,
-        string $customerMeasurementId
-    ): Response {
+    public function create(string $customerId, string $customerMeasurementId): Response
+    {
         if ('current' === $customerId) {
             /** @var Customer $customer */
             $customer = $this->getUser();

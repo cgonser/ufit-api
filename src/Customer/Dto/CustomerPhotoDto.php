@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Customer\Dto;
+declare(strict_types=1);
 
-use Nelmio\ApiDocBundle\Annotation\Model;
-use OpenApi\Annotations as OA;
+namespace App\Customer\Dto;
 
 class CustomerPhotoDto
 {

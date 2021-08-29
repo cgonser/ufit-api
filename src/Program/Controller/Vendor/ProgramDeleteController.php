@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Controller\Vendor;
 
 use App\Core\Exception\ApiJsonException;
@@ -19,10 +21,8 @@ class ProgramDeleteController extends AbstractController
 
     private VendorProgramProvider $programProvider;
 
-    public function __construct(
-        ProgramManager $programManager,
-        VendorProgramProvider $programProvider
-    ) {
+    public function __construct(ProgramManager $programManager, VendorProgramProvider $programProvider)
+    {
         $this->programManager = $programManager;
         $this->programProvider = $programProvider;
     }
@@ -42,7 +42,7 @@ class ProgramDeleteController extends AbstractController
      */
     public function create(string $vendorId, string $programId): Response
     {
-        if ('current' == $vendorId) {
+        if ('current' === $vendorId) {
             /** @var Vendor $vendor */
             $vendor = $this->getUser();
         } else {

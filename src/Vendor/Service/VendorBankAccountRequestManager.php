@@ -1,22 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Service;
 
 use App\Vendor\Entity\VendorBankAccount;
-use App\Vendor\Provider\VendorProvider;
 use App\Vendor\Request\VendorBankAccountRequest;
 use Ramsey\Uuid\Uuid;
 
 class VendorBankAccountRequestManager
 {
-    private VendorBankAccountManager $vendorBankAccountManager;
-
-    private VendorProvider $vendorProvider;
-
     public function __construct(
-        VendorBankAccountManager $vendorBankAccountManager
+        private VendorBankAccountManager $vendorBankAccountManager
     ) {
-        $this->vendorBankAccountManager = $vendorBankAccountManager;
     }
 
     public function createFromRequest(VendorBankAccountRequest $vendorBankAccountRequest): VendorBankAccount
@@ -33,7 +29,7 @@ class VendorBankAccountRequestManager
     public function updateFromRequest(
         VendorBankAccount $vendorBankAccount,
         VendorBankAccountRequest $vendorBankAccountRequest
-    ) {
+    ): void {
         $this->mapFromRequest($vendorBankAccount, $vendorBankAccountRequest);
 
         $this->vendorBankAccountManager->update($vendorBankAccount);
@@ -42,7 +38,7 @@ class VendorBankAccountRequestManager
     private function mapFromRequest(
         VendorBankAccount $vendorBankAccount,
         VendorBankAccountRequest $vendorBankAccountRequest
-    ) {
+    ): void {
         if ($vendorBankAccountRequest->has('vendorId')) {
             $vendorBankAccount->setVendorId(Uuid::fromString($vendorBankAccountRequest->vendorId));
         }

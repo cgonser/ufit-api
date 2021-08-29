@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Provider;
 
 use App\Customer\Entity\Customer;
@@ -22,7 +24,7 @@ class CustomerPhotoProvider
         /** @var CustomerPhoto|null $customerPhoto */
         $customerPhoto = $this->customerPhotoRepository->find($customerPhotoId);
 
-        if (!$customerPhoto) {
+        if (! $customerPhoto) {
             throw new CustomerPhotoNotFoundException();
         }
 
@@ -37,7 +39,7 @@ class CustomerPhotoProvider
             'customer' => $customer,
         ]);
 
-        if (!$customerPhoto) {
+        if (! $customerPhoto) {
             throw new CustomerPhotoNotFoundException();
         }
 
@@ -46,6 +48,8 @@ class CustomerPhotoProvider
 
     public function findByCustomer(Customer $customer): array
     {
-        return $this->customerPhotoRepository->findBy(['customer' => $customer]);
+        return $this->customerPhotoRepository->findBy([
+            'customer' => $customer,
+        ]);
     }
 }

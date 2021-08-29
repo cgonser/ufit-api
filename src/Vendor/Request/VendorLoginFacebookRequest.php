@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Request;
 
 use OpenApi\Annotations as OA;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * @OA\RequestBody(
@@ -15,13 +17,13 @@ class VendorLoginFacebookRequest
 {
     /**
      * @OA\Property()
-     * @Assert\NotBlank()
      */
+    #[NotBlank]
     public ?string $accessToken = null;
 
     /**
      * @OA\Property()
-     * @Assert\NotBlank()
      */
+    #[NotBlank]
     public ?string $userId = null;
 }

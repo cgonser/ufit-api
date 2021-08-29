@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\DataFixtures;
 
 use App\Customer\Entity\Customer;
@@ -40,22 +42,20 @@ class ProgramAssignmentFixtures extends Fixture implements DependentFixtureInter
         $manager->flush();
     }
 
+    public function getDependencies()
+    {
+        return [ProgramFixtures::class, SubscriptionFixtures::class];
+    }
+
     private function assignProgram(Customer $customer, Vendor $vendor)
     {
         $programAssignmentRequest = new ProgramAssignmentRequest();
-        $programAssignmentRequest->customerId = $customer->getId()->toString();
+        $programAssignmentRequest->customerId = $customer->getId()
+            ->toString();
 
         $programs = $this->programProvider->findByVendor($vendor);
         $program = $programs[array_rand($programs)];
 
         $this->programAssignmentManager->createFromRequest($program, $programAssignmentRequest);
-    }
-
-    public function getDependencies()
-    {
-        return [
-            ProgramFixtures::class,
-            SubscriptionFixtures::class,
-        ];
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Service;
 
 use App\Vendor\Entity\Question;
@@ -10,16 +12,10 @@ use App\Vendor\Request\QuestionRequest;
 
 class QuestionService
 {
-    private QuestionnaireRepository $questionnaireRepository;
-
-    private QuestionRepository $questionRepository;
-
     public function __construct(
-        QuestionnaireRepository $questionnaireRepository,
-        QuestionRepository $questionRepository
+        private QuestionnaireRepository $questionnaireRepository,
+        private QuestionRepository $questionRepository
     ) {
-        $this->questionnaireRepository = $questionnaireRepository;
-        $this->questionRepository = $questionRepository;
     }
 
     public function create(Questionnaire $questionnaire, QuestionRequest $questionRequest): Question
@@ -35,21 +31,21 @@ class QuestionService
         return $question;
     }
 
-    public function update(Question $question, QuestionRequest $questionRequest)
+    public function update(Question $question, QuestionRequest $questionRequest): void
     {
         $this->mapFromRequest($question, $questionRequest);
 
         $this->questionRepository->save($question);
     }
 
-    private function mapFromRequest(Question $question, QuestionRequest $questionRequest)
+    public function delete(Question $question): void
+    {
+        $this->questionRepository->delete($question);
+    }
+
+    private function mapFromRequest(Question $question, QuestionRequest $questionRequest): void
     {
         $question->setQuestion($questionRequest->question);
         $question->setOrder($questionRequest->order);
-    }
-
-    public function delete(Question $question)
-    {
-        $this->questionRepository->delete($question);
     }
 }

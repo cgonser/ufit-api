@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Provider;
 
-use App\Customer\Entity\Customer;
 use App\Customer\Entity\PhotoType;
 use App\Customer\Exception\PhotoTypeNotFoundException;
 use App\Customer\Repository\PhotoTypeRepository;
@@ -22,7 +23,7 @@ class PhotoTypeProvider
         /** @var PhotoType|null $photoType */
         $photoType = $this->photoTypeRepository->find($photoTypeId);
 
-        if (!$photoType) {
+        if (! $photoType) {
             throw new PhotoTypeNotFoundException();
         }
 
@@ -34,7 +35,7 @@ class PhotoTypeProvider
         /** @var PhotoType|null $photoType */
         $photoType = $this->findOneByName($name);
 
-        if (!$photoType) {
+        if (! $photoType) {
             throw new PhotoTypeNotFoundException();
         }
 
@@ -43,7 +44,9 @@ class PhotoTypeProvider
 
     public function findOneByName(string $name): ?PhotoType
     {
-        return $this->photoTypeRepository->findOneBy(['name' => $name]);
+        return $this->photoTypeRepository->findOneBy([
+            'name' => $name,
+        ]);
     }
 
     public function findAll(): array

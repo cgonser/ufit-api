@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Service;
 
 use App\Vendor\Entity\Vendor;
@@ -10,29 +12,18 @@ use App\Vendor\Request\VendorPasswordResetRequest;
 use App\Vendor\Request\VendorPasswordResetTokenRequest;
 use App\Vendor\Request\VendorRequest;
 use App\Vendor\Request\VendorSocialLinkRequest;
+use Exception;
 use GeoIp2\Database\Reader;
 use Symfony\Component\Intl\Timezones;
 
 class VendorRequestManager
 {
-    private VendorManager $vendorManager;
-
-    private VendorProvider $vendorProvider;
-
-    private VendorPasswordManager $vendorPasswordManager;
-
-    private Reader $geoIpReader;
-
     public function __construct(
-        VendorManager $vendorManager,
-        VendorProvider $vendorProvider,
-        VendorPasswordManager $vendorPasswordManager,
-        Reader $geoIpReader
+        private VendorManager $vendorManager,
+        private VendorProvider $vendorProvider,
+        private VendorPasswordManager $vendorPasswordManager,
+        private Reader $geoIpReader
     ) {
-        $this->vendorManager = $vendorManager;
-        $this->vendorProvider = $vendorProvider;
-        $this->vendorPasswordManager = $vendorPasswordManager;
-        $this->geoIpReader = $geoIpReader;
     }
 
     public function createFromRequest(VendorRequest $vendorRequest, ?string $ipAddress = null): Vendor
@@ -50,14 +41,14 @@ class VendorRequestManager
         return $vendor;
     }
 
-    public function updateFromRequest(Vendor $vendor, VendorRequest $vendorRequest)
+    public function updateFromRequest(Vendor $vendor, VendorRequest $vendorRequest): void
     {
         $this->mapFromRequest($vendor, $vendorRequest);
 
         $this->vendorManager->update($vendor);
     }
 
-    public function mapFromRequest(Vendor $vendor, VendorRequest $vendorRequest)
+    public function mapFromRequest(Vendor $vendor, VendorRequest $vendorRequest): void
     {
         if ($vendorRequest->has('email')) {
             $vendor->setEmail(strtolower($vendorRequest->email));
@@ -110,7 +101,7 @@ class VendorRequestManager
         }
     }
 
-    public function changePassword(Vendor $vendor, VendorPasswordChangeRequest $vendorPasswordChangeRequest)
+    public function changePassword(Vendor $vendor, VendorPasswordChangeRequest $vendorPasswordChangeRequest): void
     {
         $this->vendorPasswordManager->changePassword(
             $vendor,
@@ -119,50 +110,50 @@ class VendorRequestManager
         );
     }
 
-    public function startPasswordReset(VendorPasswordResetRequest $vendorPasswordResetRequest)
+    public function startPasswordReset(VendorPasswordResetRequest $vendorPasswordResetRequest): void
     {
         $vendor = $this->vendorProvider->findOneByEmail($vendorPasswordResetRequest->emailAddress);
 
-        if (!$vendor) {
+        if (! $vendor instanceof Vendor) {
             return;
         }
 
         $this->vendorPasswordManager->startPasswordReset($vendor);
     }
 
-    public function concludePasswordReset(VendorPasswordResetTokenRequest $vendorPasswordResetTokenRequest)
+    public function concludePasswordReset(VendorPasswordResetTokenRequest $vendorPasswordResetTokenRequest): void
     {
-        [$emailAddress, $token] = explode('|', base64_decode($vendorPasswordResetTokenRequest->token));
+        [$emailAddress, $token] = explode('|', base64_decode($vendorPasswordResetTokenRequest->token, true));
 
         $vendor = $this->vendorProvider->findOneByEmail($emailAddress);
 
-        if (!$vendor) {
+        if (! $vendor instanceof Vendor) {
             throw new VendorNotFoundException();
         }
 
         $this->vendorPasswordManager->resetPassword($vendor, $token, $vendorPasswordResetTokenRequest->password);
     }
 
-    public function updateSocialLink(Vendor $vendor, VendorSocialLinkRequest $vendorSocialLinkRequest)
+    public function updateSocialLink(Vendor $vendor, VendorSocialLinkRequest $vendorSocialLinkRequest): void
     {
         $vendor->setSocialLink($vendorSocialLinkRequest->network, $vendorSocialLinkRequest->link);
 
         $this->vendorManager->update($vendor);
     }
 
-    private function localizeVendor(Vendor $vendor, string $ipAddress)
+    private function localizeVendor(Vendor $vendor, string $ipAddress): void
     {
         try {
             if (null === $vendor->getCountry()) {
-                $record = $this->geoIpReader->country($ipAddress);
+                $country = $this->geoIpReader->country($ipAddress);
 
-                $vendor->setCountry($record->country->isoCode);
+                $vendor->setCountry($country->country->isoCode);
             }
 
             if (null === $vendor->getTimezone()) {
                 $vendor->setTimezone(Timezones::forCountryCode($vendor->getCountry())[0]);
             }
-        } catch (\Exception $e) {
+        } catch (Exception) {
             // do nothing
         }
     }

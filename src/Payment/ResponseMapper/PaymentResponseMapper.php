@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\ResponseMapper;
 
 use App\Localization\ResponseMapper\CurrencyResponseMapper;
@@ -26,13 +28,18 @@ class PaymentResponseMapper
     public function mapBaseData(Payment $payment): PaymentDto
     {
         $paymentDto = new PaymentDto();
-        $paymentDto->id = $payment->getId()->toString();
-        $paymentDto->paymentMethodId = $payment->getPaymentMethodId()->toString();
+        $paymentDto->id = $payment->getId()
+            ->toString();
+        $paymentDto->paymentMethodId = $payment->getPaymentMethodId()
+            ->toString();
         $paymentDto->amount = $payment->getAmount();
         $paymentDto->status = $payment->getStatus();
-        $paymentDto->dueDate = $payment->getDueDate()->format('Y-m-d');
-        $paymentDto->createdAt = $payment->getCreatedAt()->format(\DateTimeInterface::ATOM);
-        $paymentDto->updatedAt = $payment->getUpdatedAt()->format(\DateTimeInterface::ATOM);
+        $paymentDto->dueDate = $payment->getDueDate()
+            ->format('Y-m-d');
+        $paymentDto->createdAt = $payment->getCreatedAt()
+            ->format(\DateTimeInterface::ATOM);
+        $paymentDto->updatedAt = $payment->getUpdatedAt()
+            ->format(\DateTimeInterface::ATOM);
 
         return $paymentDto;
     }
@@ -44,12 +51,16 @@ class PaymentResponseMapper
         bool $mapVendorPlan = true
     ): PaymentDto {
         $paymentDto = $this->mapBaseData($payment);
-        $paymentDto->invoiceId = $payment->getInvoiceId()->toString();
-        $paymentDto->currencyId = $payment->getInvoice()->getCurrencyId()->toString();
+        $paymentDto->invoiceId = $payment->getInvoiceId()
+            ->toString();
+        $paymentDto->currencyId = $payment->getInvoice()
+            ->getCurrencyId()
+            ->toString();
         $paymentDto->details = $payment->getDetails();
 
         if (null !== $payment->getPaidAt()) {
-            $paymentDto->paidAt = $payment->getPaidAt()->format(\DateTimeInterface::ATOM);
+            $paymentDto->paidAt = $payment->getPaidAt()
+                ->format(\DateTimeInterface::ATOM);
         }
 
         if ($mapPaymentMethod) {
@@ -61,7 +72,11 @@ class PaymentResponseMapper
         }
 
         if ($mapVendorPlan) {
-            $paymentDto->vendorPlan = $this->vendorPlanResponseMapper->map($payment->getInvoice()->getSubscription()->getVendorPlan());
+            $paymentDto->vendorPlan = $this->vendorPlanResponseMapper->map(
+                $payment->getInvoice()
+                    ->getSubscription()
+                    ->getVendorPlan()
+            );
         }
 
         return $paymentDto;
@@ -73,7 +88,9 @@ class PaymentResponseMapper
         $paymentDto->paymentMethod = $this->paymentMethodResponseMapper->map($payment->getPaymentMethod());
         $paymentDto->currency = $this->currencyResponseMapper->map($payment->getInvoice()->getCurrency());
         $paymentDto->vendorPlan = $this->vendorPlanResponseMapper->map(
-            $payment->getInvoice()->getSubscription()->getVendorPlan()
+            $payment->getInvoice()
+                ->getSubscription()
+                ->getVendorPlan()
         );
 
         return $paymentDto;

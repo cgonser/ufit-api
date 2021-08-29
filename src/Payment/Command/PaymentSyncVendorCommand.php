@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Command;
 
 use App\Payment\Service\PaymentProcessor\VendorInformationManagerInterface;
@@ -14,9 +16,8 @@ class PaymentSyncVendorCommand extends Command
 
     private VendorInformationManagerInterface $vendorInformationManager;
 
-    public function __construct(
-        VendorInformationManagerInterface $vendorInformationManager
-    ) {
+    public function __construct(VendorInformationManagerInterface $vendorInformationManager)
+    {
         $this->vendorInformationManager = $vendorInformationManager;
 
         parent::__construct();
@@ -32,9 +33,7 @@ class PaymentSyncVendorCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->vendorInformationManager->updateVendorInformation(
-            Uuid::fromString($input->getArgument('vendorId'))
-        );
+        $this->vendorInformationManager->updateVendorInformation(Uuid::fromString($input->getArgument('vendorId')));
 
         return 0;
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\ResponseMapper;
 
 use App\Program\Dto\ProgramAssetDto;
@@ -12,10 +14,8 @@ class ProgramAssetResponseMapper
 
     private string $programAssetS3Bucket;
 
-    public function __construct(
-        S3Client $s3Client,
-        string $programAssetS3Bucket
-    ) {
+    public function __construct(S3Client $s3Client, string $programAssetS3Bucket)
+    {
         $this->s3Client = $s3Client;
         $this->programAssetS3Bucket = $programAssetS3Bucket;
     }
@@ -23,14 +23,18 @@ class ProgramAssetResponseMapper
     public function map(ProgramAsset $programAsset): ProgramAssetDto
     {
         $programAssetDto = new ProgramAssetDto();
-        $programAssetDto->id = $programAsset->getId()->toString();
-        $programAssetDto->programId = $programAsset->getProgram()->getId()->toString();
+        $programAssetDto->id = $programAsset->getId()
+            ->toString();
+        $programAssetDto->programId = $programAsset->getProgram()
+            ->getId()
+            ->toString();
         $programAssetDto->title = $programAsset->getTitle();
         $programAssetDto->type = $programAsset->getType();
         if (null !== $programAsset->getFilename()) {
             $programAssetDto->url = $this->prepareAssetUrl($programAsset->getFilename());
         }
-        $programAssetDto->createdAt = $programAsset->getCreatedAt()->format(\DateTimeInterface::ATOM);
+        $programAssetDto->createdAt = $programAsset->getCreatedAt()
+            ->format(\DateTimeInterface::ATOM);
 
         return $programAssetDto;
     }

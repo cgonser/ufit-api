@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Entity;
 
 use App\Vendor\Entity\Vendor;
@@ -97,7 +99,7 @@ class Program
         return $this->vendorId;
     }
 
-    public function setVendorId(UuidInterface $vendorId): Program
+    public function setVendorId(UuidInterface $vendorId): self
     {
         $this->vendorId = $vendorId;
 

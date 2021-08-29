@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Provider;
 
 use App\Core\Provider\AbstractProvider;
@@ -15,15 +17,17 @@ class BillingInformationProvider extends AbstractProvider
         $this->repository = $repository;
     }
 
-    public function getByCustomerAndId(UuidInterface $customerId, UuidInterface $billingInformationId): BillingInformation
-    {
+    public function getByCustomerAndId(
+        UuidInterface $customerId,
+        UuidInterface $billingInformationId
+    ): BillingInformation {
         /** @var BillingInformation|null $billingInformation */
         $billingInformation = $this->repository->findOneBy([
             'id' => $billingInformationId,
             'customerId' => $customerId,
         ]);
 
-        if (!$billingInformation) {
+        if (! $billingInformation) {
             throw new BillingInformationNotFoundException();
         }
 
@@ -37,8 +41,6 @@ class BillingInformationProvider extends AbstractProvider
 
     protected function getFilterableFields(): array
     {
-        return [
-            'customerId',
-        ];
+        return ['customerId'];
     }
 }

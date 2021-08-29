@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Localization\ResponseMapper;
 
 use App\Localization\Dto\CurrencyDto;
@@ -10,7 +12,8 @@ class CurrencyResponseMapper
     public function map(Currency $currency): CurrencyDto
     {
         $currencyDto = new CurrencyDto();
-        $currencyDto->id = $currency->getId()->toString();
+        $currencyDto->id = $currency->getId()
+            ->toString();
         $currencyDto->name = $currency->getName();
         $currencyDto->code = $currency->getCode();
 

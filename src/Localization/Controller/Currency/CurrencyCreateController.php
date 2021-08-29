@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Localization\Controller\Currency;
 
 use App\Core\Exception\ApiJsonInputValidationException;
@@ -22,10 +24,8 @@ class CurrencyCreateController extends AbstractController
 
     private CurrencyResponseMapper $currencyResponseMapper;
 
-    public function __construct(
-        CurrencyService $currencyService,
-        CurrencyResponseMapper $currencyResponseMapper
-    ) {
+    public function __construct(CurrencyService $currencyService, CurrencyResponseMapper $currencyResponseMapper)
+    {
         $this->currencyService = $currencyService;
         $this->currencyResponseMapper = $currencyResponseMapper;
     }
@@ -62,9 +62,6 @@ class CurrencyCreateController extends AbstractController
 
         $currency = $this->currencyService->create($currencyRequest);
 
-        return new ApiJsonResponse(
-            Response::HTTP_CREATED,
-            $this->currencyResponseMapper->map($currency)
-        );
+        return new ApiJsonResponse(Response::HTTP_CREATED, $this->currencyResponseMapper->map($currency));
     }
 }

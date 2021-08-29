@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Doctrine\Migrations;
 
 use App\Customer\Service\CustomerRequestManager;
@@ -42,10 +44,7 @@ class MigrationFactory implements \Doctrine\Migrations\Version\MigrationFactory
 
     public function createVersion(string $migrationClassName): AbstractMigration
     {
-        $migration = new $migrationClassName(
-            $this->connection,
-            $this->logger
-        );
+        $migration = new $migrationClassName($this->connection, $this->logger);
 
         // or you can ommit this check
         if ($migration instanceof CoreMigration) {

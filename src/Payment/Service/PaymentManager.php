@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Service;
 
 use App\Payment\Entity\Invoice;
@@ -20,10 +22,8 @@ class PaymentManager
 
     private MessageBusInterface $messageBus;
 
-    public function __construct(
-        PaymentRepository $paymentRepository,
-        MessageBusInterface $messageBus
-    ) {
+    public function __construct(PaymentRepository $paymentRepository, MessageBusInterface $messageBus)
+    {
         $this->paymentRepository = $paymentRepository;
         $this->messageBus = $messageBus;
     }
@@ -65,9 +65,7 @@ class PaymentManager
 
         $this->paymentRepository->save($payment);
 
-        $this->messageBus->dispatch(
-            new InvoicePaidEvent($payment->getInvoiceId(), $payment->getPaidAt())
-        );
+        $this->messageBus->dispatch(new InvoicePaidEvent($payment->getInvoiceId(), $payment->getPaidAt()));
     }
 
     public function createFromInvoice(Invoice $invoice, PaymentMethod $paymentMethod): Payment

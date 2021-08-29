@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Controller\PaymentMethod;
 
-use App\Core\Response\ApiJsonResponse;
 use App\Core\Exception\ApiJsonInputValidationException;
+use App\Core\Response\ApiJsonResponse;
 use App\Payment\Dto\PaymentMethodDto;
 use App\Payment\Provider\PaymentMethodProvider;
 use App\Payment\Request\PaymentMethodRequest;
@@ -60,9 +62,6 @@ class PaymentMethodUpdateController extends AbstractController
 
         $this->paymentMethodRequestManager->updateFromRequest($paymentMethod, $paymentMethodRequest);
 
-        return new ApiJsonResponse(
-            Response::HTTP_OK,
-            $this->paymentMethodResponseMapper->map($paymentMethod)
-        );
+        return new ApiJsonResponse(Response::HTTP_OK, $this->paymentMethodResponseMapper->map($paymentMethod));
     }
 }

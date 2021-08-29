@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\MessageHandler;
 
 use App\Payment\Entity\Payment;
@@ -37,10 +39,19 @@ class PaymentCreatedHandler implements MessageHandlerInterface
         $this->logger->info(
             'payment.created',
             [
-                'id' => $payment->getId()->toString(),
-                'subscriptionId' => $payment->getInvoice()->getSubscriptionId()->toString(),
-                'customerId' => $payment->getInvoice()->getSubscription()->getCustomerId()->toString(),
-                'vendorPlanId' => $payment->getInvoice()->getSubscription()->getVendorPlanId()->toString(),
+                'id' => $payment->getId()
+                    ->toString(),
+                'subscriptionId' => $payment->getInvoice()
+                    ->getSubscriptionId()
+                    ->toString(),
+                'customerId' => $payment->getInvoice()
+                    ->getSubscription()
+                    ->getCustomerId()
+                    ->toString(),
+                'vendorPlanId' => $payment->getInvoice()
+                    ->getSubscription()
+                    ->getVendorPlanId()
+                    ->toString(),
             ]
         );
     }

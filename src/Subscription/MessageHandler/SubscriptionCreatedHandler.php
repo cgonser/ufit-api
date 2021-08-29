@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\MessageHandler;
 
 use App\Subscription\Message\SubscriptionCreatedEvent;
@@ -33,9 +35,14 @@ class SubscriptionCreatedHandler implements MessageHandlerInterface
         $this->logger->info(
             'subscription.created',
             [
-                'id' => $subscription->getId()->toString(),
-                'customerId' => $subscription->getCustomer()->getId()->toString(),
-                'vendorPlanId' => $subscription->getVendorPlan()->getId()->toString(),
+                'id' => $subscription->getId()
+                    ->toString(),
+                'customerId' => $subscription->getCustomer()
+                    ->getId()
+                    ->toString(),
+                'vendorPlanId' => $subscription->getVendorPlan()
+                    ->getId()
+                    ->toString(),
             ]
         );
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Controller\PaymentMethod;
 
 use App\Core\Response\ApiJsonResponse;

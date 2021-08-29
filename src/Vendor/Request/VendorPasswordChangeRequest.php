@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Request;
 
 use OpenApi\Annotations as OA;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * @OA\RequestBody(
@@ -19,7 +21,7 @@ class VendorPasswordChangeRequest
 
     /**
      * @OA\Property()
-     * @Assert\NotBlank()
      */
+    #[NotBlank]
     public ?string $newPassword = null;
 }

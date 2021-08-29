@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Provider;
 
 use App\Customer\Entity\Customer;
@@ -22,7 +24,7 @@ class CustomerMeasurementProvider
         /** @var CustomerMeasurement|null $customerMeasurement */
         $customerMeasurement = $this->customerMeasurementRepository->find($customerMeasurementId);
 
-        if (!$customerMeasurement) {
+        if (! $customerMeasurement) {
             throw new CustomerMeasurementNotFoundException();
         }
 
@@ -37,7 +39,7 @@ class CustomerMeasurementProvider
             'customer' => $customer,
         ]);
 
-        if (!$customerMeasurement) {
+        if (! $customerMeasurement) {
             throw new CustomerMeasurementNotFoundException();
         }
 
@@ -46,6 +48,8 @@ class CustomerMeasurementProvider
 
     public function findByCustomer(Customer $customer): array
     {
-        return $this->customerMeasurementRepository->findBy(['customer' => $customer]);
+        return $this->customerMeasurementRepository->findBy([
+            'customer' => $customer,
+        ]);
     }
 }

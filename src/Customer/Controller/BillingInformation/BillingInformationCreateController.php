@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Controller\BillingInformation;
 
 use App\Core\Exception\ApiJsonException;
@@ -12,7 +14,6 @@ use App\Customer\ResponseMapper\BillingInformationResponseMapper;
 use App\Customer\Service\BillingInformationRequestManager;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
-use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;

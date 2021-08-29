@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Provider;
 
 use App\Vendor\Entity\Question;
@@ -10,11 +12,9 @@ use Ramsey\Uuid\UuidInterface;
 
 class QuestionProvider
 {
-    private QuestionRepository $questionRepository;
-
-    public function __construct(QuestionRepository $questionRepository)
-    {
-        $this->questionRepository = $questionRepository;
+    public function __construct(
+        private QuestionRepository $questionRepository
+    ) {
     }
 
     public function get(UuidInterface $questionId): Question
@@ -22,14 +22,14 @@ class QuestionProvider
         /** @var Question|null $question */
         $question = $this->questionRepository->find($questionId);
 
-        if (!$question) {
+        if (null === $question) {
             throw new QuestionNotFoundException();
         }
 
         return $question;
     }
 
-    public function findOneByQuestionnaireAndId(Questionnaire $questionnaire, UuidInterface $questionId): ?Question
+    public function findOneByQuestionnaireAndId(Questionnaire $questionnaire, UuidInterface $questionId): ?object
     {
         return $this->questionRepository->findOneBy([
             'id' => $questionId,
@@ -39,18 +39,22 @@ class QuestionProvider
 
     public function getByQuestionnaireAndId(Questionnaire $questionnaire, UuidInterface $questionId): Question
     {
-        /** @var Question|null $vendorPlan */
         $question = $this->findOneByQuestionnaireAndId($questionnaire, $questionId);
 
-        if (!$question) {
+        if (null === $question) {
             throw new QuestionNotFoundException();
         }
 
         return $question;
     }
 
+    /**
+     * @return mixed[]
+     */
     public function findByQuestionnaire(Questionnaire $questionnaire): array
     {
-        return $this->questionRepository->findBy(['questionnaire' => $questionnaire]);
+        return $this->questionRepository->findBy([
+            'questionnaire' => $questionnaire,
+        ]);
     }
 }

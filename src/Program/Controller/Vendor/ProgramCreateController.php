@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Controller\Vendor;
 
 use App\Core\Exception\ApiJsonException;
@@ -24,10 +26,8 @@ class ProgramCreateController extends AbstractController
 
     private ProgramResponseMapper $programResponseMapper;
 
-    public function __construct(
-        ProgramManager $programManager,
-        ProgramResponseMapper $programResponseMapper
-    ) {
+    public function __construct(ProgramManager $programManager, ProgramResponseMapper $programResponseMapper)
+    {
         $this->programResponseMapper = $programResponseMapper;
         $this->programManager = $programManager;
     }
@@ -63,7 +63,7 @@ class ProgramCreateController extends AbstractController
             throw new ApiJsonInputValidationException($validationErrors);
         }
 
-        if ('current' == $vendorId) {
+        if ('current' === $vendorId) {
             /** @var Vendor $vendor */
             $vendor = $this->getUser();
         } else {
@@ -73,9 +73,6 @@ class ProgramCreateController extends AbstractController
 
         $program = $this->programManager->createFromRequest($vendor, $programRequest);
 
-        return new ApiJsonResponse(
-            Response::HTTP_CREATED,
-            $this->programResponseMapper->map($program)
-        );
+        return new ApiJsonResponse(Response::HTTP_CREATED, $this->programResponseMapper->map($program));
     }
 }

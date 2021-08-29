@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Request;
 
 use App\Core\Request\AbstractRequest;
@@ -33,5 +35,4 @@ class CustomerMeasurementItemRequest extends AbstractRequest
      * @OA\Property()
      */
     public ?string $unit;
-
 }

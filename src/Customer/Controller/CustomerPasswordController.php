@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Controller;
 
 use App\Core\Exception\ApiJsonInputValidationException;
@@ -112,11 +114,8 @@ class CustomerPasswordController extends AbstractController
      */
     public function resetPasswordForm(string $token): Response
     {
-        return $this->render(
-            'customer/password_reset.html.twig',
-            [
-                'token' => $token,
-            ]
-        );
+        return $this->render('customer/password_reset.html.twig', [
+            'token' => $token,
+        ]);
     }
 }

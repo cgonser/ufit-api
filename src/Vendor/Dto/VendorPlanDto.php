@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Dto;
 
 use OpenApi\Annotations as OA;
@@ -8,25 +10,25 @@ class VendorPlanDto
 {
     public string $id;
 
-    public ?string $vendorId;
+    public ?string $vendorId = null;
 
-    public ?string $questionnaireId;
+    public ?string $questionnaireId = null;
 
-    public ?QuestionnaireDto $questionnaire;
+    public ?QuestionnaireDto $questionnaire = null;
 
     public string $name;
 
-    public ?string $description;
+    public ?string $description = null;
 
     /**
      * @OA\Property(type="array", @OA\Items(type="string"))
      */
-    public ?array $features;
+    public ?array $features = null;
 
     /**
      * @OA\Property(type="array", @OA\Items(type="string"))
      */
-    public ?array $paymentMethods;
+    public ?array $paymentMethods = null;
 
     public ?float $price = null;
 
@@ -38,9 +40,9 @@ class VendorPlanDto
 
     public ?string $currency = null;
 
-    public ?string $durationMonths = null;
+    public ?int $durationMonths = null;
 
-    public ?string $durationDays = null;
+    public ?int $durationDays = null;
 
-    public ?string $image;
+    public ?string $image = null;
 }

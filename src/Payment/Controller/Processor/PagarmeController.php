@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Controller\Processor;
 
 use App\Payment\Message\PagarmeSubscriptionResponseReceivedEvent;
@@ -44,13 +46,10 @@ class PagarmeController extends AbstractController
     {
         parse_str($request->getContent(), $payload);
 
-        $this->logger->info(
-            'pagarme.postback',
-            [
-                'content' => $request->getContent(),
-                'payload' => $payload,
-            ]
-        );
+        $this->logger->info('pagarme.postback', [
+            'content' => $request->getContent(),
+            'payload' => $payload,
+        ]);
 
         try {
             $subscriptionId = $this->subscriptionProvider->get(Uuid::fromString($request->get('reference')))->getId();

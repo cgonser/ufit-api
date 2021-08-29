@@ -1,8 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Exception;
 
-class VendorPlanInvalidImageException extends \Exception
+use Exception;
+
+class VendorPlanInvalidImageException extends Exception
 {
-    protected $message = "Invalid image";
+    /**
+     * @var string
+     */
+    protected $message = 'Invalid image';
 }

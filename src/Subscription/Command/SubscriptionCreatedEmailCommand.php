@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\Command;
 
 use App\Subscription\Provider\SubscriptionProvider;
@@ -37,9 +39,7 @@ class SubscriptionCreatedEmailCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $subscription = $this->subscriptionProvider->get(
-            Uuid::fromString($input->getArgument('subscriptionId'))
-        );
+        $subscription = $this->subscriptionProvider->get(Uuid::fromString($input->getArgument('subscriptionId')));
 
         $this->subscriptionEmailManager->sendCreatedEmail($subscription);
 

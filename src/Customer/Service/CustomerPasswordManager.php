@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Service;
 
 use App\Core\Service\EmailComposer;
@@ -12,13 +14,13 @@ use App\Customer\Repository\CustomerPasswordResetTokenRepository;
 use App\Customer\Repository\CustomerRepository;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class CustomerPasswordManager
 {
     private const TOKEN_VALIDITY = '60 minutes';
 
-    private UserPasswordEncoderInterface $userPasswordEncoder;
+    private UserPasswordHasherInterface $userPasswordHasher;
 
     private CustomerRepository $customerRepository;
 
@@ -31,14 +33,14 @@ class CustomerPasswordManager
     private string $customerPasswordResetUrl;
 
     public function __construct(
-        UserPasswordEncoderInterface $userPasswordEncoder,
+        UserPasswordHasherInterface $userPasswordHasher,
         CustomerRepository $customerRepository,
         CustomerPasswordResetTokenRepository $customerPasswordResetTokenRepository,
         EmailComposer $emailComposer,
         MailerInterface $mailer,
         string $customerPasswordResetUrl
     ) {
-        $this->userPasswordEncoder = $userPasswordEncoder;
+        $this->userPasswordHasher = $userPasswordHasher;
         $this->customerRepository = $customerRepository;
         $this->customerPasswordResetTokenRepository = $customerPasswordResetTokenRepository;
         $this->emailComposer = $emailComposer;
@@ -46,26 +48,24 @@ class CustomerPasswordManager
         $this->customerPasswordResetUrl = $customerPasswordResetUrl;
     }
 
-    public function changePassword(Customer $customer, string $currentPassword, string $newPassword)
+    public function changePassword(Customer $customer, string $currentPassword, string $newPassword): void
     {
         if (null !== $customer->getPassword()) {
-            $isPasswordValid = $this->userPasswordEncoder->isPasswordValid($customer, $currentPassword);
+            $isPasswordValid = $this->userPasswordHasher->isPasswordValid($customer, $currentPassword);
 
-            if (!$isPasswordValid) {
+            if (! $isPasswordValid) {
                 throw new CustomerInvalidPasswordException();
             }
         }
 
-        $customer->setPassword(
-            $this->userPasswordEncoder->encodePassword($customer, $newPassword)
-        );
+        $customer->setPassword($this->userPasswordHasher->hashPassword($customer, $newPassword));
 
         $this->customerRepository->save($customer);
     }
 
-    public function encodePassword(Customer $customer, string $password): string
+    public function hashPassword(Customer $customer, string $password): string
     {
-        return $this->userPasswordEncoder->encodePassword($customer, $password);
+        return $this->userPasswordHasher->hashPassword($customer, $password);
     }
 
     public function startPasswordReset(Customer $customer): void
@@ -81,6 +81,28 @@ class CustomerPasswordManager
         $this->customerPasswordResetTokenRepository->save($customerPasswordResetToken);
 
         $this->sendResetEmail($customerPasswordResetToken);
+    }
+
+    public function resetPassword(Customer $customer, string $token, string $password): void
+    {
+        $customerPasswordResetToken = $this->customerPasswordResetTokenRepository->findOneBy([
+            'customer' => $customer,
+            'token' => $token,
+        ]);
+
+        if (! $customerPasswordResetToken) {
+            throw new CustomerPasswordResetTokenNotFoundException();
+        }
+
+        if ((new \DateTime()) > $customerPasswordResetToken->getExpiresAt()) {
+            throw new CustomerPasswordResetTokenExpiredException();
+        }
+
+        $customer->setPassword($this->userPasswordHasher->hashPassword($customer, $password));
+
+        $this->customerRepository->save($customer);
+
+        $this->customerPasswordResetTokenRepository->delete($customerPasswordResetToken);
     }
 
     private function sendResetEmail(CustomerPasswordResetToken $customerPasswordResetToken): void
@@ -111,34 +133,12 @@ class CustomerPasswordManager
 
     private function generateResetToken(CustomerPasswordResetToken $customerPasswordResetToken): string
     {
-        $plainToken = $customerPasswordResetToken->getCustomer()->getId()->toString();
+        $plainToken = $customerPasswordResetToken->getCustomer()
+            ->getId()
+            ->toString();
         $plainToken .= '|'.Uuid::uuid4();
         $plainToken .= '|'.$customerPasswordResetToken->getExpiresAt()->getTimestamp();
 
-        return $this->encodePassword($customerPasswordResetToken->getCustomer(), $plainToken);
-    }
-
-    public function resetPassword(Customer $customer, string $token, string $password)
-    {
-        $customerPasswordResetToken = $this->customerPasswordResetTokenRepository->findOneBy([
-            'customer' => $customer,
-            'token' => $token,
-        ]);
-
-        if (!$customerPasswordResetToken) {
-            throw new CustomerPasswordResetTokenNotFoundException();
-        }
-
-        if ((new \DateTime()) > $customerPasswordResetToken->getExpiresAt()) {
-            throw new CustomerPasswordResetTokenExpiredException();
-        }
-
-        $customer->setPassword(
-            $this->userPasswordEncoder->encodePassword($customer, $password)
-        );
-
-        $this->customerRepository->save($customer);
-
-        $this->customerPasswordResetTokenRepository->delete($customerPasswordResetToken);
+        return $this->hashPassword($customerPasswordResetToken->getCustomer(), $plainToken);
     }
 }

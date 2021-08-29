@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Controller\MeasurementType;
 
 use App\Core\Exception\ApiJsonException;
@@ -69,9 +71,7 @@ class MeasurementTypeController extends AbstractController
     public function getMeasurementType(string $measurementTypeId): Response
     {
         try {
-            $measurementType = $this->measurementTypeProvider->get(
-                Uuid::fromString($measurementTypeId)
-            );
+            $measurementType = $this->measurementTypeProvider->get(Uuid::fromString($measurementTypeId));
 
             return new ApiJsonResponse(
                 Response::HTTP_OK,

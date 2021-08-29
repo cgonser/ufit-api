@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Controller\PaymentMethod;
 
+use App\Core\Response\ApiJsonResponse;
 use App\Payment\Dto\PaymentMethodDto;
 use App\Payment\Provider\PaymentMethodProvider;
 use App\Payment\Request\PaymentMethodSearchRequest;
-use App\Core\Response\ApiJsonResponse;
 use App\Payment\ResponseMapper\PaymentMethodResponseMapper;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
@@ -65,9 +67,6 @@ class PaymentMethodController extends AbstractController
     {
         $paymentMethod = $this->paymentMethodProvider->get(Uuid::fromString($paymentMethodId));
 
-        return new ApiJsonResponse(
-            Response::HTTP_OK,
-            $this->paymentMethodResponseMapper->map($paymentMethod)
-        );
+        return new ApiJsonResponse(Response::HTTP_OK, $this->paymentMethodResponseMapper->map($paymentMethod));
     }
 }

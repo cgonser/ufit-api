@@ -1,46 +1,46 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
+use App\Vendor\Repository\QuestionRepository;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\CustomIdGenerator;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\Table;
+use Knp\DoctrineBehaviors\Contract\Entity\SoftDeletableInterface;
+use Knp\DoctrineBehaviors\Contract\Entity\TimestampableInterface;
+use Knp\DoctrineBehaviors\Model\SoftDeletable\SoftDeletableTrait;
+use Knp\DoctrineBehaviors\Model\Timestampable\TimestampableTrait;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
 
-/**
- * @ORM\Entity(repositoryClass="App\Vendor\Repository\QuestionRepository")
- * @ORM\Table(name="question")
- * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
- */
-class Question
+#[Entity(repositoryClass: QuestionRepository::class)]
+#[Table(name: 'question')]
+class Question implements SoftDeletableInterface, TimestampableInterface
 {
-    use TimestampableEntity;
-    use SoftDeleteableEntity;
+    use TimestampableTrait;
+    use SoftDeletableTrait;
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="uuid", unique=true)
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class=UuidGenerator::class)
-     */
+    #[Id]
+    #[Column(type: 'uuid', unique: true)]
+    #[GeneratedValue(strategy: 'CUSTOM')]
+    #[CustomIdGenerator(class: UuidGenerator::class)]
     private UuidInterface $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Questionnaire")
-     * @ORM\JoinColumn(name="questionnaire_id", referencedColumnName="id", nullable=false)
-     */
+    #[ManyToOne(targetEntity: 'Questionnaire')]
+    #[JoinColumn(name: 'questionnaire_id', nullable: false)]
     private Questionnaire $questionnaire;
 
-    /**
-     * @ORM\Column(type="integer", name="order_num", nullable=true)
-     */
+    #[Column(type: 'integer', nullable: true)]
     private ?int $order = null;
 
-    /**
-     * @ORM\Column(type="text")
-     */
+    #[Column(type: 'text')]
     private string $question;
 
     public function getId(): UuidInterface

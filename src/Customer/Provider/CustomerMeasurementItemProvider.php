@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Provider;
 
 use App\Customer\Entity\CustomerMeasurement;
@@ -13,9 +15,8 @@ class CustomerMeasurementItemProvider
 {
     private CustomerMeasurementItemRepository $customerMeasurementItemRepository;
 
-    public function __construct(
-        CustomerMeasurementItemRepository $customerMeasurementItemRepository
-    ) {
+    public function __construct(CustomerMeasurementItemRepository $customerMeasurementItemRepository)
+    {
         $this->customerMeasurementItemRepository = $customerMeasurementItemRepository;
     }
 
@@ -24,7 +25,7 @@ class CustomerMeasurementItemProvider
         /** @var CustomerMeasurementItem|null $customerMeasurementItem */
         $customerMeasurementItem = $this->customerMeasurementItemRepository->find($customerMeasurementItemId);
 
-        if (!$customerMeasurementItem) {
+        if (! $customerMeasurementItem) {
             throw new CustomerMeasurementItemNotFoundException();
         }
 
@@ -41,7 +42,7 @@ class CustomerMeasurementItemProvider
             'customerMeasurement' => $customerMeasurement,
         ]);
 
-        if (!$customerMeasurementItem) {
+        if (! $customerMeasurementItem) {
             throw new CustomerMeasurementItemNotFoundException();
         }
 
@@ -50,7 +51,9 @@ class CustomerMeasurementItemProvider
 
     public function findByCustomerMeasurement(CustomerMeasurement $customerMeasurement): array
     {
-        return $this->customerMeasurementItemRepository->findBy(['customerMeasurement' => $customerMeasurement]);
+        return $this->customerMeasurementItemRepository->findBy([
+            'customerMeasurement' => $customerMeasurement,
+        ]);
     }
 
     public function findOneByCustomerMeasurementAndType(

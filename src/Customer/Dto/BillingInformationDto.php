@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Dto;
 
 class BillingInformationDto
@@ -39,5 +41,4 @@ class BillingInformationDto
     public ?string $addressCountry = null;
 
     public ?string $addressZipCode = null;
-
 }

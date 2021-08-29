@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Controller;
 
 use App\Core\Exception\ApiJsonException;
@@ -48,10 +50,7 @@ class CustomerController extends AbstractController
         // TODO: implement authorization
         $customers = $this->customerProvider->findAll();
 
-        return new ApiJsonResponse(
-            Response::HTTP_OK,
-            $this->customerResponseMapper->mapMultiple($customers)
-        );
+        return new ApiJsonResponse(Response::HTTP_OK, $this->customerResponseMapper->mapMultiple($customers));
     }
 
     /**
@@ -70,7 +69,7 @@ class CustomerController extends AbstractController
         /** @var Customer $customer */
         $customer = $this->getUser();
 
-        if ('current' !== $customerId && !$customer->getId()->equals(Uuid::fromString($customerId))) {
+        if ('current' !== $customerId && ! $customer->getId()->equals(Uuid::fromString($customerId))) {
             throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
         }
 

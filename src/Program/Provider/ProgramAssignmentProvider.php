@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Provider;
 
 use App\Core\Provider\AbstractProvider;
@@ -18,6 +20,35 @@ class ProgramAssignmentProvider extends AbstractProvider
         $this->repository = $repository;
     }
 
+    public function getByProgramAndId(Program $program, UuidInterface $programAssignmentId): ProgramAssignment
+    {
+        /** @var ProgramAssignment|null $programAssignment */
+        $programAssignment = $this->repository->findOneBy([
+            'id' => $programAssignmentId,
+            'program' => $program,
+        ]);
+
+        if (! $programAssignment) {
+            $this->throwNotFoundException();
+        }
+
+        return $programAssignment;
+    }
+
+    public function searchProgramAssignments(Program $program, SearchRequest $searchRequest): array
+    {
+        return $this->search($searchRequest, [
+            'program' => $program,
+        ]);
+    }
+
+    public function countProgramAssignments(Program $program, SearchRequest $searchRequest): int
+    {
+        return $this->count($searchRequest, [
+            'program' => $program,
+        ]);
+    }
+
     protected function throwNotFoundException()
     {
         throw new ProgramAssignmentNotFoundException();
@@ -27,31 +58,6 @@ class ProgramAssignmentProvider extends AbstractProvider
     {
         return parent::buildQueryBuilder()
             ->innerJoin('root.program', 'program');
-    }
-
-    public function getByProgramAndId(Program $program, UuidInterface $programAssignmentId): ProgramAssignment
-    {
-        /** @var ProgramAssignment|null $programAssignment */
-        $programAssignment = $this->repository->findOneBy([
-            'id' => $programAssignmentId,
-            'program' => $program,
-        ]);
-
-        if (!$programAssignment) {
-            $this->throwNotFoundException();
-        }
-
-        return $programAssignment;
-    }
-
-    public function searchProgramAssignments(Program $program, SearchRequest $searchRequest): array
-    {
-        return $this->search($searchRequest, ['program' => $program]);
-    }
-
-    public function countProgramAssignments(Program $program, SearchRequest $searchRequest): int
-    {
-        return $this->count($searchRequest, ['program' => $program]);
     }
 
     protected function getSearchableFields(): array

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Controller\Vendor\Asset;
 
 use App\Core\Exception\ApiJsonException;
@@ -47,7 +49,7 @@ class ProgramAssetDeleteController extends AbstractController
      */
     public function delete(string $vendorId, string $programId, string $programAssetId): Response
     {
-        if ('current' == $vendorId) {
+        if ('current' === $vendorId) {
             /** @var Vendor $vendor */
             $vendor = $this->getUser();
         } else {

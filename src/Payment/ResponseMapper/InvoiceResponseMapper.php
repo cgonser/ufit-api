@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\ResponseMapper;
 
 use App\Localization\ResponseMapper\CurrencyResponseMapper;
@@ -24,19 +26,27 @@ class InvoiceResponseMapper
     public function map(Invoice $invoice, bool $mapSubscription = false, bool $mapCurrency = true): InvoiceDto
     {
         $invoiceDto = new InvoiceDto();
-        $invoiceDto->id = $invoice->getId()->toString();
-        $invoiceDto->subscriptionId = $invoice->getSubscriptionId()->toString();
-        $invoiceDto->currencyId = $invoice->getCurrencyId()->toString();
+        $invoiceDto->id = $invoice->getId()
+            ->toString();
+        $invoiceDto->subscriptionId = $invoice->getSubscriptionId()
+            ->toString();
+        $invoiceDto->currencyId = $invoice->getCurrencyId()
+            ->toString();
         $invoiceDto->totalAmount = $invoice->getTotalAmount();
-        $invoiceDto->dueDate = $invoice->getDueDate()->format('Y-m-d');
+        $invoiceDto->dueDate = $invoice->getDueDate()
+            ->format('Y-m-d');
         $invoiceDto->paidAt = null !== $invoice->getPaidAt()
-            ? $invoice->getPaidAt()->format(\DateTimeInterface::ISO8601)
+            ? $invoice->getPaidAt()
+                ->format(\DateTimeInterface::ISO8601)
             : null;
         $invoiceDto->overdueNotificationSentAt = null !== $invoice->getOverdueNotificationSentAt()
-            ? $invoice->getOverdueNotificationSentAt()->format(\DateTimeInterface::ISO8601)
+            ? $invoice->getOverdueNotificationSentAt()
+                ->format(\DateTimeInterface::ISO8601)
             : null;
-        $invoiceDto->createdAt = $invoice->getCreatedAt()->format(\DateTimeInterface::ISO8601);
-        $invoiceDto->updatedAt = $invoice->getUpdatedAt()->format(\DateTimeInterface::ISO8601);
+        $invoiceDto->createdAt = $invoice->getCreatedAt()
+            ->format(\DateTimeInterface::ISO8601);
+        $invoiceDto->updatedAt = $invoice->getUpdatedAt()
+            ->format(\DateTimeInterface::ISO8601);
 
         if ($mapSubscription) {
             $invoiceDto->subscription = $this->subscriptionResponseMapper->map($invoice->getSubscription());

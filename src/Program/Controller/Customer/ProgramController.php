@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Controller\Customer;
 
 use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
+use App\Customer\Entity\Customer;
 use App\Customer\Provider\CustomerProvider;
 use App\Customer\ResponseMapper\CustomerResponseMapper;
 use App\Program\Dto\ProgramDto;
+use App\Program\Provider\CustomerProgramProvider;
 use App\Program\Request\CustomerProgramSearchRequest;
 use App\Program\ResponseMapper\ProgramResponseMapper;
-use App\Customer\Entity\Customer;
-use App\Program\Provider\CustomerProgramProvider;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
@@ -91,7 +93,7 @@ class ProgramController extends AbstractController
      */
     public function getProgram(string $customerId, string $programId): Response
     {
-        if ('current' == $customerId) {
+        if ('current' === $customerId) {
             /** @var Customer $customer */
             $customer = $this->getUser();
         } else {
@@ -101,9 +103,6 @@ class ProgramController extends AbstractController
 
         $program = $this->programProvider->getByCustomerAndId($customer, Uuid::fromString($programId));
 
-        return new ApiJsonResponse(
-            Response::HTTP_OK,
-            $this->programResponseMapper->map($program)
-        );
+        return new ApiJsonResponse(Response::HTTP_OK, $this->programResponseMapper->map($program));
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Localization\DataFixtures;
 
 use App\Localization\Entity\Currency;
@@ -30,10 +32,6 @@ class CurrencyFixtures extends Fixture
 
     private function getData(): array
     {
-        return [
-            ['Real', 'BRL'],
-            ['Euro', 'EUR'],
-            ['US Dollars', 'USD'],
-        ];
+        return [['Real', 'BRL'], ['Euro', 'EUR'], ['US Dollars', 'USD']];
     }
 }

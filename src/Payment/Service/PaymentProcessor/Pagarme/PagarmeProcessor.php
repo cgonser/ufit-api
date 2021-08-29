@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Service\PaymentProcessor\Pagarme;
 
 use App\Core\Exception\InvalidInputException;
@@ -21,7 +23,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 abstract class PagarmeProcessor
 {
-    const RESPONSE_TIMEOUT = 5;
+    public const RESPONSE_TIMEOUT = 5;
 
     private VendorSettingManager $vendorSettingManager;
     private SubscriptionManager $subscriptionManager;
@@ -50,10 +52,13 @@ abstract class PagarmeProcessor
     {
         $this->validate($payment);
 
-        $subscription = $payment->getInvoice()->getSubscription();
+        $subscription = $payment->getInvoice()
+            ->getSubscription();
         $this->subscriptionManager->defineExternalRefence($subscription, null);
 
-        $vendorPlan = $payment->getInvoice()->getSubscription()->getVendorPlan();
+        $vendorPlan = $payment->getInvoice()
+            ->getSubscription()
+            ->getVendorPlan();
 
         $transactionData = $this->prepareTransactionData($payment);
 
@@ -68,7 +73,9 @@ abstract class PagarmeProcessor
 
             try {
                 $response = $this->refreshResponse(
-                    $this->pagarmeClient->subscriptions()->create($transactionData), 'subscription'
+                    $this->pagarmeClient->subscriptions()
+                        ->create($transactionData),
+                    'subscription'
                 );
             } catch (PagarMeException $e) {
                 $this->handlePagarmeSusbcriptionException($payment, $e);
@@ -77,14 +84,17 @@ abstract class PagarmeProcessor
             $this->messageBus->dispatch(
                 new PagarmeSubscriptionResponseReceivedEvent(
                     $response,
-                    $subscription->getId()->toString(),
-                    $payment->getId()->toString()
+                    $subscription->getId()
+                        ->toString(),
+                    $payment->getId()
+                        ->toString()
                 )
             );
         } else {
             try {
                 $response = $this->refreshResponse(
-                    $this->pagarmeClient->transactions()->create($transactionData),
+                    $this->pagarmeClient->transactions()
+                        ->create($transactionData),
                     'transaction'
                 );
             } catch (PagarMeException $e) {
@@ -94,8 +104,10 @@ abstract class PagarmeProcessor
             $this->messageBus->dispatch(
                 new PagarmeTransactionResponseReceivedEvent(
                     $response,
-                    $subscription->getId()->toString(),
-                    $payment->getId()->toString()
+                    $subscription->getId()
+                        ->toString(),
+                    $payment->getId()
+                        ->toString()
                 )
             );
         }
@@ -104,13 +116,16 @@ abstract class PagarmeProcessor
     protected function appendCustomerInformation(array &$transactionData, Payment $payment): void
     {
         $billingInformation = $payment->getBillingInformation();
-        $customer = $payment->getInvoice()->getSubscription()->getCustomer();
+        $customer = $payment->getInvoice()
+            ->getSubscription()
+            ->getCustomer();
 
         $phoneAreaCode = $customer->getPhoneAreaCode() ?: $billingInformation->getPhoneAreaCode();
         $phoneNumber = $customer->getPhoneNumber() ?: $billingInformation->getPhoneNumber();
 
         $transactionData['customer'] = [
-            'external_id' => $customer->getId()->toString(),
+            'external_id' => $customer->getId()
+                ->toString(),
             'name' => $billingInformation->getName() ?: $customer->getName(),
             'type' => 'individual',
             'country' => 'br',
@@ -138,16 +153,16 @@ abstract class PagarmeProcessor
                 $phoneNumber = '+'.$phoneNumber;
             }
 
-            $transactionData['customer']['phone_numbers'] = [
-                $phoneNumber,
-            ];
+            $transactionData['customer']['phone_numbers'] = [$phoneNumber];
         }
     }
 
     protected function appendBillingInformation(array &$transactionData, Payment $payment): void
     {
         $billingInformation = $payment->getBillingInformation();
-        $customer = $payment->getInvoice()->getSubscription()->getCustomer();
+        $customer = $payment->getInvoice()
+            ->getSubscription()
+            ->getCustomer();
 
         $transactionData['billing'] = [
             'name' => $billingInformation->getName() ?: $customer->getName(),
@@ -170,15 +185,19 @@ abstract class PagarmeProcessor
 
     protected function appendItems(array &$transactionData, Payment $payment): void
     {
-        $vendorPlan = $payment->getInvoice()->getSubscription()->getVendorPlan();
+        $vendorPlan = $payment->getInvoice()
+            ->getSubscription()
+            ->getVendorPlan();
         $amount = new Decimal($payment->getInvoice()->getTotalAmount());
 
         $transactionData['amount'] = $amount->mul(100)->toFixed(0);
         $transactionData['items'] = [
             [
-                'id' => $vendorPlan->getId()->toString(),
+                'id' => $vendorPlan->getId()
+                    ->toString(),
                 'title' => $vendorPlan->getName(),
-                'unit_price' => $amount->mul(100)->toFixed(0),
+                'unit_price' => $amount->mul(100)
+                    ->toFixed(0),
                 'quantity' => 1,
                 'tangible' => false,
             ],
@@ -187,7 +206,9 @@ abstract class PagarmeProcessor
 
     protected function appendSplitRules(array &$transactionData, Payment $payment)
     {
-        $vendorPlan = $payment->getInvoice()->getSubscription()->getVendorPlan();
+        $vendorPlan = $payment->getInvoice()
+            ->getSubscription()
+            ->getVendorPlan();
 
         $vendorPagarmeId = $this->vendorSettingManager->getValue($vendorPlan->getVendor()->getId(), 'pagarme_id');
 
@@ -231,31 +252,39 @@ abstract class PagarmeProcessor
     protected function createPlan(VendorPlan $vendorPlan): int
     {
         if (0 !== $vendorPlan->getDuration()->d) {
-            $days = $vendorPlan->getDuration()->d;
+            $days = $vendorPlan->getDuration()
+                ->d;
         } elseif (12 === $vendorPlan->getDuration()->m) {
             $days = 365;
         } elseif (0 !== $vendorPlan->getDuration()->m) {
-            $days = $vendorPlan->getDuration()->m * 30;
+            $days = $vendorPlan->getDuration()
+                ->m * 30;
         } elseif (0 !== $vendorPlan->getDuration()->y) {
-            $days = $vendorPlan->getDuration()->y * 365;
+            $days = $vendorPlan->getDuration()
+                ->y * 365;
         } else {
             throw new VendorPlanInvalidDurationException();
         }
 
         try {
-            $plan = $this->pagarmeClient->plans()->create(
-                [
-                    'amount' => $vendorPlan->getPrice()->mul(100)->toFixed(0),
-                    'days' => $days,
-                    'name' => $vendorPlan->getName(),
-                ]
-            );
+            $plan = $this->pagarmeClient->plans()
+                ->create(
+                    [
+                        'amount' => $vendorPlan->getPrice()
+                            ->mul(100)
+                            ->toFixed(0),
+                        'days' => $days,
+                        'name' => $vendorPlan->getName(),
+                    ]
+                );
         } catch (PagarMeException $e) {
             $this->handlePagarmeVendorPlanException($vendorPlan, $e);
         }
 
         return $plan->id;
     }
+
+    abstract protected function prepareTransactionData(Payment $payment): array;
 
     private function refreshResponse(
         \stdClass $response,
@@ -270,9 +299,15 @@ abstract class PagarmeProcessor
             }
 
             if ('subscription' === $type) {
-                $response = $this->pagarmeClient->subscriptions()->get(['id' => $response->id]);
+                $response = $this->pagarmeClient->subscriptions()
+                    ->get([
+                        'id' => $response->id,
+                    ]);
             } else {
-                $response = $this->pagarmeClient->transactions()->get(['id' => $response->id]);
+                $response = $this->pagarmeClient->transactions()
+                    ->get([
+                        'id' => $response->id,
+                    ]);
             }
         }
 
@@ -286,11 +321,10 @@ abstract class PagarmeProcessor
         throw new PagarmeInvalidInputException($vendorPlan, $propertyName, $e->getMessage());
     }
 
-    abstract protected function prepareTransactionData(Payment $payment): array;
-
     private function handlePagarmeSusbcriptionException(Payment $payment, \Exception $e): void
     {
-        $subscription = $payment->getInvoice()->getSubscription();
+        $subscription = $payment->getInvoice()
+            ->getSubscription();
 
         $customerProperties = [
             'email' => 'email',
@@ -310,9 +344,7 @@ abstract class PagarmeProcessor
             throw new MissingVendorBankAccountException($e->getMessage());
         }
 
-        $vendorProperties = [
-            '',
-        ];
+        $vendorProperties = [''];
 
         if (isset($vendorProperties[$e->getParameterName()])) {
             $propertyName = $vendorProperties[$e->getParameterName()] ?? $e->getParameterName();

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Localization\Provider;
 
 use App\Core\Provider\AbstractProvider;
@@ -18,7 +20,7 @@ class CurrencyProvider extends AbstractProvider
         /** @var Currency|null $currency */
         $currency = $this->findOneByCode($code);
 
-        if (!$currency) {
+        if (! $currency) {
             $this->throwNotFoundException();
         }
 
@@ -27,6 +29,8 @@ class CurrencyProvider extends AbstractProvider
 
     public function findOneByCode(string $code): ?Currency
     {
-        return $this->repository->findOneBy(['code' => $code]);
+        return $this->repository->findOneBy([
+            'code' => $code,
+        ]);
     }
 }

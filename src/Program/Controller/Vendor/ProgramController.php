@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Controller\Vendor;
 
 use App\Core\Exception\ApiJsonException;
@@ -7,10 +9,10 @@ use App\Core\Request\SearchRequest;
 use App\Core\Response\ApiJsonResponse;
 use App\Customer\ResponseMapper\CustomerResponseMapper;
 use App\Program\Dto\ProgramDto;
+use App\Program\Provider\VendorProgramProvider;
 use App\Program\Request\VendorProgramSearchRequest;
 use App\Program\ResponseMapper\ProgramResponseMapper;
 use App\Vendor\Entity\Vendor;
-use App\Program\Provider\VendorProgramProvider;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
@@ -70,7 +72,7 @@ class ProgramController extends AbstractController
      */
     public function getPrograms(string $vendorId, VendorProgramSearchRequest $searchRequest): Response
     {
-        if ('current' == $vendorId) {
+        if ('current' === $vendorId) {
             /** @var Vendor $vendor */
             $vendor = $this->getUser();
         } else {
@@ -78,7 +80,8 @@ class ProgramController extends AbstractController
             throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
         }
 
-        $searchRequest->vendorId = $vendor->getId()->toString();
+        $searchRequest->vendorId = $vendor->getId()
+            ->toString();
 
         $programs = $this->programProvider->search($searchRequest);
         $count = $this->programProvider->count($searchRequest);
@@ -106,7 +109,7 @@ class ProgramController extends AbstractController
      */
     public function getProgram(string $vendorId, string $programId): Response
     {
-        if ('current' == $vendorId) {
+        if ('current' === $vendorId) {
             /** @var Vendor $vendor */
             $vendor = $this->getUser();
         } else {
@@ -116,9 +119,6 @@ class ProgramController extends AbstractController
 
         $program = $this->programProvider->getByVendorAndId($vendor, Uuid::fromString($programId));
 
-        return new ApiJsonResponse(
-            Response::HTTP_OK,
-            $this->programResponseMapper->map($program)
-        );
+        return new ApiJsonResponse(Response::HTTP_OK, $this->programResponseMapper->map($program));
     }
 }

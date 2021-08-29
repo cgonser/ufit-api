@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\DataFixtures;
 
 use App\Customer\DataFixtures\CustomerFixtures;
@@ -44,6 +46,11 @@ class SubscriptionFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
+    public function getDependencies()
+    {
+        return [CustomerFixtures::class, VendorFixtures::class, VendorPlanFixtures::class];
+    }
+
     private function loadCustomer(Customer $customer)
     {
         $vendors = $this->getVendors();
@@ -54,7 +61,8 @@ class SubscriptionFixtures extends Fixture implements DependentFixtureInterface
         $vendorPlan = $vendorPlans->get(rand(0, $vendorPlans->count() - 1));
 
         $subscriptionRequest = new SubscriptionRequest();
-        $subscriptionRequest->vendorPlanId = $vendorPlan->getId()->toString();
+        $subscriptionRequest->vendorPlanId = $vendorPlan->getId()
+            ->toString();
 
         $this->service->createFromCustomerRequest($customer, $subscriptionRequest);
     }
@@ -66,14 +74,5 @@ class SubscriptionFixtures extends Fixture implements DependentFixtureInterface
         }
 
         return $this->vendors;
-    }
-
-    public function getDependencies()
-    {
-        return [
-            CustomerFixtures::class,
-            VendorFixtures::class,
-            VendorPlanFixtures::class,
-        ];
     }
 }

@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\Controller\Vendor;
 
 use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
 use App\Subscription\Dto\SubscriptionDto;
 use App\Subscription\Exception\SubscriptionNotFoundException;
+use App\Subscription\Provider\SubscriptionProvider;
 use App\Subscription\Request\SubscriptionSearchRequest;
 use App\Subscription\ResponseMapper\SubscriptionResponseMapper;
 use App\Vendor\Entity\Vendor;
-use App\Subscription\Provider\SubscriptionProvider;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
@@ -98,7 +100,7 @@ class SubscriptionController extends AbstractController
     public function getSubscription(string $vendorId, string $subscriptionId): Response
     {
         try {
-            if ('current' == $vendorId) {
+            if ('current' === $vendorId) {
                 /** @var Vendor $vendor */
                 $vendor = $this->getUser();
             } else {

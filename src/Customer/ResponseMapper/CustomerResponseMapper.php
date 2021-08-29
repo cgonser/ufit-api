@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\ResponseMapper;
 
 use App\Customer\Dto\CustomerDto;
@@ -18,9 +20,11 @@ class CustomerResponseMapper
         $customerDto->phoneNumber = $customer->getPhoneNumber();
         $customerDto->gender = $customer->getGender();
         $customerDto->height = $customer->getHeight();
-        $customerDto->lastWeight = null !== $customer->getLastWeight() ? $customer->getLastWeight()->toString() : null;
+        $customerDto->lastWeight = null !== $customer->getLastWeight() ? $customer->getLastWeight()
+            ->toString() : null;
         $customerDto->birthDate = $customer->getBirthDate()
-            ? $customer->getBirthDate()->format('Y-m-d')
+            ? $customer->getBirthDate()
+                ->format('Y-m-d')
             : null;
         $customerDto->goals = $customer->getGoals();
         $customerDto->country = $customer->getCountry();

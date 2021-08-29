@@ -1,34 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\ResponseMapper;
 
 use App\Vendor\Dto\VendorDto;
 use App\Vendor\Entity\Vendor;
 use App\Vendor\Entity\VendorPlan;
 use Aws\S3\S3Client;
+use League\Flysystem\FilesystemInterface;
 
 class VendorResponseMapper
 {
-    private VendorPlanResponseMapper $vendorPlanResponseMapper;
-
-    private S3Client $s3Client;
-
-    private string $vendorPhotoS3Bucket;
-
     public function __construct(
-        VendorPlanResponseMapper $vendorPlanResponseMapper,
-        S3Client $s3Client,
-        string $vendorPhotoS3Bucket
+        private VendorPlanResponseMapper $vendorPlanResponseMapper,
+        private S3Client $s3Client,
+        private string $vendorPhotoS3Bucket,
+        private FilesystemInterface $vendorPhotoFileSystem,
     ) {
-        $this->vendorPlanResponseMapper = $vendorPlanResponseMapper;
-        $this->s3Client = $s3Client;
-        $this->vendorPhotoS3Bucket = $vendorPhotoS3Bucket;
     }
 
     public function mapBaseData(Vendor $vendor): VendorDto
     {
         $vendorDto = new VendorDto();
-        $vendorDto->id = $vendor->getId()->toString();
+        $vendorDto->id = $vendor->getId()
+            ->toString();
         $vendorDto->name = $vendor->getName();
         $vendorDto->displayName = $vendor->getDisplayName();
         $vendorDto->slug = $vendor->getSlug();
@@ -48,10 +44,10 @@ class VendorResponseMapper
         $vendorDto = $this->mapBaseData($vendor);
         $vendorDto->plans = [];
 
-        /** @var VendorPlan $vendorPlan */
-        foreach ($vendor->getPlans() as $vendorPlan) {
-            if ($vendorPlan->isActive() && $vendorPlan->isVisible()) {
-                $vendorDto->plans[] = $this->vendorPlanResponseMapper->map($vendorPlan);
+        /** @var VendorPlan $collection */
+        foreach ($vendor->getPlans() as $collection) {
+            if ($collection->isActive() && $collection->isVisible()) {
+                $vendorDto->plans[] = $this->vendorPlanResponseMapper->map($collection);
             }
         }
 
@@ -63,7 +59,8 @@ class VendorResponseMapper
         $vendorDto = $this->mapBaseData($vendor);
         $vendorDto->email = $vendor->getEmail();
         $vendorDto->allowEmailMarketing = $vendor->allowEmailMarketing();
-        $vendorDto->country = $vendor->getCountry();
+        $vendorDto->timezone = $vendor->getTimezone();
+        $vendorDto->locale = $vendor->getLocale();
 
         if ($mapPlans) {
             $vendorDto->plans = $this->vendorPlanResponseMapper->mapMultiple($vendor->getPlans()->toArray());
@@ -72,6 +69,9 @@ class VendorResponseMapper
         return $vendorDto;
     }
 
+    /**
+     * @return VendorDto[]
+     */
     public function mapMultiple(array $vendors): array
     {
         $vendorDtos = [];

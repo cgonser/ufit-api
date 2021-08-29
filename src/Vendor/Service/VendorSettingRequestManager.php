@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Service;
 
 use App\Vendor\Entity\VendorSetting;
@@ -8,12 +10,9 @@ use Ramsey\Uuid\Uuid;
 
 class VendorSettingRequestManager
 {
-    private VendorSettingManager $vendorSettingManager;
-
     public function __construct(
-        VendorSettingManager $vendorSettingManager
+        private VendorSettingManager $vendorSettingManager
     ) {
-        $this->vendorSettingManager = $vendorSettingManager;
     }
 
     public function createFromRequest(VendorSettingRequest $vendorSettingRequest): VendorSetting

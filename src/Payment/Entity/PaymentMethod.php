@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -41,6 +43,11 @@ class PaymentMethod
      * @ORM\Column(type="boolean", nullable=false, options={"default": true})
      */
     private bool $isActive = true;
+
+    public function __toString(): string
+    {
+        return $this->getName();
+    }
 
     public function getId(): UuidInterface
     {
@@ -95,13 +102,8 @@ class PaymentMethod
         return $this;
     }
 
-    public function __toString(): string
-    {
-        return $this->getName();
-    }
-
     public function isNew(): bool
     {
-        return !isset($this->id);
+        return ! isset($this->id);
     }
 }

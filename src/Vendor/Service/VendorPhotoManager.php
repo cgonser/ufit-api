@@ -1,41 +1,39 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Service;
 
 use App\Vendor\Entity\Vendor;
 use App\Vendor\Exception\VendorInvalidPhotoException;
-use Intervention\Image\ImageManagerStatic as Image;
+use Exception;
 use GuzzleHttp\Client;
+use Intervention\Image\ImageManagerStatic;
 use League\Flysystem\FilesystemInterface;
 
 class VendorPhotoManager
 {
-    private VendorManager $vendorManager;
-    private FilesystemInterface $filesystem;
-
     public function __construct(
-        VendorManager $vendorManager,
-        FilesystemInterface $vendorPhotoFileSystem
+        private VendorManager $vendorManager,
+        private FilesystemInterface $vendorPhotoFileSystem,
     ) {
-        $this->vendorManager = $vendorManager;
-        $this->filesystem = $vendorPhotoFileSystem;
     }
 
     public function uploadPhoto(Vendor $vendor, string $photoContents): void
     {
-        $image = Image::make($photoContents);
+        $image = ImageManagerStatic::make($photoContents);
+        echo "mime=".$image->mime().PHP_EOL;
 
         if (false === $image) {
             throw new VendorInvalidPhotoException();
         }
 
-        $filename = $vendor->getId()->toString().'.png';
+        $filename = $vendor->getId()
+            ->toString().'.png';
 
-        $this->filesystem->put(
-            $filename,
-            $image->encode('png'),
-            ['ACL' => 'public-read']
-        );
+        $this->vendorPhotoFileSystem->put($filename, $image->encode('png'), [
+            'ACL' => 'public-read',
+        ]);
 
         $vendor->setPhoto($filename);
 
@@ -46,15 +44,17 @@ class VendorPhotoManager
     {
         try {
             $httpClient = new Client();
-            $photo = $httpClient->get($photoUrl);
+            $response = $httpClient->get($photoUrl);
 
-            $photoContents = $photo->getBody()->getContents();
+            $photoContents = $response->getBody()
+                ->getContents();
 
             $this->uploadPhoto($vendor, $photoContents);
 
             return true;
-        } catch (\Exception $e) {
-            echo $e;
+        } catch (Exception $exception) {
+            echo $exception;
+
             return false;
         }
     }

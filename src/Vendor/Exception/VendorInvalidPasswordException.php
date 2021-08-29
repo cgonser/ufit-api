@@ -1,8 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Exception;
 
-class VendorInvalidPasswordException extends \Exception
+use Exception;
+
+class VendorInvalidPasswordException extends Exception
 {
-    protected $message = "Invalid password";
+    /**
+     * @var string
+     */
+    protected $message = 'Invalid password';
 }

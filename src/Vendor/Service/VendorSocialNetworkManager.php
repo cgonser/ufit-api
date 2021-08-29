@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Service;
 
 use App\Core\Validation\EntityValidator;
@@ -8,21 +10,15 @@ use App\Vendor\Repository\VendorSocialNetworkRepository;
 
 class VendorSocialNetworkManager
 {
-    private VendorSocialNetworkRepository $vendorSocialNetworkRepository;
-
-    private EntityValidator $validator;
-
     public function __construct(
-        VendorSocialNetworkRepository $vendorSocialNetworkRepository,
-        EntityValidator $validator
+        private VendorSocialNetworkRepository $vendorSocialNetworkRepository,
+        private EntityValidator $entityValidator
     ) {
-        $this->vendorSocialNetworkRepository = $vendorSocialNetworkRepository;
-        $this->validator = $validator;
     }
 
-    public function save(VendorSocialNetwork $vendorSocialNetwork)
+    public function save(VendorSocialNetwork $vendorSocialNetwork): void
     {
-        $this->validator->validate($vendorSocialNetwork);
+        $this->entityValidator->validate($vendorSocialNetwork);
 
         $this->vendorSocialNetworkRepository->save($vendorSocialNetwork);
     }

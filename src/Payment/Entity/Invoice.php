@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Entity;
 
 use App\Localization\Entity\Currency;
@@ -56,7 +58,7 @@ class Invoice
     /**
      * @ORM\Column(type="decimal", nullable=false, options={"precision": 11, "scale": 2})
      */
-    private string $totalAmount;
+    private Decimal|string|null $totalAmount;
 
     /**
      * @ORM\Column(type="uuid")
@@ -143,9 +145,9 @@ class Invoice
         return new Decimal($this->totalAmount);
     }
 
-    public function setTotalAmount(Decimal $totalAmount): self
+    public function setTotalAmount(Decimal|string $totalAmount): self
     {
-        $this->totalAmount = $totalAmount;
+        $this->totalAmount = is_string($totalAmount) ? new Decimal($totalAmount) : $totalAmount;
 
         return $this;
     }

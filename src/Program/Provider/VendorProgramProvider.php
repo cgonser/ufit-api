@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Provider;
 
-use App\Core\Request\SearchRequest;
 use App\Program\Entity\Program;
 use App\Vendor\Entity\Vendor;
 use Ramsey\Uuid\UuidInterface;
@@ -17,7 +18,7 @@ class VendorProgramProvider extends ProgramProvider
             'vendor' => $vendor,
         ]);
 
-        if (!$program) {
+        if (! $program) {
             $this->throwNotFoundException();
         }
 
@@ -26,23 +27,18 @@ class VendorProgramProvider extends ProgramProvider
 
     public function findByVendor(Vendor $vendor): array
     {
-        return $this->repository->findBy(['vendor' => $vendor]);
+        return $this->repository->findBy([
+            'vendor' => $vendor,
+        ]);
     }
 
     public function getSearchableFields(): array
     {
-        return [
-            'name',
-            'goals',
-        ];
+        return ['name', 'goals'];
     }
 
     public function getFilterableFields(): array
     {
-        return [
-            'vendorId',
-            'isTemplate',
-            'isActive',
-        ];
+        return ['vendorId', 'isTemplate', 'isActive'];
     }
 }

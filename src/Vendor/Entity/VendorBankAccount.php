@@ -1,82 +1,68 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
+use App\Vendor\Repository\VendorBankAccountRepository;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\CustomIdGenerator;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Table;
+use Knp\DoctrineBehaviors\Contract\Entity\SoftDeletableInterface;
+use Knp\DoctrineBehaviors\Contract\Entity\TimestampableInterface;
+use Knp\DoctrineBehaviors\Model\SoftDeletable\SoftDeletableTrait;
+use Knp\DoctrineBehaviors\Model\Timestampable\TimestampableTrait;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
-/**
- * @ORM\Entity(repositoryClass="App\Vendor\Repository\VendorBankAccountRepository")
- * @ORM\Table(name="vendor_bank_account")
- * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
- */
-class VendorBankAccount
+#[Entity(repositoryClass: VendorBankAccountRepository::class)]
+#[Table(name: 'vendor_bank_account')]
+class VendorBankAccount implements SoftDeletableInterface, TimestampableInterface
 {
-    use TimestampableEntity;
-    use SoftDeleteableEntity;
+    use TimestampableTrait;
+    use SoftDeletableTrait;
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="uuid", unique=true)
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class=UuidGenerator::class)
-     */
+    #[Id]
+    #[Column(type: 'uuid', unique: true)]
+    #[GeneratedValue(strategy: 'CUSTOM')]
+    #[CustomIdGenerator(class: UuidGenerator::class)]
     private UuidInterface $id;
 
-    /**
-     * @ORM\Column(type="uuid", nullable=false)
-     * @Assert\NotBlank()
-     */
+    #[Column(type: 'uuid')]
+    #[NotBlank]
     private ?UuidInterface $vendorId = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[Column(type: 'string', nullable: true)]
     private ?string $bankCode = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[Column(type: 'string', nullable: true)]
     private ?string $agencyNumber = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     * @Assert\NotBlank()
-     */
+    #[Column(type: 'string', nullable: true)]
+    #[NotBlank]
     private ?string $accountNumber = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[Column(type: 'string', nullable: true)]
     private ?string $accountDigit = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     * @Assert\NotBlank()
-     */
+    #[Column(type: 'string', nullable: true)]
+    #[NotBlank]
     private ?string $ownerName = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[Column(type: 'string', nullable: true)]
     private ?string $ownerDocumentType = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[Column(type: 'string', nullable: true)]
     private ?string $ownerDocumentNumber = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[Column(type: 'boolean', nullable: true)]
     private ?bool $isValid = null;
 
-    public function getId(): ?UuidInterface
+    public function getId(): UuidInterface
     {
         return $this->id;
     }
@@ -96,7 +82,7 @@ class VendorBankAccount
         return $this->bankCode;
     }
 
-    public function setBankCode(?string $bankCode): VendorBankAccount
+    public function setBankCode(?string $bankCode): self
     {
         $this->bankCode = $bankCode;
 
@@ -108,7 +94,7 @@ class VendorBankAccount
         return $this->agencyNumber;
     }
 
-    public function setAgencyNumber(?string $agencyNumber): VendorBankAccount
+    public function setAgencyNumber(?string $agencyNumber): self
     {
         $this->agencyNumber = $agencyNumber;
 
@@ -120,7 +106,7 @@ class VendorBankAccount
         return $this->accountNumber;
     }
 
-    public function setAccountNumber(?string $accountNumber): VendorBankAccount
+    public function setAccountNumber(?string $accountNumber): self
     {
         $this->accountNumber = $accountNumber;
 
@@ -132,7 +118,7 @@ class VendorBankAccount
         return $this->accountDigit;
     }
 
-    public function setAccountDigit(?string $accountDigit): VendorBankAccount
+    public function setAccountDigit(?string $accountDigit): self
     {
         $this->accountDigit = $accountDigit;
 
@@ -144,7 +130,7 @@ class VendorBankAccount
         return $this->ownerName;
     }
 
-    public function setOwnerName(?string $ownerName): VendorBankAccount
+    public function setOwnerName(?string $ownerName): self
     {
         $this->ownerName = $ownerName;
 
@@ -156,7 +142,7 @@ class VendorBankAccount
         return $this->ownerDocumentType;
     }
 
-    public function setOwnerDocumentType(?string $ownerDocumentType): VendorBankAccount
+    public function setOwnerDocumentType(?string $ownerDocumentType): self
     {
         $this->ownerDocumentType = $ownerDocumentType;
 
@@ -168,7 +154,7 @@ class VendorBankAccount
         return $this->ownerDocumentNumber;
     }
 
-    public function setOwnerDocumentNumber(?string $ownerDocumentNumber): VendorBankAccount
+    public function setOwnerDocumentNumber(?string $ownerDocumentNumber): self
     {
         $this->ownerDocumentNumber = $ownerDocumentNumber;
 
@@ -189,6 +175,6 @@ class VendorBankAccount
 
     public function isNew(): bool
     {
-        return !isset($this->id);
+        return ! isset($this->id);
     }
 }

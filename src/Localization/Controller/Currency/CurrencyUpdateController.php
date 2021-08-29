@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Localization\Controller\Currency;
 
 use App\Core\Exception\ApiJsonInputValidationException;
@@ -71,9 +73,6 @@ class CurrencyUpdateController extends AbstractController
 
         $this->currencyService->update($currency, $currencyRequest);
 
-        return new ApiJsonResponse(
-            Response::HTTP_OK,
-            $this->currencyResponseMapper->map($currency)
-        );
+        return new ApiJsonResponse(Response::HTTP_OK, $this->currencyResponseMapper->map($currency));
     }
 }

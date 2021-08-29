@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\MessageHandler;
 
 use App\Payment\Message\PagarmeTransactionResponseReceivedEvent;
@@ -23,10 +25,7 @@ class PagarmeTransactionResponseHandler implements MessageHandlerInterface
 
     public function __invoke(PagarmeTransactionResponseReceivedEvent $event)
     {
-        $this->logger->info(
-            'payment.transaction.response',
-            (array)$event->getResponse()
-        );
+        $this->logger->info('payment.transaction.response', (array) $event->getResponse());
 
         $this->pagarmeResponseProcessor->process(
             $event->getResponse(),

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\Provider;
 
 use App\Core\Provider\AbstractProvider;
@@ -34,11 +36,6 @@ class SubscriptionCustomerProvider extends AbstractProvider
 
     protected function getFilterableFields(): array
     {
-        return [
-            'vendorPlanId',
-            'customerId',
-            'vendorId',
-            'isActive',
-        ];
+        return ['vendorPlanId', 'customerId', 'vendorId', 'isActive'];
     }
 }

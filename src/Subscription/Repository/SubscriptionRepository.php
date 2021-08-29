@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\Repository;
 
 use App\Core\Repository\BaseRepository;
@@ -18,7 +20,8 @@ class SubscriptionRepository extends BaseRepository
 
     public function findCustomersByVendor(Vendor $vendor)
     {
-        $query = $this->getEntityManager()->createQueryBuilder()
+        $query = $this->getEntityManager()
+            ->createQueryBuilder()
             ->select('c')
             ->addSelect('s')
             ->from(Customer::class, 'c')
@@ -32,12 +35,14 @@ class SubscriptionRepository extends BaseRepository
 //            ->andWhere('s.expiresAt >= :expiresAt')
 //            ->setParameter('expiresAt', $expiresAt)
 
-        return $query->getQuery()->getResult();
+        return $query->getQuery()
+            ->getResult();
     }
 
     public function findOneVendorCustomer(Vendor $vendor, UuidInterface $customerId): Customer
     {
-        $query = $this->getEntityManager()->createQueryBuilder()
+        $query = $this->getEntityManager()
+            ->createQueryBuilder()
             ->select('c')
             ->addSelect('s')
             ->from(Customer::class, 'c')
@@ -49,7 +54,8 @@ class SubscriptionRepository extends BaseRepository
             ->setParameter('customerId', $customerId)
             ->orderBy('c.id', 'ASC');
 
-        return $query->getQuery()->getOneOrNullResult();
+        return $query->getQuery()
+            ->getOneOrNullResult();
     }
 
     public function findActiveSubscriptionsByCustomer(Customer $customer)

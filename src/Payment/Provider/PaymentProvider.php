@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Provider;
 
 use App\Core\Provider\AbstractProvider;
@@ -21,7 +23,7 @@ class PaymentProvider extends AbstractProvider
         /** @var Payment|null $payment */
         $payment = $this->get($paymentId);
 
-        if (!$payment->getInvoice()->getSubscription()->getCustomerId()->equals($customerId)) {
+        if (! $payment->getInvoice()->getSubscription()->getCustomerId()->equals($customerId)) {
             $this->throwNotFoundException();
         }
 
@@ -51,9 +53,15 @@ class PaymentProvider extends AbstractProvider
     protected function getFilterableFields(): array
     {
         return [
-            ['customerId' => 'subscription'],
-            ['vendorId' => 'vendorPlan'],
-            ['subscriptionId' => 'invoice'],
+            [
+                'customerId' => 'subscription',
+            ],
+            [
+                'vendorId' => 'vendorPlan',
+            ],
+            [
+                'subscriptionId' => 'invoice',
+            ],
             'invoiceId',
             'paymentMethodId',
             'status',

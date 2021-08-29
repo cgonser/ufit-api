@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Localization\ResponseMapper;
 
 use App\Localization\Dto\TimezoneDto;

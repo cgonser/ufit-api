@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\Service;
 
 use App\Core\Validation\EntityValidator;
@@ -8,7 +10,6 @@ use App\Payment\Exception\InvoiceNotFoundException;
 use App\Payment\Provider\InvoiceProvider;
 use App\Payment\Service\InvoiceManager;
 use App\Subscription\Entity\Subscription;
-use App\Subscription\Entity\SubscriptionCycle;
 use App\Subscription\Message\SubscriptionApprovedEvent;
 use App\Subscription\Message\SubscriptionCreatedEvent;
 use App\Subscription\Message\SubscriptionRejectedEvent;
@@ -59,7 +60,7 @@ class SubscriptionManager
             $this->getOrCreateUnpaidInvoice($subscription->getId());
         }
 
-        if (!$vendorPlan->isApprovalRequired() && $vendorPlan->getPrice()->equals(0)) {
+        if (! $vendorPlan->isApprovalRequired() && $vendorPlan->getPrice()->equals(0)) {
             $this->approve($subscription);
         }
     }
@@ -102,7 +103,8 @@ class SubscriptionManager
     {
         $previousExpiration = clone $subscription->getExpiresAt();
 
-        $newExpiration = $this->calculateExpiration($subscription)->format(\DateTimeInterface::ATOM);
+        $newExpiration = $this->calculateExpiration($subscription)
+            ->format(\DateTimeInterface::ATOM);
         $subscription->setExpiresAt(\DateTime::createFromFormat(\DateTimeInterface::ATOM, $newExpiration));
         // overcome stupid doctrine bug
 
@@ -117,28 +119,6 @@ class SubscriptionManager
         );
 
 //        $this->messageBus->dispatch(new SubscriptionRenewedEvent($subscription->getId()));
-    }
-
-    private function calculateExpiration(Subscription $subscription): ?\DateTime
-    {
-        if (null === $subscription->getVendorPlan()->getDuration()) {
-            return null;
-        }
-
-//        dump($subscription->getVendorPlan()->getDuration());
-//        dump($subscription->getExpiresAt());
-//        dd(($subscription->getExpiresAt() ?: new \DateTime())->add($subscription->getVendorPlan()->getDuration()));
-
-        return ($subscription->getExpiresAt() ?: new \DateTime())->add($subscription->getVendorPlan()->getDuration());
-    }
-
-    private function cancel(Subscription $subscription)
-    {
-        $subscription->setCancelledAt(new \DateTime());
-        $subscription->setIsActive(false);
-        // todo: calculate expiration
-
-        $this->subscriptionRepository->save($subscription);
     }
 
     public function expire(Subscription $subscription)
@@ -177,6 +157,29 @@ class SubscriptionManager
     public function defineExternalRefence(Subscription $subscription, ?string $externalReference): void
     {
         $subscription->setExternalReference($externalReference);
+
+        $this->subscriptionRepository->save($subscription);
+    }
+
+    private function calculateExpiration(Subscription $subscription): ?\DateTime
+    {
+        if (null === $subscription->getVendorPlan()->getDuration()) {
+            return null;
+        }
+
+//        dump($subscription->getVendorPlan()->getDuration());
+//        dump($subscription->getExpiresAt());
+//        dd(($subscription->getExpiresAt() ?: new \DateTime())->add($subscription->getVendorPlan()->getDuration()));
+
+        return ($subscription->getExpiresAt() ?: new \DateTime())
+            ->add($subscription->getVendorPlan()->getDuration());
+    }
+
+    private function cancel(Subscription $subscription)
+    {
+        $subscription->setCancelledAt(new \DateTime());
+        $subscription->setIsActive(false);
+        // todo: calculate expiration
 
         $this->subscriptionRepository->save($subscription);
     }

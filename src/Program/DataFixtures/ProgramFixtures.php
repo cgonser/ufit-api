@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\DataFixtures;
 
 use App\Program\Request\ProgramRequest;
@@ -32,6 +34,11 @@ class ProgramFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
+    public function getDependencies()
+    {
+        return [VendorFixtures::class];
+    }
+
     private function loadVendor(Vendor $vendor)
     {
         foreach ($this->getData() as $programRequest) {
@@ -58,12 +65,5 @@ class ProgramFixtures extends Fixture implements DependentFixtureInterface
         $programRequest->description = 'Go to Krypton';
 
         yield $programRequest;
-    }
-
-    public function getDependencies()
-    {
-        return [
-            VendorFixtures::class,
-        ];
     }
 }

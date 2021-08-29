@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Localization\Controller\Currency;
 
 use App\Core\Response\ApiJsonResponse;
@@ -19,10 +21,8 @@ class CurrencyDeleteController extends AbstractController
 
     private CurrencyProvider $currencyProvider;
 
-    public function __construct(
-        CurrencyService $currencyService,
-        CurrencyProvider $currencyProvider
-    ) {
+    public function __construct(CurrencyService $currencyService, CurrencyProvider $currencyProvider)
+    {
         $this->currencyService = $currencyService;
         $this->currencyProvider = $currencyProvider;
     }

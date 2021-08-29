@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Controller;
 
 use App\Core\Response\ApiJsonResponse;
@@ -20,10 +22,8 @@ class ProgramController extends AbstractController
 
     private ProgramResponseMapper $programResponseMapper;
 
-    public function __construct(
-        ProgramProvider $programProvider,
-        ProgramResponseMapper $programResponseMapper
-    ) {
+    public function __construct(ProgramProvider $programProvider, ProgramResponseMapper $programResponseMapper)
+    {
         $this->programProvider = $programProvider;
         $this->programResponseMapper = $programResponseMapper;
     }
@@ -47,10 +47,7 @@ class ProgramController extends AbstractController
     {
         $programs = $this->programProvider->findAll();
 
-        return new ApiJsonResponse(
-            Response::HTTP_OK,
-            $this->programResponseMapper->mapMultiple($programs)
-        );
+        return new ApiJsonResponse(Response::HTTP_OK, $this->programResponseMapper->mapMultiple($programs));
     }
 
     /**
@@ -67,9 +64,6 @@ class ProgramController extends AbstractController
     {
         $program = $this->programProvider->get(Uuid::fromString($programId));
 
-        return new ApiJsonResponse(
-            Response::HTTP_OK,
-            $this->programResponseMapper->map($program)
-        );
+        return new ApiJsonResponse(Response::HTTP_OK, $this->programResponseMapper->map($program));
     }
 }

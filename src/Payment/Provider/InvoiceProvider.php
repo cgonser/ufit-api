@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Provider;
 
 use App\Core\Provider\AbstractProvider;
@@ -44,9 +46,6 @@ class InvoiceProvider extends AbstractProvider
 
     protected function getFilterableFields(): array
     {
-        return [
-            'subscriptionId',
-            'currencyId',
-        ];
+        return ['subscriptionId', 'currencyId'];
     }
 }
