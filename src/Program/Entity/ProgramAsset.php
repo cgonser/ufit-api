@@ -8,6 +8,7 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Ramsey\Uuid\UuidInterface;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Program\Repository\ProgramAssetRepository")
@@ -35,6 +36,7 @@ class ProgramAsset
 
     /**
      * @ORM\Column(nullable=true)
+     * @Assert\NotBlank()
      */
     private ?string $filename = null;
 

@@ -184,7 +184,7 @@ class SubscriptionManager
     private function createCycle(
         Subscription $subscription,
         \DateTimeInterface $startsAt,
-        \DateTimeInterface $endsAt,
+        ?\DateTimeInterface $endsAt = null,
         ?Invoice $invoice = null
     ): void {
         $subscriptionCycle = $this->subscriptionCycleManager->create($subscription, $startsAt, $endsAt);

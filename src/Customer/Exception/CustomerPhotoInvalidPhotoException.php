@@ -2,7 +2,9 @@
 
 namespace App\Customer\Exception;
 
-class CustomerPhotoInvalidPhotoException extends \Exception
+use App\Core\Exception\InvalidInputException;
+
+class CustomerPhotoInvalidPhotoException extends InvalidInputException
 {
     protected $message = "Invalid photo file";
 }

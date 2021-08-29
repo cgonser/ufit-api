@@ -53,7 +53,7 @@ class AssignmentController extends AbstractController
      */
     public function getProgramAssignments(string $customerId, ProgramAssignmentSearchRequest $searchRequest): Response
     {
-        if ('current' == $customerId) {
+        if ('current' === $customerId) {
             /** @var Customer $customer */
             $customer = $this->getUser();
         } else {

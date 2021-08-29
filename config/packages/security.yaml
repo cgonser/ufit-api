@@ -95,7 +95,7 @@ security:
 
         - { path: ^/subscriptions, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
         - { path: ^/subscriptions, roles: IS_AUTHENTICATED_FULLY }
-        -
+
         - { path: ^/programs, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/payments, roles: IS_AUTHENTICATED_FULLY }
 

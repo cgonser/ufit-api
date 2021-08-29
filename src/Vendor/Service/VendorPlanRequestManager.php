@@ -17,24 +17,17 @@ use Ramsey\Uuid\Uuid;
 class VendorPlanRequestManager
 {
     private VendorPlanManager $vendorPlanManager;
-
-    private VendorPlanImageService $vendorPlanImageService;
-
     private QuestionnaireProvider $questionnaireProvider;
-
     private PaymentMethodProvider $paymentMethodProvider;
-
     private CurrencyProvider $currencyProvider;
 
     public function __construct(
         VendorPlanManager $vendorPlanManager,
-        VendorPlanImageService $vendorPlanImageService,
         QuestionnaireProvider $questionnaireProvider,
         CurrencyProvider $currencyProvider,
         PaymentMethodProvider $paymentMethodProvider
     ) {
         $this->vendorPlanManager = $vendorPlanManager;
-        $this->vendorPlanImageService = $vendorPlanImageService;
         $this->questionnaireProvider = $questionnaireProvider;
         $this->paymentMethodProvider = $paymentMethodProvider;
         $this->currencyProvider = $currencyProvider;
@@ -130,10 +123,6 @@ class VendorPlanRequestManager
             $vendorPlan->setQuestionnaire($questionnaire);
         } else {
             $vendorPlan->setQuestionnaire(null);
-        }
-
-        if ($vendorPlanRequest->has('imageContents')) {
-            $this->vendorPlanImageService->uploadImage($vendorPlan, $vendorPlanRequest->imageContents);
         }
     }
 

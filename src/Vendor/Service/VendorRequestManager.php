@@ -19,8 +19,6 @@ class VendorRequestManager
 
     private VendorProvider $vendorProvider;
 
-    private VendorPhotoService $vendorPhotoService;
-
     private VendorPasswordManager $vendorPasswordManager;
 
     private Reader $geoIpReader;
@@ -28,13 +26,11 @@ class VendorRequestManager
     public function __construct(
         VendorManager $vendorManager,
         VendorProvider $vendorProvider,
-        VendorPhotoService $vendorPhotoService,
         VendorPasswordManager $vendorPasswordManager,
         Reader $geoIpReader
     ) {
         $this->vendorManager = $vendorManager;
         $this->vendorProvider = $vendorProvider;
-        $this->vendorPhotoService = $vendorPhotoService;
         $this->vendorPasswordManager = $vendorPasswordManager;
         $this->geoIpReader = $geoIpReader;
     }
@@ -51,13 +47,6 @@ class VendorRequestManager
 
         $this->vendorManager->create($vendor);
 
-        if ($vendorRequest->has('photoContents')) {
-            $this->vendorPhotoService->uploadPhoto(
-                $vendor,
-                $this->vendorPhotoService->decodePhotoContents($vendorRequest->photoContents)
-            );
-        }
-
         return $vendor;
     }
 
@@ -71,7 +60,7 @@ class VendorRequestManager
     public function mapFromRequest(Vendor $vendor, VendorRequest $vendorRequest)
     {
         if ($vendorRequest->has('email')) {
-            $vendor->setEmail($vendorRequest->email);
+            $vendor->setEmail(strtolower($vendorRequest->email));
         }
 
         if ($vendorRequest->has('name')) {

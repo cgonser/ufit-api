@@ -6,7 +6,7 @@ use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
 use App\Customer\Entity\Customer;
 use App\Customer\Provider\CustomerPhotoProvider;
-use App\Customer\Service\CustomerPhotoService;
+use App\Customer\Service\CustomerPhotoManager;
 use OpenApi\Annotations as OA;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,15 +15,15 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CustomerPhotoDeleteController extends AbstractController
 {
-    private CustomerPhotoService $customerPhotoService;
+    private CustomerPhotoManager $customerPhotoManager;
 
     private CustomerPhotoProvider $customerPhotoProvider;
 
     public function __construct(
-        CustomerPhotoService $customerPhotoService,
+        CustomerPhotoManager $customerPhotoManager,
         CustomerPhotoProvider $customerPhotoProvider
     ) {
-        $this->customerPhotoService = $customerPhotoService;
+        $this->customerPhotoManager = $customerPhotoManager;
         $this->customerPhotoProvider = $customerPhotoProvider;
     }
 
@@ -31,14 +31,8 @@ class CustomerPhotoDeleteController extends AbstractController
      * @Route("/customers/{customerId}/photos/{customerPhotoId}", methods="DELETE", name="customers_photos_delete")
      *
      * @OA\Tag(name="Customer / Photo")
-     * @OA\Response(
-     *     response=204,
-     *     description="Deletes a photo"
-     * )
-     * @OA\Response(
-     *     response=404,
-     *     description="Photo not found"
-     * )
+     * @OA\Response(response=204, description="Deletes a photo")
+     * @OA\Response(response=404, description="Photo not found")
      */
     public function delete(string $customerId, string $customerPhotoId): Response
     {
@@ -55,7 +49,7 @@ class CustomerPhotoDeleteController extends AbstractController
             Uuid::fromString($customerPhotoId)
         );
 
-        $this->customerPhotoService->delete($customerPhoto);
+        $this->customerPhotoManager->delete($customerPhoto);
 
         return new ApiJsonResponse(Response::HTTP_NO_CONTENT);
     }

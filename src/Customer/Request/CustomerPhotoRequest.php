@@ -29,10 +29,5 @@ class CustomerPhotoRequest
     /**
      * @OA\Property()
      */
-    public ?string $photoContents = null;
-
-    /**
-     * @OA\Property()
-     */
     public ?string $takenAt = null;
 }

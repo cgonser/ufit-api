@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Customer\Service;
+namespace App\Program\Service;
 
 use App\Core\Service\EmailComposer;
-use App\Customer\Entity\Customer;
+use App\Program\Entity\ProgramAssignment;
 use Symfony\Component\Mailer\MailerInterface;
 
-class CustomerEmailManager
+class ProgramEmailManager
 {
     private EmailComposer $emailComposer;
 
@@ -18,16 +18,21 @@ class CustomerEmailManager
         $this->mailer = $mailer;
     }
 
-    public function sendCreatedEmail(Customer $customer): void
+    public function sendAssignedEmail(ProgramAssignment $programAssignment): void
     {
+        $customer = $programAssignment->getCustomer();
+        $vendor = $programAssignment->getProgram()->getVendor();
+
         $this->mailer->send(
             $this->emailComposer->compose(
-                'customer.created',
+                'customer.program_sent',
                 [
                     $customer->getName() => $customer->getEmail(),
                 ],
                 [
                     'greeting_name' => $customer->getName(),
+                    'vendor_name' => $vendor->getDisplayName(),
+                    'download_url' => 'https://ufit.io',
                 ],
                 $customer->getLocale()
             )

@@ -22,7 +22,7 @@ framework:
                     max_delay: 0
 
         routing:
-            'App\Customer\Message\CustomerCreatedEvent': customer
+            'App\Customer\Message\CustomerCreatedEvent': void
 
             'App\Payment\Message\InvoicePaidEvent': payment
             'App\Payment\Message\PaymentCreatedEvent': payment
@@ -33,7 +33,7 @@ framework:
             'App\Program\Message\ProgramDeletedEvent': void
             'App\Program\Message\ProgramAssetCreatedEvent': void
             'App\Program\Message\ProgramAssetDeletedEvent': void
-            'App\Program\Message\ProgramAssignmentCreatedEvent': void
+            'App\Program\Message\ProgramAssignmentCreatedEvent': customer
             'App\Program\Message\ProgramAssignmentDeletedEvent': void
             'App\Program\Message\ProgramAssignmentExpiredEvent': void
             'App\Program\Message\ProgramAssignmentUpdatedEvent': void

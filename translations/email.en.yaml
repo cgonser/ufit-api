@@ -1,11 +1,11 @@
 customer:
     created:
         subject: "Welcome to uFit"
-        content: "What text goes here?"
+        content: "We are thrilled you have joined the uFit community! Welcome!\n\nYour personal trainer, %vendor_name%, will soon get in touch with you to get more information and prepare a training program that best suits your goals."
 
     program_sent:
         subject: "Your new training program is here"
-        content: "%vendor_name% has sent you a new training program.\n\nYou can download your program by clicking here [%download_url%](here)."
+        content: "%vendor_name% has sent you a new training program.\n\nYou can download your program by clicking [here](%download_url%)."
 
     password_reset:
         subject: "uFit password recovery"

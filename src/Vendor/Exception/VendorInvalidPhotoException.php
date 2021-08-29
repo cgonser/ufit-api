@@ -2,7 +2,9 @@
 
 namespace App\Vendor\Exception;
 
-class VendorInvalidPhotoException extends \Exception
+use App\Core\Exception\InvalidInputException;
+
+class VendorInvalidPhotoException extends InvalidInputException
 {
-    protected $message = "Invalid photo";
+    protected $message = "Invalid photo file";
 }

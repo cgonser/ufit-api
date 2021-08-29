@@ -2,13 +2,12 @@
 
 namespace App\Program\Service;
 
-use App\Program\Entity\Program;
 use App\Program\Entity\ProgramAsset;
 use App\Program\Message\ProgramAssetCreatedEvent;
 use App\Program\Message\ProgramAssetDeletedEvent;
 use App\Program\Repository\ProgramAssetRepository;
-use App\Program\Request\ProgramAssetRequest;
 use League\Flysystem\FilesystemInterface;
+use Mimey\MimeTypes;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class ProgramAssetManager
@@ -29,55 +28,45 @@ class ProgramAssetManager
         $this->messageBus = $messageBus;
     }
 
-    public function createFromRequest(Program $program, ProgramAssetRequest $programAssetRequest): ProgramAsset
+    public function create(ProgramAsset $programAsset): void
     {
-        $programAsset = new ProgramAsset();
-        $programAsset->setProgram($program);
-
-        if (null !== $programAssetRequest->title) {
-            $programAsset->setTitle($programAssetRequest->title);
-        }
-
-        if (null !== $programAssetRequest->type) {
-            $programAsset->setType($programAssetRequest->type);
-        }
-
-        $this->programAssetRepository->save($programAsset);
-
-        $this->persistAsset(
-            $programAsset,
-            $programAssetRequest->filename,
-            $this->decodeFileContents($programAssetRequest->contents)
-        );
+        $this->save($programAsset);
 
         $this->messageBus->dispatch(new ProgramAssetCreatedEvent($programAsset->getId()));
-
-        return $programAsset;
     }
 
-    public function delete(ProgramAsset $programAsset)
+    public function save(ProgramAsset $programAsset): void
+    {
+        $this->programAssetRepository->save($programAsset);
+    }
+
+    public function delete(ProgramAsset $programAsset): void
     {
         $this->programAssetRepository->delete($programAsset);
 
         $this->messageBus->dispatch(new ProgramAssetDeletedEvent($programAsset->getId()));
     }
 
-    private function persistAsset(ProgramAsset $programAsset, string $filename, string $contents)
+    public function uploadAsset(ProgramAsset $programAsset, string $contents, ?string $type = null): void
     {
-        $extension = pathinfo($filename, PATHINFO_EXTENSION);
-        $filename = $programAsset->getId()->toString().'.'.$extension;
+        $extension = null;
 
-        $this->filesystem->write($filename, $contents);
+        if (null !== $type) {
+            $mimeTypes = new MimeTypes();
+            $extension = $mimeTypes->getExtension($type);
+        }
+
+        if (null === $extension && null !== $programAsset->getFilename()) {
+            $extension = pathinfo($programAsset->getFilename(), PATHINFO_EXTENSION);
+        }
+
+        $filename = $programAsset->getId()->toString().($extension !== null ? ('.'.$extension) : '');
+
+        $this->filesystem->put($filename, $contents);
 
         $programAsset->setFilename($filename);
+        $programAsset->setType($type);
 
-        $this->programAssetRepository->save($programAsset);
-    }
-
-    public function decodeFileContents(string $contents): ?string
-    {
-        return null !== $contents
-            ? base64_decode($contents)
-            : null;
+        $this->save($programAsset);
     }
 }

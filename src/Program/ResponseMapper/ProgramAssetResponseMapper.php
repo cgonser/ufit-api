@@ -27,8 +27,10 @@ class ProgramAssetResponseMapper
         $programAssetDto->programId = $programAsset->getProgram()->getId()->toString();
         $programAssetDto->title = $programAsset->getTitle();
         $programAssetDto->type = $programAsset->getType();
-        $programAssetDto->url = $this->prepareAssetUrl($programAsset->getFilename());
-        $programAssetDto->createdAt = $programAsset->getCreatedAt()->format(\DateTimeInterface::ISO8601);
+        if (null !== $programAsset->getFilename()) {
+            $programAssetDto->url = $this->prepareAssetUrl($programAsset->getFilename());
+        }
+        $programAssetDto->createdAt = $programAsset->getCreatedAt()->format(\DateTimeInterface::ATOM);
 
         return $programAssetDto;
     }
