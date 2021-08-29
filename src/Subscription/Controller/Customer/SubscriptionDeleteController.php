@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\Controller\Customer;
 
 use App\Core\Exception\ApiJsonException;
@@ -55,7 +57,10 @@ class SubscriptionDeleteController extends AbstractController
                 throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
             }
 
-            $subscription = $this->subscriptionProvider->getByCustomerAndId($customer, Uuid::fromString($subscriptionId));
+            $subscription = $this->subscriptionProvider->getByCustomerAndId(
+                $customer,
+                Uuid::fromString($subscriptionId)
+            );
 
             $this->subscriptionService->customerCancellation($subscription);
 

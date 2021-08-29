@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Service;
 
 use App\Payment\Entity\PaymentMethod;
@@ -9,9 +11,8 @@ class PaymentMethodRequestManager
 {
     private PaymentMethodManager $paymentMethodManager;
 
-    public function __construct(
-        PaymentMethodManager $paymentMethodManager
-    ) {
+    public function __construct(PaymentMethodManager $paymentMethodManager)
+    {
         $this->paymentMethodManager = $paymentMethodManager;
     }
 

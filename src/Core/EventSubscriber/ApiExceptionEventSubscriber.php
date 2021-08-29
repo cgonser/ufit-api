@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\EventSubscriber;
 
 use App\Core\Exception\ApiJsonException;
@@ -16,17 +18,21 @@ class ApiExceptionEventSubscriber implements EventSubscriberInterface
 {
     private LoggerInterface $logger;
 
-    public function __construct(
-        LoggerInterface $logger
-    ) {
+    public function __construct(LoggerInterface $logger)
+    {
         $this->logger = $logger;
     }
 
     public function onKernelException(ExceptionEvent $event): void
     {
-        $event->setResponse(
-            $this->prepareResponse($event->getThrowable())
-        );
+        $event->setResponse($this->prepareResponse($event->getThrowable()));
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return [
+            KernelEvents::EXCEPTION => 'onKernelException',
+        ];
     }
 
     private function prepareResponse(\Throwable $e)
@@ -36,11 +42,7 @@ class ApiExceptionEventSubscriber implements EventSubscriberInterface
         }
 
         if ($e instanceof ApiJsonException) {
-            return new ApiJsonErrorResponse(
-                $e->getStatusCode(),
-                $e->getMessage(),
-                $e->getErrors()
-            );
+            return new ApiJsonErrorResponse($e->getStatusCode(), $e->getMessage(), $e->getErrors());
         }
 
         if ($e instanceof HttpException) {
@@ -52,7 +54,8 @@ class ApiExceptionEventSubscriber implements EventSubscriberInterface
         }
 
         $this->logger->error(
-            'error', [
+            'error',
+            [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
@@ -61,12 +64,5 @@ class ApiExceptionEventSubscriber implements EventSubscriberInterface
         );
 
         return new ApiJsonErrorResponse($e->getCode() ?: Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
-    }
-
-    public static function getSubscribedEvents()
-    {
-        return [
-            KernelEvents::EXCEPTION => 'onKernelException',
-        ];
     }
 }

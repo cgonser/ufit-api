@@ -1,45 +1,40 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Controller\Questionnaire;
 
 use App\Core\Exception\ApiJsonException;
 use App\Core\Exception\ApiJsonInputValidationException;
 use App\Core\Response\ApiJsonResponse;
+use App\Core\Security\AuthorizationVoterInterface;
 use App\Vendor\Dto\QuestionnaireDto;
 use App\Vendor\Entity\Vendor;
 use App\Vendor\Exception\VendorPlanInvalidDurationException;
+use App\Vendor\Provider\VendorProvider;
 use App\Vendor\Request\QuestionnaireRequest;
 use App\Vendor\ResponseMapper\QuestionnaireResponseMapper;
 use App\Vendor\Service\QuestionnaireService;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
+use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
+#[Route(path: '/vendors/{vendorId}/questionnaires')]
 class QuestionnaireCreateController extends AbstractController
 {
-    private QuestionnaireService $questionnaireService;
-
-    private QuestionnaireResponseMapper $questionnaireResponseMapper;
-
     public function __construct(
-        QuestionnaireService $questionnaireService,
-        QuestionnaireResponseMapper $questionnaireResponseMapper
+        private QuestionnaireService $questionnaireService,
+        private QuestionnaireResponseMapper $questionnaireResponseMapper,
+        private VendorProvider $vendorProvider,
     ) {
-        $this->questionnaireService = $questionnaireService;
-        $this->questionnaireResponseMapper = $questionnaireResponseMapper;
     }
 
     /**
-     * @Route("/questionnaires", methods="POST", name="questionnaires_create")
-     *
-     * @ParamConverter("questionnaireRequest", converter="fos_rest.request_body", options={
-     *     "deserializationContext"= {"allow_extra_attributes"=false}
-     * })
-     *
      * @OA\Tag(name="Questionnaire")
      * @OA\RequestBody(
      *     required=true,
@@ -55,28 +50,26 @@ class QuestionnaireCreateController extends AbstractController
      *     description="Invalid input"
      * )
      */
+    #[Route(name: 'questionnaires_create', methods: 'POST')]
+    #[ParamConverter(data: 'questionnaireRequest', options: [
+        'deserializationContext' => [
+            'allow_extra_attributes' => false,
+        ],
+    ], converter: 'fos_rest.request_body')]
     public function create(
+        string $vendorId,
         QuestionnaireRequest $questionnaireRequest,
-        ConstraintViolationListInterface $validationErrors
+        ConstraintViolationListInterface $constraintViolationList
     ): Response {
-        try {
-            if ($validationErrors->count() > 0) {
-                throw new ApiJsonInputValidationException($validationErrors);
-            }
-
-            if ('current' == $questionnaireRequest->vendorId) {
-                /** @var Vendor $vendor */
-                $vendor = $this->getUser();
-            } else {
-                // vendor fetching not implemented yet; requires also authorization
-                throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
-            }
-
-            $questionnaire = $this->questionnaireService->create($vendor, $questionnaireRequest);
-
-            return new ApiJsonResponse(Response::HTTP_CREATED, $this->questionnaireResponseMapper->map($questionnaire));
-        } catch (VendorPlanInvalidDurationException | CurrencyNotFoundException $e) {
-            throw new ApiJsonException(Response::HTTP_BAD_REQUEST, $e->getMessage());
+        if ($constraintViolationList->count() > 0) {
+            throw new ApiJsonInputValidationException($constraintViolationList);
         }
+
+        $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
+        $this->denyAccessUnlessGranted(AuthorizationVoterInterface::UPDATE, $vendor);
+
+        $questionnaire = $this->questionnaireService->create($vendor, $questionnaireRequest);
+
+        return new ApiJsonResponse(Response::HTTP_CREATED, $this->questionnaireResponseMapper->map($questionnaire));
     }
 }

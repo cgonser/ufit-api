@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\Controller\Customer;
 
 use App\Core\Exception\ApiJsonException;
@@ -78,7 +80,8 @@ class SubscriptionCreateController extends AbstractController
             /** @var Customer $customer */
             $customer = $this->getUser();
 
-            $subscriptionRequest->customerId = $customer->getId()->toString();
+            $subscriptionRequest->customerId = $customer->getId()
+                ->toString();
         } else {
             // customer fetching not implemented yet; requires also authorization
             throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Request;
 
 use App\Core\Request\AbstractRequest;
@@ -13,15 +15,15 @@ class VendorSettingRequest extends AbstractRequest
     /**
      * @OA\Property()
      */
-    public ?string $vendorId;
+    public ?string $vendorId = null;
 
     /**
      * @OA\Property()
      */
-    public ?string $name;
+    public ?string $name = null;
 
     /**
      * @OA\Property()
      */
-    public ?string $value;
+    public ?string $value = null;
 }

@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Controller;
 
-use App\Core\Exception\ApiJsonInputValidationException;
 use App\Core\Dto\JWTAuthenticationTokenDto;
+use App\Core\Exception\ApiJsonInputValidationException;
 use App\Customer\Provider\CustomerProvider;
 use App\Customer\Request\CustomerCreateRequest;
 use App\Customer\Request\CustomerRequest;

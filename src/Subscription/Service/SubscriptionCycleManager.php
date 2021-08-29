@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\Service;
 
 use App\Subscription\Entity\Subscription;
@@ -10,9 +12,8 @@ class SubscriptionCycleManager
 {
     private SubscriptionCycleRepository $subscriptionCycleRepository;
 
-    public function __construct(
-        SubscriptionCycleRepository $subscriptionCycleRepository
-    ) {
+    public function __construct(SubscriptionCycleRepository $subscriptionCycleRepository)
+    {
         $this->subscriptionCycleRepository = $subscriptionCycleRepository;
     }
 

@@ -1,8 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Exception;
 
-class VendorPlanSlugInUseException extends \Exception
+use Exception;
+
+class VendorPlanSlugInUseException extends Exception
 {
-    protected $message = "Slug already in use";
+    /**
+     * @var string
+     */
+    protected $message = 'Slug already in use';
 }

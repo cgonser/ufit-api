@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Command;
 
-use App\Vendor\Provider\VendorProvider;
 use App\Vendor\Repository\VendorInstagramProfileRepository;
 use App\Vendor\Service\VendorInstagramManager;
 use Symfony\Component\Console\Command\Command;
@@ -12,27 +13,19 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class VendorInstagramProfileUpdateCommand extends Command
 {
+    /**
+     * @var string
+     */
     protected static $defaultName = 'ufit:vendor:instagram-update';
 
-    private VendorProvider $vendorProvider;
-
-    private VendorInstagramProfileRepository $vendorInstagramProfileRepository;
-
-    private VendorInstagramManager $vendorInstagramManager;
-
     public function __construct(
-        VendorProvider $vendorProvider,
-        VendorInstagramProfileRepository $vendorInstagramProfileRepository,
-        VendorInstagramManager $vendorInstagramManager
+        private VendorInstagramProfileRepository $vendorInstagramProfileRepository,
+        private VendorInstagramManager $vendorInstagramManager
     ) {
-        $this->vendorProvider = $vendorProvider;
-        $this->vendorInstagramProfileRepository = $vendorInstagramProfileRepository;
-        $this->vendorInstagramManager = $vendorInstagramManager;
-
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDescription('Updates instagram profile pictures')
@@ -41,7 +34,7 @@ class VendorInstagramProfileUpdateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $io = new SymfonyStyle($input, $output);
+        new SymfonyStyle($input, $output);
 
         $vendorInstagramProfiles = $this->vendorInstagramProfileRepository->findAll();
 

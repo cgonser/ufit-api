@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\ResponseMapper;
 
 use App\Customer\Dto\BillingInformationDto;
@@ -15,7 +17,8 @@ class BillingInformationResponseMapper
         $billingInformationDto->name = $billingInformation->getName();
         $billingInformationDto->email = $billingInformation->getEmail();
         $billingInformationDto->birthDate = $billingInformation->getBirthDate()
-            ? $billingInformation->getBirthDate()->format(\DateTimeInterface::ATOM)
+            ? $billingInformation->getBirthDate()
+                ->format(\DateTimeInterface::ATOM)
             : null;
         $billingInformationDto->phoneIntlCode = $billingInformation->getPhoneIntlCode();
         $billingInformationDto->phoneAreaCode = $billingInformation->getPhoneAreaCode();

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Controller\CustomerMeasurement;
 
 use App\Core\Exception\ApiJsonException;
@@ -82,7 +84,7 @@ class CustomerMeasurementUpdateController extends AbstractController
                 throw new ApiJsonInputValidationException($validationErrors);
             }
 
-            if ('current' == $customerId) {
+            if ('current' === $customerId) {
                 /** @var Customer $customer */
                 $customer = $this->getUser();
             } else {

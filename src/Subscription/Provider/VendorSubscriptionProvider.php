@@ -1,9 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\Provider;
 
-use App\Customer\Entity\Customer;
-use App\Customer\Exception\CustomerNotFoundException;
 use App\Subscription\Entity\Subscription;
 use App\Subscription\Exception\SubscriptionNotFoundException;
 use App\Subscription\Repository\SubscriptionRepository;
@@ -20,10 +20,8 @@ class VendorSubscriptionProvider
         $this->subscriptionRepository = $subscriptionRepository;
     }
 
-    public function findWithRequest(
-        Vendor $vendor,
-        SubscriptionSearchRequest $subscriptionSearchRequest
-    ): array {
+    public function findWithRequest(Vendor $vendor, SubscriptionSearchRequest $subscriptionSearchRequest): array
+    {
         if (true === $subscriptionSearchRequest->isActive) {
             return $this->subscriptionRepository->findActiveByVendor($vendor);
         }
@@ -44,7 +42,7 @@ class VendorSubscriptionProvider
         /** @var Subscription|null $subscription */
         $subscription = $this->subscriptionRepository->findOneByVendorAndId($vendor, $subscriptionId);
 
-        if (!$subscription) {
+        if (! $subscription) {
             throw new SubscriptionNotFoundException();
         }
 

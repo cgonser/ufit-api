@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\Controller\Vendor;
 
 use App\Core\Exception\ApiJsonException;

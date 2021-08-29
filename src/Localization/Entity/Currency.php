@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Localization\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -35,6 +37,11 @@ class Currency
      */
     private string $code;
 
+    public function __toString(): string
+    {
+        return $this->getName();
+    }
+
     public function getId(): UuidInterface
     {
         return $this->id;
@@ -64,13 +71,8 @@ class Currency
         return $this;
     }
 
-    public function __toString(): string
-    {
-        return $this->getName();
-    }
-
     public function isNew(): bool
     {
-        return !isset($this->id);
+        return ! isset($this->id);
     }
 }

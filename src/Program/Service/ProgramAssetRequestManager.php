@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Service;
 
 use App\Program\Entity\Program;
@@ -10,9 +12,8 @@ class ProgramAssetRequestManager
 {
     private ProgramAssetManager $programAssetManager;
 
-    public function __construct(
-        ProgramAssetManager $programAssetManager
-    ) {
+    public function __construct(ProgramAssetManager $programAssetManager)
+    {
         $this->programAssetManager = $programAssetManager;
     }
 

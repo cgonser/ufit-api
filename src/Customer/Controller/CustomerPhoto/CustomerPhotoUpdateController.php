@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Controller\CustomerPhoto;
 
 use App\Core\Exception\ApiJsonException;
@@ -91,11 +93,8 @@ class CustomerPhotoUpdateController extends AbstractController
      * @OA\Response(response=400, description="Invalid input")
      * @OA\Response(response=404, description="Photo not found")
      */
-    public function upload(
-        string $customerId,
-        string $customerPhotoId,
-        Request $request
-    ): Response {
+    public function upload(string $customerId, string $customerPhotoId, Request $request): Response
+    {
         if ('current' === $customerId) {
             /** @var Customer $customer */
             $customer = $this->getUser();

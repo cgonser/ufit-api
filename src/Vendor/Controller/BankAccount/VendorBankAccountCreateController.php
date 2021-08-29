@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Controller\BankAccount;
 
 use App\Core\Exception\ApiJsonException;
 use App\Core\Exception\ApiJsonInputValidationException;
 use App\Core\Response\ApiJsonResponse;
+use App\Core\Security\AuthorizationVoterInterface;
 use App\Vendor\Dto\VendorBankAccountDto;
+use App\Vendor\Entity\Vendor;
+use App\Vendor\Provider\VendorProvider;
 use App\Vendor\Request\VendorBankAccountRequest;
 use App\Vendor\ResponseMapper\VendorBankAccountResponseMapper;
 use App\Vendor\Service\VendorBankAccountRequestManager;
-use App\Vendor\Entity\Vendor;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Ramsey\Uuid\Uuid;
@@ -19,51 +23,44 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
+#[Route(path: '/vendors/{vendorId}/bank_accounts')]
 class VendorBankAccountCreateController extends AbstractController
 {
-    private VendorBankAccountResponseMapper $vendorBankAccountResponseMapper;
-
-    private VendorBankAccountRequestManager $vendorBankAccountManager;
-
     public function __construct(
-        VendorBankAccountResponseMapper $vendorBankAccountResponseMapper,
-        VendorBankAccountRequestManager $vendorBankAccountManager
+        private VendorBankAccountResponseMapper $vendorBankAccountResponseMapper,
+        private VendorBankAccountRequestManager $vendorBankAccountRequestManager,
+        private VendorProvider $vendorProvider,
     ) {
-        $this->vendorBankAccountResponseMapper = $vendorBankAccountResponseMapper;
-        $this->vendorBankAccountManager = $vendorBankAccountManager;
     }
 
     /**
-     * @Route("/vendors/{vendorId}/bank_accounts", methods="POST", name="vendor_bank_accounts_create")
-     * @ParamConverter("vendorBankAccountRequest", converter="fos_rest.request_body", options={
-     *     "deserializationContext"= {"allow_extra_attributes"=false}
-     * })
-     *
      * @OA\Tag(name="Vendor / Bank Account")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=VendorBankAccountRequest::class)))
      * @OA\Response(response=201, description="Success", @OA\JsonContent(ref=@Model(type=VendorBankAccountDto::class)))
      * @OA\Response(response=400, description="Invalid input")
      * @OA\Response(response=404, description="Resource not found")
      */
+    #[Route(name: 'vendor_bank_accounts_create', methods: 'POST')]
+    #[ParamConverter(data: 'vendor
+    BankAccountRequest', options: [
+        'deserializationContext' => [
+            'allow_extra_attributes' => false,
+        ],
+    ], converter: 'fos_rest.request_body')]
     public function create(
         string $vendorId,
         VendorBankAccountRequest $vendorBankAccountRequest,
-        ConstraintViolationListInterface $validationErrors
-    ): Response {
-        if ($validationErrors->count() > 0) {
-            throw new ApiJsonInputValidationException($validationErrors);
+        ConstraintViolationListInterface $constraintViolationList
+    ): ApiJsonResponse {
+        if ($constraintViolationList->count() > 0) {
+            throw new ApiJsonInputValidationException($constraintViolationList);
         }
 
-        if ('current' == $vendorId) {
-            /** @var Vendor $vendor */
-            $vendor = $this->getUser();
-        } else {
-            // vendor fetching not implemented yet; requires also authorization
-            throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
-        }
+        $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
+        $this->denyAccessUnlessGranted(AuthorizationVoterInterface::UPDATE, $vendor);
 
-        $vendorBankAccountRequest->vendorId = $vendor->getId();
-        $vendorBankAccount = $this->vendorBankAccountManager->createFromRequest($vendorBankAccountRequest);
+        $vendorBankAccountRequest->vendorId = $vendor->getId()->toString();
+        $vendorBankAccount = $this->vendorBankAccountRequestManager->createFromRequest($vendorBankAccountRequest);
 
         return new ApiJsonResponse(
             Response::HTTP_CREATED,

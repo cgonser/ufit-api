@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Entity;
 
 use App\Subscription\Entity\Subscription;
@@ -7,12 +9,14 @@ use Decimal\Decimal;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Knp\DoctrineBehaviors\Contract\Entity\SoftDeletableInterface;
+use Knp\DoctrineBehaviors\Contract\Entity\TimestampableInterface;
+use Knp\DoctrineBehaviors\Model\SoftDeletable\SoftDeletableTrait;
+use Knp\DoctrineBehaviors\Model\Timestampable\TimestampableTrait;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -20,12 +24,11 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="App\Customer\Repository\CustomerRepository")
  * @ORM\Table(name="customer")
  * @UniqueEntity(fields={"email"})
- * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
  */
-class Customer implements UserInterface, \Serializable
+class Customer implements PasswordAuthenticatedUserInterface, UserInterface, \Serializable, SoftDeletableInterface, TimestampableInterface
 {
-    use TimestampableEntity;
-    use SoftDeleteableEntity;
+    use TimestampableTrait;
+    use SoftDeletableTrait;
 
     /**
      * @ORM\Id
@@ -111,7 +114,7 @@ class Customer implements UserInterface, \Serializable
     /**
      * @ORM\Column(type="decimal", nullable=true, options={"precision": 11, "scale": 2})
      */
-    private ?string $lastWeight = null;
+    private Decimal|string|null $lastWeight = null;
 
     /**
      * @ORM\Column(type="json", nullable=true)
@@ -148,6 +151,11 @@ class Customer implements UserInterface, \Serializable
     public function getName(): ?string
     {
         return $this->name;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->getUsername();
     }
 
     public function getUsername(): ?string
@@ -316,9 +324,9 @@ class Customer implements UserInterface, \Serializable
         return null !== $this->lastWeight ? new Decimal($this->lastWeight) : null;
     }
 
-    public function setLastWeight(Decimal $lastWeight): self
+    public function setLastWeight(Decimal|string $lastWeight): self
     {
-        $this->lastWeight = $lastWeight;
+        $this->lastWeight = is_string($lastWeight) ? new Decimal($lastWeight) : $lastWeight;
 
         return $this;
     }
@@ -368,7 +376,7 @@ class Customer implements UserInterface, \Serializable
 
         /** @var Subscription $subscription */
         foreach ($this->subscriptions as $subscription) {
-            if (!$subscription->isActive()) {
+            if (! $subscription->isActive()) {
                 continue;
             }
 
@@ -425,11 +433,13 @@ class Customer implements UserInterface, \Serializable
     public function unserialize($serialized): void
     {
         // add $this->salt too if you don't use Bcrypt or Argon2i
-        [$this->id, $this->email, $this->password] = unserialize($serialized, ['allowed_classes' => false]);
+        [$this->id, $this->email, $this->password] = unserialize($serialized, [
+            'allowed_classes' => false,
+        ]);
     }
 
     public function isNew(): bool
     {
-        return !isset($this->id);
+        return ! isset($this->id);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Controller\Vendor\Assignment;
 
 use App\Core\Exception\ApiJsonException;
@@ -59,8 +61,11 @@ class ProgramAssignmentController extends AbstractController
      * )
      * @Security(name="Bearer")
      */
-    public function getPrograms(string $vendorId, string $programId, ProgramAssignmentSearchRequest $searchRequest): Response
-    {
+    public function getPrograms(
+        string $vendorId,
+        string $programId,
+        ProgramAssignmentSearchRequest $searchRequest
+    ): Response {
         if ('current' === $vendorId) {
             /** @var Vendor $vendor */
             $vendor = $this->getUser();

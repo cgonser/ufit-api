@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\DataFixtures;
 
 use App\Payment\Entity\PaymentMethod;
@@ -31,9 +33,6 @@ class PaymentMethodFixtures extends Fixture
 
     private function getData(): array
     {
-        return [
-            ['Boleto', ['BR'], []],
-            ['Credit Card', [], []],
-        ];
+        return [['Boleto', ['BR'], []], ['Credit Card', [], []]];
     }
 }

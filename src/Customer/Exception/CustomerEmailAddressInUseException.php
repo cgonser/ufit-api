@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Exception;
 
 class CustomerEmailAddressInUseException extends \Exception
 {
-    protected $message = "E-mail address already in use";
+    protected $message = 'E-mail address already in use';
 }

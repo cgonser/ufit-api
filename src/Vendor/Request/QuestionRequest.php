@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Request;
 
 use OpenApi\Annotations as OA;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Positive;
 
 /**
  * @OA\RequestBody(
@@ -20,13 +23,13 @@ class QuestionRequest
 
     /**
      * @OA\Property()
-     * @Assert\Positive()
      */
+    #[Positive]
     public ?int $order = null;
 
     /**
      * @OA\Property()
-     * @Assert\NotBlank()
      */
+    #[NotBlank]
     public ?string $question = null;
 }

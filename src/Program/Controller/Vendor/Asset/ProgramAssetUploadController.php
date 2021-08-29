@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Controller\Vendor\Asset;
 
 use App\Core\Exception\ApiJsonException;
@@ -66,9 +68,6 @@ class ProgramAssetUploadController extends AbstractController
             $request->headers->get('Content-Type')
         );
 
-        return new ApiJsonResponse(
-            Response::HTTP_OK,
-            $this->programAssetResponseMapper->map($programAsset)
-        );
+        return new ApiJsonResponse(Response::HTTP_OK, $this->programAssetResponseMapper->map($programAsset));
     }
 }

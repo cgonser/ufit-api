@@ -1,19 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Controller\BillingInformation;
 
 use App\Core\Exception\ApiJsonException;
 use App\Core\Request\SearchRequest;
 use App\Core\Response\ApiJsonResponse;
-use App\Customer\Entity\Customer;
 use App\Customer\Dto\BillingInformationDto;
+use App\Customer\Entity\Customer;
 use App\Customer\Provider\BillingInformationProvider;
 use App\Customer\Request\BillingInformationSearchRequest;
 use App\Customer\ResponseMapper\BillingInformationResponseMapper;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
-use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;

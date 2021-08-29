@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\Entity;
 
 use Decimal\Decimal;
@@ -43,7 +45,7 @@ class SubscriptionCycle
     /**
      * @ORM\Column(type="decimal", nullable=false, options={"precision": 11, "scale": 2})
      */
-    private string $price;
+    private Decimal|string|null $price;
 
     /**
      * @ORM\Column(name="starts_at", type="datetime", nullable=true)
@@ -89,9 +91,9 @@ class SubscriptionCycle
         return new Decimal($this->price);
     }
 
-    public function setPrice(Decimal $price): self
+    public function setPrice(Decimal|string $price): self
     {
-        $this->price = $price;
+        $this->price = is_string($price) ? new Decimal($price) : $price;
 
         return $this;
     }

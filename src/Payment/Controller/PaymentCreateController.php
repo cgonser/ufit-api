@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Controller;
 
 use App\Core\Exception\ApiJsonInputValidationException;
@@ -51,9 +53,6 @@ class PaymentCreateController extends AbstractController
 
         $payment = $this->paymentManager->createFromRequest($paymentRequest);
 
-        return new ApiJsonResponse(
-            Response::HTTP_CREATED,
-            $this->paymentResponseMapper->map($payment)
-        );
+        return new ApiJsonResponse(Response::HTTP_CREATED, $this->paymentResponseMapper->map($payment));
     }
 }

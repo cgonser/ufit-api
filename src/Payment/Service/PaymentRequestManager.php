@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Service;
 
 use App\Customer\Provider\BillingInformationProvider;
@@ -76,7 +78,8 @@ class PaymentRequestManager
 
         if ($paymentRequest->has('billingInformation') && null !== $payment->getInvoice()->getSubscription()) {
             $paymentRequest->billingInformation->customerId = $payment->getInvoice()
-                ->getSubscription()->getCustomerId();
+                ->getSubscription()
+                ->getCustomerId();
 
             if (null === $payment->getBillingInformationId()) {
                 $billingInformation = $this->billingInformationRequestManager->createFromRequest(

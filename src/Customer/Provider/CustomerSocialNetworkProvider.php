@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Provider;
 
 use App\Core\Provider\AbstractProvider;
@@ -35,7 +37,7 @@ class CustomerSocialNetworkProvider extends AbstractProvider
     {
         $customerSocialNetwork = $this->findOneByCustomerAndPlatform($customer, $platform);
 
-        if (!$customerSocialNetwork) {
+        if (! $customerSocialNetwork) {
             $this->throwNotFoundException();
         }
 

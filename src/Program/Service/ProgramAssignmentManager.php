@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Service;
 
 use App\Customer\Provider\CustomerProvider;
@@ -31,8 +33,10 @@ class ProgramAssignmentManager
         $this->messageBus = $messageBus;
     }
 
-    public function createFromRequest(Program $program, ProgramAssignmentRequest $programAssignmentRequest): ProgramAssignment
-    {
+    public function createFromRequest(
+        Program $program,
+        ProgramAssignmentRequest $programAssignmentRequest
+    ): ProgramAssignment {
         $programAssignment = new ProgramAssignment();
         $programAssignment->setProgram($program);
 
@@ -45,8 +49,10 @@ class ProgramAssignmentManager
         return $programAssignment;
     }
 
-    public function updateFromRequest(ProgramAssignment $programAssignment, ProgramAssignmentRequest $programAssignmentRequest)
-    {
+    public function updateFromRequest(
+        ProgramAssignment $programAssignment,
+        ProgramAssignmentRequest $programAssignmentRequest
+    ) {
         $this->mapFromRequest($programAssignment, $programAssignmentRequest);
 
         $this->programAssignmentRepository->save($programAssignment);
@@ -61,8 +67,10 @@ class ProgramAssignmentManager
         $this->messageBus->dispatch(new ProgramAssignmentDeletedEvent($programAssignment->getId()));
     }
 
-    private function mapFromRequest(ProgramAssignment $programAssignment, ProgramAssignmentRequest $programAssignmentRequest)
-    {
+    private function mapFromRequest(
+        ProgramAssignment $programAssignment,
+        ProgramAssignmentRequest $programAssignmentRequest
+    ) {
         if (null !== $programAssignmentRequest->customerId) {
             $customer = $this->customerProvider->get(Uuid::fromString($programAssignmentRequest->customerId));
             $programAssignment->setCustomer($customer);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Provider;
 
 use App\Core\Exception\ResourceNotFoundException;
@@ -10,7 +12,7 @@ use Ramsey\Uuid\UuidInterface;
 
 abstract class AbstractProvider
 {
-    const RESULTS_PER_PAGE = 10;
+    public const RESULTS_PER_PAGE = 10;
 
     protected ServiceEntityRepository $repository;
 
@@ -41,7 +43,7 @@ abstract class AbstractProvider
         /** @var object|null $object */
         $object = $this->repository->findOneBy($criteria);
 
-        if (!$object) {
+        if (! $object) {
             $this->throwNotFoundException();
         }
 
@@ -70,7 +72,7 @@ abstract class AbstractProvider
     {
         $queryBuilder = $this->buildSearchQueryBuilder($searchRequest, $filters);
 
-        return (int)$queryBuilder->select('COUNT(root.id)')
+        return (int) $queryBuilder->select('COUNT(root.id)')
             ->getQuery()
             ->useQueryCache(true)
             ->getSingleScalarResult();
@@ -93,7 +95,7 @@ abstract class AbstractProvider
             $filters = $this->prepareFilters($searchRequest);
         }
 
-        if (!empty($filters)) {
+        if (! empty($filters)) {
             $this->addFilters($queryBuilder, $filters);
         }
 
@@ -113,12 +115,12 @@ abstract class AbstractProvider
                 $entity = 'root';
             }
 
-            if (!property_exists($searchRequest, $property)) {
+            if (! property_exists($searchRequest, $property)) {
                 continue;
             }
 
-            if (null !== $searchRequest->$property) {
-                $filters[$entity.'.'.$property] = $searchRequest->$property;
+            if (null !== $searchRequest->{$property}) {
+                $filters[$entity.'.'.$property] = $searchRequest->{$property};
             }
         }
 
@@ -147,10 +149,7 @@ abstract class AbstractProvider
 
         foreach ($this->getSearchableFields() as $fieldName => $fieldType) {
             if ('text' === $fieldType) {
-                $searchFields[] = $queryBuilder->expr()->like(
-                    sprintf('LOWER(root.%s)', $fieldName),
-                    ':searchText'
-                );
+                $searchFields[] = $queryBuilder->expr()->like(sprintf('LOWER(root.%s)', $fieldName), ':searchText');
             }
         }
 

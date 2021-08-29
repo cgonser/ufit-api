@@ -1,38 +1,54 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\DataFixtures;
 
 use App\Vendor\Request\VendorRequest;
 use App\Vendor\Service\VendorRequestManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Iterator;
 
 class VendorFixtures extends Fixture
 {
-    const VENDOR_COUNT = 20;
+    /**
+     * @var int
+     */
+    public const VENDOR_COUNT = 20;
 
-    const VENDOR_DEFAULT_PASSWORD = '123';
+    /**
+     * @var string
+     */
+    public const VENDOR_DEFAULT_PASSWORD = '123';
 
-    const COUNTRIES = ['BR', 'LU'];
+    /**
+     * @var string[]
+     */
+    public const COUNTRIES = ['BR', 'LU'];
 
-    const LOCALES = [
+    /**
+     * @var array<string, string>
+     */
+    public const LOCALES = [
         'BR' => 'pt_BR',
         'LU' => 'en',
     ];
 
-    const TIMEZONES = [
+    /**
+     * @var array<string, string>
+     */
+    public const TIMEZONES = [
         'BR' => 'America/Sao_Paulo',
         'LU' => 'Europe/Luxembourg',
     ];
 
-    private VendorRequestManager $vendorRequestManager;
-
-    public function __construct(VendorRequestManager $vendorRequestManager)
-    {
-        $this->vendorRequestManager = $vendorRequestManager;
+    public function __construct(
+        private VendorRequestManager $vendorRequestManager
+    ) {
     }
 
-    public function load(ObjectManager $manager): void
+    public function load(ObjectManager $objectManager): void
     {
         foreach ($this->getData() as $vendorRequest) {
             $vendor = $this->vendorRequestManager->createFromRequest($vendorRequest);
@@ -40,10 +56,13 @@ class VendorFixtures extends Fixture
             $this->addReference('vendor-'.$vendor->getEmail(), $vendor);
         }
 
-        $manager->flush();
+        $objectManager->flush();
     }
 
-    private function getData(): \Iterator
+    /**
+     * @return Iterator<VendorRequest>
+     */
+    private function getData(): Iterator
     {
         for ($i = 1; $i <= self::VENDOR_COUNT; ++$i) {
             $country = self::COUNTRIES[array_rand(self::COUNTRIES)];
@@ -66,7 +85,7 @@ class VendorFixtures extends Fixture
                 'instagram' => 'https://www.instagram.com/marshalkimjongun/',
             ];
             $vendorRequest->biography = $biography;
-            $vendorRequest->allowEmailMarketing = (bool) mt_rand(0, 1);
+            $vendorRequest->allowEmailMarketing = (bool) random_int(0, 1);
 
             yield $vendorRequest;
         }

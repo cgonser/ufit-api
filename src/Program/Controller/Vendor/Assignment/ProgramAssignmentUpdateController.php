@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Controller\Vendor\Assignment;
 
 use App\Core\Exception\ApiJsonException;
@@ -75,7 +77,7 @@ class ProgramAssignmentUpdateController extends AbstractController
         ProgramAssignmentRequest $programAssignmentRequest,
         ConstraintViolationListInterface $validationErrors
     ): Response {
-        if ('current' == $vendorId) {
+        if ('current' === $vendorId) {
             /** @var Vendor $vendor */
             $vendor = $this->getUser();
         } else {
@@ -85,7 +87,10 @@ class ProgramAssignmentUpdateController extends AbstractController
 
         $program = $this->programProvider->getByVendorAndId($vendor, Uuid::fromString($programId));
 
-        $programAssignment = $this->programAssignmentProvider->getByProgramAndId($program, Uuid::fromString($programAssignmentId));
+        $programAssignment = $this->programAssignmentProvider->getByProgramAndId(
+            $program,
+            Uuid::fromString($programAssignmentId)
+        );
 
         $this->programAssignmentManager->updateFromRequest($programAssignment, $programAssignmentRequest);
 

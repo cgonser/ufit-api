@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Controller\CustomerPhoto;
 
 use App\Core\Exception\ApiJsonException;
@@ -48,7 +50,7 @@ class CustomerPhotoController extends AbstractController
      */
     public function getCustomerPhotos(string $customerId): Response
     {
-        if ('current' == $customerId) {
+        if ('current' === $customerId) {
             /** @var Customer $customer */
             $customer = $this->getUser();
         } else {
@@ -76,7 +78,7 @@ class CustomerPhotoController extends AbstractController
     public function getCustomerPhoto(string $customerId, string $customerPhotoId): Response
     {
         try {
-            if ('current' == $customerId) {
+            if ('current' === $customerId) {
                 /** @var Customer $customer */
                 $customer = $this->getUser();
             } else {
@@ -84,7 +86,10 @@ class CustomerPhotoController extends AbstractController
                 throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
             }
 
-            $customerPhoto = $this->customerPhotoProvider->getByCustomerAndId($customer, Uuid::fromString($customerPhotoId));
+            $customerPhoto = $this->customerPhotoProvider->getByCustomerAndId(
+                $customer,
+                Uuid::fromString($customerPhotoId)
+            );
 
             return new ApiJsonResponse(Response::HTTP_OK, $this->customerPhotoResponseMapper->map($customerPhoto));
         } catch (CustomerPhotoNotFoundException $e) {

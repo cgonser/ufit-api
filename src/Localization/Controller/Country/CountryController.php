@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Localization\Controller\Country;
 
 use App\Core\Response\ApiJsonResponse;
@@ -19,10 +21,8 @@ class CountryController
 
     private CountryResponseMapper $countryResponseMapper;
 
-    public function __construct(
-        CountryProvider $countryProvider,
-        CountryResponseMapper $countryResponseMapper
-    ) {
+    public function __construct(CountryProvider $countryProvider, CountryResponseMapper $countryResponseMapper)
+    {
         $this->countryProvider = $countryProvider;
         $this->countryResponseMapper = $countryResponseMapper;
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\DataFixtures;
 
 use App\Customer\Entity\Customer;
@@ -39,35 +41,36 @@ class CustomerMeasurementFixtures extends Fixture implements DependentFixtureInt
         $manager->flush();
     }
 
+    public function getDependencies()
+    {
+        return [CustomerFixtures::class, MeasurementTypeFixtures::class];
+    }
+
     private function loadCustomer(Customer $customer)
     {
         $customerMeasurementRequest = new CustomerMeasurementRequest();
-        $customerMeasurementRequest->takenAt = (new \DateTime())->format(\DateTimeInterface::ISO8601);
+        $customerMeasurementRequest->takenAt = (new \DateTime())->format(\DateTimeInterface::ATOM);
         $customerMeasurementRequest->notes = 'Updating my measurements';
         $customerMeasurementRequest->items = [];
 
         $customerMeasurementItemRequest = new CustomerMeasurementItemRequest();
         $customerMeasurementItemRequest->measurementTypeId = $this->measurementTypeProvider
-            ->findOneBySlug('weight')->getId()->toString();
-        $customerMeasurementItemRequest->measurement = rand(50, 150);
+            ->findOneBySlug('weight')
+            ->getId()
+            ->toString();
+        $customerMeasurementItemRequest->measurement = (string) random_int(50, 150);
         $customerMeasurementItemRequest->unit = 'kg';
         $customerMeasurementRequest->items[] = $customerMeasurementItemRequest;
 
         $customerMeasurementItemRequest = new CustomerMeasurementItemRequest();
         $customerMeasurementItemRequest->measurementTypeId = $this->measurementTypeProvider
-            ->findOneBySlug('height')->getId()->toString();
-        $customerMeasurementItemRequest->measurement = rand(150, 210);
+            ->findOneBySlug('height')
+            ->getId()
+            ->toString();
+        $customerMeasurementItemRequest->measurement = (string) random_int(150, 210);
         $customerMeasurementItemRequest->unit = 'cm';
         $customerMeasurementRequest->items[] = $customerMeasurementItemRequest;
 
         $this->service->create($customer, $customerMeasurementRequest);
-    }
-
-    public function getDependencies()
-    {
-        return [
-            CustomerFixtures::class,
-            MeasurementTypeFixtures::class,
-        ];
     }
 }

@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Controller\Customer;
 
 use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
+use App\Customer\Entity\Customer;
 use App\Payment\Dto\PaymentDto;
 use App\Payment\Provider\PaymentProvider;
 use App\Payment\Request\PaymentSearchRequest;
 use App\Payment\ResponseMapper\PaymentResponseMapper;
-use App\Customer\Entity\Customer;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
@@ -23,10 +25,8 @@ class PaymentController extends AbstractController
     private PaymentProvider $paymentProvider;
     private PaymentResponseMapper $paymentResponseMapper;
 
-    public function __construct(
-        PaymentProvider $paymentProvider,
-        PaymentResponseMapper $paymentResponseMapper
-    ) {
+    public function __construct(PaymentProvider $paymentProvider, PaymentResponseMapper $paymentResponseMapper)
+    {
         $this->paymentProvider = $paymentProvider;
         $this->paymentResponseMapper = $paymentResponseMapper;
     }
@@ -54,7 +54,8 @@ class PaymentController extends AbstractController
             throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
         }
 
-        $searchRequest->customerId = $customer->getId()->toString();
+        $searchRequest->customerId = $customer->getId()
+            ->toString();
         $payments = $this->paymentProvider->search($searchRequest);
         $count = $this->paymentProvider->count($searchRequest);
 
@@ -86,9 +87,6 @@ class PaymentController extends AbstractController
 
         $payment = $this->paymentProvider->getByCustomerAndId($customer->getId(), Uuid::fromString($paymentId));
 
-        return new ApiJsonResponse(
-            Response::HTTP_OK,
-            $this->paymentResponseMapper->map($payment)
-        );
+        return new ApiJsonResponse(Response::HTTP_OK, $this->paymentResponseMapper->map($payment));
     }
 }

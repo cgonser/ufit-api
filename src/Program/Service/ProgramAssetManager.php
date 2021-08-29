@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Service;
 
 use App\Program\Entity\ProgramAsset;
@@ -60,7 +62,8 @@ class ProgramAssetManager
             $extension = pathinfo($programAsset->getFilename(), PATHINFO_EXTENSION);
         }
 
-        $filename = $programAsset->getId()->toString().($extension !== null ? ('.'.$extension) : '');
+        $filename = $programAsset->getId()
+            ->toString().(null !== $extension ? ('.'.$extension) : '');
 
         $this->filesystem->put($filename, $contents);
 

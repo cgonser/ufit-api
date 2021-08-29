@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Controller\PhotoType;
 
 use App\Core\Exception\ApiJsonException;
@@ -49,10 +51,7 @@ class PhotoTypeController extends AbstractController
     {
         $photoTypes = $this->photoTypeProvider->findAll();
 
-        return new ApiJsonResponse(
-            Response::HTTP_OK,
-            $this->photoTypeResponseMapper->mapMultiple($photoTypes)
-        );
+        return new ApiJsonResponse(Response::HTTP_OK, $this->photoTypeResponseMapper->mapMultiple($photoTypes));
     }
 
     /**
@@ -69,9 +68,7 @@ class PhotoTypeController extends AbstractController
     public function getPhotoType(string $photoTypeId): Response
     {
         try {
-            $photoType = $this->photoTypeProvider->get(
-                Uuid::fromString($photoTypeId)
-            );
+            $photoType = $this->photoTypeProvider->get(Uuid::fromString($photoTypeId));
 
             return new ApiJsonResponse(Response::HTTP_OK, $this->photoTypeResponseMapper->map($photoType));
         } catch (PhotoTypeNotFoundException $e) {

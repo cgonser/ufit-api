@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Request;
 
 use App\Core\Request\AbstractRequest;
 use App\Customer\Request\BillingInformationRequest;
-use OpenApi\Annotations as OA;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Annotations as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**

@@ -1,28 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Service;
 
 use App\Vendor\Entity\Vendor;
 use App\Vendor\Exception\VendorGoogleLoginFailedException;
 use App\Vendor\Provider\VendorProvider;
+use Exception;
 use Google_Client;
 
 class VendorLoginGoogleManager
 {
-    private Google_Client $googleClient;
-
-    private VendorProvider $vendorProvider;
-
-    private VendorManager $vendorManager;
-
     public function __construct(
-        Google_Client $googleClient,
-        VendorProvider $vendorProvider,
-        VendorManager $vendorManager
+        private Google_Client $googleClient,
+        private VendorProvider $vendorProvider,
+        private VendorManager $vendorManager
     ) {
-        $this->googleClient = $googleClient;
-        $this->vendorProvider = $vendorProvider;
-        $this->vendorManager = $vendorManager;
     }
 
     public function prepareVendorFromGoogleToken(string $accessToken): Vendor
@@ -30,18 +24,18 @@ class VendorLoginGoogleManager
         try {
             $payload = $this->googleClient->verifyIdToken($accessToken);
 
-            if (!$payload || !isset($payload['email'])) {
+            if (! $payload || ! isset($payload['email'])) {
                 throw new VendorGoogleLoginFailedException();
             }
 
             $vendor = $this->vendorProvider->findOneByEmail($payload['email']);
 
-            if (!$vendor) {
+            if (null === $vendor) {
                 $vendor = $this->createVendorFromPayload($payload);
             }
 
             return $vendor;
-        } catch (\Exception $e) {
+        } catch (Exception) {
             throw new VendorGoogleLoginFailedException();
         }
     }

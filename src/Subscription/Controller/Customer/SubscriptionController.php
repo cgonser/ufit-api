@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\Controller\Customer;
 
 use App\Core\Exception\ApiJsonException;
@@ -56,7 +58,7 @@ class SubscriptionController extends AbstractController
      */
     public function getSubscriptions(string $customerId, SubscriptionSearchRequest $subscriptionSearchRequest): Response
     {
-        if ('current' == $customerId) {
+        if ('current' === $customerId) {
             /** @var Customer $customer */
             $customer = $this->getUser();
         } else {
@@ -92,7 +94,7 @@ class SubscriptionController extends AbstractController
     public function getSubscription(string $customerId, string $subscriptionId): Response
     {
         try {
-            if ('current' == $customerId) {
+            if ('current' === $customerId) {
                 /** @var Customer $customer */
                 $customer = $this->getUser();
             } else {
@@ -100,7 +102,10 @@ class SubscriptionController extends AbstractController
                 throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
             }
 
-            $subscription = $this->subscriptionProvider->getByCustomerAndId($customer, Uuid::fromString($subscriptionId));
+            $subscription = $this->subscriptionProvider->getByCustomerAndId(
+                $customer,
+                Uuid::fromString($subscriptionId)
+            );
 
             return new ApiJsonResponse(
                 Response::HTTP_OK,

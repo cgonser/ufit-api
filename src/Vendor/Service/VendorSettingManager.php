@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Service;
 
 use App\Vendor\Entity\VendorSetting;
@@ -8,25 +10,22 @@ use Ramsey\Uuid\UuidInterface;
 
 class VendorSettingManager
 {
-    private VendorSettingRepository $vendorSettingRepository;
-
     public function __construct(
-        VendorSettingRepository $vendorSettingRepository
+        private VendorSettingRepository $vendorSettingRepository
     ) {
-        $this->vendorSettingRepository = $vendorSettingRepository;
     }
 
-    public function create(VendorSetting $vendorSetting)
+    public function create(VendorSetting $vendorSetting): void
     {
         $this->vendorSettingRepository->save($vendorSetting);
     }
 
-    public function update(VendorSetting $vendorSetting)
+    public function update(VendorSetting $vendorSetting): void
     {
         $this->vendorSettingRepository->save($vendorSetting);
     }
 
-    public function delete(VendorSetting $vendorSetting)
+    public function delete(VendorSetting $vendorSetting): void
     {
         $this->vendorSettingRepository->delete($vendorSetting);
     }
@@ -35,7 +34,7 @@ class VendorSettingManager
     {
         $vendorSetting = $this->get($vendorId, $name);
 
-        if (!$vendorSetting) {
+        if (null === $vendorSetting) {
             $vendorSetting = new VendorSetting();
             $vendorSetting->setVendorId($vendorId);
             $vendorSetting->setName($name);
@@ -48,7 +47,7 @@ class VendorSettingManager
         return $vendorSetting;
     }
 
-    public function get(UuidInterface $vendorId, string $name): ?VendorSetting
+    public function get(UuidInterface $vendorId, string $name): ?object
     {
         return $this->vendorSettingRepository->findOneBy([
             'vendorId' => $vendorId,
@@ -60,6 +59,6 @@ class VendorSettingManager
     {
         $vendorSetting = $this->get($vendorId, $name);
 
-        return $vendorSetting ? $vendorSetting->getValue() : $defaultValue;
+        return null !== $vendorSetting ? $vendorSetting->getValue() : $defaultValue;
     }
 }

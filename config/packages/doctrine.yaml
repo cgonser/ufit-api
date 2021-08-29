@@ -106,10 +106,9 @@ doctrine:
                 NOT_SIMILAR_TO: MartinGeorgiev\Doctrine\ORM\Query\AST\Functions\NotSimilarTo
                 UNACCENT: MartinGeorgiev\Doctrine\ORM\Query\AST\Functions\Unaccent
 
-
         filters:
             softdeleteable:
-                class: Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter
+                class: App\Core\ORM\SoftDeletableFilter
                 enabled: true
 
         mappings:
@@ -143,7 +142,7 @@ doctrine:
 
             App\Vendor:
                 is_bundle: false
-                type: annotation
+                type: attribute
                 dir: '%kernel.project_dir%/src/Vendor/Entity'
                 prefix: 'App\Vendor\Entity'
                 alias: AppVendor

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Entity;
 
 use Decimal\Decimal;
@@ -43,7 +45,7 @@ class CustomerMeasurementItem
     /**
      * @ORM\Column(type="decimal", nullable=false, options={"precision": 11, "scale": 2})
      */
-    private string $measurement;
+    private Decimal|string|null $measurement;
 
     /**
      * @ORM\Column()
@@ -84,9 +86,9 @@ class CustomerMeasurementItem
         return new Decimal($this->measurement);
     }
 
-    public function setMeasurement(Decimal $measurement): self
+    public function setMeasurement(Decimal|string $measurement): self
     {
-        $this->measurement = $measurement;
+        $this->measurement = is_string($measurement) ? new Decimal($measurement) : $measurement;
 
         return $this;
     }

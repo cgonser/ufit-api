@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Service;
 
 use App\Payment\Entity\Invoice;
@@ -13,10 +15,8 @@ class InvoiceManager
 
     private MessageBusInterface $messageBus;
 
-    public function __construct(
-        InvoiceRepository $invoiceRepository,
-        MessageBusInterface $messageBus
-    ) {
+    public function __construct(InvoiceRepository $invoiceRepository, MessageBusInterface $messageBus)
+    {
         $this->invoiceRepository = $invoiceRepository;
         $this->messageBus = $messageBus;
     }

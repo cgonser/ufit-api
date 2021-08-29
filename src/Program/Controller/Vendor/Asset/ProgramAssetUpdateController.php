@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Controller\Vendor\Asset;
 
 use App\Core\Exception\ApiJsonException;
@@ -68,9 +70,6 @@ class ProgramAssetUpdateController extends AbstractController
 
         $this->programAssetRequestManager->updateFromRequest($programAsset, $programAssetRequest);
 
-        return new ApiJsonResponse(
-            Response::HTTP_OK,
-            $this->programAssetResponseMapper->map($programAsset)
-        );
+        return new ApiJsonResponse(Response::HTTP_OK, $this->programAssetResponseMapper->map($programAsset));
     }
 }

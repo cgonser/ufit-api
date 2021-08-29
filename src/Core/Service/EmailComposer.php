@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Service;
 
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -35,7 +37,8 @@ class EmailComposer
             ->context(
                 array_merge(
                     [
-                        'recipient_email' => $email->getTo()[0]->getAddress(),
+                        'recipient_email' => $email->getTo()[0]
+                            ->getAddress(),
                         'identifier' => $identifier,
                         'subject' => $subject,
                         'unsubscribe_url' => 'https://ufit.io',

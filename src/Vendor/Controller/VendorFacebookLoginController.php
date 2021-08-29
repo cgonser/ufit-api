@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Controller;
 
 use App\Core\Exception\ApiJsonException;
@@ -17,30 +19,25 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class VendorFacebookLoginController extends AbstractController
 {
-    private VendorFacebookLoginService $vendorFacebookLoginService;
-
-    private AuthenticationSuccessHandler $authenticationSuccessHandler;
-
     public function __construct(
-        VendorFacebookLoginService $vendorFacebookLoginService,
-        AuthenticationSuccessHandler $authenticationSuccessHandler
+        private VendorFacebookLoginService $vendorFacebookLoginService,
+        private AuthenticationSuccessHandler $authenticationSuccessHandler
     ) {
-        $this->vendorFacebookLoginService = $vendorFacebookLoginService;
-        $this->authenticationSuccessHandler = $authenticationSuccessHandler;
     }
 
     /**
-     * @Route("/vendors/login/facebook", methods="POST", name="vendor_facebook_login")
-     * @ParamConverter("vendorLoginFacebookRequest", converter="fos_rest.request_body", options={
-     *     "deserializationContext"= {"allow_extra_attributes"=false}
-     * })
-     *
      * @OA\Tag(name="Vendor")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=VendorLoginFacebookRequest::class)))
      * @OA\Response(response=200, description="Returns the API access token")
      * @OA\Response(response=400, description="Invalid input")
      * @OA\Response(response=401, description="Invalid credentials")
      */
+    #[Route(path: '/vendors/login/facebook', name: 'vendor_facebook_login', methods: 'POST')]
+    #[ParamConverter(data: 'vendorLoginFacebookRequest', options: [
+        'deserializationContext' => [
+            'allow_extra_attributes' => false,
+        ],
+    ], converter: 'fos_rest.request_body')]
     public function facebookLogin(VendorLoginFacebookRequest $vendorLoginFacebookRequest, Request $request): Response
     {
         try {
@@ -50,8 +47,8 @@ class VendorFacebookLoginController extends AbstractController
             );
 
             return $this->authenticationSuccessHandler->handleAuthenticationSuccess($vendor);
-        } catch (VendorFacebookLoginFailedException $e) {
-            throw new ApiJsonException(Response::HTTP_UNAUTHORIZED, $e->getMessage());
+        } catch (VendorFacebookLoginFailedException $vendorFacebookLoginFailedException) {
+            throw new ApiJsonException(Response::HTTP_UNAUTHORIZED, $vendorFacebookLoginFailedException->getMessage());
         }
     }
 }

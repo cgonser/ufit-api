@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\MessageHandler;
 
 use App\Payment\Entity\Invoice;
@@ -38,7 +40,8 @@ class InvoicePaidHandler implements MessageHandlerInterface
             'invoice.paid',
             [
                 'invoiceId' => $event->getInvoiceId(),
-                'paidAt' => $event->getPaidAt()->format(\DateTimeInterface::ATOM),
+                'paidAt' => $event->getPaidAt()
+                    ->format(\DateTimeInterface::ATOM),
             ]
         );
 

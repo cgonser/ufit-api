@@ -1,16 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\Controller\Vendor;
 
 use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
 use App\Subscription\Dto\SubscriptionDto;
-use App\Subscription\Exception\SubscriptionNotFoundException;
+use App\Subscription\Provider\VendorSubscriptionProvider;
 use App\Subscription\Request\SubscriptionReviewRequest;
 use App\Subscription\ResponseMapper\SubscriptionResponseMapper;
 use App\Subscription\Service\SubscriptionRequestManager;
 use App\Vendor\Entity\Vendor;
-use App\Subscription\Provider\VendorSubscriptionProvider;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
@@ -49,7 +50,6 @@ class SubscriptionUpdateController extends AbstractController
      * })
      * @Security(name="Bearer")
      *
-     *
      * @OA\Tag(name="Subscription")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=SubscriptionReviewRequest::class)))
      * @OA\Response(
@@ -63,7 +63,7 @@ class SubscriptionUpdateController extends AbstractController
         string $subscriptionId,
         SubscriptionReviewRequest $subscriptionReviewRequest
     ): Response {
-        if ('current' == $vendorId) {
+        if ('current' === $vendorId) {
             /** @var Vendor $vendor */
             $vendor = $this->getUser();
         } else {
@@ -74,9 +74,6 @@ class SubscriptionUpdateController extends AbstractController
         $subscription = $this->vendorSubscriptionProvider->getByVendorAndId($vendor, Uuid::fromString($subscriptionId));
         $this->subscriptionManager->review($subscription, $subscriptionReviewRequest);
 
-        return new ApiJsonResponse(
-            Response::HTTP_OK,
-            $this->subscriptionResponseMapper->map($subscription)
-        );
+        return new ApiJsonResponse(Response::HTTP_OK, $this->subscriptionResponseMapper->map($subscription));
     }
 }

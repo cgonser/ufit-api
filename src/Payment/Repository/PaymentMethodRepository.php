@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Repository;
 
 use App\Payment\Entity\PaymentMethod;
@@ -15,13 +17,17 @@ class PaymentMethodRepository extends ServiceEntityRepository
 
     public function save(PaymentMethod $paymentMethod)
     {
-        $this->getEntityManager()->persist($paymentMethod);
-        $this->getEntityManager()->flush();
+        $this->getEntityManager()
+            ->persist($paymentMethod);
+        $this->getEntityManager()
+            ->flush();
     }
 
     public function delete(PaymentMethod $paymentMethod)
     {
-        $this->getEntityManager()->remove($paymentMethod);
-        $this->getEntityManager()->flush();
+        $this->getEntityManager()
+            ->remove($paymentMethod);
+        $this->getEntityManager()
+            ->flush();
     }
 }

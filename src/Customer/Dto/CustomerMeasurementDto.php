@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Dto;
 
 use Nelmio\ApiDocBundle\Annotation\Model;

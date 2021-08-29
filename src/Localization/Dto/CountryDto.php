@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Localization\Dto;
 
 use OpenApi\Annotations as OA;

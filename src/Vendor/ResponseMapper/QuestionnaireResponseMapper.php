@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\ResponseMapper;
 
 use App\Vendor\Dto\QuestionnaireDto;
@@ -7,26 +9,31 @@ use App\Vendor\Entity\Questionnaire;
 
 class QuestionnaireResponseMapper
 {
-    private QuestionResponseMapper $questionResponseMapper;
-
-    public function __construct(QuestionResponseMapper $questionResponseMapper)
-    {
-        $this->questionResponseMapper = $questionResponseMapper;
+    public function __construct(
+        private QuestionResponseMapper $questionResponseMapper
+    ) {
     }
 
     public function map(Questionnaire $questionnaire): QuestionnaireDto
     {
         $questionnaireDto = new QuestionnaireDto();
-        $questionnaireDto->id = $questionnaire->getId()->toString();
-        $questionnaireDto->vendorId = $questionnaire->getVendor()->getId()->toString();
+        $questionnaireDto->id = $questionnaire->getId()
+            ->toString();
+        $questionnaireDto->vendorId = $questionnaire->getVendor()
+            ->getId()
+            ->toString();
         $questionnaireDto->title = $questionnaire->getTitle() ?? '';
         $questionnaireDto->questions = $this->questionResponseMapper->mapMultiple(
-            $questionnaire->getQuestions()->toArray()
+            $questionnaire->getQuestions()
+                ->toArray()
         );
 
         return $questionnaireDto;
     }
 
+    /**
+     * @return QuestionnaireDto[]
+     */
     public function mapMultiple(array $questionnaires): array
     {
         $questionnaireDtos = [];

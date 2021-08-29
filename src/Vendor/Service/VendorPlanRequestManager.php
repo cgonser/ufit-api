@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Service;
 
 use App\Localization\Provider\CurrencyProvider;
@@ -16,21 +18,12 @@ use Ramsey\Uuid\Uuid;
 
 class VendorPlanRequestManager
 {
-    private VendorPlanManager $vendorPlanManager;
-    private QuestionnaireProvider $questionnaireProvider;
-    private PaymentMethodProvider $paymentMethodProvider;
-    private CurrencyProvider $currencyProvider;
-
     public function __construct(
-        VendorPlanManager $vendorPlanManager,
-        QuestionnaireProvider $questionnaireProvider,
-        CurrencyProvider $currencyProvider,
-        PaymentMethodProvider $paymentMethodProvider
+        private VendorPlanManager $vendorPlanManager,
+        private QuestionnaireProvider $questionnaireProvider,
+        private CurrencyProvider $currencyProvider,
+        private PaymentMethodProvider $paymentMethodProvider
     ) {
-        $this->vendorPlanManager = $vendorPlanManager;
-        $this->questionnaireProvider = $questionnaireProvider;
-        $this->paymentMethodProvider = $paymentMethodProvider;
-        $this->currencyProvider = $currencyProvider;
     }
 
     public function createFromRequest(Vendor $vendor, VendorPlanRequest $vendorPlanRequest): VendorPlan
@@ -70,6 +63,10 @@ class VendorPlanRequestManager
             $vendorPlan->setPrice(new Decimal($vendorPlanRequest->price));
         }
 
+        if ($vendorPlanRequest->has('currencyId')) {
+            $vendorPlan->setCurrency($this->currencyProvider->get(Uuid::fromString($vendorPlanRequest->currencyId)));
+        }
+
         if ($vendorPlanRequest->has('currency')) {
             $vendorPlan->setCurrency($this->currencyProvider->getByCode($vendorPlanRequest->currency));
         }
@@ -86,8 +83,8 @@ class VendorPlanRequestManager
             $vendorPlan->setIsActive($vendorPlanRequest->isActive);
         }
 
-        if (($vendorPlanRequest->has('durationMonths') && $vendorPlanRequest->durationMonths !== null)
-            || ($vendorPlanRequest->has('durationDays') && $vendorPlanRequest->durationDays !== null)) {
+        if (($vendorPlanRequest->has('durationMonths') && null !== $vendorPlanRequest->durationMonths)
+            || ($vendorPlanRequest->has('durationDays') && null !== $vendorPlanRequest->durationDays)) {
             $vendorPlan->setDuration(
                 $this->prepareDuration(
                     $vendorPlanRequest->durationMonths ?? 0,
@@ -97,7 +94,8 @@ class VendorPlanRequestManager
         }
 
         if ($vendorPlanRequest->has('paymentMethods')) {
-            $vendorPlan->getPaymentMethods()->clear();
+            $vendorPlan->getPaymentMethods()
+                ->clear();
 
             foreach ($vendorPlanRequest->paymentMethods as $paymentMethodId) {
                 $vendorPlan->addPaymentMethod(
@@ -126,7 +124,7 @@ class VendorPlanRequestManager
         }
     }
 
-    private function prepareDuration(?string $durationMonths, ?string $durationDays): DateInterval
+    private function prepareDuration(?int $durationMonths, ?int $durationDays): DateInterval
     {
         $durationString = 'P';
 
@@ -139,7 +137,7 @@ class VendorPlanRequestManager
 
         try {
             return new DateInterval($durationString);
-        } catch (Exception $e) {
+        } catch (Exception) {
             throw new VendorPlanInvalidDurationException();
         }
     }

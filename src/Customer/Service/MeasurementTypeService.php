@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Service;
 
 use App\Customer\Entity\MeasurementType;
@@ -50,7 +52,7 @@ class MeasurementTypeService
         $existingMeasurementType = $this->measurementTypeProvider->findOneByName($measurementTypeRequest->name);
 
         if ($existingMeasurementType &&
-            ($measurementType->isNew() || $existingMeasurementType->getId()->toString() != $measurementType->getId()->toString())
+            ($measurementType->isNew() || $existingMeasurementType->getId()->toString() !== $measurementType->getId()->toString())
         ) {
             throw new MeasurementTypeAlreadyExistsException();
         }
@@ -67,7 +69,7 @@ class MeasurementTypeService
 
     public function generateSlug(MeasurementType $measurementType, ?int $suffix = null): string
     {
-        $slug = strtolower($this->slugger->slug($measurementType->getName()));
+        $slug = strtolower($this->slugger->slug($measurementType->getName())->toString());
 
         if (null !== $suffix) {
             $slug .= '-'.(string) $suffix;
@@ -86,11 +88,11 @@ class MeasurementTypeService
     {
         $existingMeasurementType = $this->measurementTypeProvider->findOneBySlug($slug);
 
-        if (!$existingMeasurementType) {
+        if (! $existingMeasurementType) {
             return true;
         }
 
-        if (!$measurementType->isNew() && $existingMeasurementType->getId()->toString() == $measurementType->getId()->toString()) {
+        if (! $measurementType->isNew() && $existingMeasurementType->getId()->toString() === $measurementType->getId()->toString()) {
             return true;
         }
 

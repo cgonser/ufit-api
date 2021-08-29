@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Service;
 
 use App\Customer\Entity\Customer;
@@ -30,13 +32,13 @@ class CustomerLoginGoogleManager
         try {
             $payload = $this->googleClient->verifyIdToken($accessToken);
 
-            if (!$payload || !isset($payload['email'])) {
+            if (! $payload || ! isset($payload['email'])) {
                 throw new CustomerGoogleLoginFailedException();
             }
 
             $customer = $this->customerProvider->findOneByEmail($payload['email']);
 
-            if (!$customer) {
+            if (! $customer) {
                 $customer = $this->createCustomerFromPayload($payload);
             }
 

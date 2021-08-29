@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Service;
 
 use App\Program\Entity\Program;
@@ -9,7 +11,6 @@ use App\Program\Message\ProgramUpdatedEvent;
 use App\Program\Repository\ProgramRepository;
 use App\Program\Request\ProgramRequest;
 use App\Vendor\Entity\Vendor;
-use Ramsey\Uuid\Uuid;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class ProgramManager
@@ -18,10 +19,8 @@ class ProgramManager
 
     private MessageBusInterface $messageBus;
 
-    public function __construct(
-        ProgramRepository $programRepository,
-        MessageBusInterface $messageBus
-    ) {
+    public function __construct(ProgramRepository $programRepository, MessageBusInterface $messageBus)
+    {
         $this->programRepository = $programRepository;
         $this->messageBus = $messageBus;
     }

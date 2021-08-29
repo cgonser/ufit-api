@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Provider;
 
 use App\Core\Provider\AbstractProvider;
@@ -16,11 +18,6 @@ class ProgramAssetProvider extends AbstractProvider
         $this->repository = $repository;
     }
 
-    protected function throwNotFoundException()
-    {
-        throw new ProgramAssetNotFoundException();
-    }
-
     public function getByProgramAndId(Program $program, UuidInterface $programAssetId): ProgramAsset
     {
         /** @var ProgramAsset|null $programAsset */
@@ -29,10 +26,15 @@ class ProgramAssetProvider extends AbstractProvider
             'program' => $program,
         ]);
 
-        if (!$programAsset) {
+        if (! $programAsset) {
             $this->throwNotFoundException();
         }
 
         return $programAsset;
+    }
+
+    protected function throwNotFoundException()
+    {
+        throw new ProgramAssetNotFoundException();
     }
 }

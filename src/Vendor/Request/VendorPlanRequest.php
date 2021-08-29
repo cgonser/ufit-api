@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Request;
 
 use App\Core\Request\AbstractRequest;
 use OpenApi\Annotations as OA;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\Currency;
+use Symfony\Component\Validator\Constraints\Positive;
+use Symfony\Component\Validator\Constraints\PositiveOrZero;
 
 /**
  * @OA\RequestBody()
@@ -38,8 +42,8 @@ class VendorPlanRequest extends AbstractRequest
 
     /**
      * @OA\Property()
-     * @Assert\Positive()
      */
+    #[Positive]
     public ?string $price;
 
     /**
@@ -49,20 +53,25 @@ class VendorPlanRequest extends AbstractRequest
 
     /**
      * @OA\Property()
-     * @Assert\Currency()
      */
+    public ?string $currencyId;
+
+    /**
+     * @OA\Property()
+     */
+    #[Currency]
     public ?string $currency;
 
     /**
      * @OA\Property()
-     * @Assert\PositiveOrZero()
      */
+    #[PositiveOrZero]
     public ?int $durationDays;
 
     /**
      * @OA\Property()
-     * @Assert\PositiveOrZero()
      */
+    #[PositiveOrZero]
     public ?int $durationMonths;
 
     /**

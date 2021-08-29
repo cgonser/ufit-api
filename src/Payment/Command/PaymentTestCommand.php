@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Command;
 
 use App\Payment\Request\PaymentRequest;
@@ -14,9 +16,8 @@ class PaymentTestCommand extends Command
 
     private PaymentRequestManager $paymentRequestManager;
 
-    public function __construct(
-        PaymentRequestManager $paymentRequestManager
-    ) {
+    public function __construct(PaymentRequestManager $paymentRequestManager)
+    {
         $this->paymentRequestManager = $paymentRequestManager;
 
         parent::__construct();

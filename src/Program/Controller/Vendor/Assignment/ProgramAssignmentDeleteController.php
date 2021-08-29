@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Controller\Vendor\Assignment;
 
 use App\Core\Exception\ApiJsonException;
@@ -47,7 +49,7 @@ class ProgramAssignmentDeleteController extends AbstractController
      */
     public function delete(string $vendorId, string $programId, string $programAssignmentId): Response
     {
-        if ('current' == $vendorId) {
+        if ('current' === $vendorId) {
             /** @var Vendor $vendor */
             $vendor = $this->getUser();
         } else {
@@ -57,7 +59,10 @@ class ProgramAssignmentDeleteController extends AbstractController
 
         $program = $this->programProvider->getByVendorAndId($vendor, Uuid::fromString($programId));
 
-        $programAssignment = $this->programAssignmentProvider->getByProgramAndId($program, Uuid::fromString($programAssignmentId));
+        $programAssignment = $this->programAssignmentProvider->getByProgramAndId(
+            $program,
+            Uuid::fromString($programAssignmentId)
+        );
 
         $this->programAssignmentManager->delete($programAssignment);
 

@@ -1,50 +1,50 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
+use App\Vendor\Repository\VendorPasswordResetTokenRepository;
+use DateTimeInterface;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\CustomIdGenerator;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\Table;
+use Knp\DoctrineBehaviors\Contract\Entity\TimestampableInterface;
+use Knp\DoctrineBehaviors\Model\Timestampable\TimestampableTrait;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
 
-/**
- * @ORM\Entity(repositoryClass="App\Vendor\Repository\VendorPasswordResetTokenRepository")
- * @ORM\Table()
- */
-class VendorPasswordResetToken
+#[Entity(repositoryClass: VendorPasswordResetTokenRepository::class)]
+#[Table]
+class VendorPasswordResetToken implements TimestampableInterface
 {
-    use TimestampableEntity;
+    use TimestampableTrait;
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="uuid", unique=true)
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class=UuidGenerator::class)
-     */
+    #[Id]
+    #[Column(type: 'uuid', unique: true)]
+    #[GeneratedValue(strategy: 'CUSTOM')]
+    #[CustomIdGenerator(class: UuidGenerator::class)]
     private UuidInterface $id;
 
-    /**
-     * @ORM\Column(type="uuid")
-     */
+    #[Column(type: 'uuid')]
     private UuidInterface $vendorId;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Vendor")
-     * @ORM\JoinColumn(name="vendor_id", referencedColumnName="id", nullable=false)
-     */
+    #[ManyToOne(targetEntity: 'Vendor')]
+    #[JoinColumn(name: 'vendor_id', nullable: false)]
     private Vendor $vendor;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    #[Column(type: 'string')]
     private string $token;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private \DateTimeInterface $expiresAt;
+    #[Column(type: 'datetime')]
+    private DateTimeInterface $expiresAt;
 
-    public function getId(): ?UuidInterface
+    public function getId(): UuidInterface
     {
         return $this->id;
     }
@@ -85,12 +85,12 @@ class VendorPasswordResetToken
         return $this;
     }
 
-    public function getExpiresAt(): \DateTimeInterface
+    public function getExpiresAt(): DateTimeInterface
     {
         return $this->expiresAt;
     }
 
-    public function setExpiresAt(\DateTimeInterface $expiresAt): self
+    public function setExpiresAt(DateTimeInterface $expiresAt): self
     {
         $this->expiresAt = $expiresAt;
 

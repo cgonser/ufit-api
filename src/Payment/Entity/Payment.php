@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Entity;
 
 use App\Customer\Entity\BillingInformation;
@@ -18,12 +20,11 @@ use Ramsey\Uuid\UuidInterface;
  */
 class Payment
 {
-    const STATUS_PENDING = 'pending';
-    const STATUS_PAID = 'paid';
-    const STATUS_REJECTED = 'rejected';
-
     use TimestampableEntity;
     use SoftDeleteableEntity;
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_PAID = 'paid';
+    public const STATUS_REJECTED = 'rejected';
 
     /**
      * @ORM\Id
@@ -74,7 +75,7 @@ class Payment
     /**
      * @ORM\Column(type="decimal", nullable=false, options={"precision": 11, "scale": 2})
      */
-    private ?string $amount = null;
+    private Decimal|string|null $amount = null;
 
     /**
      * @ORM\Column(type="json", nullable=true)
@@ -195,12 +196,12 @@ class Payment
 
     public function getAmount(): ?Decimal
     {
-        return new Decimal($this->amount);
+        return null !== $this->amount ? new Decimal($this->amount) : null;
     }
 
-    public function setAmount(Decimal $amount): self
+    public function setAmount(Decimal|string $amount): self
     {
-        $this->amount = $amount;
+        $this->amount = is_string($amount) ? new Decimal($amount) : $amount;
 
         return $this;
     }
@@ -222,7 +223,7 @@ class Payment
         return $this->gatewayResponse;
     }
 
-    public function setGatewayResponse(?array $gatewayResponse): Payment
+    public function setGatewayResponse(?array $gatewayResponse): self
     {
         $this->gatewayResponse = $gatewayResponse;
 

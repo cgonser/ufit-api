@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Provider;
 
 use App\Core\Provider\AbstractProvider;
@@ -42,8 +44,6 @@ class PaymentMethodProvider extends AbstractProvider
 
     protected function getFilterableFields(): array
     {
-        return [
-            'countryCode',
-        ];
+        return ['countryCode'];
     }
 }

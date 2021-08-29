@@ -56,6 +56,8 @@ services:
             $vendorPasswordResetUrl: '%vendor.password_reset_url%'
             $pagarmePostbackUrl: '%pagarme.postback_url%'
             $pagarmeRecebedorId: '%pagarme.recebedor_id%'
+            $facebookAppId: '%facebook.app_id%'
+            $facebookAppSecret: '%facebook.app_secret%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
@@ -127,21 +129,8 @@ services:
     App\Core\Twig\MailtoExtension:
         tags: ['twig.extension']
 
-    Aws\S3\S3Client:
-        arguments:
-            -
-                version: '2006-03-01'
-                region: '%aws.s3_region%'
-#                credentials:
-#                    key: '%aws.s3_access_key_id%'
-#                    secret: '%aws.s3_access_key_secret%'
-
-    Facebook\Facebook:
-        arguments:
-            -
-                app_id: '%facebook.app_id%'
-                app_secret: '%facebook.app_secret%'
-                default_graph_version: 'v2.10'
+    FacebookAds\Api:
+        factory: ['@App\Core\Service\FacebookApiClientFactory', 'createInstance']
 
     EspressoDev\InstagramBasicDisplay\InstagramBasicDisplay:
         arguments:

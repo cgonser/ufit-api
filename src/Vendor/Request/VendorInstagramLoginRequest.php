@@ -1,9 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Request;
 
 use OpenApi\Annotations as OA;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotNull;
 
 /**
  * @OA\RequestBody(
@@ -15,14 +19,14 @@ class VendorInstagramLoginRequest
 {
     /**
      * @OA\Property()
-     * @Assert\NotNull()
-     * @Assert\NotBlank()
      */
+    #[NotNull]
+    #[NotBlank]
     public ?string $code = null;
 
     /**
      * @OA\Property()
-     * @Assert\Email()
      */
+    #[Email]
     public ?string $email = null;
 }

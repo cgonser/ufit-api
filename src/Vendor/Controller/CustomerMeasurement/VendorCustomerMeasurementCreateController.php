@@ -1,19 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Controller\CustomerMeasurement;
 
-use App\Core\Exception\ApiJsonException;
 use App\Core\Exception\ApiJsonInputValidationException;
 use App\Core\Response\ApiJsonResponse;
+use App\Core\Security\AuthorizationVoterInterface;
 use App\Customer\Dto\CustomerMeasurementDto;
 use App\Customer\Entity\Customer;
-use App\Customer\Exception\CustomerMeasurementInvalidTakenAtException;
-use App\Customer\Provider\CustomerProvider;
 use App\Customer\Request\CustomerMeasurementRequest;
 use App\Customer\ResponseMapper\CustomerMeasurementResponseMapper;
 use App\Customer\Service\CustomerMeasurementService;
 use App\Subscription\Provider\SubscriptionCustomerProvider;
 use App\Vendor\Entity\Vendor;
+use App\Vendor\Provider\VendorProvider;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Ramsey\Uuid\Uuid;
@@ -23,59 +24,42 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
+#[Route(path: '/vendors/{vendorId}/customers/{customerId}/measurements')]
 class VendorCustomerMeasurementCreateController extends AbstractController
 {
-    private CustomerMeasurementService $customerMeasurementService;
-    private CustomerMeasurementResponseMapper $customerMeasurementResponseMapper;
-    private SubscriptionCustomerProvider $subscriptionCustomerProvider;
-
     public function __construct(
-        CustomerMeasurementService $customerMeasurementService,
-        CustomerMeasurementResponseMapper $customerMeasurementResponseMapper,
-        SubscriptionCustomerProvider $subscriptionCustomerProvider
+        private CustomerMeasurementService $customerMeasurementService,
+        private CustomerMeasurementResponseMapper $customerMeasurementResponseMapper,
+        private SubscriptionCustomerProvider $subscriptionCustomerProvider,
+        private VendorProvider $vendorProvider,
     ) {
-        $this->customerMeasurementResponseMapper = $customerMeasurementResponseMapper;
-        $this->customerMeasurementService = $customerMeasurementService;
-        $this->subscriptionCustomerProvider = $subscriptionCustomerProvider;
     }
 
     /**
-     * @Route(
-     *     "/vendors/{vendorId}/customers/{customerId}/measurements",
-     *     methods="POST",
-     *     name="vendor_customers_measurements_create"
-     * )
-     *
-     * @ParamConverter("customerMeasurementRequest", converter="fos_rest.request_body", options={
-     *     "deserializationContext"= {"allow_extra_attributes"=false}
-     * })
-     *
      * @OA\Tag(name="Vendor / Customer / Measurement")
-     * @OA\RequestBody(
-     *     required=true,
-     *     @OA\JsonContent(ref=@Model(type=CustomerMeasurementRequest::class))
-     * )
-     * @OA\Response(
-     *     response=201,
-     *     description="Creates a new measurement",
-     *     @OA\JsonContent(ref=@Model(type=CustomerMeasurementDto::class))
-     * )
-     * @OA\Response(
-     *     response=400,
-     *     description="Invalid input"
-     * )
+     * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=CustomerMeasurementRequest::class)))
+     * @OA\Response(response=201, description="Success", @OA\JsonContent(ref=@Model(type=CustomerMeasurementDto::class)))
+     * @OA\Response(response=400, description="Invalid input")
      */
+    #[Route(name: 'vendor_customers_measurements_create', methods: 'POST')]
+    #[ParamConverter(data: 'customerMeasurementRequest', options: [
+        'deserializationContext' => [
+            'allow_extra_attributes' => false,
+        ],
+    ], converter: 'fos_rest.request_body')]
     public function create(
         string $customerId,
+        string $vendorId,
         CustomerMeasurementRequest $customerMeasurementRequest,
-        ConstraintViolationListInterface $validationErrors
-    ): Response {
-        if ($validationErrors->count() > 0) {
-            throw new ApiJsonInputValidationException($validationErrors);
+        ConstraintViolationListInterface $constraintViolationList
+    ): ApiJsonResponse {
+        if ($constraintViolationList->count() > 0) {
+            throw new ApiJsonInputValidationException($constraintViolationList);
         }
 
-        /** @var Vendor $vendor */
-        $vendor = $this->getUser();
+        $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
+        $this->denyAccessUnlessGranted(AuthorizationVoterInterface::UPDATE, $vendor);
+
         $customer = $this->subscriptionCustomerProvider->getVendorCustomer($vendor, Uuid::fromString($customerId));
         $customerMeasurement = $this->customerMeasurementService->create($customer, $customerMeasurementRequest);
 

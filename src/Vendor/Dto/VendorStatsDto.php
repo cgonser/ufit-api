@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Dto;
 
 class VendorStatsDto
 {
-    public ?VendorStatsRevenueDto $revenue;
+    public ?VendorStatsRevenueDto $revenue = null;
 
-    public ?VendorStatsReceivableDto $receivable;
+    public ?VendorStatsReceivableDto $receivable = null;
 
-    public ?VendorStatsSubscriptionsDto $subscriptions;
+    public ?VendorStatsSubscriptionsDto $subscriptions = null;
 }

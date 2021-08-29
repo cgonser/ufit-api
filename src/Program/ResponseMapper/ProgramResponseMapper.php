@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\ResponseMapper;
 
 use App\Program\Dto\ProgramDto;
@@ -23,16 +25,21 @@ class ProgramResponseMapper
     public function map(Program $program, bool $mapAssets = true, bool $mapVendor = false): ProgramDto
     {
         $programDto = new ProgramDto();
-        $programDto->id = $program->getId()->toString();
-        $programDto->vendorId = $program->getVendor()->getId()->toString();
+        $programDto->id = $program->getId()
+            ->toString();
+        $programDto->vendorId = $program->getVendor()
+            ->getId()
+            ->toString();
         $programDto->name = $program->getName();
         $programDto->level = $program->getLevel();
         $programDto->goals = $program->getGoals();
         $programDto->description = $program->getDescription();
         $programDto->isTemplate = $program->isTemplate();
         $programDto->isActive = $program->isActive();
-        $programDto->createdAt = $program->getCreatedAt()->format(\DateTimeInterface::ISO8601);
-        $programDto->updatedAt = $program->getUpdatedAt()->format(\DateTimeInterface::ISO8601);
+        $programDto->createdAt = $program->getCreatedAt()
+            ->format(\DateTimeInterface::ISO8601);
+        $programDto->updatedAt = $program->getUpdatedAt()
+            ->format(\DateTimeInterface::ISO8601);
 
         if ($mapAssets) {
             $programDto->assets = $this->programAssetResponseMapper->mapMultiple($program->getAssets()->toArray());

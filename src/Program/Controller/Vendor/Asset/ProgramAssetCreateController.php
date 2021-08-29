@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Controller\Vendor\Asset;
 
 use App\Core\Exception\ApiJsonException;
 use App\Core\Exception\ApiJsonInputValidationException;
 use App\Core\Response\ApiJsonResponse;
 use App\Program\Dto\ProgramAssetDto;
-use App\Vendor\Entity\Vendor;
 use App\Program\Provider\VendorProgramProvider;
 use App\Program\Request\ProgramAssetRequest;
 use App\Program\ResponseMapper\ProgramAssetResponseMapper;
 use App\Program\Service\ProgramAssetRequestManager;
+use App\Vendor\Entity\Vendor;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Ramsey\Uuid\Uuid;
@@ -72,9 +74,6 @@ class ProgramAssetCreateController extends AbstractController
 
         $programAsset = $this->programAssetRequestManager->createFromRequest($program, $programAssetRequest);
 
-        return new ApiJsonResponse(
-            Response::HTTP_CREATED,
-            $this->programAssetResponseMapper->map($programAsset)
-        );
+        return new ApiJsonResponse(Response::HTTP_CREATED, $this->programAssetResponseMapper->map($programAsset));
     }
 }

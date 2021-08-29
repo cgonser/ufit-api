@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\Entity;
 
 use App\Customer\Entity\Customer;
@@ -20,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="subscription")
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
  */
-class   Subscription
+class Subscription
 {
     use TimestampableEntity;
     use SoftDeleteableEntity;
@@ -91,7 +93,7 @@ class   Subscription
      * @ORM\Column(type="decimal", nullable=false, options={"precision": 11, "scale": 2})
      * @Assert\NotNull()
      */
-    private string $price;
+    private Decimal|string|null $price;
 
     /**
      * @ORM\Column(type="boolean", nullable=false, options={"default": true})
@@ -266,9 +268,9 @@ class   Subscription
         return new Decimal($this->price);
     }
 
-    public function setPrice(Decimal $price): self
+    public function setPrice(Decimal|string $price): self
     {
-        $this->price = $price;
+        $this->price = is_string($price) ? new Decimal($price) : $price;
 
         return $this;
     }
@@ -281,6 +283,7 @@ class   Subscription
     public function setIsRecurring(bool $isRecurring): self
     {
         $this->isRecurring = $isRecurring;
+
         return $this;
     }
 

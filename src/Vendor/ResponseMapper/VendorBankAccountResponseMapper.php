@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\ResponseMapper;
 
 use App\Vendor\Dto\VendorBankAccountDto;
@@ -10,8 +12,10 @@ class VendorBankAccountResponseMapper
     public function map(VendorBankAccount $vendorBankAccount): VendorBankAccountDto
     {
         $vendorBankAccountDto = new VendorBankAccountDto();
-        $vendorBankAccountDto->id = $vendorBankAccount->getId()->toString();
-        $vendorBankAccountDto->vendorId = $vendorBankAccount->getVendorId()->toString();
+        $vendorBankAccountDto->id = $vendorBankAccount->getId()
+            ->toString();
+        $vendorBankAccountDto->vendorId = $vendorBankAccount->getVendorId()
+            ->toString();
         $vendorBankAccountDto->bankCode = $vendorBankAccount->getBankCode();
         $vendorBankAccountDto->agencyNumber = $vendorBankAccount->getAgencyNumber();
         $vendorBankAccountDto->accountNumber = $vendorBankAccount->getAccountNumber();
@@ -23,6 +27,9 @@ class VendorBankAccountResponseMapper
         return $vendorBankAccountDto;
     }
 
+    /**
+     * @return VendorBankAccountDto[]
+     */
     public function mapMultiple(array $vendorBankAccounts): array
     {
         $vendorBankAccountDtos = [];
