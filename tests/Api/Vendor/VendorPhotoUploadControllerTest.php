@@ -25,7 +25,7 @@ class VendorPhotoUploadControllerTest extends AbstractVendorTest
         $client = static::createClient();
 
         $vendorData = $this->getVendorDummyData();
-        $vendor = $this->createVendorDummy($vendorData);
+        $this->createVendorDummy($vendorData);
 
         $client->request(Request::METHOD_PUT, '/vendors/current/photo', [], [], [], $uploadedFile->getContent());
         static::assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
@@ -33,8 +33,7 @@ class VendorPhotoUploadControllerTest extends AbstractVendorTest
         $this->authenticateClient($client, $vendorData['email'], $vendorData['password']);
 
         $this->setUpUploadEnvironment();
-
-        echo $uploadedFile->getFilename().PHP_EOL;
+        $client->setServerParameter('CONTENT_TYPE', $uploadedFile->getMimeType());
         $client->request(Request::METHOD_PUT, '/vendors/current/photo', [], [], [], $uploadedFile->getContent());
         $this->assertJsonResponse(Response::HTTP_OK);
         $responseData = $this->getAndAssertJsonResponseData($client);

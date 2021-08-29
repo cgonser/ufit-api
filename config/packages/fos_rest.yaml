@@ -6,12 +6,13 @@ fos_rest:
         rules:
             - { path: ^/, prefer_extension: true, fallback_format: json, priorities: [ json, html ] }
 
-    body_listener:
-        enabled: true
-        default_format: json
-        decoders:
-            json: fos_rest.decoder.json
-        throw_exception_on_unsupported_content_type: true
+    body_listener: true
+#    body_listener:
+#        enabled: true
+##        default_format: json
+#        decoders:
+#            json: fos_rest.decoder.json
+#        throw_exception_on_unsupported_content_type: true
 
     body_converter:
         enabled: true
@@ -21,12 +22,3 @@ fos_rest:
     exception:
         enabled: true
         map_exception_codes: true
-
-#    routing_loader: true
-#    view:
-#        view_response_listener:  true
-#    exception:
-#        codes:
-#            App\Exception\MyException: 403
-#        messages:
-#            App\Exception\MyException: Forbidden area.
