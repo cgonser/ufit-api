@@ -15,14 +15,11 @@ class PagarmeTransactionResponseReceivedEvent
      */
     public const NAME = 'payment.pagarme.transaction.response';
 
-    private ?UuidInterface $subscriptionId = null;
-
-    private ?UuidInterface $paymentId = null;
-
-    public function __construct(private stdClass $response, ?string $subscriptionId = null, ?string $paymentId = null)
-    {
-        $this->subscriptionId = null !== $subscriptionId ? Uuid::fromString($subscriptionId) : null;
-        $this->paymentId = null !== $paymentId ? Uuid::fromString($paymentId) : null;
+    public function __construct(
+        private stdClass $response,
+        private ?UuidInterface $subscriptionId = null,
+        private ?UuidInterface $paymentId = null,
+    ) {
     }
 
     public function getSubscriptionId(): ?UuidInterface

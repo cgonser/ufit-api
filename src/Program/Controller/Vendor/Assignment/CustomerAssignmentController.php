@@ -49,7 +49,7 @@ class CustomerAssignmentController extends AbstractController
         name: 'vendor_customer_program_assignments_find',
         methods: 'GET'
     )]
-    #[ParamConverter(data: 'searchRequest', converter: 'querystring')]
+    #[ParamConverter(data: 'programAssignmentSearchRequest', converter: 'querystring')]
     public function getCustomerAssignments(
         string $vendorId,
         string $customerId,
