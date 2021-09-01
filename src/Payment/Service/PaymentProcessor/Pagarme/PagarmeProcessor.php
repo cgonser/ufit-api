@@ -42,13 +42,10 @@ abstract class PagarmeProcessor
     {
         $this->validate($payment);
 
-        $subscription = $payment->getInvoice()
-            ->getSubscription();
+        $subscription = $payment->getInvoice()->getSubscription();
         $this->subscriptionManager->defineExternalRefence($subscription, null);
 
-        $vendorPlan = $payment->getInvoice()
-            ->getSubscription()
-            ->getVendorPlan();
+        $vendorPlan = $payment->getInvoice()->getSubscription()->getVendorPlan();
 
         $transactionData = $this->prepareTransactionData($payment);
 

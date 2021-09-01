@@ -8,7 +8,7 @@ use Iterator;
 use App\Payment\Service\PaymentProcessor\VendorInformationManagerInterface;
 use App\Vendor\Message\VendorBankAccountCreatedEvent;
 use App\Vendor\Message\VendorBankAccountUpdatedEvent;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
 
 class VendorBankAccountUpdateHandler implements MessageSubscriberInterface
@@ -17,13 +17,15 @@ class VendorBankAccountUpdateHandler implements MessageSubscriberInterface
     {
     }
 
-    public function handleVendorBankAccountCreatedEvent(VendorBankAccountCreatedEvent $vendorBankAccountCreatedEvent): void
-    {
+    public function handleVendorBankAccountCreatedEvent(
+        VendorBankAccountCreatedEvent $vendorBankAccountCreatedEvent
+    ): void {
         $this->updateVendorPaymentInformation($vendorBankAccountCreatedEvent->getVendorId());
     }
 
-    public function handleVendorBankAccountUpdatedEvent(VendorBankAccountUpdatedEvent $vendorBankAccountUpdatedEvent): void
-    {
+    public function handleVendorBankAccountUpdatedEvent(
+        VendorBankAccountUpdatedEvent $vendorBankAccountUpdatedEvent
+    ): void {
         $this->updateVendorPaymentInformation($vendorBankAccountUpdatedEvent->getVendorId());
     }
 
@@ -41,8 +43,8 @@ class VendorBankAccountUpdateHandler implements MessageSubscriberInterface
         ];
     }
 
-    private function updateVendorPaymentInformation(string $vendorId): void
+    private function updateVendorPaymentInformation(UuidInterface $vendorId): void
     {
-        $this->vendorInformationManager->updateVendorInformation(Uuid::fromString($vendorId));
+        $this->vendorInformationManager->updateVendorInformation($vendorId);
     }
 }

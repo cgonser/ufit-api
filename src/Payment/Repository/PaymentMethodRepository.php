@@ -17,17 +17,13 @@ class PaymentMethodRepository extends ServiceEntityRepository
 
     public function save(PaymentMethod $paymentMethod): void
     {
-        $this->getEntityManager()
-            ->persist($paymentMethod);
-        $this->getEntityManager()
-            ->flush();
+        $this->getEntityManager()->persist($paymentMethod);
+        $this->getEntityManager()->flush();
     }
 
     public function delete(PaymentMethod $paymentMethod): void
     {
-        $this->getEntityManager()
-            ->remove($paymentMethod);
-        $this->getEntityManager()
-            ->flush();
+        $this->getEntityManager()->remove($paymentMethod);
+        $this->getEntityManager()->flush();
     }
 }

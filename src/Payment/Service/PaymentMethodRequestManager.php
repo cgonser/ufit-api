@@ -33,19 +33,19 @@ class PaymentMethodRequestManager
 
     public function mapFromRequest(PaymentMethod $paymentMethod, PaymentMethodRequest $paymentMethodRequest): void
     {
-        if (null !== $paymentMethodRequest->name) {
+        if ($paymentMethodRequest->has('name')) {
             $paymentMethod->setName($paymentMethodRequest->name);
         }
 
-        if (null !== $paymentMethodRequest->countriesEnabled) {
+        if ($paymentMethodRequest->has('countriesEnabled')) {
             $paymentMethod->setCountriesEnabled($paymentMethodRequest->countriesEnabled);
         }
 
-        if (null !== $paymentMethodRequest->countriesDisabled) {
+        if ($paymentMethodRequest->has('countriesDisabled')) {
             $paymentMethod->setCountriesDisabled($paymentMethodRequest->countriesDisabled);
         }
 
-        if (null !== $paymentMethodRequest->isActive) {
+        if ($paymentMethodRequest->has('isActive')) {
             $paymentMethod->setIsActive($paymentMethodRequest->isActive);
         }
     }

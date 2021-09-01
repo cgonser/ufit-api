@@ -14,8 +14,13 @@ use Ramsey\Uuid\Uuid;
 
 class PaymentRequestManager
 {
-    public function __construct(private PaymentManager $paymentManager, private InvoiceProvider $invoiceProvider, private PaymentMethodProvider $paymentMethodProvider, private BillingInformationProvider $billingInformationProvider, private BillingInformationRequestManager $billingInformationRequestManager)
-    {
+    public function __construct(
+        private PaymentManager $paymentManager,
+        private InvoiceProvider $invoiceProvider,
+        private PaymentMethodProvider $paymentMethodProvider,
+        private BillingInformationProvider $billingInformationProvider,
+        private BillingInformationRequestManager $billingInformationRequestManager
+    ) {
     }
 
     public function createFromRequest(PaymentRequest $paymentRequest): Payment

@@ -11,13 +11,18 @@ use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
 class PagarmeSubscriptionResponseHandler implements MessageHandlerInterface
 {
-    public function __construct(private PagarmeSubscriptionResponseProcessor $pagarmeSubscriptionResponseProcessor, private LoggerInterface $logger)
-    {
+    public function __construct(
+        private PagarmeSubscriptionResponseProcessor $pagarmeSubscriptionResponseProcessor,
+        private LoggerInterface $logger,
+    ) {
     }
 
     public function __invoke(PagarmeSubscriptionResponseReceivedEvent $pagarmeSubscriptionResponseReceivedEvent)
     {
-        $this->logger->info('payment.subscription.response', (array) $pagarmeSubscriptionResponseReceivedEvent->getResponse());
+        $this->logger->info(
+            'payment.subscription.response',
+            (array)$pagarmeSubscriptionResponseReceivedEvent->getResponse()
+        );
 
         $this->pagarmeSubscriptionResponseProcessor->process(
             $pagarmeSubscriptionResponseReceivedEvent->getResponse(),

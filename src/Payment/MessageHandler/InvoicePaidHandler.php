@@ -15,8 +15,12 @@ use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
 class InvoicePaidHandler implements MessageHandlerInterface
 {
-    public function __construct(private InvoiceProvider $invoiceProvider, private InvoiceManager $invoiceManager, private SubscriptionManager $subscriptionManager, private LoggerInterface $logger)
-    {
+    public function __construct(
+        private InvoiceProvider $invoiceProvider,
+        private InvoiceManager $invoiceManager,
+        private SubscriptionManager $subscriptionManager,
+        private LoggerInterface $logger,
+    ) {
     }
 
     public function __invoke(InvoicePaidEvent $invoicePaidEvent)
@@ -25,8 +29,7 @@ class InvoicePaidHandler implements MessageHandlerInterface
             'invoice.paid',
             [
                 'invoiceId' => $invoicePaidEvent->getInvoiceId(),
-                'paidAt' => $invoicePaidEvent->getPaidAt()
-                    ->format(DateTimeInterface::ATOM),
+                'paidAt' => $invoicePaidEvent->getPaidAt()->format(DateTimeInterface::ATOM),
             ]
         );
 

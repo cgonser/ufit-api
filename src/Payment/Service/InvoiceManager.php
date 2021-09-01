@@ -4,13 +4,9 @@ declare(strict_types=1);
 
 namespace App\Payment\Service;
 
-use DateTime;
-use DateTimeImmutable;
-use DateTimeInterface;
 use App\Payment\Entity\Invoice;
 use App\Payment\Repository\InvoiceRepository;
 use App\Subscription\Entity\Subscription;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 class InvoiceManager
 {
@@ -18,13 +14,12 @@ class InvoiceManager
     {
     }
 
-    /**
-     * @param DateTime|DateTimeImmutable|null $dateTime
-     */
-    public function createFromSubscription(Subscription $subscription, DateTime|DateTimeImmutable|null $dateTime = null): Invoice
-    {
+    public function createFromSubscription(
+        Subscription $subscription,
+        \DateTimeInterface|null $dateTime = null
+    ): Invoice {
         if (null === $dateTime) {
-            $dateTime = new DateTime();
+            $dateTime = new \DateTime();
         }
 
         $invoice = new Invoice();
@@ -38,7 +33,7 @@ class InvoiceManager
         return $invoice;
     }
 
-    public function markAsPaid(Invoice $invoice, DateTimeInterface $paidAt): void
+    public function markAsPaid(Invoice $invoice, \DateTimeInterface $paidAt): void
     {
         $invoice->setPaidAt($paidAt);
 

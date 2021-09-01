@@ -21,8 +21,12 @@ class PagarmeVendorInformationManager implements VendorInformationManagerInterfa
      */
     public const PAGARME_ERROR_SAME_DOC = 'ERROR TYPE: invalid_parameter. PARAMETER: bank_account_id. MESSAGE: The new bank account should have the same document number as the previous';
 
-    public function __construct(private VendorBankAccountProvider $vendorBankAccountProvider, private VendorBankAccountManager $vendorBankAccountManager, private VendorSettingManager $vendorSettingManager, private Client $pagarmeClient)
-    {
+    public function __construct(
+        private VendorBankAccountProvider $vendorBankAccountProvider,
+        private VendorBankAccountManager $vendorBankAccountManager,
+        private VendorSettingManager $vendorSettingManager,
+        private Client $pagarmeClient
+    ) {
     }
 
     public function updateVendorInformation(UuidInterface $vendorId): void
@@ -89,8 +93,10 @@ class PagarmeVendorInformationManager implements VendorInformationManagerInterfa
         }
     }
 
-    private function handlePagarmeException(VendorBankAccount $vendorBankAccount, PagarMeException $pagarMeException): void
-    {
+    private function handlePagarmeException(
+        VendorBankAccount $vendorBankAccount,
+        PagarMeException $pagarMeException
+    ): void {
         $this->vendorBankAccountManager->markAsInvalid($vendorBankAccount);
 
         $mappedProperties = [

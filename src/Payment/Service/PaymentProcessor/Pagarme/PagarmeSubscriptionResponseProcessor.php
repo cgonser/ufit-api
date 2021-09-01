@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Payment\Service\PaymentProcessor\Pagarme;
 
-use App\Subscription\Entity\Subscription;
 use App\Subscription\Exception\SubscriptionNotFoundException;
 use App\Subscription\Provider\SubscriptionProvider;
 use App\Subscription\Service\SubscriptionManager;
 use Ramsey\Uuid\UuidInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\String\UnicodeString;
 
 class PagarmeSubscriptionResponseProcessor
@@ -17,7 +15,7 @@ class PagarmeSubscriptionResponseProcessor
     public function __construct(
         private SubscriptionProvider $subscriptionProvider,
         private SubscriptionManager $subscriptionManager,
-        private PagarmeTransactionResponseProcessor $pagarmeTransactionResponseProcessor
+        private PagarmeTransactionResponseProcessor $pagarmeTransactionResponseProcessor,
     ) {
     }
 
