@@ -16,12 +16,11 @@ use Ramsey\Uuid\UuidInterface;
 
 class SubscriptionProvider extends AbstractProvider
 {
-    private CustomerRepository $customerRepository;
-
-    public function __construct(SubscriptionRepository $repository, CustomerRepository $customerRepository)
-    {
-        $this->repository = $repository;
-        $this->customerRepository = $customerRepository;
+    public function __construct(
+        SubscriptionRepository $subscriptionRepository,
+        private CustomerRepository $customerRepository
+    ) {
+        $this->repository = $subscriptionRepository;
     }
 
     public function searchCustomers(SearchRequest $searchRequest, ?array $filters = null): array
@@ -45,12 +44,15 @@ class SubscriptionProvider extends AbstractProvider
     {
         $queryBuilder = $this->buildSearchQueryBuilder($searchRequest, $filters);
 
-        return (int) $queryBuilder->select('COUNT(DISTINCT root.customerId)')
+        return (int)$queryBuilder->select('COUNT(DISTINCT root.customerId)')
             ->getQuery()
             ->useQueryCache(true)
             ->getSingleScalarResult();
     }
 
+    /**
+     * @return mixed[]
+     */
     public function findByCustomer(Customer $customer): array
     {
         return $this->repository->findBy([
@@ -98,7 +100,7 @@ class SubscriptionProvider extends AbstractProvider
         return $queryBuilder;
     }
 
-    protected function throwNotFoundException()
+    protected function throwNotFoundException(): void
     {
         throw new SubscriptionNotFoundException();
     }

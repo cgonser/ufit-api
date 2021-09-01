@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Vendor\Entity;
 
 use App\Vendor\Repository\VendorRepository;
-use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -390,6 +389,6 @@ class Vendor implements PasswordAuthenticatedUserInterface, UserInterface, Seria
 
     public function isNew(): bool
     {
-        return !isset($this->id);
+        return ! isset($this->id);
     }
 }

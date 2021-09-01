@@ -11,27 +11,27 @@ class SubscriptionDto
 {
     public string $id;
 
-    public ?string $customerId;
+    public ?string $customerId = null;
 
-    public ?CustomerDto $customer;
+    public ?CustomerDto $customer = null;
 
-    public ?string $vendorPlanId;
+    public ?string $vendorPlanId = null;
 
-    public ?VendorPlanDto $vendorPlan;
+    public ?VendorPlanDto $vendorPlan = null;
 
-    public ?string $validFrom;
+    public ?string $validFrom = null;
 
-    public ?string $expiresAt;
+    public ?string $expiresAt = null;
 
-    public ?float $price;
+    public ?float $price = null;
 
-    public ?string $reviewedAt;
+    public ?string $reviewedAt = null;
 
-    public ?bool $isActive;
+    public ?bool $isActive = null;
 
-    public ?bool $isApproved;
+    public ?bool $isApproved = null;
 
-    public ?bool $isRecurring;
+    public ?bool $isRecurring = null;
 
-    public ?string $cancelledAt;
+    public ?string $cancelledAt = null;
 }

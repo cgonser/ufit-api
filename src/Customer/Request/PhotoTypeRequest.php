@@ -5,18 +5,16 @@ declare(strict_types=1);
 namespace App\Customer\Request;
 
 use OpenApi\Annotations as OA;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints;
 
 /**
- * @OA\RequestBody(
- *     request="PhotoTypeRequest"
- * )
+ * @OA\RequestBody()
  */
 class PhotoTypeRequest
 {
     /**
      * @OA\Property()
-     * @Assert\NotBlank()
      */
+    #[Constraints\NotBlank]
     public ?string $name = null;
 }

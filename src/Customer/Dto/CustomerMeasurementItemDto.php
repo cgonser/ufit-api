@@ -10,7 +10,7 @@ class CustomerMeasurementItemDto
 
     public MeasurementTypeDto $measurementType;
 
-    public float $measurement;
+    public string $measurement;
 
     public string $unit;
 }

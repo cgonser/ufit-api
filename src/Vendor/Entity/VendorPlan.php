@@ -68,7 +68,10 @@ class VendorPlan implements SoftDeletableInterface, TimestampableInterface
     #[Column(type: 'json', nullable: true)]
     private ?array $features = null;
 
-    #[Column(type: 'decimal', options: ['precision' => 11, 'scale' => 2,])]
+    #[Column(type: 'decimal', options: [
+        'precision' => 11,
+        'scale' => 2,
+    ])]
     #[NotBlank]
     private Decimal|string|null $price;
 

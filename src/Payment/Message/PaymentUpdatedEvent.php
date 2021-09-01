@@ -8,6 +8,9 @@ use Ramsey\Uuid\UuidInterface;
 
 class PaymentUpdatedEvent
 {
+    /**
+     * @var string
+     */
     public const NAME = 'payment.updated';
 
     protected ?UuidInterface $paymentId = null;

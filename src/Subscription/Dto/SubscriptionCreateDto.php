@@ -8,7 +8,7 @@ use App\Payment\Dto\InvoiceDto;
 
 class SubscriptionCreateDto
 {
-    public ?SubscriptionDto $subscription;
+    public ?SubscriptionDto $subscription = null;
 
-    public ?InvoiceDto $invoice;
+    public ?InvoiceDto $invoice = null;
 }

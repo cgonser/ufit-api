@@ -22,47 +22,31 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class SubscriptionCreateController extends AbstractController
 {
-    private SubscriptionRequestManager $subscriptionService;
-
-    private SubscriptionResponseMapper $subscriptionResponseMapper;
-
-    private InvoiceProvider $invoiceProvider;
-
-    private InvoiceResponseMapper $invoiceResponseMapper;
-
     public function __construct(
-        SubscriptionRequestManager $subscriptionService,
-        SubscriptionResponseMapper $subscriptionResponseMapper,
-        InvoiceProvider $invoiceProvider,
-        InvoiceResponseMapper $invoiceResponseMapper
+        private SubscriptionRequestManager $subscriptionRequestManager,
+        private SubscriptionResponseMapper $subscriptionResponseMapper,
+        private InvoiceProvider $invoiceProvider,
+        private InvoiceResponseMapper $invoiceResponseMapper
     ) {
-        $this->subscriptionService = $subscriptionService;
-        $this->subscriptionResponseMapper = $subscriptionResponseMapper;
-        $this->invoiceProvider = $invoiceProvider;
-        $this->invoiceResponseMapper = $invoiceResponseMapper;
     }
 
     /**
-     * @Route("/subscriptions", methods="POST", name="subscriptions_create")
-     * @ParamConverter("subscriptionRequest", converter="fos_rest.request_body", options={
-     *     "deserializationContext"= {"allow_extra_attributes"=false}
-     * })
      *
      * @OA\Tag(name="Subscription")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=SubscriptionRequest::class)))
      * @OA\Response(response=201, description="Success", @OA\JsonContent(ref=@Model(type=SubscriptionCreateDto::class)))
      * @OA\Response(response=400, description="Invalid input")
      */
+    #[Route(path: '/subscriptions', name: 'subscriptions_create', methods: 'POST')]
+    #[ParamConverter(
+        data: 'subscriptionRequest',
+        options: ['deserializationContext' => ['allow_extra_attributes' => false]],
+        converter: 'fos_rest.request_body'
+    )]
     public function subscribe(
         SubscriptionRequest $subscriptionRequest,
-        ConstraintViolationListInterface $validationErrors
-    ) {
-        if ($validationErrors->count() > 0) {
-            throw new ApiJsonInputValidationException($validationErrors);
-        }
-
-        $subscription = $this->subscriptionService->createFromRequest($subscriptionRequest);
-
+    ): ApiJsonResponse {
+        $subscription = $this->subscriptionRequestManager->createFromRequest($subscriptionRequest);
         $invoice = $this->invoiceProvider->getSubscriptionNextDueInvoice($subscription->getId());
 
         return new ApiJsonResponse(

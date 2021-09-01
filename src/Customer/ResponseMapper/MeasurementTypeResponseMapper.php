@@ -12,7 +12,7 @@ class MeasurementTypeResponseMapper
     public function map(MeasurementType $measurementType): MeasurementTypeDto
     {
         $measurementTypeDto = new MeasurementTypeDto();
-        $measurementTypeDto->id = $measurementType->getId();
+        $measurementTypeDto->id = $measurementType->getId()->toString();
         $measurementTypeDto->name = $measurementType->getName();
         $measurementTypeDto->slug = $measurementType->getSlug();
         $measurementTypeDto->units = explode(MeasurementType::UNIT_SEPARATOR, $measurementType->getUnits());

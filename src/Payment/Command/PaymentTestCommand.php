@@ -12,18 +12,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class PaymentTestCommand extends Command
 {
+    /**
+     * @var string
+     */
     protected static $defaultName = 'ufit:payment:test';
 
-    private PaymentRequestManager $paymentRequestManager;
-
-    public function __construct(PaymentRequestManager $paymentRequestManager)
-    {
-        $this->paymentRequestManager = $paymentRequestManager;
-
-        parent::__construct();
-    }
-
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->addArgument('invoiceId')

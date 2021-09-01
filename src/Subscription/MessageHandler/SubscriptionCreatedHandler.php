@@ -12,20 +12,11 @@ use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
 class SubscriptionCreatedHandler implements MessageHandlerInterface
 {
-    private SubscriptionProvider $subscriptionProvider;
-
-    private SubscriptionEmailManager $subscriptionEmailManager;
-
-    private LoggerInterface $logger;
-
     public function __construct(
-        SubscriptionProvider $subscriptionProvider,
-        SubscriptionEmailManager $subscriptionEmailManager,
-        LoggerInterface $logger
+        private SubscriptionProvider $subscriptionProvider,
+        private SubscriptionEmailManager $subscriptionEmailManager,
+        private LoggerInterface $logger
     ) {
-        $this->subscriptionProvider = $subscriptionProvider;
-        $this->subscriptionEmailManager = $subscriptionEmailManager;
-        $this->logger = $logger;
     }
 
     public function __invoke(SubscriptionCreatedEvent $subscriptionCreatedEvent)

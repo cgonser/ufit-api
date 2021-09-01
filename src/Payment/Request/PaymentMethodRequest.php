@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Payment\Request;
 
+use Symfony\Component\Validator\Constraints\NotBlank;
 use OpenApi\Annotations as OA;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints;
 
 /**
  * @OA\RequestBody(
@@ -16,8 +17,8 @@ class PaymentMethodRequest
 {
     /**
      * @OA\Property()
-     * @Assert\NotBlank()
      */
+    #[NotBlank]
     public ?string $name = null;
 
     /**

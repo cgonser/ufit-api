@@ -13,11 +13,8 @@ use Ramsey\Uuid\UuidInterface;
 
 class VendorSubscriptionProvider
 {
-    private SubscriptionRepository $subscriptionRepository;
-
-    public function __construct(SubscriptionRepository $subscriptionRepository)
+    public function __construct(private SubscriptionRepository $subscriptionRepository)
     {
-        $this->subscriptionRepository = $subscriptionRepository;
     }
 
     public function findWithRequest(Vendor $vendor, SubscriptionSearchRequest $subscriptionSearchRequest): array
@@ -26,7 +23,7 @@ class VendorSubscriptionProvider
             return $this->subscriptionRepository->findActiveByVendor($vendor);
         }
 
-        if (true === $subscriptionSearchRequest->isInactive) {
+        if (false === $subscriptionSearchRequest->isActive) {
             return $this->subscriptionRepository->findInactiveByVendor($vendor);
         }
 
@@ -39,10 +36,9 @@ class VendorSubscriptionProvider
 
     public function getByVendorAndId(Vendor $vendor, UuidInterface $subscriptionId): Subscription
     {
-        /** @var Subscription|null $subscription */
         $subscription = $this->subscriptionRepository->findOneByVendorAndId($vendor, $subscriptionId);
 
-        if (! $subscription) {
+        if (!$subscription instanceof Subscription) {
             throw new SubscriptionNotFoundException();
         }
 

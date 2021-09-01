@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Vendor\Controller\BankAccount;
 
-use App\Core\Exception\ApiJsonException;
 use App\Core\Exception\ApiJsonInputValidationException;
 use App\Core\Response\ApiJsonResponse;
 use App\Core\Security\AuthorizationVoterInterface;
@@ -59,7 +58,8 @@ class VendorBankAccountCreateController extends AbstractController
         $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
         $this->denyAccessUnlessGranted(AuthorizationVoterInterface::UPDATE, $vendor);
 
-        $vendorBankAccountRequest->vendorId = $vendor->getId()->toString();
+        $vendorBankAccountRequest->vendorId = $vendor->getId()
+            ->toString();
         $vendorBankAccount = $this->vendorBankAccountRequestManager->createFromRequest($vendorBankAccountRequest);
 
         return new ApiJsonResponse(

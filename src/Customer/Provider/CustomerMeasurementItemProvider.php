@@ -13,11 +13,8 @@ use Ramsey\Uuid\UuidInterface;
 
 class CustomerMeasurementItemProvider
 {
-    private CustomerMeasurementItemRepository $customerMeasurementItemRepository;
-
-    public function __construct(CustomerMeasurementItemRepository $customerMeasurementItemRepository)
+    public function __construct(private CustomerMeasurementItemRepository $customerMeasurementItemRepository)
     {
-        $this->customerMeasurementItemRepository = $customerMeasurementItemRepository;
     }
 
     public function get(UuidInterface $customerMeasurementItemId): CustomerMeasurementItem
@@ -25,7 +22,7 @@ class CustomerMeasurementItemProvider
         /** @var CustomerMeasurementItem|null $customerMeasurementItem */
         $customerMeasurementItem = $this->customerMeasurementItemRepository->find($customerMeasurementItemId);
 
-        if (! $customerMeasurementItem) {
+        if ($customerMeasurementItem === null) {
             throw new CustomerMeasurementItemNotFoundException();
         }
 
@@ -42,13 +39,16 @@ class CustomerMeasurementItemProvider
             'customerMeasurement' => $customerMeasurement,
         ]);
 
-        if (! $customerMeasurementItem) {
+        if ($customerMeasurementItem === null) {
             throw new CustomerMeasurementItemNotFoundException();
         }
 
         return $customerMeasurementItem;
     }
 
+    /**
+     * @return mixed[]
+     */
     public function findByCustomerMeasurement(CustomerMeasurement $customerMeasurement): array
     {
         return $this->customerMeasurementItemRepository->findBy([
@@ -59,7 +59,7 @@ class CustomerMeasurementItemProvider
     public function findOneByCustomerMeasurementAndType(
         CustomerMeasurement $customerMeasurement,
         MeasurementType $measurementType
-    ): ?CustomerMeasurementItem {
+    ): ?object {
         return $this->customerMeasurementItemRepository->findOneBy([
             'customerMeasurement' => $customerMeasurement,
             'measurementType' => $measurementType,

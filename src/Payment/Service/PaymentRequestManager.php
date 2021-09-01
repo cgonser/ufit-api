@@ -14,24 +14,8 @@ use Ramsey\Uuid\Uuid;
 
 class PaymentRequestManager
 {
-    private PaymentManager $paymentManager;
-    private InvoiceProvider $invoiceProvider;
-    private PaymentMethodProvider $paymentMethodProvider;
-    private BillingInformationProvider $billingInformationProvider;
-    private BillingInformationRequestManager $billingInformationRequestManager;
-
-    public function __construct(
-        PaymentManager $paymentManager,
-        InvoiceProvider $invoiceProvider,
-        PaymentMethodProvider $paymentMethodProvider,
-        BillingInformationProvider $billingInformationProvider,
-        BillingInformationRequestManager $billingInformationRequestManager
-    ) {
-        $this->paymentManager = $paymentManager;
-        $this->paymentMethodProvider = $paymentMethodProvider;
-        $this->invoiceProvider = $invoiceProvider;
-        $this->billingInformationProvider = $billingInformationProvider;
-        $this->billingInformationRequestManager = $billingInformationRequestManager;
+    public function __construct(private PaymentManager $paymentManager, private InvoiceProvider $invoiceProvider, private PaymentMethodProvider $paymentMethodProvider, private BillingInformationProvider $billingInformationProvider, private BillingInformationRequestManager $billingInformationRequestManager)
+    {
     }
 
     public function createFromRequest(PaymentRequest $paymentRequest): Payment
@@ -45,7 +29,7 @@ class PaymentRequestManager
         return $payment;
     }
 
-    public function updateFromRequest(Payment $payment, PaymentRequest $paymentRequest)
+    public function updateFromRequest(Payment $payment, PaymentRequest $paymentRequest): void
     {
         $this->mapFromRequest($payment, $paymentRequest);
 

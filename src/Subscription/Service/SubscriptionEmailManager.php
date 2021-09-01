@@ -11,17 +11,11 @@ use Symfony\Component\Mailer\MailerInterface;
 
 class SubscriptionEmailManager
 {
-    private EmailComposer $emailComposer;
-
-    private MailerInterface $mailer;
-
-    public function __construct(EmailComposer $emailComposer, MailerInterface $mailer)
+    public function __construct(private EmailComposer $emailComposer, private MailerInterface $mailer)
     {
-        $this->emailComposer = $emailComposer;
-        $this->mailer = $mailer;
     }
 
-    public function sendCreatedEmail(Subscription $subscription)
+    public function sendCreatedEmail(Subscription $subscription): void
     {
         $customer = $subscription->getCustomer();
         $vendorPlan = $subscription->getVendorPlan();
@@ -45,7 +39,7 @@ class SubscriptionEmailManager
             ?: ($vendor->getCountry() ? Timezones::forCountryCode($vendor->getCountry())[0] : null)
                 ?: null;
 
-        $vendorDateFormatter = new \IntlDateFormatter(
+        $intlDateFormatter = new \IntlDateFormatter(
             $vendor->getLocale(),
             \IntlDateFormatter::FULL,
             \IntlDateFormatter::SHORT,
@@ -61,7 +55,7 @@ class SubscriptionEmailManager
                 [
                     'greeting_name' => $vendor->getName(),
                     'customer_name' => $customer->getName(),
-                    'subscription_created_at' => $vendorDateFormatter->format($subscription->getCreatedAt()),
+                    'subscription_created_at' => $intlDateFormatter->format($subscription->getCreatedAt()),
                     'plan_name' => $vendorPlan->getName(),
                 ],
                 $vendor->getLocale()
@@ -69,7 +63,7 @@ class SubscriptionEmailManager
         );
     }
 
-    public function sendApprovedEmail(Subscription $subscription)
+    public function sendApprovedEmail(Subscription $subscription): void
     {
         $customer = $subscription->getCustomer();
         $vendorPlan = $subscription->getVendorPlan();

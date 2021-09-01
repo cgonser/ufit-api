@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Payment\Service\PaymentProcessor\Pagarme;
 
+use stdClass;
 use App\Subscription\Entity\Subscription;
 use App\Subscription\Exception\SubscriptionNotFoundException;
 use App\Subscription\Provider\SubscriptionProvider;
@@ -14,31 +15,15 @@ use Symfony\Component\String\UnicodeString;
 
 class PagarmeSubscriptionResponseProcessor
 {
-    private SubscriptionProvider $subscriptionProvider;
-
-    private SubscriptionManager $subscriptionManager;
-
-    private PagarmeTransactionResponseProcessor $pagarmeTransactionResponseProcessor;
-
-    private MessageBusInterface $messageBus;
-
-    public function __construct(
-        SubscriptionProvider $subscriptionProvider,
-        SubscriptionManager $subscriptionManager,
-        PagarmeTransactionResponseProcessor $pagarmeTransactionResponseProcessor,
-        MessageBusInterface $messageBus
-    ) {
-        $this->subscriptionProvider = $subscriptionProvider;
-        $this->subscriptionManager = $subscriptionManager;
-        $this->pagarmeTransactionResponseProcessor = $pagarmeTransactionResponseProcessor;
-        $this->messageBus = $messageBus;
+    public function __construct(private SubscriptionProvider $subscriptionProvider, private SubscriptionManager $subscriptionManager, private PagarmeTransactionResponseProcessor $pagarmeTransactionResponseProcessor)
+    {
     }
 
     public function process(
-        \stdClass $response,
+        stdClass $response,
         ?UuidInterface $subscriptionId = null,
         ?UuidInterface $paymentId = null
-    ) {
+    ): void {
         if (null !== $subscriptionId) {
             $subscription = $this->subscriptionProvider->get($subscriptionId);
 
@@ -51,11 +36,11 @@ class PagarmeSubscriptionResponseProcessor
             $subscription = $this->subscriptionProvider->getByExternalReference((string) $response->id);
         }
 
-        $status = new UnicodeString($response->status);
-        $methodName = 'process'.ucfirst($status->camel());
+        $unicodeString = new UnicodeString($response->status);
+        $methodName = 'process'.ucfirst($unicodeString->camel());
 
         $this->pagarmeTransactionResponseProcessor->process(
-            json_decode(json_encode($response->current_transaction)),
+            json_decode(json_encode($response->current_transaction, JSON_THROW_ON_ERROR), null, 512, JSON_THROW_ON_ERROR),
             $paymentId,
             $subscription->getId(),
         );
@@ -63,39 +48,5 @@ class PagarmeSubscriptionResponseProcessor
         if (method_exists($this, $methodName)) {
             $this->{$methodName}($subscription, $response);
         }
-    }
-
-    private function processTrialing(Subscription $subscription, \stdClass $response)
-    {
-        // not implemented
-    }
-
-    private function processPaid(Subscription $subscription, \stdClass $response)
-    {
-        if (! $subscription->isApproved()) {
-            $this->subscriptionManager->approve($subscription);
-        }
-    }
-
-    private function processPendingPayment(Subscription $subscription, \stdClass $response)
-    {
-        // todo: handle due payments
-    }
-
-    private function processUnpaid(Subscription $subscription, \stdClass $response)
-    {
-        // todo: handle due payments
-    }
-
-    private function processCanceled(Subscription $subscription, \stdClass $response)
-    {
-        $this->subscriptionManager->customerCancellation($subscription);
-        // todo: what else to trigger?
-    }
-
-    private function processEnded(Subscription $subscription, \stdClass $response)
-    {
-        $this->subscriptionManager->expire($subscription);
-        // todo: what else to trigger?
     }
 }

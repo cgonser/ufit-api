@@ -4,20 +4,19 @@ declare(strict_types=1);
 
 namespace App\Subscription\Request;
 
+use Symfony\Component\Validator\Constraints\NotNull;
 use OpenApi\Annotations as OA;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints;
 
 /**
- * @OA\RequestBody(
- *     request="SubscriptionReviewRequest"
- * )
+ * @OA\RequestBody()
  */
 class SubscriptionReviewRequest
 {
     /**
      * @OA\Property()
-     * @Assert\NotNull
      */
+    #[NotNull]
     public bool $isApproved;
 
     /**

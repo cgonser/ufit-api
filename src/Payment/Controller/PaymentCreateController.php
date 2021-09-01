@@ -20,39 +20,25 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class PaymentCreateController extends AbstractController
 {
-    private PaymentRequestManager $paymentManager;
-
-    private PaymentResponseMapper $paymentResponseMapper;
-
-    public function __construct(
-        PaymentRequestManager $paymentManager,
-        PaymentResponseMapper $paymentResponseMapper
-    ) {
-        $this->paymentResponseMapper = $paymentResponseMapper;
-        $this->paymentManager = $paymentManager;
+    public function __construct(private PaymentRequestManager $paymentRequestManager, private PaymentResponseMapper $paymentResponseMapper)
+    {
     }
 
     /**
-     * @Route("/payments", methods="POST", name="payments_create")
-     * @ParamConverter("paymentRequest", converter="fos_rest.request_body", options={
-     *     "deserializationContext"= {"allow_extra_attributes"=false}
-     * })
      *
      * @OA\Tag(name="Payment")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=PaymentRequest::class)))
      * @OA\Response(response=201, description="Success", @OA\JsonContent(ref=@Model(type=PaymentDto::class)))
      * @OA\Response(response=400, description="Invalid input")
      */
-    public function create(
-        PaymentRequest $paymentRequest,
-        ConstraintViolationListInterface $validationErrors
-    ): Response {
-        if ($validationErrors->count() > 0) {
-            throw new ApiJsonInputValidationException($validationErrors);
+    #[Route(path: '/payments', methods: 'POST', name: 'payments_create')]
+    #[ParamConverter(data: 'paymentRequest', converter: 'fos_rest.request_body', options: ['deserializationContext' => ['allow_extra_attributes' => false]])]
+    public function create(PaymentRequest $paymentRequest, ConstraintViolationListInterface $constraintViolationList) : ApiJsonResponse
+    {
+        if ($constraintViolationList->count() > 0) {
+            throw new ApiJsonInputValidationException($constraintViolationList);
         }
-
-        $payment = $this->paymentManager->createFromRequest($paymentRequest);
-
+        $payment = $this->paymentRequestManager->createFromRequest($paymentRequest);
         return new ApiJsonResponse(Response::HTTP_CREATED, $this->paymentResponseMapper->map($payment));
     }
 }

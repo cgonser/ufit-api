@@ -150,7 +150,7 @@ doctrine:
 
             App\Subscription:
                 is_bundle: false
-                type: annotation
+                type: attribute
                 dir: '%kernel.project_dir%/src/Subscription/Entity'
                 prefix: 'App\Subscription\Entity'
                 alias: AppVendor

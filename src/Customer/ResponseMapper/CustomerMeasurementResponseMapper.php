@@ -19,14 +19,11 @@ class CustomerMeasurementResponseMapper
     public function map(CustomerMeasurement $customerMeasurement): CustomerMeasurementDto
     {
         $customerMeasurementDto = new CustomerMeasurementDto();
-        $customerMeasurementDto->id = $customerMeasurement->getId()
-            ->toString();
+        $customerMeasurementDto->id = $customerMeasurement->getId()->toString();
         $customerMeasurementDto->notes = $customerMeasurement->getNotes() ?? '';
-        $customerMeasurementDto->takenAt = $customerMeasurement->getTakenAt()
-            ->format(\DateTimeInterface::ISO8601);
+        $customerMeasurementDto->takenAt = $customerMeasurement->getTakenAt()?->format(\DateTimeInterface::ATOM);
         $customerMeasurementDto->items = $this->customerMeasurementItemResponseMapper->mapMultiple(
-            $customerMeasurement->getItems()
-                ->toArray()
+            $customerMeasurement->getItems()->toArray()
         );
 
         return $customerMeasurementDto;

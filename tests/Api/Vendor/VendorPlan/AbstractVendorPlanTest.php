@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Api\Vendor\VendorPlan;
 
 use App\Tests\Api\Vendor\AbstractVendorTest;
@@ -23,7 +25,7 @@ abstract class AbstractVendorPlanTest extends AbstractVendorTest
             'price' => '100',
             'durationDays' => null,
             'durationMonths' => 1,
-//            'isApprovalRequired' => false,
+            //            'isApprovalRequired' => false,
             'isRecurring' => true,
             'isVisible' => true,
         ];
@@ -38,7 +40,7 @@ abstract class AbstractVendorPlanTest extends AbstractVendorTest
         $vendorPlanRequest = new VendorPlanRequest();
 
         foreach ($data as $property => $value) {
-            $vendorPlanRequest->$property = $value;
+            $vendorPlanRequest->{$property} = $value;
         }
 
         return self::getContainer()->get(VendorPlanRequestManager::class)->createFromRequest(

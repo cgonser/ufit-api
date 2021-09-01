@@ -11,11 +11,8 @@ use Ramsey\Uuid\UuidInterface;
 
 class CustomerProvider
 {
-    private CustomerRepository $customerRepository;
-
-    public function __construct(CustomerRepository $customerRepository)
+    public function __construct(private CustomerRepository $customerRepository)
     {
-        $this->customerRepository = $customerRepository;
     }
 
     public function get(UuidInterface $customerId): Customer
@@ -23,20 +20,23 @@ class CustomerProvider
         /** @var Customer|null $customer */
         $customer = $this->customerRepository->find($customerId);
 
-        if (! $customer) {
+        if ($customer === null) {
             throw new CustomerNotFoundException();
         }
 
         return $customer;
     }
 
-    public function findOneByEmail(string $emailAddress): ?Customer
+    public function findOneByEmail(string $emailAddress): ?object
     {
         return $this->customerRepository->findOneBy([
             'email' => $emailAddress,
         ]);
     }
 
+    /**
+     * @return mixed[]
+     */
     public function findAll(): array
     {
         return $this->customerRepository->findAll();

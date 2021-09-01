@@ -13,15 +13,16 @@ class ConstraintViolationEventSubscriber implements EventSubscriberInterface
 {
     public function onControllerArguments($event): void
     {
-        foreach ($event->getArguments() as $argument) {
-            if (! $argument instanceof ConstraintViolationList) {
-                continue;
-            }
-
-            if ($argument->count() > 0) {
-                throw new ApiJsonInputValidationException($argument);
-            }
+        if (!$event->getRequest()->attributes->has('constraintViolationList')) {
+            return;
         }
+
+        $constraintViolationList = $event->getRequest()->attributes->get('constraintViolationList');
+        if ($constraintViolationList->count() === 0) {
+            return;
+        }
+
+        throw new ApiJsonInputValidationException($constraintViolationList);
     }
 
     public static function getSubscribedEvents(): array

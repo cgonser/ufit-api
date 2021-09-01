@@ -27,6 +27,9 @@ class CreditCardProcessor extends PagarmeProcessor implements PaymentProcessorIn
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function prepareTransactionData(Payment $payment): array
     {
         return [

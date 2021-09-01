@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Payment\ResponseMapper;
 
+use DateTimeInterface;
 use App\Localization\ResponseMapper\CurrencyResponseMapper;
 use App\Payment\Dto\PaymentDto;
 use App\Payment\Entity\Payment;
@@ -11,18 +12,8 @@ use App\Vendor\ResponseMapper\VendorPlanResponseMapper;
 
 class PaymentResponseMapper
 {
-    private PaymentMethodResponseMapper $paymentMethodResponseMapper;
-    private CurrencyResponseMapper $currencyResponseMapper;
-    private VendorPlanResponseMapper $vendorPlanResponseMapper;
-
-    public function __construct(
-        PaymentMethodResponseMapper $paymentMethodResponseMapper,
-        CurrencyResponseMapper $currencyResponseMapper,
-        VendorPlanResponseMapper $vendorPlanResponseMapper
-    ) {
-        $this->paymentMethodResponseMapper = $paymentMethodResponseMapper;
-        $this->currencyResponseMapper = $currencyResponseMapper;
-        $this->vendorPlanResponseMapper = $vendorPlanResponseMapper;
+    public function __construct(private PaymentMethodResponseMapper $paymentMethodResponseMapper, private CurrencyResponseMapper $currencyResponseMapper, private VendorPlanResponseMapper $vendorPlanResponseMapper)
+    {
     }
 
     public function mapBaseData(Payment $payment): PaymentDto
@@ -37,9 +28,9 @@ class PaymentResponseMapper
         $paymentDto->dueDate = $payment->getDueDate()
             ->format('Y-m-d');
         $paymentDto->createdAt = $payment->getCreatedAt()
-            ->format(\DateTimeInterface::ATOM);
+            ->format(DateTimeInterface::ATOM);
         $paymentDto->updatedAt = $payment->getUpdatedAt()
-            ->format(\DateTimeInterface::ATOM);
+            ->format(DateTimeInterface::ATOM);
 
         return $paymentDto;
     }
@@ -60,7 +51,7 @@ class PaymentResponseMapper
 
         if (null !== $payment->getPaidAt()) {
             $paymentDto->paidAt = $payment->getPaidAt()
-                ->format(\DateTimeInterface::ATOM);
+                ->format(DateTimeInterface::ATOM);
         }
 
         if ($mapPaymentMethod) {
@@ -82,7 +73,7 @@ class PaymentResponseMapper
         return $paymentDto;
     }
 
-    public function mapPublic(Payment $payment)
+    public function mapPublic(Payment $payment): PaymentDto
     {
         $paymentDto = $this->mapBaseData($payment);
         $paymentDto->paymentMethod = $this->paymentMethodResponseMapper->map($payment->getPaymentMethod());
@@ -96,6 +87,9 @@ class PaymentResponseMapper
         return $paymentDto;
     }
 
+    /**
+     * @return mixed[]
+     */
     public function mapMultiplePublic(array $payments): array
     {
         $paymentDtos = [];
@@ -107,6 +101,9 @@ class PaymentResponseMapper
         return $paymentDtos;
     }
 
+    /**
+     * @return PaymentDto[]
+     */
     public function mapMultiple(
         array $payments,
         bool $mapPaymentMethod = true,

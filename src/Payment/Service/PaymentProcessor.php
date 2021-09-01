@@ -9,20 +9,14 @@ use Psr\Log\LoggerInterface;
 
 class PaymentProcessor
 {
-    private PaymentProcessorFactory $paymentProcessorFactory;
-
-    private LoggerInterface $logger;
-
-    public function __construct(PaymentProcessorFactory $paymentProcessorFactory, LoggerInterface $logger)
+    public function __construct(private PaymentProcessorFactory $paymentProcessorFactory)
     {
-        $this->paymentProcessorFactory = $paymentProcessorFactory;
-        $this->logger = $logger;
     }
 
-    public function process(Payment $payment)
+    public function process(Payment $payment): void
     {
-        $processor = $this->paymentProcessorFactory->createProcessor($payment->getPaymentMethod());
+        $paymentProcessor = $this->paymentProcessorFactory->createProcessor($payment->getPaymentMethod());
 
-        $processor->process($payment);
+        $paymentProcessor->process($payment);
     }
 }

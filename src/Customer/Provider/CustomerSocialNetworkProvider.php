@@ -12,9 +12,9 @@ use App\Customer\Repository\CustomerSocialNetworkRepository;
 
 class CustomerSocialNetworkProvider extends AbstractProvider
 {
-    public function __construct(CustomerSocialNetworkRepository $repository)
+    public function __construct(CustomerSocialNetworkRepository $customerSocialNetworkRepository)
     {
-        $this->repository = $repository;
+        $this->repository = $customerSocialNetworkRepository;
     }
 
     public function findOneByCustomerAndPlatform(Customer $customer, string $platform): ?CustomerSocialNetwork
@@ -37,14 +37,14 @@ class CustomerSocialNetworkProvider extends AbstractProvider
     {
         $customerSocialNetwork = $this->findOneByCustomerAndPlatform($customer, $platform);
 
-        if (! $customerSocialNetwork) {
+        if ($customerSocialNetwork === null) {
             $this->throwNotFoundException();
         }
 
         return $customerSocialNetwork;
     }
 
-    protected function throwNotFoundException()
+    protected function throwNotFoundException(): void
     {
         throw new CustomerSocialNetworkNotFoundException();
     }

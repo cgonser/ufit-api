@@ -34,11 +34,7 @@ class VendorCustomerMeasurementDeleteController extends AbstractController
      * @OA\Response(response=404, description="Measurement not found")
      */
     #[Route(path: '/{customerMeasurementId}', name: 'vendor_customers_measurements_delete', methods: 'DELETE')]
-    public function create(
-        string $customerId,
-        string $vendorId,
-        string $customerMeasurementId
-    ): ApiJsonResponse {
+    public function create(string $customerId, string $vendorId, string $customerMeasurementId): ApiJsonResponse {
         $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
         $this->denyAccessUnlessGranted(AuthorizationVoterInterface::UPDATE, $vendor);
 

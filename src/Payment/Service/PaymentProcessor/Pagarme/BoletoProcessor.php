@@ -15,6 +15,9 @@ class BoletoProcessor extends PagarmeProcessor implements PaymentProcessorInterf
         return 'boleto' === $paymentMethod->getName();
     }
 
+    /**
+     * @return array<string, string>|array<string, bool>
+     */
     protected function prepareTransactionData(Payment $payment): array
     {
         return [

@@ -40,7 +40,8 @@ class VendorPhotoManager extends ImageUploader
             }
 
             $image->fit(self::MAX_WIDTH, self::MAX_HEIGHT);
-            $filename = $vendor->getId()->toString().'.png';
+            $filename = $vendor->getId()
+                ->toString().'.png';
 
             $this->vendorPhotoFileSystem->put($filename, $image->encode('png'), [
                 'ACL' => 'public-read',

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Payment\Service;
 
+use DateTime;
+use DateTimeImmutable;
 use App\Payment\Entity\Invoice;
 use App\Payment\Entity\Payment;
 //use App\Payment\Message\PaymentCreatedEvent;
@@ -18,17 +20,11 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 class PaymentManager
 {
-    private PaymentRepository $paymentRepository;
-
-    private MessageBusInterface $messageBus;
-
-    public function __construct(PaymentRepository $paymentRepository, MessageBusInterface $messageBus)
+    public function __construct(private PaymentRepository $paymentRepository, private MessageBusInterface $messageBus)
     {
-        $this->paymentRepository = $paymentRepository;
-        $this->messageBus = $messageBus;
     }
 
-    public function create(Payment $payment)
+    public function create(Payment $payment): void
     {
         if (null === $payment->getStatus()) {
             $payment->setStatus(Payment::STATUS_PENDING);
@@ -39,26 +35,26 @@ class PaymentManager
         $this->messageBus->dispatch(new PaymentCreatedEvent($payment->getId()));
     }
 
-    public function update(Payment $payment)
+    public function update(Payment $payment): void
     {
         $this->save($payment);
 
         $this->messageBus->dispatch(new PaymentUpdatedEvent($payment->getId()));
     }
 
-    public function save(Payment $payment)
+    public function save(Payment $payment): void
     {
         $this->paymentRepository->save($payment);
     }
 
-    public function delete(Payment $payment)
+    public function delete(Payment $payment): void
     {
         $this->paymentRepository->delete($payment);
 
 //        $this->messageBus->dispatch(new PaymentDeletedEvent($payment->getId()));
     }
 
-    public function markAsPaid(Payment $payment, \DateTime $paidAt)
+    public function markAsPaid(Payment $payment, DateTime|DateTimeImmutable $paidAt): void
     {
         $payment->setStatus(Payment::STATUS_PAID);
         $payment->setPaidAt($paidAt);

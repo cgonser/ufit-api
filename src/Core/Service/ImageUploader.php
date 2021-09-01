@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Service;
 
 use App\Core\Exception\ImageMaxDimensionsExceededException;
@@ -21,10 +23,7 @@ class ImageUploader
 
     protected function calculateMaxDimensions(): int
     {
-        $memoryUsed = max(
-            round(memory_get_usage(true) / 1048576, 2) * 1.2,
-            ((int) $this->initialMemory) * 0.75
-        );
+        $memoryUsed = max(round(memory_get_usage(true) / 1048576, 2) * 1.2, ((int) $this->initialMemory) * 0.75);
 
         $memoryAvailable = self::MAX_MEMORY - $memoryUsed;
 
@@ -39,10 +38,7 @@ class ImageUploader
         $this->initialMemory = ini_get('memory_limit');
         set_time_limit(50);
 
-        $memoryUsed = max(
-            round(memory_get_usage(true) / 1048576, 2) * 1.2,
-            ((int) $this->initialMemory) * 0.75
-        );
+        $memoryUsed = max(round(memory_get_usage(true) / 1048576, 2) * 1.2, ((int) $this->initialMemory) * 0.75);
 
         $memorySize = $memoryUsed + floor(($width * $height * 4 * 1.5 + 1048576) / 1048576);
         $memorySize = max((int) $this->initialMemory, $memorySize);

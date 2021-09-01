@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Vendor\Controller\VendorPlan;
 
 use App\Core\Response\ApiJsonResponse;
-use App\Core\Security\AuthorizationVoterInterface;
 use App\Vendor\Dto\VendorPlanDto;
 use App\Vendor\Entity\Vendor;
 use App\Vendor\Provider\VendorPlanProvider;

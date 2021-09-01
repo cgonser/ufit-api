@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Exception;
 
 class ApiJsonException extends \JsonException
@@ -10,7 +12,7 @@ class ApiJsonException extends \JsonException
         private array $errors = [],
         \Throwable $previous = null
     ) {
-        parent::__construct($message, $statusCode, $previous);
+        parent::__construct($message ?? '', $statusCode, $previous);
     }
 
     public function getStatusCode(): ?int

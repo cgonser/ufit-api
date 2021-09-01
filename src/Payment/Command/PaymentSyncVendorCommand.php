@@ -12,18 +12,17 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class PaymentSyncVendorCommand extends Command
 {
+    /**
+     * @var string
+     */
     protected static $defaultName = 'ufit:payment:sync-vendor';
 
-    private VendorInformationManagerInterface $vendorInformationManager;
-
-    public function __construct(VendorInformationManagerInterface $vendorInformationManager)
+    public function __construct(private VendorInformationManagerInterface $vendorInformationManager)
     {
-        $this->vendorInformationManager = $vendorInformationManager;
-
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->addArgument('vendorId')

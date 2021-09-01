@@ -22,20 +22,26 @@ class VendorPlanResponseMapper
     public function map(VendorPlan $vendorPlan, bool $mapQuestionnaire = true): VendorPlanDto
     {
         $vendorPlanDto = new VendorPlanDto();
-        $vendorPlanDto->id = $vendorPlan->getId()->toString();
-        $vendorPlanDto->vendorId = $vendorPlan->getVendor()->getId()->toString();
+        $vendorPlanDto->id = $vendorPlan->getId()
+            ->toString();
+        $vendorPlanDto->vendorId = $vendorPlan->getVendor()
+            ->getId()
+            ->toString();
         $vendorPlanDto->name = $vendorPlan->getName() ?? '';
-        $vendorPlanDto->currency = $vendorPlan->getCurrency()->getCode();
+        $vendorPlanDto->currency = $vendorPlan->getCurrency()
+            ->getCode();
         $vendorPlanDto->durationDays = $vendorPlan->getDuration()?->d;
         $vendorPlanDto->durationMonths = $vendorPlan->getDuration()?->m;
-        $vendorPlanDto->price = $vendorPlan->getPrice()->toFloat();
+        $vendorPlanDto->price = $vendorPlan->getPrice()
+            ->toFloat();
         $vendorPlanDto->isVisible = $vendorPlan->isVisible();
         $vendorPlanDto->isRecurring = $vendorPlan->isRecurring();
         $vendorPlanDto->isActive = $vendorPlan->isActive();
         $vendorPlanDto->description = $vendorPlan->getDescription();
         $vendorPlanDto->features = $vendorPlan->getFeatures();
         $vendorPlanDto->paymentMethods = $this->paymentMethodResponseMapper->mapMultiple(
-            $vendorPlan->getPaymentMethods()->toArray()
+            $vendorPlan->getPaymentMethods()
+                ->toArray()
         );
 
         if ($mapQuestionnaire) {
@@ -44,7 +50,9 @@ class VendorPlanResponseMapper
                 : null;
         } else {
             $vendorPlanDto->questionnaireId = null !== $vendorPlan->getQuestionnaire()
-                ? $vendorPlan->getQuestionnaire()->getId()->toString()
+                ? $vendorPlan->getQuestionnaire()
+                    ->getId()
+                    ->toString()
                 : null;
         }
 

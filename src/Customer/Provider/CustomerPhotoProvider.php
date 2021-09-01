@@ -12,11 +12,8 @@ use Ramsey\Uuid\UuidInterface;
 
 class CustomerPhotoProvider
 {
-    private CustomerPhotoRepository $customerPhotoRepository;
-
-    public function __construct(CustomerPhotoRepository $customerPhotoRepository)
+    public function __construct(private CustomerPhotoRepository $customerPhotoRepository)
     {
-        $this->customerPhotoRepository = $customerPhotoRepository;
     }
 
     public function get(UuidInterface $customerPhotoId): CustomerPhoto
@@ -24,7 +21,7 @@ class CustomerPhotoProvider
         /** @var CustomerPhoto|null $customerPhoto */
         $customerPhoto = $this->customerPhotoRepository->find($customerPhotoId);
 
-        if (! $customerPhoto) {
+        if ($customerPhoto === null) {
             throw new CustomerPhotoNotFoundException();
         }
 
@@ -39,13 +36,16 @@ class CustomerPhotoProvider
             'customer' => $customer,
         ]);
 
-        if (! $customerPhoto) {
+        if ($customerPhoto === null) {
             throw new CustomerPhotoNotFoundException();
         }
 
         return $customerPhoto;
     }
 
+    /**
+     * @return mixed[]
+     */
     public function findByCustomer(Customer $customer): array
     {
         return $this->customerPhotoRepository->findBy([

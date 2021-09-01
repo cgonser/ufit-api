@@ -13,9 +13,9 @@ use Ramsey\Uuid\UuidInterface;
 
 class SubscriptionCustomerProvider extends AbstractProvider
 {
-    public function __construct(SubscriptionRepository $repository)
+    public function __construct(SubscriptionRepository $subscriptionRepository)
     {
-        $this->repository = $repository;
+        $this->repository = $subscriptionRepository;
     }
 
     public function getVendorCustomer(Vendor $vendor, UuidInterface $customerId): Customer
@@ -29,7 +29,7 @@ class SubscriptionCustomerProvider extends AbstractProvider
         return $customer;
     }
 
-    protected function throwNotFoundException()
+    protected function throwNotFoundException(): void
     {
         throw new CustomerNotFoundException();
     }

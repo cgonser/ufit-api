@@ -16,8 +16,8 @@ class VendorStatsResponseMapper
     public function map(): VendorStatsDto
     {
         $vendorStatsReceivableDto = new VendorStatsReceivableDto();
-        $vendorStatsReceivableDto->currentAmount = "500";
-        $vendorStatsReceivableDto->nextPaymentAmount = "250";
+        $vendorStatsReceivableDto->currentAmount = '500';
+        $vendorStatsReceivableDto->nextPaymentAmount = '250';
         $vendorStatsReceivableDto->nextPaymentDate = (new DateTime())->format(DateTimeInterface::ATOM);
 
         $vendorStatsSubscriptionsDto = new VendorStatsSubscriptionsDto();
@@ -26,8 +26,8 @@ class VendorStatsResponseMapper
         $vendorStatsSubscriptionsDto->terminated = 1;
 
         $vendorStatsRevenueDto = new VendorStatsRevenueDto();
-        $vendorStatsRevenueDto->currentAmount = "1000";
-        $vendorStatsRevenueDto->previousAmount = "400";
+        $vendorStatsRevenueDto->currentAmount = '1000';
+        $vendorStatsRevenueDto->previousAmount = '400';
 
         $vendorStatsDto = new VendorStatsDto();
         $vendorStatsDto->receivable = $vendorStatsReceivableDto;

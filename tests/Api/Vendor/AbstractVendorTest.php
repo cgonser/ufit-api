@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Api\Vendor;
 
+use App\Tests\Api\AbstractApiTest;
 use App\Vendor\Entity\Vendor;
 use App\Vendor\Service\VendorManager;
 use App\Vendor\Service\VendorPasswordManager;
-use App\Tests\Api\AbstractApiTest;
 use joshtronic\LoremIpsum;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
@@ -15,14 +15,10 @@ abstract class AbstractVendorTest extends AbstractApiTest
 {
     protected function authenticateClient(KernelBrowser $client, string $username, string $password): void
     {
-        $client->jsonRequest(
-            'POST',
-            '/vendors/login',
-            [
+        $client->jsonRequest('POST', '/vendors/login', [
                 'username' => $username,
                 'password' => $password,
-            ]
-        );
+            ]);
 
         $responseData = json_decode($client->getResponse()->getContent(), true);
 
@@ -53,12 +49,9 @@ abstract class AbstractVendorTest extends AbstractApiTest
         $vendor = new Vendor();
 
         foreach ($vendorData as $property => $value) {
-            if ($property === 'password') {
+            if ('password' === $property) {
                 $vendor->setPassword(
-                    static::getContainer()->get(VendorPasswordManager::class)->encodePassword(
-                        $vendor,
-                        $value
-                    )
+                    static::getContainer()->get(VendorPasswordManager::class)->encodePassword($vendor, $value)
                 );
 
                 continue;

@@ -46,21 +46,6 @@ class VendorPlanControllerTest extends AbstractVendorPlanTest
         $this->assertVendorPlanResponse($vendorPlan, $this->getAndAssertJsonResponseData($client));
     }
 
-    private function assertVendorPlanResponse(VendorPlan $vendorPlan, array $responseData): void
-    {
-        $this->assertSame($vendorPlan->getId()->toString(), $responseData['id']);
-        $this->assertSame($vendorPlan->getVendorId()->toString(), $responseData['vendorId']);
-        $this->assertSame($vendorPlan->getName(), $responseData['name']);
-        $this->assertSame($vendorPlan->getDescription(), $responseData['description']);
-        $this->assertSame($vendorPlan->getCurrency()->getCode(), $responseData['currency']);
-        $this->assertSame($vendorPlan->getDuration()?->d, $responseData['durationDays']);
-        $this->assertSame($vendorPlan->getDuration()?->m, $responseData['durationMonths']);
-        $this->assertEquals($vendorPlan->getPrice()->toFloat(), $responseData['price']);
-        $this->assertSame($vendorPlan->isVisible(), $responseData['isVisible']);
-        $this->assertSame($vendorPlan->isRecurring(), $responseData['isRecurring']);
-        $this->assertSame($vendorPlan->isActive(), $responseData['isActive']);
-    }
-
     public function testNotFound(): void
     {
         $client = static::createClient();
@@ -70,5 +55,20 @@ class VendorPlanControllerTest extends AbstractVendorPlanTest
 
         $client->request('GET', '/vendors/'.$vendor->getId()->toString().'/plans/'.Uuid::uuid4());
         $this->assertJsonResponse(Response::HTTP_NOT_FOUND);
+    }
+
+    private function assertVendorPlanResponse(VendorPlan $vendorPlan, array $responseData): void
+    {
+        $this->assertSame($vendorPlan->getId()->toString(), $responseData['id']);
+        $this->assertSame($vendorPlan->getVendorId()->toString(), $responseData['vendorId']);
+        $this->assertSame($vendorPlan->getName(), $responseData['name']);
+        $this->assertSame($vendorPlan->getDescription(), $responseData['description']);
+        $this->assertSame($vendorPlan->getCurrency()->getCode(), $responseData['currency']);
+        $this->assertSame($vendorPlan->getDuration()?->d, $responseData['durationDays']);
+        $this->assertSame($vendorPlan->getDuration()?->m, $responseData['durationMonths']);
+        $this->assertSame($vendorPlan->getPrice()->toFloat(), $responseData['price']);
+        $this->assertSame($vendorPlan->isVisible(), $responseData['isVisible']);
+        $this->assertSame($vendorPlan->isRecurring(), $responseData['isRecurring']);
+        $this->assertSame($vendorPlan->isActive(), $responseData['isActive']);
     }
 }

@@ -14,14 +14,10 @@ abstract class AbstractCustomerTest extends AbstractApiTest
 {
     protected function authenticateClient(KernelBrowser $client, string $username, string $password): void
     {
-        $client->jsonRequest(
-            'POST',
-            '/customers/login',
-            [
+        $client->jsonRequest('POST', '/customers/login', [
                 'username' => $username,
                 'password' => $password,
-            ]
-        );
+            ]);
 
         $responseData = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Payment\Service;
 
+use DateTime;
+use DateTimeImmutable;
+use DateTimeInterface;
 use App\Payment\Entity\Invoice;
 use App\Payment\Repository\InvoiceRepository;
 use App\Subscription\Entity\Subscription;
@@ -11,34 +14,31 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 class InvoiceManager
 {
-    private InvoiceRepository $invoiceRepository;
-
-    private MessageBusInterface $messageBus;
-
-    public function __construct(InvoiceRepository $invoiceRepository, MessageBusInterface $messageBus)
+    public function __construct(private InvoiceRepository $invoiceRepository)
     {
-        $this->invoiceRepository = $invoiceRepository;
-        $this->messageBus = $messageBus;
     }
 
-    public function createFromSubscription(Subscription $subscription, ?\DateTime $dueDate = null): Invoice
+    /**
+     * @param DateTime|DateTimeImmutable|null $dateTime
+     */
+    public function createFromSubscription(Subscription $subscription, DateTime|DateTimeImmutable|null $dateTime = null): Invoice
     {
-        if (null === $dueDate) {
-            $dueDate = new \DateTime();
+        if (null === $dateTime) {
+            $dateTime = new DateTime();
         }
 
         $invoice = new Invoice();
         $invoice->setSubscription($subscription);
         $invoice->setCurrency($subscription->getVendorPlan()->getCurrency());
         $invoice->setTotalAmount($subscription->getPrice());
-        $invoice->setDueDate($dueDate);
+        $invoice->setDueDate($dateTime);
 
         $this->invoiceRepository->save($invoice);
 
         return $invoice;
     }
 
-    public function markAsPaid(Invoice $invoice, \DateTimeInterface $paidAt): void
+    public function markAsPaid(Invoice $invoice, DateTimeInterface $paidAt): void
     {
         $invoice->setPaidAt($paidAt);
 

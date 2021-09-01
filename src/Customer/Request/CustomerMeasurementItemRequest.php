@@ -6,33 +6,31 @@ namespace App\Customer\Request;
 
 use App\Core\Request\AbstractRequest;
 use OpenApi\Annotations as OA;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints;
 
 /**
- * @OA\RequestBody(
- *     request="CustomerMeasurementItemRequest"
- * )
+ * @OA\RequestBody()
  */
 class CustomerMeasurementItemRequest extends AbstractRequest
 {
     /**
      * @OA\Property()
      */
-    public ?string $measurementTypeId;
+    public ?string $measurementTypeId = null;
 
     /**
      * @OA\Property()
      */
-    public ?string $type;
+    public ?string $type = null;
 
     /**
      * @OA\Property()
-     * @Assert\Positive()
      */
+    #[Constraints\Positive]
     public string $measurement;
 
     /**
      * @OA\Property()
      */
-    public ?string $unit;
+    public ?string $unit = null;
 }

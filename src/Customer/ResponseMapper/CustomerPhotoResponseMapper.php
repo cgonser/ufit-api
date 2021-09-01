@@ -23,15 +23,11 @@ class CustomerPhotoResponseMapper
     public function map(CustomerPhoto $customerPhoto): CustomerPhotoDto
     {
         $customerPhotoDto = new CustomerPhotoDto();
-        $customerPhotoDto->id = $customerPhoto->getId()
-            ->toString();
-        $customerPhotoDto->customerId = $customerPhoto->getCustomer()
-            ->getId()
-            ->toString();
+        $customerPhotoDto->id = $customerPhoto->getId()->toString();
+        $customerPhotoDto->customerId = $customerPhoto->getCustomer()->getId()->toString();
         $customerPhotoDto->title = $customerPhoto->getTitle() ?? '';
         $customerPhotoDto->description = $customerPhoto->getDescription() ?? '';
-        $customerPhotoDto->takenAt = $customerPhoto->getTakenAt()
-            ->format(\DateTimeInterface::ATOM);
+        $customerPhotoDto->takenAt = $customerPhoto->getTakenAt()?->format(\DateTimeInterface::ATOM);
 
         if (null !== $customerPhoto->getFilename()) {
             $cmd = $this->s3Client->getCommand('GetObject', [

@@ -13,23 +13,19 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SubscriptionCreatedEmailCommand extends Command
 {
+    /**
+     * @var string
+     */
     protected static $defaultName = 'ufit:subscription:created-email';
 
-    private SubscriptionProvider $subscriptionProvider;
-
-    private SubscriptionEmailManager $subscriptionEmailManager;
-
     public function __construct(
-        SubscriptionProvider $subscriptionProvider,
-        SubscriptionEmailManager $subscriptionEmailManager
+        private SubscriptionProvider $subscriptionProvider,
+        private SubscriptionEmailManager $subscriptionEmailManager
     ) {
-        $this->subscriptionProvider = $subscriptionProvider;
-        $this->subscriptionEmailManager = $subscriptionEmailManager;
-
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->addArgument('subscriptionId')
