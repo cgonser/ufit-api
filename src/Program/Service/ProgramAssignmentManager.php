@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Program\Service;
 
+use DateTime;
+use DateTimeInterface;
 use App\Customer\Provider\CustomerProvider;
 use App\Program\Entity\Program;
 use App\Program\Entity\ProgramAssignment;
@@ -17,20 +19,11 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 class ProgramAssignmentManager
 {
-    private ProgramAssignmentRepository $programAssignmentRepository;
-
-    private CustomerProvider $customerProvider;
-
-    private MessageBusInterface $messageBus;
-
     public function __construct(
-        ProgramAssignmentRepository $programAssignmentRepository,
-        CustomerProvider $customerProvider,
-        MessageBusInterface $messageBus
+        private ProgramAssignmentRepository $programAssignmentRepository,
+        private CustomerProvider $customerProvider,
+        private MessageBusInterface $messageBus,
     ) {
-        $this->programAssignmentRepository = $programAssignmentRepository;
-        $this->customerProvider = $customerProvider;
-        $this->messageBus = $messageBus;
     }
 
     public function createFromRequest(
@@ -52,7 +45,7 @@ class ProgramAssignmentManager
     public function updateFromRequest(
         ProgramAssignment $programAssignment,
         ProgramAssignmentRequest $programAssignmentRequest
-    ) {
+    ): void {
         $this->mapFromRequest($programAssignment, $programAssignmentRequest);
 
         $this->programAssignmentRepository->save($programAssignment);
@@ -60,7 +53,7 @@ class ProgramAssignmentManager
         $this->messageBus->dispatch(new ProgramAssignmentUpdatedEvent($programAssignment->getId()));
     }
 
-    public function delete(ProgramAssignment $programAssignment)
+    public function delete(ProgramAssignment $programAssignment): void
     {
         $this->programAssignmentRepository->delete($programAssignment);
 
@@ -70,19 +63,19 @@ class ProgramAssignmentManager
     private function mapFromRequest(
         ProgramAssignment $programAssignment,
         ProgramAssignmentRequest $programAssignmentRequest
-    ) {
-        if (null !== $programAssignmentRequest->customerId) {
+    ): void {
+        if ($programAssignmentRequest->has('customerId')) {
             $customer = $this->customerProvider->get(Uuid::fromString($programAssignmentRequest->customerId));
             $programAssignment->setCustomer($customer);
         }
 
-        if (null !== $programAssignmentRequest->expiresAt) {
+        if ($programAssignmentRequest->has('expiresAt')) {
             $programAssignment->setExpiresAt(
-                \DateTime::createFromFormat(\DateTimeInterface::ATOM, $programAssignmentRequest->expiresAt)
+                DateTime::createFromFormat(DateTimeInterface::ATOM, $programAssignmentRequest->expiresAt)
             );
         }
 
-        if (null !== $programAssignmentRequest->isActive) {
+        if ($programAssignmentRequest->has('isActive')) {
             $programAssignment->setIsActive($programAssignmentRequest->isActive);
         }
     }

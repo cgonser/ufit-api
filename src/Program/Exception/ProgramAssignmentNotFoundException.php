@@ -8,5 +8,8 @@ use App\Core\Exception\ResourceNotFoundException;
 
 class ProgramAssignmentNotFoundException extends ResourceNotFoundException
 {
+    /**
+     * @var string
+     */
     protected $message = 'Program assignment not found';
 }

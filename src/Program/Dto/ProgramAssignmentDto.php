@@ -12,11 +12,11 @@ class ProgramAssignmentDto
 
     public string $programId;
 
-    public ?ProgramDto $program;
+    public ?ProgramDto $program = null;
 
-    public ?string $customerId;
+    public ?string $customerId = null;
 
-    public ?CustomerDto $customer;
+    public ?CustomerDto $customer = null;
 
     public bool $isActive;
 
@@ -24,5 +24,5 @@ class ProgramAssignmentDto
 
     public string $updatedAt;
 
-    public ?string $expiresAt;
+    public ?string $expiresAt = null;
 }

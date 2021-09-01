@@ -10,36 +10,25 @@ use App\Vendor\ResponseMapper\VendorResponseMapper;
 
 class ProgramResponseMapper
 {
-    private ProgramAssetResponseMapper $programAssetResponseMapper;
-
-    private VendorResponseMapper $vendorResponseMapper;
-
     public function __construct(
-        ProgramAssetResponseMapper $programAssetResponseMapper,
-        VendorResponseMapper $vendorResponseMapper
+        private ProgramAssetResponseMapper $programAssetResponseMapper,
+        private VendorResponseMapper $vendorResponseMapper,
     ) {
-        $this->programAssetResponseMapper = $programAssetResponseMapper;
-        $this->vendorResponseMapper = $vendorResponseMapper;
     }
 
     public function map(Program $program, bool $mapAssets = true, bool $mapVendor = false): ProgramDto
     {
         $programDto = new ProgramDto();
-        $programDto->id = $program->getId()
-            ->toString();
-        $programDto->vendorId = $program->getVendor()
-            ->getId()
-            ->toString();
+        $programDto->id = $program->getId()->toString();
+        $programDto->vendorId = $program->getVendor()->getId()->toString();
         $programDto->name = $program->getName();
         $programDto->level = $program->getLevel();
         $programDto->goals = $program->getGoals();
         $programDto->description = $program->getDescription();
         $programDto->isTemplate = $program->isTemplate();
         $programDto->isActive = $program->isActive();
-        $programDto->createdAt = $program->getCreatedAt()
-            ->format(\DateTimeInterface::ISO8601);
-        $programDto->updatedAt = $program->getUpdatedAt()
-            ->format(\DateTimeInterface::ISO8601);
+        $programDto->createdAt = $program->getCreatedAt()?->format(\DateTimeInterface::ATOM);
+        $programDto->updatedAt = $program->getUpdatedAt()?->format(\DateTimeInterface::ATOM);
 
         if ($mapAssets) {
             $programDto->assets = $this->programAssetResponseMapper->mapMultiple($program->getAssets()->toArray());
@@ -52,6 +41,9 @@ class ProgramResponseMapper
         return $programDto;
     }
 
+    /**
+     * @return ProgramDto[]
+     */
     public function mapMultiple(array $programs, bool $mapAssets = false, bool $mapVendor = false): array
     {
         $programDtos = [];

@@ -10,14 +10,8 @@ use Symfony\Component\Mailer\MailerInterface;
 
 class ProgramEmailManager
 {
-    private EmailComposer $emailComposer;
-
-    private MailerInterface $mailer;
-
-    public function __construct(EmailComposer $emailComposer, MailerInterface $mailer)
+    public function __construct(private EmailComposer $emailComposer, private MailerInterface $mailer)
     {
-        $this->emailComposer = $emailComposer;
-        $this->mailer = $mailer;
     }
 
     public function sendAssignedEmail(ProgramAssignment $programAssignment): void

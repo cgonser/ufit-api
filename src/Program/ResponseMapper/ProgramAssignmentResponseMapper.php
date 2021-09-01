@@ -10,16 +10,10 @@ use App\Program\Entity\ProgramAssignment;
 
 class ProgramAssignmentResponseMapper
 {
-    private CustomerResponseMapper $customerResponseMapper;
-
-    private ProgramResponseMapper $programResponseMapper;
-
     public function __construct(
-        CustomerResponseMapper $customerResponseMapper,
-        ProgramResponseMapper $programResponseMapper
+        private CustomerResponseMapper $customerResponseMapper,
+        private ProgramResponseMapper $programResponseMapper,
     ) {
-        $this->customerResponseMapper = $customerResponseMapper;
-        $this->programResponseMapper = $programResponseMapper;
     }
 
     public function map(
@@ -28,37 +22,30 @@ class ProgramAssignmentResponseMapper
         bool $mapProgram = false
     ): ProgramAssignmentDto {
         $programAssignmentDto = new ProgramAssignmentDto();
-        $programAssignmentDto->id = $programAssignment->getId()
-            ->toString();
-        $programAssignmentDto->createdAt = $programAssignment->getCreatedAt()
-            ->format(\DateTimeInterface::ISO8601);
-        $programAssignmentDto->updatedAt = $programAssignment->getUpdatedAt()
-            ->format(\DateTimeInterface::ISO8601);
+        $programAssignmentDto->id = $programAssignment->getId()->toString();
+        $programAssignmentDto->createdAt = $programAssignment->getCreatedAt()->format(\DateTimeInterface::ATOM);
+        $programAssignmentDto->updatedAt = $programAssignment->getUpdatedAt()?->format(\DateTimeInterface::ATOM);
         $programAssignmentDto->isActive = $programAssignment->isActive();
-        $programAssignmentDto->expiresAt = null !== $programAssignment->getExpiresAt()
-            ? $programAssignment->getExpiresAt()
-                ->format(\DateTimeInterface::ISO8601)
-            : null;
+        $programAssignmentDto->expiresAt = $programAssignment->getExpiresAt()?->format(\DateTimeInterface::ATOM);
 
         if ($mapCustomer) {
             $programAssignmentDto->customer = $this->customerResponseMapper->map($programAssignment->getCustomer());
         } else {
-            $programAssignmentDto->customerId = $programAssignment->getCustomer()
-                ->getId()
-                ->toString();
+            $programAssignmentDto->customerId = $programAssignment->getCustomer()->getId()->toString();
         }
 
         if ($mapProgram) {
             $programAssignmentDto->program = $this->programResponseMapper->map($programAssignment->getProgram());
         } else {
-            $programAssignmentDto->programId = $programAssignment->getProgram()
-                ->getId()
-                ->toString();
+            $programAssignmentDto->programId = $programAssignment->getProgram()->getId()->toString();
         }
 
         return $programAssignmentDto;
     }
 
+    /**
+     * @return ProgramAssignmentDto[]
+     */
     public function mapMultiple(array $programAssignments, bool $mapCustomers = true, bool $mapPrograms = false): array
     {
         $dtos = [];

@@ -8,5 +8,8 @@ use App\Core\Exception\ResourceNotFoundException;
 
 class ProgramNotFoundException extends ResourceNotFoundException
 {
+    /**
+     * @var string
+     */
     protected $message = 'Program not found';
 }

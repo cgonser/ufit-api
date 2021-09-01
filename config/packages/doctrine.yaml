@@ -136,7 +136,7 @@ doctrine:
 
             App\Program:
                 is_bundle: false
-                type: annotation
+                type: attribute
                 dir: '%kernel.project_dir%/src/Program/Entity'
                 prefix: 'App\Program\Entity'
                 alias: AppProgram
