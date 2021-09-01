@@ -44,7 +44,7 @@ class VendorBankAccountController extends AbstractController
      * )
      */
     #[Route(name: 'vendor_bank_accounts_find', methods: 'GET')]
-    #[ParamConverter(data: 'searchRequest', converter: 'querystring')]
+    #[ParamConverter(data: 'vendorBankAccountSearchRequest', converter: 'querystring')]
     public function getVendorBankAccounts(
         string $vendorId,
         VendorBankAccountSearchRequest $vendorBankAccountSearchRequest
