@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Payment\Service\PaymentProcessor\Pagarme;
 
-use stdClass;
 use App\Subscription\Entity\Subscription;
 use App\Subscription\Exception\SubscriptionNotFoundException;
 use App\Subscription\Provider\SubscriptionProvider;
@@ -15,12 +14,15 @@ use Symfony\Component\String\UnicodeString;
 
 class PagarmeSubscriptionResponseProcessor
 {
-    public function __construct(private SubscriptionProvider $subscriptionProvider, private SubscriptionManager $subscriptionManager, private PagarmeTransactionResponseProcessor $pagarmeTransactionResponseProcessor)
-    {
+    public function __construct(
+        private SubscriptionProvider $subscriptionProvider,
+        private SubscriptionManager $subscriptionManager,
+        private PagarmeTransactionResponseProcessor $pagarmeTransactionResponseProcessor
+    ) {
     }
 
     public function process(
-        stdClass $response,
+        \stdClass $response,
         ?UuidInterface $subscriptionId = null,
         ?UuidInterface $paymentId = null
     ): void {
@@ -28,19 +30,24 @@ class PagarmeSubscriptionResponseProcessor
             $subscription = $this->subscriptionProvider->get($subscriptionId);
 
             if (null === $subscription->getExternalReference()) {
-                $this->subscriptionManager->defineExternalRefence($subscription, (string) $response->id);
+                $this->subscriptionManager->defineExternalRefence($subscription, (string)$response->id);
             } elseif ($response->id !== $subscription->getExternalReference()) {
                 throw new SubscriptionNotFoundException();
             }
         } else {
-            $subscription = $this->subscriptionProvider->getByExternalReference((string) $response->id);
+            $subscription = $this->subscriptionProvider->getByExternalReference((string)$response->id);
         }
 
         $unicodeString = new UnicodeString($response->status);
-        $methodName = 'process'.ucfirst($unicodeString->camel());
+        $methodName = 'process'.ucfirst($unicodeString->camel()->toString());
 
         $this->pagarmeTransactionResponseProcessor->process(
-            json_decode(json_encode($response->current_transaction, JSON_THROW_ON_ERROR), null, 512, JSON_THROW_ON_ERROR),
+            json_decode(
+                json_encode($response->current_transaction, JSON_THROW_ON_ERROR),
+                null,
+                512,
+                JSON_THROW_ON_ERROR
+            ),
             $paymentId,
             $subscription->getId(),
         );
