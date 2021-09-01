@@ -35,8 +35,7 @@ class PagarmeTransactionResponseProcessor
             $response->payment_method
         );
 
-        $unicodeString = new UnicodeString($response->status);
-        $methodName = 'process'.ucfirst($unicodeString->camel()->toString());
+        $methodName = 'process'.ucfirst((new UnicodeString($response->status))->camel()->toString());
 
         $gatewayResponse = $payment->getGatewayResponse();
         if (null === $payment->getGatewayResponse()) {
@@ -89,5 +88,66 @@ class PagarmeTransactionResponseProcessor
 
             throw $paymentNotFoundException;
         }
+    }
+
+    private function processPaid(Payment $payment, \stdClass $response): void
+    {
+        $this->paymentManager->markAsPaid($payment, new \DateTime($response->date_updated));
+    }
+
+    private function processProcessing(Payment $payment, \stdClass $response): void
+    {
+        $payment->setStatus(Payment::STATUS_PENDING);
+    }
+
+    private function processAuthorized(Payment $payment, \stdClass $response): void
+    {
+//        $payment->setStatus(Payment::STATUS_PENDING);
+    }
+
+    private function processRefunded(Payment $payment, \stdClass $response): void
+    {
+//        $payment->setStatus(Payment::STATUS_PENDING);
+    }
+
+    private function processWaitingPayment(Payment $payment, \stdClass $response): void
+    {
+        $payment->setStatus(Payment::STATUS_PENDING);
+        $payment->setDetails(
+            array_merge(
+                $payment->getDetails() ?? [],
+                [
+                    'boleto_url' => $response->boleto_url,
+                    'boleto_barcode' => $response->boleto_barcode,
+                    'boleto_expiration_date' => $response->boleto_expiration_date,
+                ]
+            )
+        );
+        $payment->setDueDate(new \DateTime($response->boleto_expiration_date));
+    }
+
+    private function processPendingRefund(Payment $payment, \stdClass $response): void
+    {
+//        $payment->setStatus(Payment::STATUS_PENDING);
+    }
+
+    private function processRefused(Payment $payment, \stdClass $response): void
+    {
+        $payment->setStatus(Payment::STATUS_REJECTED);
+    }
+
+    private function processChargedback(Payment $payment, \stdClass $response): void
+    {
+//        $payment->setStatus(Payment::STATUS_PENDING);
+    }
+
+    private function processAnalyzing(Payment $payment, \stdClass $response): void
+    {
+        $payment->setStatus(Payment::STATUS_PENDING);
+    }
+
+    private function processPendingReview(Payment $payment, \stdClass $response): void
+    {
+        $payment->setStatus(Payment::STATUS_PENDING);
     }
 }

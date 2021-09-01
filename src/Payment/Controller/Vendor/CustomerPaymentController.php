@@ -46,7 +46,7 @@ class CustomerPaymentController extends AbstractController
         name: 'vendor_customer_payments_find',
         methods: 'GET'
     )]
-    #[ParamConverter(data: 'searchRequest', converter: 'querystring')]
+    #[ParamConverter(data: 'paymentSearchRequest', converter: 'querystring')]
     public function getPayments(
         string $vendorId,
         string $customerId,

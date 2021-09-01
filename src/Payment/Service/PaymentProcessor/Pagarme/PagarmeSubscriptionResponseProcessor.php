@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Payment\Service\PaymentProcessor\Pagarme;
 
+use App\Subscription\Entity\Subscription;
 use App\Subscription\Exception\SubscriptionNotFoundException;
 use App\Subscription\Provider\SubscriptionProvider;
 use App\Subscription\Service\SubscriptionManager;
@@ -40,12 +41,7 @@ class PagarmeSubscriptionResponseProcessor
         $methodName = 'process'.ucfirst($unicodeString->camel()->toString());
 
         $this->pagarmeTransactionResponseProcessor->process(
-            json_decode(
-                json_encode($response->current_transaction, JSON_THROW_ON_ERROR),
-                null,
-                512,
-                JSON_THROW_ON_ERROR
-            ),
+            json_decode(json_encode($response->current_transaction)),
             $paymentId,
             $subscription->getId(),
         );
@@ -53,5 +49,39 @@ class PagarmeSubscriptionResponseProcessor
         if (method_exists($this, $methodName)) {
             $this->{$methodName}($subscription, $response);
         }
+    }
+
+    private function processTrialing(Subscription $subscription, \stdClass $response): void
+    {
+        // not implemented
+    }
+
+    private function processPaid(Subscription $subscription, \stdClass $response): void
+    {
+        if (!$subscription->isApproved()) {
+            $this->subscriptionManager->approve($subscription);
+        }
+    }
+
+    private function processPendingPayment(Subscription $subscription, \stdClass $response): void
+    {
+        // todo: handle due payments
+    }
+
+    private function processUnpaid(Subscription $subscription, \stdClass $response): void
+    {
+        // todo: handle due payments
+    }
+
+    private function processCanceled(Subscription $subscription, \stdClass $response): void
+    {
+        $this->subscriptionManager->customerCancellation($subscription);
+        // todo: what else to trigger?
+    }
+
+    private function processEnded(Subscription $subscription, \stdClass $response): void
+    {
+        $this->subscriptionManager->expire($subscription);
+        // todo: what else to trigger?
     }
 }

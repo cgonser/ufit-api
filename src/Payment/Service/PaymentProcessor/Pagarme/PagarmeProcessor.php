@@ -70,8 +70,8 @@ abstract class PagarmeProcessor
             $this->messageBus->dispatch(
                 new PagarmeSubscriptionResponseReceivedEvent(
                     $response,
-                    $subscription->getId()->toString(),
-                    $payment->getId()->toString()
+                    $subscription->getId(),
+                    $payment->getId()
                 )
             );
         } else {
@@ -87,8 +87,8 @@ abstract class PagarmeProcessor
             $this->messageBus->dispatch(
                 new PagarmeTransactionResponseReceivedEvent(
                     $response,
-                    $subscription->getId()->toString(),
-                    $payment->getId()->toString()
+                    $subscription->getId(),
+                    $payment->getId()
                 )
             );
         }
@@ -97,9 +97,7 @@ abstract class PagarmeProcessor
     protected function appendCustomerInformation(array &$transactionData, Payment $payment): void
     {
         $billingInformation = $payment->getBillingInformation();
-        $customer = $payment->getInvoice()
-            ->getSubscription()
-            ->getCustomer();
+        $customer = $payment->getInvoice()->getSubscription()->getCustomer();
 
         $phoneAreaCode = $customer->getPhoneAreaCode() ?: $billingInformation->getPhoneAreaCode();
         $phoneNumber = $customer->getPhoneNumber() ?: $billingInformation->getPhoneNumber();
@@ -121,12 +119,12 @@ abstract class PagarmeProcessor
         if ($payment->getInvoice()->getSubscription()->getVendorPlan()->isRecurring()) {
             $transactionData['customer']['address'] = $this->prepareAddressData($billingInformation);
             $transactionData['customer']['phone'] = [
-                'ddd' => ltrim($phoneAreaCode, '0'),
+                'ddd' => ltrim($phoneAreaCode ?? '', '0'),
                 'number' => $phoneNumber,
             ];
         } else {
             $phoneNumber = $phoneNumber ?: '+55'.
-                ltrim($phoneAreaCode, '0').
+                ltrim($phoneAreaCode ?? '', '0').
                 $phoneNumber;
 
             if (!str_starts_with($phoneNumber, '+')) {
@@ -162,15 +160,13 @@ abstract class PagarmeProcessor
             'state' => $billingInformation->getAddressState(),
             'city' => $billingInformation->getAddressCity(),
             'neighborhood' => $billingInformation->getAddressDistrict(),
-            'zipcode' => $billingInformation->getAddressZipCode(),
+            'zipcode' => preg_replace('/\D+/', '', $billingInformation->getAddressZipCode() ?? ''),
         ];
     }
 
     protected function appendItems(array &$transactionData, Payment $payment): void
     {
-        $vendorPlan = $payment->getInvoice()
-            ->getSubscription()
-            ->getVendorPlan();
+        $vendorPlan = $payment->getInvoice()->getSubscription()->getVendorPlan();
         $decimal = new Decimal($payment->getInvoice()->getTotalAmount());
 
         $transactionData['amount'] = $decimal->mul(100)->toFixed(0);
@@ -185,7 +181,7 @@ abstract class PagarmeProcessor
         ];
     }
 
-    protected function appendSplitRules(array &$transactionData, Payment $payment)
+    protected function appendSplitRules(array &$transactionData, Payment $payment): void
     {
         $vendorPlan = $payment->getInvoice()
             ->getSubscription()
@@ -245,12 +241,10 @@ abstract class PagarmeProcessor
         }
 
         try {
-            $arrayObject = $this->pagarmeClient->plans()
+            $plan = $this->pagarmeClient->plans()
                 ->create(
                     [
-                        'amount' => $vendorPlan->getPrice()
-                            ->mul(100)
-                            ->toFixed(0),
+                        'amount' => $vendorPlan->getPrice()->mul(100)->toFixed(0),
                         'days' => $days,
                         'name' => $vendorPlan->getName(),
                     ]
@@ -259,7 +253,7 @@ abstract class PagarmeProcessor
             $this->handlePagarmeVendorPlanException($vendorPlan, $e);
         }
 
-        return $arrayObject->id;
+        return $plan->id;
     }
 
     /**
@@ -311,6 +305,9 @@ abstract class PagarmeProcessor
             'customer[phone][ddd]' => 'phoneAreaCode',
             'customer[phone][number]' => 'phoneNumber',
         ];
+
+        //message: "ERROR TYPE: validation_error. PARAMETER: billing. MESSAGE: \"zipcode\" must be 8 digits long for Brazilian addresses"
+        //propertyPath: "billing"
 
         if (isset($customerProperties[$exception->getParameterName()])) {
             $propertyName = $customerProperties[$exception->getParameterName()] ?? $exception->getParameterName();
