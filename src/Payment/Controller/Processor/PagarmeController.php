@@ -20,15 +20,19 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PagarmeController extends AbstractController
 {
-    public function __construct(private SubscriptionProvider $subscriptionProvider, private PaymentProvider $paymentProvider, private MessageBusInterface $messageBus, private LoggerInterface $logger)
-    {
+    public function __construct(
+        private SubscriptionProvider $subscriptionProvider,
+        private PaymentProvider $paymentProvider,
+        private MessageBusInterface $messageBus,
+        private LoggerInterface $logger
+    ) {
     }
 
     /**
      * @OA\Tag(name="Payment / Processor / Pagarme")
      */
-    #[Route(path: '/payments/pagarme/postback', methods: 'POST', name: 'payments_pagarme_postback')]
-    public function paymentPostback(Request $request) : Response
+    #[Route(path: '/payments/pagarme/postback', name: 'payments_pagarme_postback', methods: 'POST')]
+    public function paymentPostback(Request $request): Response
     {
         parse_str($request->getContent(), $payload);
         $this->logger->info('pagarme.postback', [
@@ -40,29 +44,33 @@ class PagarmeController extends AbstractController
         } catch (Exception) {
             $subscriptionId = null;
         }
+
         try {
             $paymentId = $this->paymentProvider->get(Uuid::fromString($request->get('reference')))->getId();
         } catch (Exception) {
             $paymentId = null;
         }
+
         if ('subscription' === $payload['object']) {
             $this->messageBus->dispatch(
                 new PagarmeSubscriptionResponseReceivedEvent(
-                    (object) $payload['subscription'],
+                    (object)$payload['subscription'],
                     $subscriptionId,
                     $paymentId
                 )
             );
         }
+
         if ('transaction' === $payload['object']) {
             $this->messageBus->dispatch(
                 new PagarmeTransactionResponseReceivedEvent(
-                    (object) $payload['transaction'],
+                    (object)$payload['transaction'],
                     $subscriptionId,
                     $paymentId
                 )
             );
         }
+
         return new Response(null, Response::HTTP_NO_CONTENT);
     }
 }

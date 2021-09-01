@@ -49,7 +49,6 @@ final class VendorUpdateController extends AbstractController
     public function update(
         string $vendorId,
         VendorRequest $vendorRequest,
-        ConstraintViolationListInterface $constraintViolationList,
     ): ApiJsonResponse {
         $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
         $this->denyAccessUnlessGranted(AuthorizationVoterInterface::UPDATE, $vendor);

@@ -15,21 +15,23 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PaymentMethodDeleteController extends AbstractController
 {
-    public function __construct(private PaymentMethodManager $paymentMethodManager, private PaymentMethodProvider $paymentMethodProvider)
-    {
+    public function __construct(
+        private PaymentMethodManager $paymentMethodManager,
+        private PaymentMethodProvider $paymentMethodProvider
+    ) {
     }
 
     /**
-     *
      * @OA\Tag(name="PaymentMethod")
      * @OA\Response(response=204, description="Deleted")
      * @OA\Response(response=404, description="Payment method not found")
      */
-    #[Route(path: '/payment_methods/{paymentMethodId}', methods: 'DELETE', name: 'payment_methods_delete')]
-    public function delete(string $paymentMethodId) : ApiJsonResponse
+    #[Route(path: '/payment_methods/{paymentMethodId}', name: 'payment_methods_delete', methods: 'DELETE')]
+    public function delete(string $paymentMethodId): ApiJsonResponse
     {
         $paymentMethod = $this->paymentMethodProvider->get(Uuid::fromString($paymentMethodId));
         $this->paymentMethodManager->delete($paymentMethod);
+
         return new ApiJsonResponse(Response::HTTP_NO_CONTENT);
     }
 }

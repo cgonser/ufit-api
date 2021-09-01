@@ -129,7 +129,7 @@ doctrine:
 
             App\Payment:
                 is_bundle: false
-                type: annotation
+                type: attribute
                 dir: '%kernel.project_dir%/src/Payment/Entity'
                 prefix: 'App\Payment\Entity'
                 alias: AppPayment

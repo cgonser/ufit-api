@@ -22,26 +22,32 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class PaymentMethodUpdateController extends AbstractController
 {
-    public function __construct(private PaymentMethodRequestManager $paymentMethodRequestManager, private PaymentMethodProvider $paymentMethodProvider, private PaymentMethodResponseMapper $paymentMethodResponseMapper)
-    {
+    public function __construct(
+        private PaymentMethodRequestManager $paymentMethodRequestManager,
+        private PaymentMethodProvider $paymentMethodProvider,
+        private PaymentMethodResponseMapper $paymentMethodResponseMapper
+    ) {
     }
 
     /**
-     *
      * @OA\Tag(name="PaymentMethod")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=PaymentMethodRequest::class)))
      * @OA\Response(response=200, description="Success", @OA\JsonContent(ref=@Model(type=PaymentMethodDto::class)))
      * @OA\Response(response=400, description="Invalid input")
      */
-    #[Route(path: '/payment_methods/{paymentMethodId}', methods: 'PUT', name: 'payment_methods_update')]
-    #[ParamConverter(data: 'paymentMethodRequest', converter: 'fos_rest.request_body', options: ['deserializationContext' => ['allow_extra_attributes' => false]])]
-    public function update(string $paymentMethodId, PaymentMethodRequest $paymentMethodRequest, ConstraintViolationListInterface $constraintViolationList) : ApiJsonResponse
-    {
-        if ($constraintViolationList->count() > 0) {
-            throw new ApiJsonInputValidationException($constraintViolationList);
-        }
+    #[Route(path: '/payment_methods/{paymentMethodId}', name: 'payment_methods_update', methods: 'PUT')]
+    #[ParamConverter(
+        data: 'paymentMethodRequest',
+        options: ['deserializationContext' => ['allow_extra_attributes' => false]],
+        converter: 'fos_rest.request_body'
+    )]
+    public function update(
+        string $paymentMethodId,
+        PaymentMethodRequest $paymentMethodRequest,
+    ): ApiJsonResponse {
         $paymentMethod = $this->paymentMethodProvider->get(Uuid::fromString($paymentMethodId));
         $this->paymentMethodRequestManager->updateFromRequest($paymentMethod, $paymentMethodRequest);
+
         return new ApiJsonResponse(Response::HTTP_OK, $this->paymentMethodResponseMapper->map($paymentMethod));
     }
 }

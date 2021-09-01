@@ -19,8 +19,10 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PaymentMethodController extends AbstractController
 {
-    public function __construct(private PaymentMethodProvider $paymentMethodProvider, private PaymentMethodResponseMapper $paymentMethodResponseMapper)
-    {
+    public function __construct(
+        private PaymentMethodProvider $paymentMethodProvider,
+        private PaymentMethodResponseMapper $paymentMethodResponseMapper
+    ) {
     }
 
     /**
@@ -32,12 +34,13 @@ class PaymentMethodController extends AbstractController
      *     @OA\JsonContent(type="array",@OA\Items(ref=@Model(type=PaymentMethodDto::class))))
      * )
      */
-    #[Route(path: '/payment_methods', methods: 'GET', name: 'payment_methods_get')]
-    #[ParamConverter(data: 'searchRequest', converter: 'querystring')]
-    public function getPaymentMethods(PaymentMethodSearchRequest $paymentMethodSearchRequest) : ApiJsonResponse
+    #[Route(path: '/payment_methods', name: 'payment_methods_get', methods: 'GET')]
+    #[ParamConverter(data: 'paymentMethodSearchRequest', converter: 'querystring')]
+    public function getPaymentMethods(PaymentMethodSearchRequest $paymentMethodSearchRequest): ApiJsonResponse
     {
         $paymentMethods = $this->paymentMethodProvider->search($paymentMethodSearchRequest);
         $count = $this->paymentMethodProvider->count($paymentMethodSearchRequest);
+
         return new ApiJsonResponse(
             Response::HTTP_OK,
             $this->paymentMethodResponseMapper->mapMultiple($paymentMethods),
@@ -48,14 +51,14 @@ class PaymentMethodController extends AbstractController
     }
 
     /**
-     *
      * @OA\Tag(name="PaymentMethod")
      * @OA\Response(response=200, description="Success", @OA\JsonContent(ref=@Model(type=PaymentMethodDto::class)))
      */
-    #[Route(path: '/payment_methods/{paymentMethodId}', methods: 'GET', name: 'payment_methods_get_by_id')]
-    public function getPaymentMethodById(string $paymentMethodId) : ApiJsonResponse
+    #[Route(path: '/payment_methods/{paymentMethodId}', name: 'payment_methods_get_by_id', methods: 'GET')]
+    public function getPaymentMethodById(string $paymentMethodId): ApiJsonResponse
     {
         $paymentMethod = $this->paymentMethodProvider->get(Uuid::fromString($paymentMethodId));
+
         return new ApiJsonResponse(Response::HTTP_OK, $this->paymentMethodResponseMapper->map($paymentMethod));
     }
 }
