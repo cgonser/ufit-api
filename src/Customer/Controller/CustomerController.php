@@ -32,8 +32,7 @@ class CustomerController extends AbstractController
     }
 
     /**
-     * @Route("/customers", methods="GET", name="customers_get")
-     *
+     * @Security(name="Bearer")
      * @OA\Tag(name="Customer")
      * @OA\Response(
      *     response=200,
@@ -43,7 +42,7 @@ class CustomerController extends AbstractController
      *         @OA\Items(ref=@Model(type=CustomerDto::class)))
      *     )*
      * )
-     * @Security(name="Bearer")
+     * @Route("/customers", methods="GET", name="customers_get")
      */
     public function getCustomers(): Response
     {
@@ -54,8 +53,6 @@ class CustomerController extends AbstractController
     }
 
     /**
-     * @Route("/customers/{customerId}", methods="GET", name="customers_get_one")
-     *
      * @OA\Tag(name="Customer")
      * @OA\Response(
      *     response=200,
@@ -63,6 +60,7 @@ class CustomerController extends AbstractController
      *     @OA\JsonContent(ref=@Model(type=CustomerDto::class))
      * )
      * @Security(name="Bearer")
+     * @Route("/customers/{customerId}", methods="GET", name="customers_get_one")
      */
     public function getCustomer(string $customerId): Response
     {

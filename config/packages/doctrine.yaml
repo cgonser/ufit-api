@@ -1,5 +1,6 @@
 doctrine:
     dbal:
+        server_version: 13
         url: '%env(resolve:DATABASE_URL)%'
         types:
             uuid: Ramsey\Uuid\Doctrine\UuidType

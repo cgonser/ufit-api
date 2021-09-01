@@ -12,7 +12,7 @@ class CustomerResponseMapper
     public function map(Customer $customer): CustomerDto
     {
         $customerDto = new CustomerDto();
-        $customerDto->id = $customer->getId();
+        $customerDto->id = $customer->getId()->toString();
         $customerDto->name = $customer->getName();
         $customerDto->email = $customer->getEmail();
         $customerDto->phoneIntlCode = $customer->getPhoneIntlCode();
