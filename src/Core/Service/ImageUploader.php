@@ -14,7 +14,7 @@ class ImageUploader
 
     protected function validateImageSize($width, $height): void
     {
-        $maxDimension = $this->calculateMaxDimensions();
+        $maxDimension = (string) $this->calculateMaxDimensions();
 
         if ($width * $height > ($maxDimension ** 2)) {
             throw new ImageMaxDimensionsExceededException($maxDimension, $maxDimension);
@@ -30,7 +30,7 @@ class ImageUploader
         $maxTotalDimension = $memoryAvailable * 1048576 - 1048576;
         $maxTotalDimension /= 6;
 
-        return floor(sqrt($maxTotalDimension));
+        return (int) floor(sqrt($maxTotalDimension));
     }
 
     protected function allocateMemory($width, $height): void

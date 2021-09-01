@@ -23,7 +23,7 @@ abstract class AbstractVendorPlanTest extends AbstractVendorTest
             'description' => $loremIpsum->paragraphs(3),
             'currency' => 'BRL',
             'price' => '100',
-            'durationDays' => null,
+            'durationDays' => 0,
             'durationMonths' => 1,
             //            'isApprovalRequired' => false,
             'isRecurring' => true,

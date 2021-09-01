@@ -66,7 +66,7 @@ class VendorPlanControllerTest extends AbstractVendorPlanTest
         $this->assertSame($vendorPlan->getCurrency()->getCode(), $responseData['currency']);
         $this->assertSame($vendorPlan->getDuration()?->d, $responseData['durationDays']);
         $this->assertSame($vendorPlan->getDuration()?->m, $responseData['durationMonths']);
-        $this->assertSame($vendorPlan->getPrice()->toFloat(), $responseData['price']);
+        $this->assertEquals($vendorPlan->getPrice()->toString(), $responseData['price']);
         $this->assertSame($vendorPlan->isVisible(), $responseData['isVisible']);
         $this->assertSame($vendorPlan->isRecurring(), $responseData['isRecurring']);
         $this->assertSame($vendorPlan->isActive(), $responseData['isActive']);
