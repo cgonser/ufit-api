@@ -6,6 +6,7 @@ namespace App\Customer\Controller\CustomerMeasurement;
 
 use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
+use App\Core\Security\AuthorizationVoterInterface;
 use App\Customer\Dto\CustomerMeasurementDto;
 use App\Customer\Entity\Customer;
 use App\Customer\Exception\CustomerMeasurementNotFoundException;
@@ -20,89 +21,58 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route(path: '/customers/{customerId}/measurements')]
 class CustomerMeasurementController extends AbstractController
 {
-    private CustomerMeasurementResponseMapper $customerMeasurementResponseMapper;
-
-    private CustomerMeasurementProvider $customerMeasurementProvider;
-
-    private CustomerProvider $customerProvider;
-
     public function __construct(
-        CustomerMeasurementProvider $customerMeasurementProvider,
-        CustomerMeasurementResponseMapper $customerMeasurementResponseMapper,
-        CustomerProvider $customerProvider
+        private CustomerMeasurementProvider $customerMeasurementProvider,
+        private CustomerMeasurementResponseMapper $customerMeasurementResponseMapper,
+        private CustomerProvider $customerProvider,
     ) {
-        $this->customerMeasurementResponseMapper = $customerMeasurementResponseMapper;
-        $this->customerMeasurementProvider = $customerMeasurementProvider;
-        $this->customerProvider = $customerProvider;
     }
 
     /**
-     * @Route("/customers/{customerId}/measurements", methods="GET", name="customers_measurements_get")
-     *
      * @OA\Tag(name="Customer / Measurement")
      * @OA\Response(
      *     response=200,
      *     description="Returns the information about a customer measurements",
-     *     @OA\JsonContent(
-     *         type="array",
-     *         @OA\Items(ref=@Model(type=CustomerMeasurementDto::class)))
-     *     )
+     *     @OA\JsonContent(type="array", @OA\Items(ref=@Model(type=CustomerMeasurementDto::class))))
      * )
-     *
      * @Security(name="Bearer")
      */
-    public function getCustomerMeasurements(string $customerId): Response
+    #[Route(name: 'customers_measurements_get', methods: 'GET')]
+    public function getCustomerMeasurements(string $customerId): ApiJsonResponse
     {
-        /** @var Customer $customer */
-        $customer = $this->getUser();
+        $customer = $this->customerProvider->get(Uuid::fromString($customerId));
+        $this->denyAccessUnlessGranted(AuthorizationVoterInterface::READ, $customer);
 
         $customerMeasurements = $this->customerMeasurementProvider->findByCustomer($customer);
 
-        return new ApiJsonResponse(Response::HTTP_OK, $this->customerMeasurementResponseMapper->mapMultiple(
-            $customerMeasurements
-        ));
+        return new ApiJsonResponse(
+            Response::HTTP_OK,
+            $this->customerMeasurementResponseMapper->mapMultiple($customerMeasurements)
+        );
     }
 
     /**
-     * @Route("/customers/{customerId}/measurements/{customerMeasurementId}", methods="GET", name="customers_measurements_get_one")
-     *
      * @OA\Tag(name="Customer / Measurement")
-     * @OA\Response(
-     *     response=200,
-     *     description="Returns the information about a measurement",
-     *     @OA\JsonContent(ref=@Model(type=CustomerMeasurementDto::class))
-     * )
-     *
+     * @OA\Response(response=200, description="Success", @OA\JsonContent(ref=@Model(type=CustomerMeasurementDto::class)))
      * @Security(name="Bearer")
      */
+    #[Route(path: '/{customerMeasurementId}', name: 'customers_measurements_get_one', methods: 'GET')]
     public function getCustomerMeasurement(string $customerId, string $customerMeasurementId): Response
     {
-        try {
-            if ('current' === $customerId) {
-                /** @var Customer $customer */
-                $customer = $this->getUser();
-            } else {
-                if ($this->getUser() instanceof Customer) {
-                    // customer fetching not implemented yet; requires also authorization
-                    throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
-                }
+        $customer = $this->customerProvider->get(Uuid::fromString($customerId));
+        $this->denyAccessUnlessGranted(AuthorizationVoterInterface::READ, $customer);
 
-                // TODO: implement proper vendor authorization
-                $customer = $this->customerProvider->get(Uuid::fromString($customerId));
-            }
+        $customerMeasurement = $this->customerMeasurementProvider->getByCustomerAndId(
+            $customer,
+            Uuid::fromString($customerMeasurementId)
+        );
 
-            $customerMeasurement = $this->customerMeasurementProvider->getByCustomerAndId(
-                $customer,
-                Uuid::fromString($customerMeasurementId)
-            );
-
-            return new ApiJsonResponse(Response::HTTP_OK, $this->customerMeasurementResponseMapper->map(
-                $customerMeasurement
-            ));
-        } catch (CustomerMeasurementNotFoundException $e) {
-            throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
-        }
+        return new ApiJsonResponse(
+            Response::HTTP_OK,
+            $this->customerMeasurementResponseMapper->map($customerMeasurement)
+        );
     }
 }

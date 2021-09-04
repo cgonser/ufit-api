@@ -30,7 +30,7 @@ class VendorPlanDto
      */
     public ?array $paymentMethods = null;
 
-    public ?float $price = null;
+    public ?string $price = null;
 
     public bool $isVisible;
 

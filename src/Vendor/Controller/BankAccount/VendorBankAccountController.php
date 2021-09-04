@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Vendor\Controller\BankAccount;
 
-use App\Core\Exception\ApiJsonException;
 use App\Core\Request\SearchRequest;
 use App\Core\Response\ApiJsonResponse;
 use App\Core\Security\AuthorizationVoterInterface;
@@ -45,7 +44,7 @@ class VendorBankAccountController extends AbstractController
      * )
      */
     #[Route(name: 'vendor_bank_accounts_find', methods: 'GET')]
-    #[ParamConverter(data: 'searchRequest', converter: 'querystring')]
+    #[ParamConverter(data: 'vendorBankAccountSearchRequest', converter: 'querystring')]
     public function getVendorBankAccounts(
         string $vendorId,
         VendorBankAccountSearchRequest $vendorBankAccountSearchRequest
@@ -53,7 +52,8 @@ class VendorBankAccountController extends AbstractController
         $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
         $this->denyAccessUnlessGranted(AuthorizationVoterInterface::UPDATE, $vendor);
 
-        $vendorBankAccountSearchRequest->vendorId = $vendor->getId()->toString();
+        $vendorBankAccountSearchRequest->vendorId = $vendor->getId()
+            ->toString();
         $vendorBankAccounts = $this->vendorBankAccountProvider->search($vendorBankAccountSearchRequest);
         $count = $this->vendorBankAccountProvider->count($vendorBankAccountSearchRequest);
 

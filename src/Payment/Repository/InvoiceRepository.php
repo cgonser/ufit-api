@@ -10,8 +10,8 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class InvoiceRepository extends BaseRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $managerRegistry)
     {
-        parent::__construct($registry, Invoice::class);
+        parent::__construct($managerRegistry, Invoice::class);
     }
 }

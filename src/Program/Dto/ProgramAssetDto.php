@@ -10,11 +10,11 @@ class ProgramAssetDto
 
     public string $programId;
 
-    public ?string $title;
+    public ?string $title = null;
 
     public string $url;
 
-    public ?string $type;
+    public ?string $type = null;
 
     public string $createdAt;
 }

@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Api\Vendor;
 
-use App\Vendor\Entity\Vendor;
-use App\Vendor\Exception\VendorEmailAddressInUseException;
-use joshtronic\LoremIpsum;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\HttpFoundation\Response;
 
 class VendorCreateControllerTest extends AbstractVendorTest

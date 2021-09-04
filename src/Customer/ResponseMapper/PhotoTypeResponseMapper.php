@@ -12,7 +12,7 @@ class PhotoTypeResponseMapper
     public function map(PhotoType $photoType): PhotoTypeDto
     {
         $photoTypeDto = new PhotoTypeDto();
-        $photoTypeDto->id = $photoType->getId();
+        $photoTypeDto->id = $photoType->getId()->toString();
         $photoTypeDto->name = $photoType->getName();
 
         return $photoTypeDto;

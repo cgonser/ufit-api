@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Vendor\Controller\BankAccount;
 
-use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
 use App\Core\Security\AuthorizationVoterInterface;
 use App\Vendor\Entity\Vendor;

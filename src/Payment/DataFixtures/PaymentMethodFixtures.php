@@ -10,27 +10,30 @@ use Doctrine\Persistence\ObjectManager;
 
 class PaymentMethodFixtures extends Fixture
 {
-    public function load(ObjectManager $manager): void
+    public function load(ObjectManager $objectManager): void
     {
-        $this->loadCurrencies($manager);
+        $this->loadCurrencies($objectManager);
     }
 
-    private function loadCurrencies(ObjectManager $manager): void
+    private function loadCurrencies(ObjectManager $objectManager): void
     {
-        foreach ($this->getData() as list($name, $countriesEnabled, $countriesDisabled)) {
+        foreach ($this->getData() as [$name, $countriesEnabled, $countriesDisabled]) {
             $paymentMethod = new PaymentMethod();
             $paymentMethod->setName($name);
             $paymentMethod->setCountriesEnabled($countriesEnabled);
             $paymentMethod->setCountriesDisabled($countriesDisabled);
 
-            $manager->persist($paymentMethod);
+            $objectManager->persist($paymentMethod);
 
             $this->addReference('paymentMethod-'.$paymentMethod->getName(), $paymentMethod);
         }
 
-        $manager->flush();
+        $objectManager->flush();
     }
 
+    /**
+     * @return array<int, mixed[]>
+     */
     private function getData(): array
     {
         return [['Boleto', ['BR'], []], ['Credit Card', [], []]];

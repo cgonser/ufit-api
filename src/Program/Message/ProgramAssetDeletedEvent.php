@@ -8,6 +8,9 @@ use Ramsey\Uuid\UuidInterface;
 
 class ProgramAssetDeletedEvent
 {
+    /**
+     * @var string
+     */
     public const NAME = 'program_asset.deleted';
 
     protected ?UuidInterface $programAssetId = null;

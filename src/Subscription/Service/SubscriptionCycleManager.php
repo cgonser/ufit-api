@@ -4,23 +4,21 @@ declare(strict_types=1);
 
 namespace App\Subscription\Service;
 
+use DateTimeInterface;
 use App\Subscription\Entity\Subscription;
 use App\Subscription\Entity\SubscriptionCycle;
 use App\Subscription\Repository\SubscriptionCycleRepository;
 
 class SubscriptionCycleManager
 {
-    private SubscriptionCycleRepository $subscriptionCycleRepository;
-
-    public function __construct(SubscriptionCycleRepository $subscriptionCycleRepository)
+    public function __construct(private SubscriptionCycleRepository $subscriptionCycleRepository)
     {
-        $this->subscriptionCycleRepository = $subscriptionCycleRepository;
     }
 
     public function create(
         Subscription $subscription,
-        \DateTimeInterface $startsAt,
-        ?\DateTimeInterface $endsAt = null
+        DateTimeInterface $startsAt,
+        ?DateTimeInterface $endsAt = null
     ): SubscriptionCycle {
         $subscriptionCycle = new SubscriptionCycle();
         $subscriptionCycle->setSubscription($subscription);

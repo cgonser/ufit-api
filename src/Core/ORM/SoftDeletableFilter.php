@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\ORM;
 
 use Doctrine\ORM\Mapping\ClassMetaData;
@@ -8,47 +10,34 @@ use Doctrine\ORM\Query\Filter\SQLFilter;
 class SoftDeletableFilter extends SQLFilter
 {
     protected $entityManager;
-    protected $disabled = array();
+    protected $disabled = [];
 
     /**
-     * Add the soft deletable filter
+     * Add the soft deletable filter.
      *
-     * @param ClassMetaData $targetEntity
-     * @param                $targetTableAlias
-     * @return string
+     * @param $targetTableAlias
      */
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias): string
     {
         $class = $targetEntity->getName();
-        if (array_key_exists($class, $this->disabled) && $this->disabled[$class] === true) {
+        if (array_key_exists($class, $this->disabled) && true === $this->disabled[$class]) {
             return '';
-        } else {
-            if (
+        }
+        if (
                 array_key_exists($targetEntity->rootEntityName, $this->disabled)
-                && $this->disabled[$targetEntity->rootEntityName] === true
+                && true === $this->disabled[$targetEntity->rootEntityName]
             ) {
-                return '';
-            } elseif (!$targetEntity->hasField('deletedAt')) {
-                return '';
-            }
+            return '';
+        } elseif (! $targetEntity->hasField('deletedAt')) {
+            return '';
         }
 
-        $conn = $this->getEntityManager()->getConnection();
+        $conn = $this->getEntityManager()
+            ->getConnection();
         $platform = $conn->getDatabasePlatform();
         $column = $targetEntity->getQuotedColumnName('deletedAt', $platform);
 
         return $platform->getIsNullExpression($targetTableAlias.'.'.$column);
-    }
-
-    protected function getEntityManager()
-    {
-        if ($this->entityManager === null) {
-            $refl = new \ReflectionProperty(SQLFilter::class, 'em');
-            $refl->setAccessible(true);
-            $this->entityManager = $refl->getValue($this);
-        }
-
-        return $this->entityManager;
     }
 
     public function disableForEntity($class): void
@@ -59,5 +48,16 @@ class SoftDeletableFilter extends SQLFilter
     public function enableForEntity($class): void
     {
         $this->disabled[$class] = false;
+    }
+
+    protected function getEntityManager()
+    {
+        if (null === $this->entityManager) {
+            $refl = new \ReflectionProperty(SQLFilter::class, 'em');
+            $refl->setAccessible(true);
+            $this->entityManager = $refl->getValue($this);
+        }
+
+        return $this->entityManager;
     }
 }

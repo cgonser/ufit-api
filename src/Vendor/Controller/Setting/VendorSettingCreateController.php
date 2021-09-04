@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Vendor\Controller\Setting;
 
-use App\Core\Exception\ApiJsonException;
 use App\Core\Exception\ApiJsonInputValidationException;
 use App\Core\Response\ApiJsonResponse;
 use App\Core\Security\AuthorizationVoterInterface;
@@ -57,7 +56,8 @@ class VendorSettingCreateController extends AbstractController
         $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
         $this->denyAccessUnlessGranted(AuthorizationVoterInterface::UPDATE, $vendor);
 
-        $vendorSettingRequest->vendorId = $vendor->getId()->toString();
+        $vendorSettingRequest->vendorId = $vendor->getId()
+            ->toString();
         $vendorSetting = $this->vendorSettingRequestManager->createFromRequest($vendorSettingRequest);
 
         return new ApiJsonResponse(

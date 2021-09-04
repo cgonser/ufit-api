@@ -12,7 +12,7 @@ class CustomerResponseMapper
     public function map(Customer $customer): CustomerDto
     {
         $customerDto = new CustomerDto();
-        $customerDto->id = $customer->getId();
+        $customerDto->id = $customer->getId()->toString();
         $customerDto->name = $customer->getName();
         $customerDto->email = $customer->getEmail();
         $customerDto->phoneIntlCode = $customer->getPhoneIntlCode();
@@ -20,12 +20,8 @@ class CustomerResponseMapper
         $customerDto->phoneNumber = $customer->getPhoneNumber();
         $customerDto->gender = $customer->getGender();
         $customerDto->height = $customer->getHeight();
-        $customerDto->lastWeight = null !== $customer->getLastWeight() ? $customer->getLastWeight()
-            ->toString() : null;
-        $customerDto->birthDate = $customer->getBirthDate()
-            ? $customer->getBirthDate()
-                ->format('Y-m-d')
-            : null;
+        $customerDto->lastWeight = $customer->getLastWeight()?->toString();
+        $customerDto->birthDate = $customer->getBirthDate()?->format('Y-m-d');
         $customerDto->goals = $customer->getGoals();
         $customerDto->country = $customer->getCountry();
         $customerDto->locale = $customer->getLocale();

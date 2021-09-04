@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Program\Request;
 
+use App\Core\Request\AbstractRequest;
 use OpenApi\Annotations as OA;
 
 /**
  * @OA\RequestBody()
  */
-class ProgramAssetRequest
+class ProgramAssetRequest extends AbstractRequest
 {
     /**
      * @OA\Property()
@@ -19,10 +20,10 @@ class ProgramAssetRequest
     /**
      * @OA\Property()
      */
-    public ?string $title = null;
+    public ?string $title;
 
     /**
      * @OA\Property()
      */
-    public ?string $type = null;
+    public ?string $type;
 }

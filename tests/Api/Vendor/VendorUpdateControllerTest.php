@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Api\Vendor;
 
-use App\Vendor\Entity\Vendor;
 use joshtronic\LoremIpsum;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\HttpFoundation\Response;
 
 class VendorUpdateControllerTest extends AbstractVendorTest
@@ -68,7 +66,9 @@ class VendorUpdateControllerTest extends AbstractVendorTest
         $vendor2Data['email'] = 'vendor-'.(new LoremIpsum())->word().'@ufit.io';
         $vendor2 = $this->createVendorDummy($vendor2Data);
 
-        $requestData = ['name' => 'John Doe'.time()];
+        $requestData = [
+            'name' => 'John Doe'.time(),
+        ];
 
         $this->authenticateClient($client, $vendorData['email'], $vendorData['password']);
 
@@ -91,7 +91,7 @@ class VendorUpdateControllerTest extends AbstractVendorTest
         $responseData = $this->getAndAssertJsonResponseData($client);
 
         foreach ($vendorData as $property => $value) {
-            if ($property === 'password') {
+            if ('password' === $property) {
                 continue;
             }
 

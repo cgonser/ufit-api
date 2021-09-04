@@ -22,6 +22,48 @@ class VendorControllerTest extends AbstractVendorTest
         $this->testGetPublicVendorBySlug($client, $vendor);
     }
 
+    public function testGetPrivateVendor(): void
+    {
+        $client = static::createClient();
+
+        $vendorData = $this->getVendorDummyData();
+        $vendor = $this->createVendorDummy($vendorData);
+
+        $client->request('GET', '/vendors/current');
+        $this->assertJsonResponse(Response::HTTP_UNAUTHORIZED);
+
+        $this->authenticateClient($client, $vendorData['email'], $vendorData['password']);
+
+        $this->testGetPrivateVendorById($client, $vendor);
+        $this->testGetPrivateVendorByCurrent($client, $vendor);
+        $this->testGetPrivateVendorBySlug($client, $vendor);
+    }
+
+    public function testGetAnotherVendor(): void
+    {
+        $client = static::createClient();
+
+        $vendorData = $this->getVendorDummyData();
+        $this->createVendorDummy($vendorData);
+
+        $vendor2Data = $this->getVendorDummyData();
+        $vendor2Data['email'] = 'vendor-'.(new LoremIpsum())->word().'@ufit.io';
+        $vendor2 = $this->createVendorDummy($vendor2Data);
+
+        $this->authenticateClient($client, $vendorData['email'], $vendorData['password']);
+
+        $this->testGetPublicVendorById($client, $vendor2);
+        $this->testGetPublicVendorBySlug($client, $vendor2);
+    }
+
+    public function testVendorNotFound(): void
+    {
+        $client = static::createClient();
+
+        $client->request('GET', '/vendors/some-random-vendor');
+        $this->assertJsonResponse(Response::HTTP_NOT_FOUND);
+    }
+
     private function testGetPublicVendorById(KernelBrowser $client, Vendor $vendor): void
     {
         $client->request('GET', '/vendors/'.$vendor->getId()->toString());
@@ -48,23 +90,6 @@ class VendorControllerTest extends AbstractVendorTest
         $this->assertSame($vendor->getSlug(), $responseData['slug']);
         $this->assertSame($vendor->getBiography(), $responseData['biography']);
         $this->assertSame($vendor->getCountry(), $responseData['country']);
-    }
-
-    public function testGetPrivateVendor(): void
-    {
-        $client = static::createClient();
-
-        $vendorData = $this->getVendorDummyData();
-        $vendor = $this->createVendorDummy($vendorData);
-
-        $client->request('GET', '/vendors/current');
-        $this->assertJsonResponse(Response::HTTP_UNAUTHORIZED);
-
-        $this->authenticateClient($client, $vendorData['email'], $vendorData['password']);
-
-        $this->testGetPrivateVendorById($client, $vendor);
-        $this->testGetPrivateVendorByCurrent($client, $vendor);
-        $this->testGetPrivateVendorBySlug($client, $vendor);
     }
 
     private function testGetPrivateVendorById(KernelBrowser $client, Vendor $vendor): void
@@ -100,30 +125,5 @@ class VendorControllerTest extends AbstractVendorTest
         $this->assertSame($vendor->getTimezone(), $responseData['timezone']);
         $this->assertSame($vendor->getLocale(), $responseData['locale']);
         $this->assertSame($vendor->allowEmailMarketing(), $responseData['allowEmailMarketing']);
-    }
-
-    public function testGetAnotherVendor(): void
-    {
-        $client = static::createClient();
-
-        $vendorData = $this->getVendorDummyData();
-        $this->createVendorDummy($vendorData);
-
-        $vendor2Data = $this->getVendorDummyData();
-        $vendor2Data['email'] = 'vendor-'.(new LoremIpsum())->word().'@ufit.io';
-        $vendor2 = $this->createVendorDummy($vendor2Data);
-
-        $this->authenticateClient($client, $vendorData['email'], $vendorData['password']);
-
-        $this->testGetPublicVendorById($client, $vendor2);
-        $this->testGetPublicVendorBySlug($client, $vendor2);
-    }
-
-    public function testVendorNotFound(): void
-    {
-        $client = static::createClient();
-
-        $client->request('GET', '/vendors/some-random-vendor');
-        $this->assertJsonResponse(Response::HTTP_NOT_FOUND);
     }
 }

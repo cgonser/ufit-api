@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Payment\Controller\Processor;
 
+use Exception;
 use App\Payment\Message\PagarmeSubscriptionResponseReceivedEvent;
 use App\Payment\Message\PagarmeTransactionResponseReceivedEvent;
 use App\Payment\Provider\PaymentProvider;
@@ -19,54 +20,41 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PagarmeController extends AbstractController
 {
-    private MessageBusInterface $messageBus;
-
-    private LoggerInterface $logger;
-    private SubscriptionProvider $subscriptionProvider;
-    private PaymentProvider $paymentProvider;
-
     public function __construct(
-        SubscriptionProvider $subscriptionProvider,
-        PaymentProvider $paymentProvider,
-        MessageBusInterface $messageBus,
-        LoggerInterface $logger
+        private SubscriptionProvider $subscriptionProvider,
+        private PaymentProvider $paymentProvider,
+        private MessageBusInterface $messageBus,
+        private LoggerInterface $logger
     ) {
-        $this->logger = $logger;
-        $this->messageBus = $messageBus;
-        $this->subscriptionProvider = $subscriptionProvider;
-        $this->paymentProvider = $paymentProvider;
     }
 
     /**
-     * @Route("/payments/pagarme/postback", methods="POST", name="payments_pagarme_postback")
-     *
      * @OA\Tag(name="Payment / Processor / Pagarme")
      */
-    public function paymentPostback(Request $request)
+    #[Route(path: '/payments/pagarme/postback', name: 'payments_pagarme_postback', methods: 'POST')]
+    public function paymentPostback(Request $request): Response
     {
         parse_str($request->getContent(), $payload);
-
         $this->logger->info('pagarme.postback', [
             'content' => $request->getContent(),
             'payload' => $payload,
         ]);
-
         try {
             $subscriptionId = $this->subscriptionProvider->get(Uuid::fromString($request->get('reference')))->getId();
-        } catch (\Exception $e) {
+        } catch (Exception) {
             $subscriptionId = null;
         }
 
         try {
             $paymentId = $this->paymentProvider->get(Uuid::fromString($request->get('reference')))->getId();
-        } catch (\Exception $e) {
+        } catch (Exception) {
             $paymentId = null;
         }
 
         if ('subscription' === $payload['object']) {
             $this->messageBus->dispatch(
                 new PagarmeSubscriptionResponseReceivedEvent(
-                    (object) $payload['subscription'],
+                    (object)$payload['subscription'],
                     $subscriptionId,
                     $paymentId
                 )
@@ -76,7 +64,7 @@ class PagarmeController extends AbstractController
         if ('transaction' === $payload['object']) {
             $this->messageBus->dispatch(
                 new PagarmeTransactionResponseReceivedEvent(
-                    (object) $payload['transaction'],
+                    (object)$payload['transaction'],
                     $subscriptionId,
                     $paymentId
                 )

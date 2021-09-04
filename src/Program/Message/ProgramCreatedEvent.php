@@ -8,6 +8,9 @@ use Ramsey\Uuid\UuidInterface;
 
 class ProgramCreatedEvent
 {
+    /**
+     * @var string
+     */
     public const NAME = 'program.created';
 
     protected ?UuidInterface $programId = null;

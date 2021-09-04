@@ -6,6 +6,7 @@ namespace App\Customer\Controller;
 
 use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
+use App\Core\Security\AuthorizationVoterInterface;
 use App\Customer\Dto\CustomerDto;
 use App\Customer\Entity\Customer;
 use App\Customer\Provider\CustomerProvider;
@@ -18,44 +19,36 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route(path: '/customers')]
 class CustomerController extends AbstractController
 {
-    private CustomerResponseMapper $customerResponseMapper;
-    private CustomerProvider $customerProvider;
-
     public function __construct(
-        CustomerProvider $customerProvider,
-        CustomerResponseMapper $customerResponseMapper
+        private CustomerProvider $customerProvider,
+        private CustomerResponseMapper $customerResponseMapper
     ) {
-        $this->customerResponseMapper = $customerResponseMapper;
-        $this->customerProvider = $customerProvider;
     }
 
-    /**
-     * @Route("/customers", methods="GET", name="customers_get")
-     *
-     * @OA\Tag(name="Customer")
-     * @OA\Response(
-     *     response=200,
-     *     description="Returns the information all customers",
-     *     @OA\JsonContent(
-     *         type="array",
-     *         @OA\Items(ref=@Model(type=CustomerDto::class)))
-     *     )*
-     * )
-     * @Security(name="Bearer")
-     */
-    public function getCustomers(): Response
-    {
-        // TODO: implement authorization
-        $customers = $this->customerProvider->findAll();
-
-        return new ApiJsonResponse(Response::HTTP_OK, $this->customerResponseMapper->mapMultiple($customers));
-    }
+//    /**
+//     * @Security(name="Bearer")
+//     * @OA\Tag(name="Customer")
+//     * @OA\Response(
+//     *     response=200,
+//     *     description="Returns the information all customers",
+//     *     @OA\JsonContent(
+//     *         type="array",
+//     *         @OA\Items(ref=@Model(type=CustomerDto::class)))
+//     *     )*
+//     * )
+//     */
+//    #[Route(name: 'customers_get', methods: 'GET')]
+//    public function getCustomers(): ApiJsonResponse
+//    {
+//        $customers = $this->customerProvider->findAll();
+//
+//        return new ApiJsonResponse(Response::HTTP_OK, $this->customerResponseMapper->mapMultiple($customers));
+//    }
 
     /**
-     * @Route("/customers/{customerId}", methods="GET", name="customers_get_one")
-     *
      * @OA\Tag(name="Customer")
      * @OA\Response(
      *     response=200,
@@ -64,14 +57,11 @@ class CustomerController extends AbstractController
      * )
      * @Security(name="Bearer")
      */
-    public function getCustomer(string $customerId): Response
+    #[Route(path: '/{customerId}', name: 'customers_get_one', methods: 'GET')]
+    public function getCustomer(string $customerId): ApiJsonResponse
     {
-        /** @var Customer $customer */
-        $customer = $this->getUser();
-
-        if ('current' !== $customerId && ! $customer->getId()->equals(Uuid::fromString($customerId))) {
-            throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
-        }
+        $customer = $this->customerProvider->get(Uuid::fromString($customerId));
+        $this->denyAccessUnlessGranted(AuthorizationVoterInterface::READ, $customer);
 
         return new ApiJsonResponse(Response::HTTP_OK, $this->customerResponseMapper->map($customer));
     }

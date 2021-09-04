@@ -22,6 +22,9 @@ class PaymentMethodResponseMapper
         return $paymentMethodDto;
     }
 
+    /**
+     * @return PaymentMethodDto[]
+     */
     public function mapMultiple(array $paymentMethods): array
     {
         $paymentMethodDtos = [];

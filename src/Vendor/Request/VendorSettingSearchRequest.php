@@ -8,9 +8,7 @@ use App\Core\Request\SearchRequest;
 use OpenApi\Annotations as OA;
 
 /**
- * @OA\RequestBody(
- *     request="VendorSetting"
- * )
+ * @OA\RequestBody()
  */
 class VendorSettingSearchRequest extends SearchRequest
 {

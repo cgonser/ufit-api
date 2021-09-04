@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Program\DataFixtures;
 
+use Iterator;
 use App\Program\Request\ProgramRequest;
 use App\Program\Service\ProgramManager;
 use App\Vendor\DataFixtures\VendorFixtures;
@@ -15,38 +16,38 @@ use Doctrine\Persistence\ObjectManager;
 
 class ProgramFixtures extends Fixture implements DependentFixtureInterface
 {
-    private VendorProvider $vendorProvider;
-
-    private ProgramManager $programManager;
-
-    public function __construct(VendorProvider $vendorProvider, ProgramManager $programManager)
+    public function __construct(private VendorProvider $vendorProvider, private ProgramManager $programManager)
     {
-        $this->vendorProvider = $vendorProvider;
-        $this->programManager = $programManager;
     }
 
-    public function load(ObjectManager $manager): void
+    public function load(ObjectManager $objectManager): void
     {
         foreach ($this->vendorProvider->findAll() as $vendor) {
             $this->loadVendor($vendor);
         }
 
-        $manager->flush();
+        $objectManager->flush();
     }
 
-    public function getDependencies()
+    /**
+     * @return array<class-string<VendorFixtures>>
+     */
+    public function getDependencies(): array
     {
         return [VendorFixtures::class];
     }
 
-    private function loadVendor(Vendor $vendor)
+    private function loadVendor(Vendor $vendor): void
     {
         foreach ($this->getData() as $programRequest) {
             $this->programManager->createFromRequest($vendor, $programRequest);
         }
     }
 
-    private function getData(): \Iterator
+    /**
+     * @return Iterator<ProgramRequest>
+     */
+    private function getData(): Iterator
     {
         $programRequest = new ProgramRequest();
         $programRequest->isTemplate = true;

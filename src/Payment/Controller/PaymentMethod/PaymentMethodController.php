@@ -19,22 +19,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PaymentMethodController extends AbstractController
 {
-    private PaymentMethodProvider $paymentMethodProvider;
-
-    private PaymentMethodResponseMapper $paymentMethodResponseMapper;
-
     public function __construct(
-        PaymentMethodProvider $paymentMethodProvider,
-        PaymentMethodResponseMapper $paymentMethodResponseMapper
+        private PaymentMethodProvider $paymentMethodProvider,
+        private PaymentMethodResponseMapper $paymentMethodResponseMapper
     ) {
-        $this->paymentMethodProvider = $paymentMethodProvider;
-        $this->paymentMethodResponseMapper = $paymentMethodResponseMapper;
     }
 
     /**
-     * @Route("/payment_methods", methods="GET", name="payment_methods_get")
-     * @ParamConverter("searchRequest", converter="querystring")
-
      * @OA\Tag(name="PaymentMethod")
      * @OA\Parameter(in="query", name="filters", @OA\Schema(ref=@Model(type=PaymentMethodSearchRequest::class)))
      * @OA\Response(
@@ -43,10 +34,12 @@ class PaymentMethodController extends AbstractController
      *     @OA\JsonContent(type="array",@OA\Items(ref=@Model(type=PaymentMethodDto::class))))
      * )
      */
-    public function getPaymentMethods(PaymentMethodSearchRequest $searchRequest): Response
+    #[Route(path: '/payment_methods', name: 'payment_methods_get', methods: 'GET')]
+    #[ParamConverter(data: 'paymentMethodSearchRequest', converter: 'querystring')]
+    public function getPaymentMethods(PaymentMethodSearchRequest $paymentMethodSearchRequest): ApiJsonResponse
     {
-        $paymentMethods = $this->paymentMethodProvider->search($searchRequest);
-        $count = $this->paymentMethodProvider->count($searchRequest);
+        $paymentMethods = $this->paymentMethodProvider->search($paymentMethodSearchRequest);
+        $count = $this->paymentMethodProvider->count($paymentMethodSearchRequest);
 
         return new ApiJsonResponse(
             Response::HTTP_OK,
@@ -58,12 +51,11 @@ class PaymentMethodController extends AbstractController
     }
 
     /**
-     * @Route("/payment_methods/{paymentMethodId}", methods="GET", name="payment_methods_get_by_id")
-     *
      * @OA\Tag(name="PaymentMethod")
      * @OA\Response(response=200, description="Success", @OA\JsonContent(ref=@Model(type=PaymentMethodDto::class)))
      */
-    public function getPaymentMethodById(string $paymentMethodId): Response
+    #[Route(path: '/payment_methods/{paymentMethodId}', name: 'payment_methods_get_by_id', methods: 'GET')]
+    public function getPaymentMethodById(string $paymentMethodId): ApiJsonResponse
     {
         $paymentMethod = $this->paymentMethodProvider->get(Uuid::fromString($paymentMethodId));
 

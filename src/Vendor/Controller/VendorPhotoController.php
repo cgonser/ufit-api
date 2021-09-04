@@ -37,6 +37,7 @@ class VendorPhotoController extends AbstractController
     #[Route(path: '/vendors/{vendorId}/photo', name: 'vendors_photo_upload', methods: 'PUT')]
     public function create(string $vendorId, Request $request): ApiJsonResponse
     {
+        $contentType = $request->headers->get('Content-Type');
         $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
         $this->denyAccessUnlessGranted(AuthorizationVoterInterface::UPDATE, $vendor);
         $this->vendorPhotoManager->uploadPhoto($vendor, $request->getContent());

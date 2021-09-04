@@ -6,6 +6,7 @@ namespace App\Customer\Request;
 
 use App\Core\Request\AbstractRequest;
 use OpenApi\Annotations as OA;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * @OA\RequestBody()
@@ -15,7 +16,7 @@ class BillingInformationRequest extends AbstractRequest
     /**
      * @OA\Property()
      */
-    public ?string $customerId = null;
+    public UuidInterface|string|null $customerId = null;
 
     /**
      * @OA\Property()

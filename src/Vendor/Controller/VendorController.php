@@ -62,7 +62,7 @@ final class VendorController extends AbstractController
         path: '/vendors/{vendorId}',
         name: 'vendors_get_one',
         requirements: [
-            'vendorId' => '[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}',
+            'vendorId' => '(current|[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12})',
         ],
         methods: ['GET']
     )]

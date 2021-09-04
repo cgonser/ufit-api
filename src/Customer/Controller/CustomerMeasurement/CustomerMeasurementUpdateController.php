@@ -7,6 +7,7 @@ namespace App\Customer\Controller\CustomerMeasurement;
 use App\Core\Exception\ApiJsonException;
 use App\Core\Exception\ApiJsonInputValidationException;
 use App\Core\Response\ApiJsonResponse;
+use App\Core\Security\AuthorizationVoterInterface;
 use App\Customer\Dto\CustomerMeasurementDto;
 use App\Customer\Entity\Customer;
 use App\Customer\Exception\CustomerMeasurementInvalidTakenAtException;
@@ -25,93 +26,49 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
+#[Route(path: '/customers/{customerId}/measurements')]
 class CustomerMeasurementUpdateController extends AbstractController
 {
-    private CustomerMeasurementProvider $customerMeasurementProvider;
-
-    private CustomerMeasurementService $customerMeasurementService;
-
-    private CustomerMeasurementResponseMapper $customerMeasurementResponseMapper;
-
-    private CustomerProvider $customerProvider;
-
     public function __construct(
-        CustomerMeasurementProvider $customerMeasurementProvider,
-        CustomerMeasurementService $customerMeasurementService,
-        CustomerMeasurementResponseMapper $customerMeasurementResponseMapper,
-        CustomerProvider $customerProvider
+        private CustomerMeasurementProvider $customerMeasurementProvider,
+        private CustomerMeasurementService $customerMeasurementService,
+        private CustomerMeasurementResponseMapper $customerMeasurementResponseMapper,
+        private CustomerProvider $customerProvider,
     ) {
-        $this->customerMeasurementResponseMapper = $customerMeasurementResponseMapper;
-        $this->customerMeasurementProvider = $customerMeasurementProvider;
-        $this->customerMeasurementService = $customerMeasurementService;
-        $this->customerProvider = $customerProvider;
     }
 
     /**
-     * @Route("/customers/{customerId}/measurements/{customerMeasurementId}", methods="PUT", name="customers_measurements_update")
-     *
-     * @ParamConverter("customerMeasurementRequest", converter="fos_rest.request_body", options={
-     *     "deserializationContext"= {"allow_extra_attributes"=false}
-     * })
-     *
      * @OA\Tag(name="Customer / Measurement")
-     * @OA\RequestBody(
-     *     required=true,
-     *     @OA\JsonContent(ref=@Model(type=CustomerMeasurementRequest::class))
-     * )
-     * @OA\Response(
-     *     response=200,
-     *     description="Updates a measurement",
-     *     @OA\JsonContent(ref=@Model(type=CustomerMeasurementDto::class))
-     * )
-     * @OA\Response(
-     *     response=400,
-     *     description="Invalid input"
-     * )
-     * @OA\Response(
-     *     response=404,
-     *     description="Measurement not found"
-     * )
+     * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=CustomerMeasurementRequest::class)))
+     * @OA\Response(response=200, description="Updates a measurement", @OA\JsonContent(ref=@Model(type=CustomerMeasurementDto::class)))
+     * @OA\Response(response=400,description="Invalid input")
+     * @OA\Response(response=404, description="Measurement not found")
      */
+    #[Route(path: '/{customerMeasurementId}', name: 'customers_measurements_update', methods: 'PUT')]
+    #[ParamConverter(data: 'customerMeasurementRequest', options: [
+        'deserializationContext' => [
+            'allow_extra_attributes' => false,
+
+        ],
+    ], converter: 'fos_rest.request_body')]
     public function update(
         string $customerId,
         string $customerMeasurementId,
         CustomerMeasurementRequest $customerMeasurementRequest,
-        ConstraintViolationListInterface $validationErrors
     ): Response {
-        try {
-            if ($validationErrors->count() > 0) {
-                throw new ApiJsonInputValidationException($validationErrors);
-            }
+        $customer = $this->customerProvider->get(Uuid::fromString($customerId));
+        $this->denyAccessUnlessGranted(AuthorizationVoterInterface::UPDATE, $customer);
 
-            if ('current' === $customerId) {
-                /** @var Customer $customer */
-                $customer = $this->getUser();
-            } else {
-                if ($this->getUser() instanceof Customer) {
-                    // customer fetching not implemented yet; requires also authorization
-                    throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
-                }
+        $customerMeasurement = $this->customerMeasurementProvider->getByCustomerAndId(
+            $customer,
+            Uuid::fromString($customerMeasurementId)
+        );
 
-                // TODO: implement proper vendor authorization
-                $customer = $this->customerProvider->get(Uuid::fromString($customerId));
-            }
+        $this->customerMeasurementService->update($customerMeasurement, $customerMeasurementRequest);
 
-            $customerMeasurement = $this->customerMeasurementProvider->getByCustomerAndId(
-                $customer,
-                Uuid::fromString($customerMeasurementId)
-            );
-
-            $this->customerMeasurementService->update($customerMeasurement, $customerMeasurementRequest);
-
-            return new ApiJsonResponse(
-                Response::HTTP_CREATED,
-                $this->customerMeasurementResponseMapper->map($customerMeasurement)
-            );
-        } catch (CustomerMeasurementNotFoundException $e) {
-            throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
-        } catch (CustomerMeasurementInvalidTakenAtException $e) {
-            throw new ApiJsonException(Response::HTTP_BAD_REQUEST, $e->getMessage());
-        }
+        return new ApiJsonResponse(
+            Response::HTTP_CREATED,
+            $this->customerMeasurementResponseMapper->map($customerMeasurement)
+        );
     }
 }

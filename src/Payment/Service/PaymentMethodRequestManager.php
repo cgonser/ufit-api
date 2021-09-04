@@ -9,11 +9,8 @@ use App\Payment\Request\PaymentMethodRequest;
 
 class PaymentMethodRequestManager
 {
-    private PaymentMethodManager $paymentMethodManager;
-
-    public function __construct(PaymentMethodManager $paymentMethodManager)
+    public function __construct(private PaymentMethodManager $paymentMethodManager)
     {
-        $this->paymentMethodManager = $paymentMethodManager;
     }
 
     public function createFromRequest(PaymentMethodRequest $paymentMethodRequest): PaymentMethod
@@ -27,28 +24,28 @@ class PaymentMethodRequestManager
         return $paymentMethod;
     }
 
-    public function updateFromRequest(PaymentMethod $paymentMethod, PaymentMethodRequest $paymentMethodRequest)
+    public function updateFromRequest(PaymentMethod $paymentMethod, PaymentMethodRequest $paymentMethodRequest): void
     {
         $this->mapFromRequest($paymentMethod, $paymentMethodRequest);
 
         $this->paymentMethodManager->update($paymentMethod);
     }
 
-    public function mapFromRequest(PaymentMethod $paymentMethod, PaymentMethodRequest $paymentMethodRequest)
+    public function mapFromRequest(PaymentMethod $paymentMethod, PaymentMethodRequest $paymentMethodRequest): void
     {
-        if (null !== $paymentMethodRequest->name) {
+        if ($paymentMethodRequest->has('name')) {
             $paymentMethod->setName($paymentMethodRequest->name);
         }
 
-        if (null !== $paymentMethodRequest->countriesEnabled) {
+        if ($paymentMethodRequest->has('countriesEnabled')) {
             $paymentMethod->setCountriesEnabled($paymentMethodRequest->countriesEnabled);
         }
 
-        if (null !== $paymentMethodRequest->countriesDisabled) {
+        if ($paymentMethodRequest->has('countriesDisabled')) {
             $paymentMethod->setCountriesDisabled($paymentMethodRequest->countriesDisabled);
         }
 
-        if (null !== $paymentMethodRequest->isActive) {
+        if ($paymentMethodRequest->has('isActive')) {
             $paymentMethod->setIsActive($paymentMethodRequest->isActive);
         }
     }

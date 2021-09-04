@@ -45,12 +45,7 @@ class VendorPasswordController extends AbstractController
     public function changePassword(
         string $vendorId,
         VendorPasswordChangeRequest $vendorPasswordChangeRequest,
-        ConstraintViolationListInterface $constraintViolationList
     ): ApiJsonResponse {
-        if ($constraintViolationList->count() > 0) {
-            throw new ApiJsonInputValidationException($constraintViolationList);
-        }
-
         $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
         $this->denyAccessUnlessGranted(AuthorizationVoterInterface::UPDATE, $vendor);
 
@@ -71,11 +66,7 @@ class VendorPasswordController extends AbstractController
     ], converter: 'fos_rest.request_body')]
     public function resetPassword(
         VendorPasswordResetRequest $vendorPasswordResetRequest,
-        ConstraintViolationListInterface $constraintViolationList
     ): ApiJsonResponse {
-        if ($constraintViolationList->count() > 0) {
-            throw new ApiJsonInputValidationException($constraintViolationList);
-        }
         $this->vendorRequestManager->startPasswordReset($vendorPasswordResetRequest);
 
         return new ApiJsonResponse(Response::HTTP_OK);
@@ -93,11 +84,7 @@ class VendorPasswordController extends AbstractController
     ], converter: 'fos_rest.request_body')]
     public function resetPasswordToken(
         VendorPasswordResetTokenRequest $vendorPasswordResetTokenRequest,
-        ConstraintViolationListInterface $constraintViolationList
     ): ApiJsonResponse {
-        if ($constraintViolationList->count() > 0) {
-            throw new ApiJsonInputValidationException($constraintViolationList);
-        }
         $this->vendorRequestManager->concludePasswordReset($vendorPasswordResetTokenRequest);
 
         return new ApiJsonResponse(Response::HTTP_OK);

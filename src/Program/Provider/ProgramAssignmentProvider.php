@@ -15,12 +15,12 @@ use Ramsey\Uuid\UuidInterface;
 
 class ProgramAssignmentProvider extends AbstractProvider
 {
-    public function __construct(ProgramAssignmentRepository $repository)
+    public function __construct(ProgramAssignmentRepository $programAssignmentRepository)
     {
-        $this->repository = $repository;
+        $this->repository = $programAssignmentRepository;
     }
 
-    public function getByProgramAndId(Program $program, UuidInterface $programAssignmentId): ProgramAssignment
+    public function getByProgramAndId(Program $program, UuidInterface $programAssignmentId): ?ProgramAssignment
     {
         /** @var ProgramAssignment|null $programAssignment */
         $programAssignment = $this->repository->findOneBy([
@@ -28,7 +28,7 @@ class ProgramAssignmentProvider extends AbstractProvider
             'program' => $program,
         ]);
 
-        if (! $programAssignment) {
+        if ($programAssignment === null) {
             $this->throwNotFoundException();
         }
 
@@ -49,7 +49,7 @@ class ProgramAssignmentProvider extends AbstractProvider
         ]);
     }
 
-    protected function throwNotFoundException()
+    protected function throwNotFoundException(): void
     {
         throw new ProgramAssignmentNotFoundException();
     }
@@ -65,6 +65,9 @@ class ProgramAssignmentProvider extends AbstractProvider
         return [];
     }
 
+    /**
+     * @return string[]|array<string, string>
+     */
     protected function getFilterableFields(): array
     {
         return [

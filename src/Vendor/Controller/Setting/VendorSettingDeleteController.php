@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Vendor\Controller\Setting;
 
-use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
 use App\Core\Security\AuthorizationVoterInterface;
 use App\Vendor\Entity\Vendor;
@@ -39,10 +38,7 @@ class VendorSettingDeleteController extends AbstractController
         $this->denyAccessUnlessGranted(AuthorizationVoterInterface::UPDATE, $vendor);
 
         $this->vendorSettingManager->delete(
-            $this->vendorSettingProvider->getByVendorAndId(
-                $vendor->getId(),
-                Uuid::fromString($vendorSettingId)
-            )
+            $this->vendorSettingProvider->getByVendorAndId($vendor->getId(), Uuid::fromString($vendorSettingId))
         );
 
         return new ApiJsonResponse(Response::HTTP_NO_CONTENT);

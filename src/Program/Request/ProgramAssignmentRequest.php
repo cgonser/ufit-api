@@ -4,27 +4,26 @@ declare(strict_types=1);
 
 namespace App\Program\Request;
 
+use App\Core\Request\AbstractRequest;
 use OpenApi\Annotations as OA;
 
 /**
- * @OA\RequestBody(
- *     request="ProgramAssignmentRequest"
- * )
+ * @OA\RequestBody()
  */
-class ProgramAssignmentRequest
+class ProgramAssignmentRequest extends AbstractRequest
 {
     /**
      * @OA\Property()
      */
-    public ?string $customerId = null;
+    public ?string $customerId;
 
     /**
      * @OA\Property()
      */
-    public ?bool $isActive = null;
+    public ?bool $isActive;
 
     /**
      * @OA\Property()
      */
-    public ?string $expiresAt = null;
+    public ?string $expiresAt;
 }

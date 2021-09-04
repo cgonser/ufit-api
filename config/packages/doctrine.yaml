@@ -1,5 +1,6 @@
 doctrine:
     dbal:
+        server_version: 13
         url: '%env(resolve:DATABASE_URL)%'
         types:
             uuid: Ramsey\Uuid\Doctrine\UuidType
@@ -128,14 +129,14 @@ doctrine:
 
             App\Payment:
                 is_bundle: false
-                type: annotation
+                type: attribute
                 dir: '%kernel.project_dir%/src/Payment/Entity'
                 prefix: 'App\Payment\Entity'
                 alias: AppPayment
 
             App\Program:
                 is_bundle: false
-                type: annotation
+                type: attribute
                 dir: '%kernel.project_dir%/src/Program/Entity'
                 prefix: 'App\Program\Entity'
                 alias: AppProgram
@@ -149,7 +150,7 @@ doctrine:
 
             App\Subscription:
                 is_bundle: false
-                type: annotation
+                type: attribute
                 dir: '%kernel.project_dir%/src/Subscription/Entity'
                 prefix: 'App\Subscription\Entity'
                 alias: AppVendor

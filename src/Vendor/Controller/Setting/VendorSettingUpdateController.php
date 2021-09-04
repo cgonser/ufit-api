@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Vendor\Controller\Setting;
 
-use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
 use App\Core\Security\AuthorizationVoterInterface;
 use App\Vendor\Dto\VendorSettingDto;
@@ -61,7 +60,8 @@ class VendorSettingUpdateController extends AbstractController
             Uuid::fromString($vendorSettingId)
         );
 
-        $vendorSettingRequest->vendorId = $vendor->getId()->toString();
+        $vendorSettingRequest->vendorId = $vendor->getId()
+            ->toString();
         $this->vendorSettingRequestManager->updateFromRequest($vendorSetting, $vendorSettingRequest);
 
         return new ApiJsonResponse(Response::HTTP_OK, $this->vendorSettingResponseMapper->map($vendorSetting));

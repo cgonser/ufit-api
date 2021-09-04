@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Vendor\Controller\Setting;
 
-use App\Core\Exception\ApiJsonException;
 use App\Core\Request\SearchRequest;
 use App\Core\Response\ApiJsonResponse;
 use App\Core\Security\AuthorizationVoterInterface;
@@ -35,7 +34,6 @@ class VendorSettingController extends AbstractController
 
     /**
      * @Security(name="Bearer")
-     *
      * @OA\Tag(name="Vendor / Settings")
      * @OA\Parameter(in="query", name="filters", @OA\Schema(ref=@Model(type=SearchRequest::class)))
      * @OA\Response(
@@ -46,7 +44,7 @@ class VendorSettingController extends AbstractController
      * )
      */
     #[Route(name: 'vendor_settings_find', methods: 'GET')]
-    #[ParamConverter(data: 'searchRequest', converter: 'querystring')]
+    #[ParamConverter('vendorSettingSearchRequest', converter: 'querystring')]
     public function getVendorSettings(
         string $vendorId,
         VendorSettingSearchRequest $vendorSettingSearchRequest
@@ -54,7 +52,8 @@ class VendorSettingController extends AbstractController
         $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
         $this->denyAccessUnlessGranted(AuthorizationVoterInterface::READ, $vendor);
 
-        $vendorSettingSearchRequest->vendorId = $vendor->getId()->toString();
+        $vendorSettingSearchRequest->vendorId = $vendor->getId()
+            ->toString();
         $vendorSettings = $this->vendorSettingProvider->search($vendorSettingSearchRequest);
         $count = $this->vendorSettingProvider->count($vendorSettingSearchRequest);
 

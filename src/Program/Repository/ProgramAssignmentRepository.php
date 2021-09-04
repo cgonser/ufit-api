@@ -10,8 +10,8 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class ProgramAssignmentRepository extends BaseRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $managerRegistry)
     {
-        parent::__construct($registry, ProgramAssignment::class);
+        parent::__construct($managerRegistry, ProgramAssignment::class);
     }
 }

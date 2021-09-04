@@ -89,6 +89,7 @@ class VendorManager
             return true;
         }
 
-        return !$vendor->isNew() && $existingVendor->getId()->equals($vendor->getId());
+        return ! $vendor->isNew() && $existingVendor->getId()
+            ->equals($vendor->getId());
     }
 }

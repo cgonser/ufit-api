@@ -23,68 +23,37 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
+#[Route(path: '/measurement_types')]
 class MeasurementTypeUpdateController extends AbstractController
 {
-    private MeasurementTypeService $measurementTypeService;
-
-    private MeasurementTypeResponseMapper $measurementTypeResponseMapper;
-
-    private MeasurementTypeProvider $measurementTypeProvider;
-
     public function __construct(
-        MeasurementTypeService $measurementTypeService,
-        MeasurementTypeProvider $measurementTypeProvider,
-        MeasurementTypeResponseMapper $measurementTypeResponseMapper
+        private MeasurementTypeService $measurementTypeService,
+        private MeasurementTypeProvider $measurementTypeProvider,
+        private MeasurementTypeResponseMapper $measurementTypeResponseMapper
     ) {
-        $this->measurementTypeService = $measurementTypeService;
-        $this->measurementTypeResponseMapper = $measurementTypeResponseMapper;
-        $this->measurementTypeProvider = $measurementTypeProvider;
     }
 
     /**
-     * @Route("/measurement_types/{measurementTypeId}", methods="PUT", name="measurement_types_update")
-     *
-     * @ParamConverter("measurementTypeRequest", converter="fos_rest.request_body", options={
-     *     "deserializationContext"= {"allow_extra_attributes"=false}
-     * })
-     *
      * @OA\Tag(name="MeasurementType")
-     * @OA\RequestBody(
-     *     required=true,
-     *     @OA\JsonContent(ref=@Model(type=MeasurementTypeRequest::class))
-     * )
-     * @OA\Response(
-     *     response=200,
-     *     description="Updates a measurement type",
-     *     @OA\JsonContent(ref=@Model(type=MeasurementTypeDto::class))
-     * )
-     * @OA\Response(
-     *     response=400,
-     *     description="Invalid input"
-     * )
+     * @OA\RequestBody( required=true, @OA\JsonContent(ref=@Model(type=MeasurementTypeRequest::class)))
+     * @OA\Response(response=200, description="Success", @OA\JsonContent(ref=@Model(type=MeasurementTypeDto::class)))
+     * @OA\Response(response=400, description="Invalid input")
      */
+    #[Route(path: '/{measurementTypeId}', name: 'measurement_types_update', methods: 'PUT')]
+    #[ParamConverter(data: 'measurementTypeRequest', options: [
+        'deserializationContext' => ['allow_extra_attributes' => false],
+    ], converter: 'fos_rest.request_body')]
     public function update(
         string $measurementTypeId,
         MeasurementTypeRequest $measurementTypeRequest,
-        ConstraintViolationListInterface $validationErrors
     ): Response {
-        try {
-            if ($validationErrors->count() > 0) {
-                throw new ApiJsonInputValidationException($validationErrors);
-            }
+        $measurementType = $this->measurementTypeProvider->get(Uuid::fromString($measurementTypeId));
 
-            $measurementType = $this->measurementTypeProvider->get(Uuid::fromString($measurementTypeId));
+        $this->measurementTypeService->update($measurementType, $measurementTypeRequest);
 
-            $this->measurementTypeService->update($measurementType, $measurementTypeRequest);
-
-            return new ApiJsonResponse(
-                Response::HTTP_OK,
-                $this->measurementTypeResponseMapper->map($measurementType)
-            );
-        } catch (MeasurementTypeNotFoundException $e) {
-            throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
-        } catch (MeasurementTypeAlreadyExistsException $e) {
-            throw new ApiJsonException(Response::HTTP_BAD_REQUEST, $e->getMessage());
-        }
+        return new ApiJsonResponse(
+            Response::HTTP_OK,
+            $this->measurementTypeResponseMapper->map($measurementType)
+        );
     }
 }

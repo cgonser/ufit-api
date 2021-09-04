@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Vendor\EventSubscriber;
 
 use App\Vendor\Entity\Vendor;
-use Ramsey\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -25,7 +24,7 @@ class CurrentVendorRequestSubscriber implements EventSubscriberInterface
         $request = $controllerEvent->getRequest();
 
         if ('current' === $request->attributes->get('vendorSlug')) {
-            if (!$vendor instanceof Vendor) {
+            if (! $vendor instanceof Vendor) {
                 throw new AccessDeniedHttpException();
             }
 
@@ -33,7 +32,7 @@ class CurrentVendorRequestSubscriber implements EventSubscriberInterface
         }
 
         if ('current' === $request->attributes->get('vendorId')) {
-            if (!$vendor instanceof Vendor) {
+            if (! $vendor instanceof Vendor) {
                 throw new AccessDeniedHttpException();
             }
 

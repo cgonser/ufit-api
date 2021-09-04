@@ -13,9 +13,7 @@ use Ramsey\Uuid\UuidInterface;
 
 class QuestionnaireProvider extends AbstractProvider
 {
-    public function __construct(
-        QuestionnaireRepository $questionnaireRepository
-    ) {
+    public function __construct(QuestionnaireRepository $questionnaireRepository) {
         $this->repository = $questionnaireRepository;
     }
 
@@ -26,7 +24,7 @@ class QuestionnaireProvider extends AbstractProvider
             'vendor' => $vendor,
         ]);
 
-        if (!$questionnaire) {
+        if (! $questionnaire) {
             throw new QuestionnaireNotFoundException();
         }
 

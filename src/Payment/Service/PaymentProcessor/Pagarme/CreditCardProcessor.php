@@ -22,11 +22,14 @@ class CreditCardProcessor extends PagarmeProcessor implements PaymentProcessorIn
 
         $details = $payment->getDetails();
 
-        if (null === $details || ! isset($details['card_hash'])) {
+        if (null === $details || !isset($details['card_hash'])) {
             throw new PaymentMissingCreditCardDetailsException();
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function prepareTransactionData(Payment $payment): array
     {
         return [

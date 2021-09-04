@@ -11,52 +11,38 @@ use App\Payment\Provider\PaymentProvider;
 use App\Payment\Service\PaymentManager;
 use App\Subscription\Service\SubscriptionManager;
 use Ramsey\Uuid\UuidInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\String\UnicodeString;
 
 class PagarmeTransactionResponseProcessor
 {
-    private PaymentProvider $paymentProvider;
-    private PaymentManager $paymentManager;
-    private PaymentMethodProvider $paymentMethodProvider;
-    private SubscriptionManager $subscriptionManager;
-    private MessageBusInterface $messageBus;
-
     public function __construct(
-        PaymentProvider $paymentProvider,
-        PaymentManager $paymentManager,
-        PaymentMethodProvider $paymentMethodProvider,
-        SubscriptionManager $subscriptionManager,
-        MessageBusInterface $messageBus
+        private PaymentProvider $paymentProvider,
+        private PaymentManager $paymentManager,
+        private PaymentMethodProvider $paymentMethodProvider,
+        private SubscriptionManager $subscriptionManager
     ) {
-        $this->paymentProvider = $paymentProvider;
-        $this->paymentManager = $paymentManager;
-        $this->paymentMethodProvider = $paymentMethodProvider;
-        $this->subscriptionManager = $subscriptionManager;
-        $this->messageBus = $messageBus;
     }
 
     public function process(
         \stdClass $response,
         ?UuidInterface $paymentId = null,
         ?UuidInterface $subscriptionId = null
-    ) {
+    ): void {
         $payment = $this->getOrCreatePayment(
-            (string) $response->tid,
+            (string)$response->tid,
             $paymentId,
             $subscriptionId,
             $response->payment_method
         );
 
-        $status = new UnicodeString($response->status);
-        $methodName = 'process'.ucfirst($status->camel());
+        $methodName = 'process'.ucfirst((new UnicodeString($response->status))->camel()->toString());
 
         $gatewayResponse = $payment->getGatewayResponse();
         if (null === $payment->getGatewayResponse()) {
             $gatewayResponse = [];
         }
 
-        $gatewayResponse[date('Ymd_his')] = (array) $response;
+        $gatewayResponse[date('Ymd_his')] = (array)$response;
         $payment->setGatewayResponse($gatewayResponse);
 
         if (method_exists($this, $methodName)) {
@@ -82,16 +68,16 @@ class PagarmeTransactionResponseProcessor
             }
 
             return $this->paymentProvider->getByExternalReference($externalReference);
-        } catch (PaymentNotFoundException $e) {
+        } catch (PaymentNotFoundException $paymentNotFoundException) {
             if (null !== $subscriptionId) {
                 // todo: generate invoice + payment
                 $invoice = $this->subscriptionManager->getOrCreateUnpaidInvoice($subscriptionId);
 
                 $paymentMethod = $this->paymentMethodProvider->getBy([
                     'name' => [
-                        'credit_card' => 'credit-card',
-                        'boleto' => 'boleto',
-                    ][$paymentMethodName] ?? $paymentMethodName,
+                            'credit_card' => 'credit-card',
+                            'boleto' => 'boleto',
+                        ][$paymentMethodName] ?? $paymentMethodName,
                 ]);
 
                 $payment = $this->paymentManager->createFromInvoice($invoice, $paymentMethod);
@@ -100,31 +86,31 @@ class PagarmeTransactionResponseProcessor
                 return $payment;
             }
 
-            throw $e;
+            throw $paymentNotFoundException;
         }
     }
 
-    private function processPaid(Payment $payment, \stdClass $response)
+    private function processPaid(Payment $payment, \stdClass $response): void
     {
         $this->paymentManager->markAsPaid($payment, new \DateTime($response->date_updated));
     }
 
-    private function processProcessing(Payment $payment, \stdClass $response)
+    private function processProcessing(Payment $payment, \stdClass $response): void
     {
         $payment->setStatus(Payment::STATUS_PENDING);
     }
 
-    private function processAuthorized(Payment $payment, \stdClass $response)
+    private function processAuthorized(Payment $payment, \stdClass $response): void
     {
 //        $payment->setStatus(Payment::STATUS_PENDING);
     }
 
-    private function processRefunded(Payment $payment, \stdClass $response)
+    private function processRefunded(Payment $payment, \stdClass $response): void
     {
 //        $payment->setStatus(Payment::STATUS_PENDING);
     }
 
-    private function processWaitingPayment(Payment $payment, \stdClass $response)
+    private function processWaitingPayment(Payment $payment, \stdClass $response): void
     {
         $payment->setStatus(Payment::STATUS_PENDING);
         $payment->setDetails(
@@ -140,27 +126,27 @@ class PagarmeTransactionResponseProcessor
         $payment->setDueDate(new \DateTime($response->boleto_expiration_date));
     }
 
-    private function processPendingRefund(Payment $payment, \stdClass $response)
+    private function processPendingRefund(Payment $payment, \stdClass $response): void
     {
 //        $payment->setStatus(Payment::STATUS_PENDING);
     }
 
-    private function processRefused(Payment $payment, \stdClass $response)
+    private function processRefused(Payment $payment, \stdClass $response): void
     {
         $payment->setStatus(Payment::STATUS_REJECTED);
     }
 
-    private function processChargedback(Payment $payment, \stdClass $response)
+    private function processChargedback(Payment $payment, \stdClass $response): void
     {
 //        $payment->setStatus(Payment::STATUS_PENDING);
     }
 
-    private function processAnalyzing(Payment $payment, \stdClass $response)
+    private function processAnalyzing(Payment $payment, \stdClass $response): void
     {
         $payment->setStatus(Payment::STATUS_PENDING);
     }
 
-    private function processPendingReview(Payment $payment, \stdClass $response)
+    private function processPendingReview(Payment $payment, \stdClass $response): void
     {
         $payment->setStatus(Payment::STATUS_PENDING);
     }

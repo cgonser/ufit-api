@@ -8,6 +8,9 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class ProgramAssetInvalidFilenameException extends BadRequestHttpException
 {
+    /**
+     * @var string
+     */
     protected $message = 'Invalid or null filename';
 
     public function __construct()

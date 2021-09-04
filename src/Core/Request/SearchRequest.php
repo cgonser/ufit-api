@@ -7,9 +7,7 @@ namespace App\Core\Request;
 use OpenApi\Annotations as OA;
 
 /**
- * @OA\RequestBody(
- *     request="SearchRequest"
- * )
+ * @OA\RequestBody()
  */
 class SearchRequest
 {

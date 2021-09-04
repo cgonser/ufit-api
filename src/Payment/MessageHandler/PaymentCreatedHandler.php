@@ -13,20 +13,11 @@ use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
 class PaymentCreatedHandler implements MessageHandlerInterface
 {
-    private PaymentProvider $paymentProvider;
-
-    private PaymentProcessor $paymentProcessor;
-
-    private LoggerInterface $logger;
-
     public function __construct(
-        PaymentProvider $paymentProvider,
-        PaymentProcessor $paymentProcessor,
-        LoggerInterface $logger
+        private PaymentProvider $paymentProvider,
+        private PaymentProcessor $paymentProcessor,
+        private LoggerInterface $logger,
     ) {
-        $this->paymentProvider = $paymentProvider;
-        $this->paymentProcessor = $paymentProcessor;
-        $this->logger = $logger;
     }
 
     public function __invoke(PaymentCreatedEvent $paymentCreatedEvent)
@@ -39,19 +30,10 @@ class PaymentCreatedHandler implements MessageHandlerInterface
         $this->logger->info(
             'payment.created',
             [
-                'id' => $payment->getId()
-                    ->toString(),
-                'subscriptionId' => $payment->getInvoice()
-                    ->getSubscriptionId()
-                    ->toString(),
-                'customerId' => $payment->getInvoice()
-                    ->getSubscription()
-                    ->getCustomerId()
-                    ->toString(),
-                'vendorPlanId' => $payment->getInvoice()
-                    ->getSubscription()
-                    ->getVendorPlanId()
-                    ->toString(),
+                'id' => $payment->getId()->toString(),
+                'subscriptionId' => $payment->getInvoice()->getSubscriptionId()->toString(),
+                'customerId' => $payment->getInvoice()->getSubscription()->getCustomerId()?->toString(),
+                'vendorPlanId' => $payment->getInvoice()->getSubscription()->getVendorPlanId()->toString(),
             ]
         );
     }

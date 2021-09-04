@@ -4,31 +4,34 @@ declare(strict_types=1);
 
 namespace App\Payment\MessageHandler;
 
+use Iterator;
 use App\Payment\Service\PaymentProcessor\VendorInformationManagerInterface;
 use App\Vendor\Message\VendorBankAccountCreatedEvent;
 use App\Vendor\Message\VendorBankAccountUpdatedEvent;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
 
 class VendorBankAccountUpdateHandler implements MessageSubscriberInterface
 {
-    private VendorInformationManagerInterface $vendorInformationManager;
-
-    public function __construct(VendorInformationManagerInterface $vendorInformationManager)
+    public function __construct(private VendorInformationManagerInterface $vendorInformationManager)
     {
-        $this->vendorInformationManager = $vendorInformationManager;
     }
 
-    public function handleVendorBankAccountCreatedEvent(VendorBankAccountCreatedEvent $event)
-    {
-        $this->updateVendorPaymentInformation($event->getVendorId());
+    public function handleVendorBankAccountCreatedEvent(
+        VendorBankAccountCreatedEvent $vendorBankAccountCreatedEvent
+    ): void {
+        $this->updateVendorPaymentInformation($vendorBankAccountCreatedEvent->getVendorId());
     }
 
-    public function handleVendorBankAccountUpdatedEvent(VendorBankAccountUpdatedEvent $event)
-    {
-        $this->updateVendorPaymentInformation($event->getVendorId());
+    public function handleVendorBankAccountUpdatedEvent(
+        VendorBankAccountUpdatedEvent $vendorBankAccountUpdatedEvent
+    ): void {
+        $this->updateVendorPaymentInformation($vendorBankAccountUpdatedEvent->getVendorId());
     }
 
+    /**
+     * @return Iterator<array<string, string>>
+     */
     public static function getHandledMessages(): iterable
     {
         yield VendorBankAccountCreatedEvent::class => [
@@ -40,8 +43,8 @@ class VendorBankAccountUpdateHandler implements MessageSubscriberInterface
         ];
     }
 
-    private function updateVendorPaymentInformation(string $vendorId)
+    private function updateVendorPaymentInformation(UuidInterface $vendorId): void
     {
-        $this->vendorInformationManager->updateVendorInformation(Uuid::fromString($vendorId));
+        $this->vendorInformationManager->updateVendorInformation($vendorId);
     }
 }

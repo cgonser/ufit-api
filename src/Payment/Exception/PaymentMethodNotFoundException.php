@@ -8,5 +8,8 @@ use App\Core\Exception\ResourceNotFoundException;
 
 class PaymentMethodNotFoundException extends ResourceNotFoundException
 {
+    /**
+     * @var string
+     */
     protected $message = 'Payment method not found';
 }

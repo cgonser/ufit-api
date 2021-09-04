@@ -4,44 +4,33 @@ declare(strict_types=1);
 
 namespace App\Payment\Entity;
 
+use App\Payment\Repository\PaymentMethodRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints;
 
-/**
- * @ORM\Entity(repositoryClass="App\Payment\Repository\PaymentMethodRepository")
- * @ORM\Table(name="payment_method")
- */
-class PaymentMethod
+#[ORM\Entity(repositoryClass: PaymentMethodRepository::class)]
+#[ORM\Table(name: 'payment_method')]
+class PaymentMethod implements \Stringable
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="uuid", unique=true)
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class=UuidGenerator::class)
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'uuid', unique: true)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private UuidInterface $id;
 
-    /**
-     * @ORM\Column(type="string", nullable=false)
-     * @Assert\NotBlank()
-     */
+    #[ORM\Column(type: 'string')]
+    #[Constraints\NotBlank]
     private string $name;
 
-    /**
-     * @ORM\Column(type="jsonb", nullable=true)
-     */
+    #[ORM\Column(type: 'jsonb', nullable: true)]
     private ?array $countriesEnabled = null;
 
-    /**
-     * @ORM\Column(type="jsonb", nullable=true)
-     */
+    #[ORM\Column(type: 'jsonb', nullable: true)]
     private ?array $countriesDisabled = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false, options={"default": true})
-     */
+    #[ORM\Column(type: 'boolean', options: ['default' => true])]
     private bool $isActive = true;
 
     public function __toString(): string

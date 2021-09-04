@@ -24,7 +24,13 @@ class QueryStringConverter implements ParamConverterInterface
                 continue;
             }
 
-            $object->{$propertyName} = $request->query->get($propertyName);
+            $value = $request->query->get($propertyName);
+
+            $object->{$propertyName} = match ($property->getType()->getName()) {
+                'boolean', 'bool' => (bool) $value,
+                'integer', 'int' => (int) $value,
+                default => $value,
+            };
         }
 
         $request->attributes->set($name, $object);

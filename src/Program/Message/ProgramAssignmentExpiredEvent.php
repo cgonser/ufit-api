@@ -8,6 +8,9 @@ use Ramsey\Uuid\UuidInterface;
 
 class ProgramAssignmentExpiredEvent
 {
+    /**
+     * @var string
+     */
     public const NAME = 'program_assignment.expired';
 
     protected ?UuidInterface $programAssignmentId = null;

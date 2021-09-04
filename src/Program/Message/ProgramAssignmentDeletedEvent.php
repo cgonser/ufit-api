@@ -8,6 +8,9 @@ use Ramsey\Uuid\UuidInterface;
 
 class ProgramAssignmentDeletedEvent
 {
+    /**
+     * @var string
+     */
     public const NAME = 'program_assignment.deleted';
 
     protected ?UuidInterface $programAssignmentId = null;

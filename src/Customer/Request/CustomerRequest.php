@@ -8,9 +8,7 @@ use App\Core\Request\AbstractRequest;
 use OpenApi\Annotations as OA;
 
 /**
- * @OA\RequestBody(
- *     request="CustomerRequest"
- * )
+ * @OA\RequestBody()
  */
 class CustomerRequest extends AbstractRequest
 {

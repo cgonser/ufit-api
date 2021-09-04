@@ -8,6 +8,7 @@ use App\Customer\Entity\BillingInformation;
 use App\Customer\Exception\CustomerInvalidBirthDateException;
 use App\Customer\Request\BillingInformationRequest;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 class BillingInformationRequestManager
 {
@@ -43,7 +44,11 @@ class BillingInformationRequestManager
         BillingInformationRequest $billingInformationRequest
     ): void {
         if ($billingInformationRequest->has('customerId')) {
-            $billingInformation->setCustomerId(Uuid::fromString($billingInformationRequest->customerId));
+            $billingInformation->setCustomerId(
+                $billingInformationRequest->customerId instanceof UuidInterface
+                    ? $billingInformationRequest->customerId
+                    : Uuid::fromString($billingInformationRequest->customerId)
+            );
         }
 
         if ($billingInformationRequest->has('name')) {

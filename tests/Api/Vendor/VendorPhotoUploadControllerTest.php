@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Api\Vendor;
 
-use App\Vendor\Entity\Vendor;
 use Aws\S3\S3Client;
-use joshtronic\LoremIpsum;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,7 +22,7 @@ class VendorPhotoUploadControllerTest extends AbstractVendorTest
         $client = static::createClient();
 
         $vendorData = $this->getVendorDummyData();
-        $vendor = $this->createVendorDummy($vendorData);
+        $this->createVendorDummy($vendorData);
 
         $client->request(Request::METHOD_PUT, '/vendors/current/photo', [], [], [], $uploadedFile->getContent());
         static::assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
@@ -33,8 +30,7 @@ class VendorPhotoUploadControllerTest extends AbstractVendorTest
         $this->authenticateClient($client, $vendorData['email'], $vendorData['password']);
 
         $this->setUpUploadEnvironment();
-
-        echo $uploadedFile->getFilename().PHP_EOL;
+        $client->setServerParameter('CONTENT_TYPE', $uploadedFile->getMimeType());
         $client->request(Request::METHOD_PUT, '/vendors/current/photo', [], [], [], $uploadedFile->getContent());
         $this->assertJsonResponse(Response::HTTP_OK);
         $responseData = $this->getAndAssertJsonResponseData($client);
@@ -47,11 +43,10 @@ class VendorPhotoUploadControllerTest extends AbstractVendorTest
         $files = [];
 
         $finder = new Finder();
-        $finder->files()->in(self::IMAGES_PATH);
+        $finder->files()
+            ->in(self::IMAGES_PATH);
         foreach ($finder as $file) {
-            $files [] = [
-                new UploadedFile($file->getRealPath(), $file->getRelativePathname()),
-            ];
+            $files[] = [new UploadedFile($file->getRealPath(), $file->getRelativePathname())];
         }
 
         return $files;
@@ -66,7 +61,9 @@ class VendorPhotoUploadControllerTest extends AbstractVendorTest
             return;
         }
 
-        $s3Client->createBucket(['Bucket' => $bucketName]);
+        $s3Client->createBucket([
+            'Bucket' => $bucketName,
+        ]);
     }
 
     private function tearDownUploadEnvironment(): void
@@ -74,7 +71,9 @@ class VendorPhotoUploadControllerTest extends AbstractVendorTest
         $bucketName = static::getContainer()->getParameter('s3.buckets.customer_photo');
         $s3Client = static::getContainer()->get(S3Client::class);
 
-        $objects = $s3Client->getIterator('ListObjects', (['Bucket' => $bucketName]));
+        $objects = $s3Client->getIterator('ListObjects', ([
+            'Bucket' => $bucketName,
+        ]));
 
         foreach ($objects as $object) {
             $s3Client->deleteObject([

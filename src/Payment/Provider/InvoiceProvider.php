@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Payment\Provider;
 
+use Doctrine\Common\Collections\Criteria;
 use App\Core\Provider\AbstractProvider;
 use App\Payment\Entity\Invoice;
 use App\Payment\Exception\InvoiceNotFoundException;
@@ -12,9 +13,9 @@ use Ramsey\Uuid\UuidInterface;
 
 class InvoiceProvider extends AbstractProvider
 {
-    public function __construct(InvoiceRepository $repository)
+    public function __construct(InvoiceRepository $invoiceRepository)
     {
-        $this->repository = $repository;
+        $this->repository = $invoiceRepository;
     }
 
     public function getSubscriptionNextDueInvoice(UuidInterface $subscriptionId): Invoice
@@ -22,7 +23,7 @@ class InvoiceProvider extends AbstractProvider
         $invoice = $this->repository->createQueryBuilder('i')
             ->where('i.subscriptionId = :subscriptionId')
             ->andWhere('i.paidAt IS NULL')
-            ->orderBy('i.dueDate', 'ASC')
+            ->orderBy('i.dueDate', Criteria::ASC)
             ->setParameter('subscriptionId', $subscriptionId)
             ->getQuery()
             ->getOneOrNullResult();
@@ -34,16 +35,22 @@ class InvoiceProvider extends AbstractProvider
         return $invoice;
     }
 
-    protected function throwNotFoundException()
+    protected function throwNotFoundException(): void
     {
         throw new InvoiceNotFoundException();
     }
 
+    /**
+     * @return mixed[]
+     */
     protected function getSearchableFields(): array
     {
         return [];
     }
 
+    /**
+     * @return string[]
+     */
     protected function getFilterableFields(): array
     {
         return ['subscriptionId', 'currencyId'];

@@ -9,11 +9,8 @@ use App\Payment\Repository\PaymentMethodRepository;
 
 class PaymentMethodManager
 {
-    private PaymentMethodRepository $paymentMethodRepository;
-
-    public function __construct(PaymentMethodRepository $paymentMethodRepository)
+    public function __construct(private PaymentMethodRepository $paymentMethodRepository)
     {
-        $this->paymentMethodRepository = $paymentMethodRepository;
     }
 
     public function create(PaymentMethod $paymentMethod): void
@@ -21,12 +18,12 @@ class PaymentMethodManager
         $this->paymentMethodRepository->save($paymentMethod);
     }
 
-    public function update(PaymentMethod $paymentMethod)
+    public function update(PaymentMethod $paymentMethod): void
     {
         $this->paymentMethodRepository->save($paymentMethod);
     }
 
-    public function delete(PaymentMethod $paymentMethod)
+    public function delete(PaymentMethod $paymentMethod): void
     {
         $this->paymentMethodRepository->delete($paymentMethod);
     }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Vendor\Controller\BankAccount;
 
-use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
 use App\Core\Security\AuthorizationVoterInterface;
 use App\Vendor\Dto\VendorBankAccountDto;
@@ -61,7 +60,8 @@ class VendorBankAccountUpdateController extends AbstractController
             Uuid::fromString($vendorBankAccountId)
         );
 
-        $vendorBankAccountRequest->vendorId = $vendor->getId()->toString();
+        $vendorBankAccountRequest->vendorId = $vendor->getId()
+            ->toString();
         $this->vendorBankAccountRequestManager->updateFromRequest($vendorBankAccount, $vendorBankAccountRequest);
 
         return new ApiJsonResponse(

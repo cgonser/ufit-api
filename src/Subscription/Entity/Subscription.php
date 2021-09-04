@@ -4,131 +4,93 @@ declare(strict_types=1);
 
 namespace App\Subscription\Entity;
 
+use DateTimeInterface;
 use App\Customer\Entity\Customer;
 use App\Vendor\Entity\VendorPlan;
 use Decimal\Decimal;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Knp\DoctrineBehaviors\Contract\Entity\SoftDeletableInterface;
+use Knp\DoctrineBehaviors\Contract\Entity\TimestampableInterface;
+use Knp\DoctrineBehaviors\Model\SoftDeletable\SoftDeletableTrait;
+use Knp\DoctrineBehaviors\Model\Timestampable\TimestampableTrait;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Subscription\Repository\SubscriptionRepository;
 
-/**
- * @ORM\Entity(repositoryClass="App\Subscription\Repository\SubscriptionRepository")
- * @ORM\Table(name="subscription")
- * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
- */
-class Subscription
+#[ORM\Entity(repositoryClass: SubscriptionRepository::class)]
+#[ORM\Table(name: "subscription")]
+class Subscription implements SoftDeletableInterface, TimestampableInterface
 {
-    use TimestampableEntity;
-    use SoftDeleteableEntity;
+    use TimestampableTrait;
+    use SoftDeletableTrait;
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="uuid", unique=true)
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class=UuidGenerator::class)
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: "uuid", unique: true)]
+    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private UuidInterface $id;
 
-    /**
-     * @ORM\Column(type="uuid")
-     */
+    #[ORM\Column(type: "uuid")]
     private ?UuidInterface $customerId = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Customer\Entity\Customer", inversedBy="subscriptions")
-     * @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
-     * @Assert\NotNull()
-     */
+    #[ORM\ManyToOne(targetEntity: Customer::class, inversedBy: "subscriptions")]
+    #[ORM\JoinColumn(name: "customer_id", referencedColumnName: "id")]
+    #[Assert\NotNull()]
     private ?Customer $customer = null;
 
-    /**
-     * @ORM\Column(type="uuid")
-     */
+    #[ORM\Column(type: "uuid")]
     private UuidInterface $vendorPlanId;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Vendor\Entity\VendorPlan", inversedBy="subscriptions")
-     * @ORM\JoinColumn(name="vendor_plan_id", referencedColumnName="id")
-     * @Assert\NotNull()
-     */
+    #[ORM\ManyToOne(targetEntity: VendorPlan::class, inversedBy: "subscriptions")]
+    #[ORM\JoinColumn(name: "vendor_plan_id", referencedColumnName:"id")]
+    #[Assert\NotNull()]
     private VendorPlan $vendorPlan;
 
-    /**
-     * @ORM\OneToMany(targetEntity="SubscriptionCycle", mappedBy="subscription", cascade={"persist"})
-     */
+    #[ORM\OneToMany(mappedBy: "subscription", targetEntity: "SubscriptionCycle", cascade: ["persist"])]
     private Collection $cycles;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: "boolean", nullable: true)]
     private ?bool $isApproved = null;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: "text", nullable: true)]
     private ?string $reviewNotes = null;
 
-    /**
-     * @ORM\Column(name="reviewed_at", type="datetime", nullable=true)
-     */
-    private ?\DateTimeInterface $reviewedAt = null;
+    #[ORM\Column(name:"reviewed_at", type: "datetime", nullable: true)]
+    private ?DateTimeInterface $reviewedAt = null;
 
-    /**
-     * @ORM\Column(name="valid_from", type="datetime", nullable=true)
-     */
-    private ?\DateTimeInterface $validFrom = null;
+    #[ORM\Column(name:"valid_from", type: "datetime", nullable: true)]
+    private ?DateTimeInterface $validFrom = null;
 
-    /**
-     * @ORM\Column(name="expires_at", type="datetime", nullable=true)
-     */
-    private ?\DateTimeInterface $expiresAt = null;
+    #[ORM\Column(name:"expires_at", type: "datetime", nullable: true)]
+    private ?DateTimeInterface $expiresAt = null;
 
-    /**
-     * @ORM\Column(type="decimal", nullable=false, options={"precision": 11, "scale": 2})
-     * @Assert\NotNull()
-     */
+    #[ORM\Column(type: "decimal", nullable: false, options: ["precision" => 11, "scale" => 2])]
+    #[Assert\NotNull()]
     private Decimal|string|null $price;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false, options={"default": true})
-     * @Assert\NotNull()
-     */
+    #[ORM\Column(type: "boolean", nullable: false, options: ["default" => true])]
+    #[Assert\NotNull()]
     private bool $isRecurring = true;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: "boolean", nullable: true)]
     private ?bool $isActive = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: "boolean", nullable: true)]
     private ?bool $cancelledByCustomer = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: "boolean", nullable: true)]
     private ?bool $cancelledByVendor = null;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: "text", nullable: true)]
     private ?string $cancellationNotes = null;
 
-    /**
-     * @ORM\Column(name="cancelled_at", type="datetime", nullable=true)
-     */
-    private ?\DateTimeInterface $cancelledAt = null;
+    #[ORM\Column(name:"cancelled_at", type: "datetime", nullable: true)]
+    private ?DateTimeInterface $cancelledAt = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: "string", nullable: true)]
     private ?string $externalReference = null;
 
     public function __construct()
@@ -177,16 +139,16 @@ class Subscription
         return $this;
     }
 
-    public function getCycles()
+    public function getCycles(): Collection
     {
         return $this->cycles;
     }
 
-    public function addCycle(SubscriptionCycle $cycle): self
+    public function addCycle(SubscriptionCycle $subscriptionCycle): self
     {
-        $cycle->setSubscription($this);
+        $subscriptionCycle->setSubscription($this);
 
-        $this->cycles[] = $cycle;
+        $this->cycles[] = $subscriptionCycle;
 
         return $this;
     }
@@ -227,36 +189,36 @@ class Subscription
         return $this;
     }
 
-    public function getReviewedAt(): ?\DateTimeInterface
+    public function getReviewedAt(): ?DateTimeInterface
     {
         return $this->reviewedAt;
     }
 
-    public function setReviewedAt(?\DateTimeInterface $reviewedAt): self
+    public function setReviewedAt(?DateTimeInterface $reviewedAt): self
     {
         $this->reviewedAt = $reviewedAt;
 
         return $this;
     }
 
-    public function getValidFrom(): ?\DateTimeInterface
+    public function getValidFrom(): ?DateTimeInterface
     {
         return $this->validFrom;
     }
 
-    public function setValidFrom(?\DateTimeInterface $validFrom): self
+    public function setValidFrom(?DateTimeInterface $dateTime): self
     {
-        $this->validFrom = $validFrom;
+        $this->validFrom = $dateTime;
 
         return $this;
     }
 
-    public function getExpiresAt(): ?\DateTimeInterface
+    public function getExpiresAt(): ?DateTimeInterface
     {
         return $this->expiresAt;
     }
 
-    public function setExpiresAt(?\DateTimeInterface $expiresAt): self
+    public function setExpiresAt(?DateTimeInterface $expiresAt): self
     {
         $this->expiresAt = $expiresAt;
 
@@ -335,12 +297,12 @@ class Subscription
         return $this;
     }
 
-    public function getCancelledAt(): ?\DateTimeInterface
+    public function getCancelledAt(): ?DateTimeInterface
     {
         return $this->cancelledAt;
     }
 
-    public function setCancelledAt(?\DateTimeInterface $cancelledAt): self
+    public function setCancelledAt(?DateTimeInterface $cancelledAt): self
     {
         $this->cancelledAt = $cancelledAt;
 

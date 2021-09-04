@@ -47,7 +47,7 @@ class VendorPlanUpdateControllerTest extends AbstractVendorPlanTest
         $responseData = $this->getAndAssertJsonResponseData($client);
 
         foreach ($vendorPlanData as $property => $value) {
-            $this->assertEquals($value, $responseData[$property]);
+            $this->assertSame($value, $responseData[$property]);
         }
     }
 }

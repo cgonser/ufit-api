@@ -7,38 +7,33 @@ namespace App\Customer\Controller\BillingInformation;
 use App\Core\Exception\ApiJsonException;
 use App\Core\Request\SearchRequest;
 use App\Core\Response\ApiJsonResponse;
+use App\Core\Security\AuthorizationVoterInterface;
 use App\Customer\Dto\BillingInformationDto;
 use App\Customer\Entity\Customer;
 use App\Customer\Provider\BillingInformationProvider;
+use App\Customer\Provider\CustomerProvider;
 use App\Customer\Request\BillingInformationSearchRequest;
 use App\Customer\ResponseMapper\BillingInformationResponseMapper;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
+use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route(path: '/customers/{customerId}/billing_information')]
 class BillingInformationController extends AbstractController
 {
-    private BillingInformationProvider $billingInformationProvider;
-
-    private BillingInformationResponseMapper $billingInformationResponseMapper;
-
     public function __construct(
-        BillingInformationProvider $billingInformationProvider,
-        BillingInformationResponseMapper $billingInformationResponseMapper
+        private CustomerProvider $customerProvider,
+        private BillingInformationProvider $billingInformationProvider,
+        private BillingInformationResponseMapper $billingInformationResponseMapper
     ) {
-        $this->billingInformationProvider = $billingInformationProvider;
-        $this->billingInformationResponseMapper = $billingInformationResponseMapper;
     }
 
     /**
-     * @Route("/customers/{customerId}/billing_information", methods="GET", name="customer_billing_information_find")
-     * @ParamConverter("searchRequest", converter="querystring")
-     * @Security(name="Bearer")
-     *
      * @OA\Tag(name="Customer / Billing Information")
      * @OA\Parameter(in="query", name="filters", @OA\Schema(ref=@Model(type=SearchRequest::class)))
      * @OA\Response(
@@ -47,23 +42,21 @@ class BillingInformationController extends AbstractController
      *     @OA\Header(header="X-Total-Count", @OA\Schema(type="int")),
      *     @OA\JsonContent(type="array", @OA\Items(ref=@Model(type=BillingInformationDto::class))))
      * )
+     * @Security(name="Bearer")
      */
+    #[Route(name: 'customer_billing_information_find', methods: 'GET')]
+    #[ParamConverter(data: 'billingInformationSearchRequest', converter: 'querystring')]
     public function getBillingInformationList(
         string $customerId,
-        BillingInformationSearchRequest $searchRequest
-    ): Response {
-        if ('current' === $customerId) {
-            /** @var Customer $customer */
-            $customer = $this->getUser();
-        } else {
-            // customer fetching not implemented yet; requires also authorization
-            throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
-        }
+        BillingInformationSearchRequest $billingInformationSearchRequest
+    ): ApiJsonResponse {
+        $customer = $this->customerProvider->get(Uuid::fromString($customerId));
+        $this->denyAccessUnlessGranted(AuthorizationVoterInterface::READ, $customer);
 
-        $searchRequest->customerId = $customer->getId();
+        $billingInformationSearchRequest->customerId = $customer->getId();
 
-        $results = $this->billingInformationProvider->search($searchRequest);
-        $count = $this->billingInformationProvider->count($searchRequest);
+        $results = $this->billingInformationProvider->search($billingInformationSearchRequest);
+        $count = $this->billingInformationProvider->count($billingInformationSearchRequest);
 
         return new ApiJsonResponse(
             Response::HTTP_OK,

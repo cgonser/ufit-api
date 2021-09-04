@@ -12,78 +12,55 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Knp\DoctrineBehaviors\Contract\Entity\SoftDeletableInterface;
+use Knp\DoctrineBehaviors\Contract\Entity\TimestampableInterface;
+use Knp\DoctrineBehaviors\Model\SoftDeletable\SoftDeletableTrait;
+use Knp\DoctrineBehaviors\Model\Timestampable\TimestampableTrait;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
+use App\Payment\Repository\InvoiceRepository;
 
-/**
- * @ORM\Entity(repositoryClass="App\Payment\Repository\InvoiceRepository")
- * @ORM\Table(name="invoice")
- * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
- */
-class Invoice
+#[ORM\Entity(repositoryClass: InvoiceRepository::class)]
+#[ORM\Table(name: "invoice")]
+class Invoice implements SoftDeletableInterface, TimestampableInterface
 {
-    use TimestampableEntity;
-    use SoftDeleteableEntity;
+    use TimestampableTrait;
+    use SoftDeletableTrait;
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="uuid", unique=true)
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class=UuidGenerator::class)
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: "uuid", unique: true)]
+    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private UuidInterface $id;
 
-    /**
-     * @ORM\Column(type="uuid")
-     */
+    #[ORM\Column(type: "uuid")]
     private UuidInterface $subscriptionId;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Subscription\Entity\Subscription")
-     * @ORM\JoinColumn(name="subscription_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: Subscription::class)]
     private Subscription $subscription;
 
-    /**
-     * @ORM\Column(type="uuid", nullable=true)
-     */
+    #[ORM\Column(type: "uuid", nullable: true)]
     private ?UuidInterface $subscriptionCycleId = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Subscription\Entity\SubscriptionCycle")
-     * @ORM\JoinColumn(name="subscription_cycle_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: SubscriptionCycle::class)]
     private SubscriptionCycle $subscriptionCycle;
 
-    /**
-     * @ORM\Column(type="decimal", nullable=false, options={"precision": 11, "scale": 2})
-     */
+    #[ORM\Column(type: "decimal", nullable: false, options:["precision" => 11, "scale" => 2])]
     private Decimal|string|null $totalAmount;
 
-    /**
-     * @ORM\Column(type="uuid")
-     */
+    #[ORM\Column(type: "uuid")]
     private UuidInterface $currencyId;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Localization\Entity\Currency")
-     * @ORM\JoinColumn(name="currency_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: Currency::class)]
     private Currency $currency;
 
-    /**
-     * @ORM\Column(name="due_date", type="date", nullable=true)
-     */
+    #[ORM\Column(name: "due_date", type: "date", nullable: true)]
     private ?\DateTimeInterface $dueDate = null;
 
-    /**
-     * @ORM\Column(name="paid_at", type="datetime", nullable=true)
-     */
+    #[ORM\Column(name: "paid_at", type: "datetime", nullable: true)]
     private ?\DateTimeInterface $paidAt = null;
 
-    /**
-     * @ORM\Column(name="overdue_notification_sent_at", type="datetime", nullable=true)
-     */
+    #[ORM\Column(name: "overdue_notification_sent_at", type: "datetime", nullable: true)]
     private ?\DateTimeInterface $overdueNotificationSentAt = null;
 
     public function getId(): UuidInterface

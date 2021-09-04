@@ -10,24 +10,20 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class PaymentMethodRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $managerRegistry)
     {
-        parent::__construct($registry, PaymentMethod::class);
+        parent::__construct($managerRegistry, PaymentMethod::class);
     }
 
-    public function save(PaymentMethod $paymentMethod)
+    public function save(PaymentMethod $paymentMethod): void
     {
-        $this->getEntityManager()
-            ->persist($paymentMethod);
-        $this->getEntityManager()
-            ->flush();
+        $this->getEntityManager()->persist($paymentMethod);
+        $this->getEntityManager()->flush();
     }
 
-    public function delete(PaymentMethod $paymentMethod)
+    public function delete(PaymentMethod $paymentMethod): void
     {
-        $this->getEntityManager()
-            ->remove($paymentMethod);
-        $this->getEntityManager()
-            ->flush();
+        $this->getEntityManager()->remove($paymentMethod);
+        $this->getEntityManager()->flush();
     }
 }

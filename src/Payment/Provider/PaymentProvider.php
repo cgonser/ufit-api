@@ -13,12 +13,12 @@ use Ramsey\Uuid\UuidInterface;
 
 class PaymentProvider extends AbstractProvider
 {
-    public function __construct(PaymentRepository $repository)
+    public function __construct(PaymentRepository $paymentRepository)
     {
-        $this->repository = $repository;
+        $this->repository = $paymentRepository;
     }
 
-    public function getByCustomerAndId(UuidInterface $customerId, UuidInterface $paymentId): Payment
+    public function getByCustomerAndId(UuidInterface $customerId, UuidInterface $paymentId): ?Payment
     {
         /** @var Payment|null $payment */
         $payment = $this->get($paymentId);
@@ -37,7 +37,7 @@ class PaymentProvider extends AbstractProvider
         ]);
     }
 
-    protected function throwNotFoundException()
+    protected function throwNotFoundException(): void
     {
         throw new PaymentNotFoundException();
     }

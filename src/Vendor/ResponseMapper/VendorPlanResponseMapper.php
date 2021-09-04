@@ -28,7 +28,7 @@ class VendorPlanResponseMapper
         $vendorPlanDto->currency = $vendorPlan->getCurrency()->getCode();
         $vendorPlanDto->durationDays = $vendorPlan->getDuration()?->d;
         $vendorPlanDto->durationMonths = $vendorPlan->getDuration()?->m;
-        $vendorPlanDto->price = $vendorPlan->getPrice()->toFloat();
+        $vendorPlanDto->price = $vendorPlan->getPrice()->toString();
         $vendorPlanDto->isVisible = $vendorPlan->isVisible();
         $vendorPlanDto->isRecurring = $vendorPlan->isRecurring();
         $vendorPlanDto->isActive = $vendorPlan->isActive();

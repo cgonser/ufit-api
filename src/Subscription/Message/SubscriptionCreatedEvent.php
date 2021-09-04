@@ -8,13 +8,13 @@ use Ramsey\Uuid\UuidInterface;
 
 class SubscriptionCreatedEvent
 {
+    /**
+     * @var string
+     */
     public const NAME = 'subscription.created';
 
-    protected ?UuidInterface $subscriptionId = null;
-
-    public function __construct(UuidInterface $subscriptionId)
+    public function __construct(protected ?UuidInterface $subscriptionId = null)
     {
-        $this->subscriptionId = $subscriptionId;
     }
 
     public function getSubscriptionId(): ?UuidInterface

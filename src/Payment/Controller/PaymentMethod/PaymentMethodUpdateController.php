@@ -22,44 +22,30 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class PaymentMethodUpdateController extends AbstractController
 {
-    private PaymentMethodRequestManager $paymentMethodRequestManager;
-
-    private PaymentMethodResponseMapper $paymentMethodResponseMapper;
-
-    private PaymentMethodProvider $paymentMethodProvider;
-
     public function __construct(
-        PaymentMethodRequestManager $paymentMethodRequestManager,
-        PaymentMethodProvider $paymentMethodProvider,
-        PaymentMethodResponseMapper $paymentMethodResponseMapper
+        private PaymentMethodRequestManager $paymentMethodRequestManager,
+        private PaymentMethodProvider $paymentMethodProvider,
+        private PaymentMethodResponseMapper $paymentMethodResponseMapper
     ) {
-        $this->paymentMethodRequestManager = $paymentMethodRequestManager;
-        $this->paymentMethodResponseMapper = $paymentMethodResponseMapper;
-        $this->paymentMethodProvider = $paymentMethodProvider;
     }
 
     /**
-     * @Route("/payment_methods/{paymentMethodId}", methods="PUT", name="payment_methods_update")
-     * @ParamConverter("paymentMethodRequest", converter="fos_rest.request_body", options={
-     *     "deserializationContext"= {"allow_extra_attributes"=false}
-     * })
-     *
      * @OA\Tag(name="PaymentMethod")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=PaymentMethodRequest::class)))
      * @OA\Response(response=200, description="Success", @OA\JsonContent(ref=@Model(type=PaymentMethodDto::class)))
      * @OA\Response(response=400, description="Invalid input")
      */
+    #[Route(path: '/payment_methods/{paymentMethodId}', name: 'payment_methods_update', methods: 'PUT')]
+    #[ParamConverter(
+        data: 'paymentMethodRequest',
+        options: ['deserializationContext' => ['allow_extra_attributes' => false]],
+        converter: 'fos_rest.request_body'
+    )]
     public function update(
         string $paymentMethodId,
         PaymentMethodRequest $paymentMethodRequest,
-        ConstraintViolationListInterface $validationErrors
-    ): Response {
-        if ($validationErrors->count() > 0) {
-            throw new ApiJsonInputValidationException($validationErrors);
-        }
-
+    ): ApiJsonResponse {
         $paymentMethod = $this->paymentMethodProvider->get(Uuid::fromString($paymentMethodId));
-
         $this->paymentMethodRequestManager->updateFromRequest($paymentMethod, $paymentMethodRequest);
 
         return new ApiJsonResponse(Response::HTTP_OK, $this->paymentMethodResponseMapper->map($paymentMethod));

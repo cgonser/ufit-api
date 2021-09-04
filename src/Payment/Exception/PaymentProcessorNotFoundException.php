@@ -8,6 +8,9 @@ use App\Core\Exception\InvalidInputException;
 
 class PaymentProcessorNotFoundException extends InvalidInputException
 {
+    /**
+     * @var string
+     */
     protected $message = 'Processor not found for payment method %s';
 
     public function __construct(string $paymentMethodName)

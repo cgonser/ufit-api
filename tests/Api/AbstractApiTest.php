@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Api;
 
 use App\Customer\DataFixtures\MeasurementTypeFixtures;
+use App\Localization\DataFixtures\CurrencyFixtures;
 use App\Payment\DataFixtures\PaymentMethodFixtures;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
-use App\Localization\DataFixtures\CurrencyFixtures;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 abstract class AbstractApiTest extends WebTestCase
@@ -17,7 +19,8 @@ abstract class AbstractApiTest extends WebTestCase
     public function loadFixtures(): void
     {
         if (null === $this->fixtures) {
-            $databaseTool = $this->getContainer()->get(DatabaseToolCollection::class)->get();
+            $databaseTool = $this->getContainer()
+                ->get(DatabaseToolCollection::class)->get();
 
             $this->fixtures = $databaseTool->loadFixtures([
                 CurrencyFixtures::class,
@@ -46,7 +49,8 @@ abstract class AbstractApiTest extends WebTestCase
 
     protected function getAndAssertJsonResponseData(KernelBrowser $client): array
     {
-        $jsonResponse = $client->getResponse()->getContent();
+        $jsonResponse = $client->getResponse()
+            ->getContent();
         $this->assertJson($jsonResponse);
 
         return json_decode($jsonResponse, true);

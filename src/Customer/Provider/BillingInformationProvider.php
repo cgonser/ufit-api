@@ -12,9 +12,9 @@ use Ramsey\Uuid\UuidInterface;
 
 class BillingInformationProvider extends AbstractProvider
 {
-    public function __construct(BillingInformationRepository $repository)
+    public function __construct(BillingInformationRepository $billingInformationRepository)
     {
-        $this->repository = $repository;
+        $this->repository = $billingInformationRepository;
     }
 
     public function getByCustomerAndId(
@@ -27,18 +27,21 @@ class BillingInformationProvider extends AbstractProvider
             'customerId' => $customerId,
         ]);
 
-        if (! $billingInformation) {
+        if ($billingInformation === null) {
             throw new BillingInformationNotFoundException();
         }
 
         return $billingInformation;
     }
 
-    protected function throwNotFoundException()
+    protected function throwNotFoundException(): void
     {
         throw new BillingInformationNotFoundException();
     }
 
+    /**
+     * @return string[]
+     */
     protected function getFilterableFields(): array
     {
         return ['customerId'];

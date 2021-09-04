@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace App\Vendor\Controller\Questionnaire\Question;
 
-use App\Core\Exception\ApiJsonException;
 use App\Core\Exception\ApiJsonInputValidationException;
 use App\Core\Response\ApiJsonResponse;
 use App\Core\Security\AuthorizationVoterInterface;
 use App\Vendor\Dto\QuestionDto;
-use App\Vendor\Entity\Vendor;
-use App\Vendor\Exception\QuestionnaireNotFoundException;
 use App\Vendor\Provider\QuestionnaireProvider;
 use App\Vendor\Provider\VendorProvider;
 use App\Vendor\Request\QuestionRequest;
