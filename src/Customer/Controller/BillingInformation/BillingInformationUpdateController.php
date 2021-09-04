@@ -63,7 +63,7 @@ class BillingInformationUpdateController extends AbstractController
             Uuid::fromString($billingInformationId)
         );
 
-        $billingInformationRequest->customerId = $customer->getId();
+        $billingInformationRequest->customerId = $customer->getId()->toString();
         $this->billingInformationRequestManager->updateFromRequest($billingInformation, $billingInformationRequest);
 
         return new ApiJsonResponse(

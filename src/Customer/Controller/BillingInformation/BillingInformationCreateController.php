@@ -56,7 +56,7 @@ class BillingInformationCreateController extends AbstractController
         $customer = $this->customerProvider->get(Uuid::fromString($customerId));
         $this->denyAccessUnlessGranted(AuthorizationVoterInterface::UPDATE, $customer);
 
-        $billingInformationRequest->customerId = $customer->getId();
+        $billingInformationRequest->customerId = $customer->getId()->toString();
         $billingInformation = $this->billingInformationRequestManager->createFromRequest($billingInformationRequest);
 
         return new ApiJsonResponse(

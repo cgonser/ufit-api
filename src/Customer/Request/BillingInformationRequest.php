@@ -16,7 +16,7 @@ class BillingInformationRequest extends AbstractRequest
     /**
      * @OA\Property()
      */
-    public UuidInterface|string|null $customerId = null;
+    public ?string $customerId = null;
 
     /**
      * @OA\Property()
