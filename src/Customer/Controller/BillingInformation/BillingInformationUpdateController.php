@@ -45,10 +45,7 @@ class BillingInformationUpdateController extends AbstractController
      */
     #[Route(path: '/{billingInformationId}', name: 'customer_billing_information_update', methods: 'PUT')]
     #[ParamConverter(data: 'billingInformationRequest', options: [
-        'deserializationContext' => [
-            'allow_extra_attributes' => false,
-
-        ],
+        'deserializationContext' => ['allow_extra_attributes' => false],
     ], converter: 'fos_rest.request_body')]
     public function update(
         string $customerId,

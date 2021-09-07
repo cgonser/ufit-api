@@ -44,10 +44,7 @@ class BillingInformationCreateController extends AbstractController
      */
     #[Route(name: 'customer_billing_information_create', methods: 'POST')]
     #[ParamConverter(data: 'billingInformationRequest', options: [
-        'deserializationContext' => [
-            'allow_extra_attributes' => false,
-
-        ],
+        'deserializationContext' => ['allow_extra_attributes' => false],
     ], converter: 'fos_rest.request_body')]
     public function create(
         string $customerId,
