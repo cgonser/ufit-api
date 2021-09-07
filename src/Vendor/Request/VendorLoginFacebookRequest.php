@@ -8,10 +8,7 @@ use OpenApi\Annotations as OA;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
- * @OA\RequestBody(
- *     request="VendorLoginFacebookRequest",
- *     required={"accessToken", "userId"},
- * )
+ * @OA\RequestBody()
  */
 class VendorLoginFacebookRequest
 {
@@ -20,10 +17,4 @@ class VendorLoginFacebookRequest
      */
     #[NotBlank]
     public ?string $accessToken = null;
-
-    /**
-     * @OA\Property()
-     */
-    #[NotBlank]
-    public ?string $userId = null;
 }

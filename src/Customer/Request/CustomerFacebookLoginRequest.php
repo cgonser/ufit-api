@@ -9,9 +9,7 @@ use OpenApi\Annotations as OA;
 use Symfony\Component\Validator\Constraints;
 
 /**
- * @OA\RequestBody(
- *     request="customerFacebookLoginRequest"
- * )
+ * @OA\RequestBody()
  */
 class CustomerFacebookLoginRequest
 {
@@ -20,9 +18,4 @@ class CustomerFacebookLoginRequest
      */
     #[NotBlank]
     public ?string $accessToken = null;
-
-    /**
-     * @OA\Property()
-     */
-    public ?string $facebookUserId = null;
 }

@@ -13,6 +13,7 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -35,10 +36,11 @@ class CustomerFacebookLoginController extends AbstractController
     #[ParamConverter(data: 'customerFacebookLoginRequest', options: [
         'deserializationContext' => ['allow_extra_attributes' => false],
     ], converter: 'fos_rest.request_body')]
-    public function facebookLogin(CustomerFacebookLoginRequest $customerFacebookLoginRequest): Response
+    public function facebookLogin(CustomerFacebookLoginRequest $customerFacebookLoginRequest, Request $request): Response
     {
         $customer = $this->customerFacebookLoginManager->prepareCustomerFromFacebookToken(
-            $customerFacebookLoginRequest->accessToken
+            $customerFacebookLoginRequest->accessToken,
+            $request->getClientIp()
         );
 
         return $this->authenticationSuccessHandler->handleAuthenticationSuccess($customer);

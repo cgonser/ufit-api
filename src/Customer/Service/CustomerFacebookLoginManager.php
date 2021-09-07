@@ -9,34 +9,26 @@ use App\Customer\Entity\Customer;
 use App\Customer\Entity\CustomerSocialNetwork;
 use App\Customer\Exception\CustomerFacebookLoginFailedException;
 use App\Customer\Provider\CustomerSocialNetworkProvider;
+use App\Customer\Request\CustomerRequest;
 
 class CustomerFacebookLoginManager
 {
-    private CustomerManager $customerManager;
-    private CustomerSocialNetworkProvider $customerSocialNetworkProvider;
-    private CustomerSocialNetworkManager $customerSocialNetworkManager;
-    private FacebookApiClientFactory $facebookApiClientFactory;
-
     public function __construct(
-        FacebookApiClientFactory $facebookApiClientFactory,
-        CustomerManager $customerManager,
-        CustomerSocialNetworkProvider $customerSocialNetworkProvider,
-        CustomerSocialNetworkManager $customerSocialNetworkManager
+        private FacebookApiClientFactory $facebookApiClientFactory,
+        private CustomerRequestManager $customerRequestManager,
+        private CustomerSocialNetworkProvider $customerSocialNetworkProvider,
+        private CustomerSocialNetworkManager $customerSocialNetworkManager
     ) {
-        $this->customerManager = $customerManager;
-        $this->customerSocialNetworkProvider = $customerSocialNetworkProvider;
-        $this->customerSocialNetworkManager = $customerSocialNetworkManager;
-        $this->facebookApiClientFactory = $facebookApiClientFactory;
     }
 
-    public function prepareCustomerFromFacebookToken(string $accessToken): Customer
+    public function prepareCustomerFromFacebookToken(string $accessToken, ?string $ipAddress = null): Customer
     {
         try {
             $facebookApi = $this->facebookApiClientFactory->createInstance($accessToken);
             $response = $facebookApi->call('/me?fields=id,name,email,picture');
 
             $graphUser = $response->getContent();
-            $customer = $this->createOrUpdateCustomerFromGraphUser($graphUser);
+            $customer = $this->createOrUpdateCustomerFromGraphUser($graphUser, $ipAddress);
             $this->createOrUpdateCustomerSocialNetwork($customer, $graphUser, $accessToken);
 
             return $customer;
@@ -55,7 +47,7 @@ class CustomerFacebookLoginManager
             CustomerSocialNetwork::PLATFORM_FACEBOOK
         );
 
-        if (! $customerSocialNetwork) {
+        if (null === $customerSocialNetwork) {
             $customerSocialNetwork = new CustomerSocialNetwork();
             $customerSocialNetwork->setCustomer($customer);
             $customerSocialNetwork->setExternalId($graphUser['id']);
@@ -68,7 +60,7 @@ class CustomerFacebookLoginManager
         $this->customerSocialNetworkManager->save($customerSocialNetwork);
     }
 
-    private function createOrUpdateCustomerFromGraphUser(array $graphUser): Customer
+    private function createOrUpdateCustomerFromGraphUser(array $graphUser, ?string $ipAddress = null): Customer
     {
         $customerSocialNetwork = $this->customerSocialNetworkProvider->findOneByExternalIdAndPlatform(
             $graphUser['id'],
@@ -79,12 +71,10 @@ class CustomerFacebookLoginManager
             return $customerSocialNetwork->getCustomer();
         }
 
-        $customer = new Customer();
-        $customer->setName($graphUser['name']);
-        $customer->setEmail($graphUser['email']);
+        $customerRequest = new CustomerRequest();
+        $customerRequest->name = $graphUser['name'];
+        $customerRequest->email = $graphUser['email'];
 
-        $this->customerManager->create($customer);
-
-        return $customer;
+        return $this->customerRequestManager->createFromRequest($customerRequest, $ipAddress);
     }
 }

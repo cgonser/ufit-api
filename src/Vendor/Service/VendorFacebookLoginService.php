@@ -10,7 +10,6 @@ use App\Vendor\Entity\VendorSocialNetwork;
 use App\Vendor\Exception\VendorFacebookLoginFailedException;
 use App\Vendor\Provider\VendorSocialNetworkProvider;
 use App\Vendor\Request\VendorRequest;
-use Exception;
 
 class VendorFacebookLoginService
 {
@@ -27,19 +26,22 @@ class VendorFacebookLoginService
         try {
             $facebookApi = $this->facebookApiClientFactory->createInstance($accessToken);
             $response = $facebookApi->call('/me?fields=id,name,email,picture');
-            $content = $response->getContent();
 
-            $vendor = $this->createOrUpdateVendorFromGraphUser($content, $ipAddress);
-            $this->createOrUpdateVendorSocialNetwork($vendor, $content, $accessToken);
+            $graphUser = $response->getContent();
+            $vendor = $this->createOrUpdateVendorFromGraphUser($graphUser, $ipAddress);
+            $this->createOrUpdateVendorSocialNetwork($vendor, $graphUser, $accessToken);
 
             return $vendor;
-        } catch (Exception) {
+        } catch (\Exception) {
             throw new VendorFacebookLoginFailedException();
         }
     }
 
-    private function createOrUpdateVendorSocialNetwork(Vendor $vendor, array $graphUser, string $accessToken): void
-    {
+    private function createOrUpdateVendorSocialNetwork(
+        Vendor $vendor,
+        array $graphUser,
+        string $accessToken
+    ): void {
         $vendorSocialNetwork = $this->vendorSocialNetworkProvider->findOneByVendorAndPlatform(
             $vendor,
             VendorSocialNetwork::PLATFORM_FACEBOOK

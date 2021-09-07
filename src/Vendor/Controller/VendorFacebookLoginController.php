@@ -34,21 +34,15 @@ class VendorFacebookLoginController extends AbstractController
      */
     #[Route(path: '/vendors/login/facebook', name: 'vendor_facebook_login', methods: 'POST')]
     #[ParamConverter(data: 'vendorLoginFacebookRequest', options: [
-        'deserializationContext' => [
-            'allow_extra_attributes' => false,
-        ],
+        'deserializationContext' => ['allow_extra_attributes' => false],
     ], converter: 'fos_rest.request_body')]
     public function facebookLogin(VendorLoginFacebookRequest $vendorLoginFacebookRequest, Request $request): Response
     {
-        try {
-            $vendor = $this->vendorFacebookLoginService->prepareVendorFromFacebookToken(
-                $vendorLoginFacebookRequest->accessToken,
-                $request->getClientIp()
-            );
+        $vendor = $this->vendorFacebookLoginService->prepareVendorFromFacebookToken(
+            $vendorLoginFacebookRequest->accessToken,
+            $request->getClientIp()
+        );
 
-            return $this->authenticationSuccessHandler->handleAuthenticationSuccess($vendor);
-        } catch (VendorFacebookLoginFailedException $vendorFacebookLoginFailedException) {
-            throw new ApiJsonException(Response::HTTP_UNAUTHORIZED, $vendorFacebookLoginFailedException->getMessage());
-        }
+        return $this->authenticationSuccessHandler->handleAuthenticationSuccess($vendor);
     }
 }
