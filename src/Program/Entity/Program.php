@@ -8,9 +8,6 @@ use App\Vendor\Entity\Vendor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Knp\DoctrineBehaviors\Contract\Entity\SoftDeletableInterface;
 use Knp\DoctrineBehaviors\Contract\Entity\TimestampableInterface;
 use Knp\DoctrineBehaviors\Model\SoftDeletable\SoftDeletableTrait;
@@ -31,6 +28,12 @@ class Program implements SoftDeletableInterface, TimestampableInterface
     #[ORM\GeneratedValue(strategy: "CUSTOM")]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private UuidInterface $id;
+
+    #[ORM\Column(type: "uuid", nullable: true)]
+    private ?UuidInterface $originalProgramId = null;
+
+    #[ORM\ManyToOne(targetEntity: Program::class)]
+    private ?Program $originalProgram = null;
 
     #[ORM\Column(type: "uuid")]
     private UuidInterface $vendorId;
@@ -71,6 +74,30 @@ class Program implements SoftDeletableInterface, TimestampableInterface
     public function getId(): UuidInterface
     {
         return $this->id;
+    }
+
+    public function getOriginalProgramId(): ?UuidInterface
+    {
+        return $this->originalProgramId;
+    }
+
+    public function setOriginalProgramId(?UuidInterface $originalProgramId): self
+    {
+        $this->originalProgramId = $originalProgramId;
+
+        return $this;
+    }
+
+    public function getOriginalProgram(): ?Program
+    {
+        return $this->originalProgram;
+    }
+
+    public function setOriginalProgram(?Program $originalProgram): self
+    {
+        $this->originalProgram = $originalProgram;
+
+        return $this;
     }
 
     public function getVendorId(): UuidInterface

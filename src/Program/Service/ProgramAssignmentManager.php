@@ -21,17 +21,18 @@ class ProgramAssignmentManager
 {
     public function __construct(
         private ProgramAssignmentRepository $programAssignmentRepository,
+        private ProgramManager $programManager,
         private CustomerProvider $customerProvider,
         private MessageBusInterface $messageBus,
     ) {
     }
 
     public function createFromRequest(
-        Program $program,
+        Program $originalProgram,
         ProgramAssignmentRequest $programAssignmentRequest
     ): ProgramAssignment {
         $programAssignment = new ProgramAssignment();
-        $programAssignment->setProgram($program);
+        $programAssignment->setProgram($this->programManager->clone($originalProgram));
 
         $this->mapFromRequest($programAssignment, $programAssignmentRequest);
 

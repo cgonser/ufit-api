@@ -7,9 +7,6 @@ namespace App\Program\Entity;
 use DateTimeInterface;
 use App\Customer\Entity\Customer;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Knp\DoctrineBehaviors\Contract\Entity\SoftDeletableInterface;
 use Knp\DoctrineBehaviors\Contract\Entity\TimestampableInterface;
 use Knp\DoctrineBehaviors\Model\SoftDeletable\SoftDeletableTrait;
@@ -17,7 +14,6 @@ use Knp\DoctrineBehaviors\Model\Timestampable\TimestampableTrait;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
 use App\Program\Repository\ProgramAssignmentRepository;
-use App\Program\Entity\Program;
 
 #[ORM\Entity(repositoryClass: ProgramAssignmentRepository::class)]
 #[ORM\Table(name: "program_assignment")]
@@ -74,6 +70,7 @@ class ProgramAssignment implements SoftDeletableInterface, TimestampableInterfac
 
     public function setProgram(Program $program): self
     {
+        $this->programId = $program->getId();
         $this->program = $program;
 
         return $this;

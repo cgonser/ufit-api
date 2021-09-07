@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace App\Program\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Knp\DoctrineBehaviors\Contract\Entity\SoftDeletableInterface;
 use Knp\DoctrineBehaviors\Contract\Entity\TimestampableInterface;
 use Knp\DoctrineBehaviors\Model\SoftDeletable\SoftDeletableTrait;
@@ -16,7 +13,6 @@ use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Program\Repository\ProgramAssetRepository;
-use App\Program\Entity\Program;
 
 #[ORM\Entity(repositoryClass: ProgramAssetRepository::class)]
 #[ORM\Table(name: "program_asset")]

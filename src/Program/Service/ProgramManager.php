@@ -21,6 +21,20 @@ class ProgramManager
     ) {
     }
 
+    public function clone(Program $originalProgram): Program
+    {
+        $program = clone $originalProgram;
+        $program->setOriginalProgram($originalProgram);
+
+        foreach ($originalProgram->getAssets() as $originalProgramAsset) {
+            $program->addAsset(clone $originalProgramAsset);
+        }
+
+        $this->programRepository->save($program);
+
+        return $program;
+    }
+
     public function createFromRequest(Vendor $vendor, ProgramRequest $programRequest): Program
     {
         $program = new Program();
