@@ -7,7 +7,6 @@ namespace App\Vendor\Controller\BankAccount;
 use App\Core\Response\ApiJsonResponse;
 use App\Core\Security\AuthorizationVoterInterface;
 use App\Vendor\Dto\VendorBankAccountDto;
-use App\Vendor\Entity\Vendor;
 use App\Vendor\Provider\VendorBankAccountProvider;
 use App\Vendor\Provider\VendorProvider;
 use App\Vendor\Request\VendorBankAccountRequest;
@@ -20,7 +19,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 #[Route(path: '/vendors/{vendorId}/bank_accounts')]
 class VendorBankAccountUpdateController extends AbstractController
@@ -41,16 +39,15 @@ class VendorBankAccountUpdateController extends AbstractController
      * @OA\Response(response=404, description="Resource not found")
      */
     #[Route(path: '/{vendorBankAccountId}', name: 'vendor_bank_accounts_update', methods: 'PUT')]
-    #[ParamConverter(data: 'vendorBankAccountRequest', options: [
-        'deserializationContext' => [
-            'allow_extra_attributes' => false,
-        ],
-    ], converter: 'fos_rest.request_body')]
+    #[ParamConverter(
+        data: 'vendorBankAccountRequest',
+        options: ['deserializationContext' => ['allow_extra_attributes' => false]],
+        converter: 'fos_rest.request_body'
+    )]
     public function update(
         string $vendorId,
         string $vendorBankAccountId,
         VendorBankAccountRequest $vendorBankAccountRequest,
-        ConstraintViolationListInterface $constraintViolationList
     ): ApiJsonResponse {
         $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
         $this->denyAccessUnlessGranted(AuthorizationVoterInterface::UPDATE, $vendor);
@@ -60,8 +57,7 @@ class VendorBankAccountUpdateController extends AbstractController
             Uuid::fromString($vendorBankAccountId)
         );
 
-        $vendorBankAccountRequest->vendorId = $vendor->getId()
-            ->toString();
+        $vendorBankAccountRequest->vendorId = $vendor->getId()->toString();
         $this->vendorBankAccountRequestManager->updateFromRequest($vendorBankAccount, $vendorBankAccountRequest);
 
         return new ApiJsonResponse(
