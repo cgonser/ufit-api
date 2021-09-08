@@ -51,11 +51,11 @@ class CustomerFacebookLoginController extends AbstractController
     }
 
     /**
-     * @OA\Tag(name="Customer / Demo")
+     * @OA\Tag(name="Demo / Customer")
      */
     #[Route(path: '/demo/customers/login/facebook', name: 'customer_facebook_login_button', methods: 'GET')]
     public function facebookLoginButton(): Response
     {
-        return $this->render('customer/facebook_login.html.twig');
+        return $this->render('demo/customer/facebook_login.html.twig');
     }
 }

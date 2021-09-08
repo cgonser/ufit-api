@@ -47,4 +47,13 @@ class VendorFacebookLoginController extends AbstractController
 
         return $this->authenticationSuccessHandler->handleAuthenticationSuccess($vendor);
     }
+
+    /**
+     * @OA\Tag(name="Demo / Vendor")
+     */
+    #[Route(path: '/demo/vendors/login/facebook', name: 'vendor_facebook_login_button', methods: 'GET')]
+    public function facebookLoginButton(): Response
+    {
+        return $this->render('demo/vendor/facebook_login.html.twig');
+    }
 }
