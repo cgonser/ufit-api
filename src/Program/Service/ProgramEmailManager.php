@@ -29,7 +29,7 @@ class ProgramEmailManager
                 [
                     'greeting_name' => $customer->getName(),
                     'vendor_name' => $vendor->getDisplayName(),
-                    'download_url' => 'https://ufit.io',
+                    'access_url' => 'https://ufit.io',
                 ],
                 $customer->getLocale()
             )

@@ -17,7 +17,8 @@
 <div class="container-fluid pt-2">
     <div class="row">
         <div class="col-sm-4">
-            <div id="vendors-container" class="border border-dark rounded p-2 mb-2" style="max-height: 500px; overflow-y: auto">
+            <div id="vendors-container" class="border border-dark rounded p-2 mb-2"
+                 style="max-height: 500px; overflow-y: auto">
                 <h2 class="text-center">Vendors</h2>
                 <ul class="list-group" id="vendors-list">
                     {% for vendor in vendors %}
@@ -54,50 +55,84 @@
                 <h2 class="text-center">Payment</h2>
 
                 <form role="form" id="payment-form" action="{{ path('payments_create') }}" method="POST">
+
+                    <div class="mb-1">
+                        <label for="billing-information-name">Name</label>
+                        <input type="text" class="form-control" id="billing-information-name" value="Carlos 123">
+                    </div>
+                    <div class="mb-1">
+                        <label for="billing-information-documentNumber">Document Number</label>
+                        <input type="text" class="form-control" id="billing-information-documentNumber"
+                               value="33995835830">
+                    </div>
                     <div class="row">
-                        <div class="col-xs-12">
-                            <div class="form-group">
-                                <label for="cardNumber">CARD NUMBER</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="card_number" name="card_number"
-                                           value="4111111111111111" required autofocus/>
-                                    <span class="input-group-addon"><i class="fa fa-credit-card"></i></span>
-                                </div>
-                            </div>
+                        <div class="col-3">
+                            <label for="billing-information-phoneAreaCode">Area Code</label>
+                            <input type="text" class="form-control" id="billing-information-phoneAreaCode" value="11">
+                        </div>
+                        <div class="col-9">
+                            <label for="billing-information-phoneNumber">Phone Number</label>
+                            <input type="text" class="form-control" id="billing-information-phoneNumber"
+                                   value="999888777">
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-xs-12">
-                            <div class="form-group">
-                                <label for="cardName">CARD NAME</label>
-                                <input type="text" class="form-control" id="card_holder_name" name="card_holder_name"
-                                       value="Test User" required autofocus/>
-                            </div>
+                        <div class="col-9">
+                            <label for="billing-information-addressLine1">Address</label>
+                            <input type="text" class="form-control" id="billing-information-addressLine1"
+                                   value="Av. Damasceno Vieira">
+                        </div>
+                        <div class="col-3">
+                            <label for="billing-information-addressNumber">Number</label>
+                            <input type="text" class="form-control" id="billing-information-addressNumber" value="900">
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-xs-7 col-md-7">
-                            <div class="form-group">
-                                <label for="cardExpiry">EXPIRATION DATE</label>
-                                <input type="tel" class="form-control" name="card_expiry" id="card_expiry"
-                                       value="10/28" required/>
-                            </div>
+                    <div class="mb-1">
+                        <label for="billing-information-addressZipCode">Zip Code</label>
+                        <input type="text" class="form-control" id="billing-information-addressZipCode"
+                               value="04363040">
+                    </div>
+                    <div class="mb-1">
+                        <label for="billing-information-addressDistrict">District</label>
+                        <input type="text" class="form-control" id="billing-information-addressDistrict"
+                               value="Vila Mascote">
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-9">
+                            <label for="billing-information-addressCity">City</label>
+                            <input type="text" class="form-control" id="billing-information-addressCity"
+                                   value="São Paulo">
                         </div>
-                        <div class="col-xs-5 col-md-5 pull-right">
-                            <div class="form-group">
-                                <label for="cardCVC">CV CODE</label>
-                                <input type="tel" class="form-control" id="card_cvv" name="card_cvv"
-                                       value="333" required/>
-                            </div>
+                        <div class="col-3">
+                            <label for="billing-information-addressState">State</label>
+                            <input type="text" class="form-control" id="billing-information-addressState" value="SP">
+                        </div>
+                    </div>
+
+                    <div class="mb-1">
+                        <label for="card_number">CARD NUMBER</label>
+                        <input type="text" class="form-control" id="card_number" value="4111111111111111" required
+                               autofocus/>
+                    </div>
+                    <div class="mb-1">
+                        <label for="card_holder_name">CARD NAME</label>
+                        <input type="text" class="form-control" id="card_holder_name" value="Test User" required
+                               autofocus/>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="cardExpiry">EXPIRATION DATE</label>
+                            <input type="tel" class="form-control" id="card_expiry" value="10/28" required/>
+                        </div>
+                        <div class="col-6">
+                            <label for="cardCVC">CVV CODE</label>
+                            <input type="tel" class="form-control" id="card_cvv" value="333" required/>
                         </div>
                     </div>
                     <div id="card-errors" class="d-none alert-danger"></div>
                     <br/>
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <input type="submit" class="btn btn-success btn-lg btn-block" value="Pay with card"></input>
-                        </div>
-                    </div>
+                    <input type="submit" class="btn btn-success btn-lg btn-block" value="Pay with card"></input>
                 </form>
             </div>
         </div>
@@ -225,20 +260,21 @@
             "invoiceId": document.getElementById("subscription-invoice-id").innerHTML,
             "paymentMethodId": paymentMethodId,
             "billingInformation": {
-                "name": "Carlos 123",
-                "documentNumber": "33995835830",
-                "phoneAreaCode": "11",
-                "phoneNumber": "999888777",
-                "addressLine1": "Av. Damasceno Vieira",
-                "addressNumber": "900",
-                "addressZipCode": "04363040",
-                "addressDistrict": "Vila Mascote",
-                "addressCity": "São Paulo",
-                "addressState": "SP"
+                "name": document.getElementById('billing-information-name').value,
+                "documentNumber": document.getElementById('billing-information-documentNumber').value,
+                "phoneAreaCode": document.getElementById('billing-information-phoneAreaCode').value,
+                "phoneNumber": document.getElementById('billing-information-phoneNumber').value,
+                "addressLine1": document.getElementById('billing-information-addressLine1').value,
+                "addressNumber": document.getElementById('billing-information-addressNumber').value,
+                "addressZipCode": document.getElementById('billing-information-addressZipCode').value,
+                "addressDistrict": document.getElementById('billing-information-addressDistrict').value,
+                "addressCity": document.getElementById('billing-information-addressCity').value,
+                "addressState": document.getElementById('billing-information-addressState').value
             },
             "details": {
                 "card_hash": card_hash
             }
+
         });
 
         var requestOptions = {

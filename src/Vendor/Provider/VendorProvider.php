@@ -45,8 +45,8 @@ class VendorProvider
     /**
      * @return mixed[]
      */
-    public function findAll(): array
+    public function findAll(?array $orderBy = []): array
     {
-        return $this->vendorRepository->findAll();
+        return $this->vendorRepository->findBy([], $orderBy);
     }
 }
