@@ -33,9 +33,11 @@ class VendorFacebookLoginController extends AbstractController
      * @OA\Response(response=401, description="Invalid credentials")
      */
     #[Route(path: '/vendors/login/facebook', name: 'vendor_facebook_login', methods: 'POST')]
-    #[ParamConverter(data: 'vendorLoginFacebookRequest', options: [
-        'deserializationContext' => ['allow_extra_attributes' => false],
-    ], converter: 'fos_rest.request_body')]
+    #[ParamConverter(
+        data: 'vendorLoginFacebookRequest',
+        options: ['deserializationContext' => ['allow_extra_attributes' => false]],
+        converter: 'fos_rest.request_body'
+    )]
     public function facebookLogin(VendorLoginFacebookRequest $vendorLoginFacebookRequest, Request $request): Response
     {
         $vendor = $this->vendorFacebookLoginService->prepareVendorFromFacebookToken(

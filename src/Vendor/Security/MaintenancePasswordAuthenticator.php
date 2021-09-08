@@ -43,8 +43,12 @@ class MaintenancePasswordAuthenticator extends AbstractAuthenticator
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
 
         return [
-            'username' => $propertyAccessor->getValue($data, 'username'),
-            'plainPassword' => $propertyAccessor->getValue($data, 'password'),
+            'username' => $propertyAccessor->isReadable($data, 'username')
+                ? $propertyAccessor->getValue($data, 'username')
+                : null,
+            'plainPassword' => $propertyAccessor->isReadable($data, 'password')
+                ? $propertyAccessor->getValue($data, 'password')
+                : null,
         ];
     }
 

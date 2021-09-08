@@ -33,11 +33,15 @@ class CustomerFacebookLoginController extends AbstractController
      * @OA\Response(response=401, description="Invalid credentials")
      */
     #[Route(path: '/customers/login/facebook', name: 'customer_facebook_login', methods: 'POST')]
-    #[ParamConverter(data: 'customerFacebookLoginRequest', options: [
-        'deserializationContext' => ['allow_extra_attributes' => false],
-    ], converter: 'fos_rest.request_body')]
-    public function facebookLogin(CustomerFacebookLoginRequest $customerFacebookLoginRequest, Request $request): Response
-    {
+    #[ParamConverter(
+        data: 'customerFacebookLoginRequest',
+        options: ['deserializationContext' => ['allow_extra_attributes' => false]],
+        converter: 'fos_rest.request_body'
+    )]
+    public function facebookLogin(
+        CustomerFacebookLoginRequest $customerFacebookLoginRequest,
+        Request $request
+    ): Response {
         $customer = $this->customerFacebookLoginManager->prepareCustomerFromFacebookToken(
             $customerFacebookLoginRequest->accessToken,
             $request->getClientIp()
@@ -49,7 +53,7 @@ class CustomerFacebookLoginController extends AbstractController
     /**
      * @OA\Tag(name="Customer / Demo")
      */
-    #[Route(path: '/customers/login/facebook', name: 'customer_facebook_login_button', methods: 'GET')]
+    #[Route(path: '/demo/customers/login/facebook', name: 'customer_facebook_login_button', methods: 'GET')]
     public function facebookLoginButton(): Response
     {
         return $this->render('customer/facebook_login.html.twig');
