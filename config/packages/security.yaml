@@ -23,6 +23,8 @@ security:
             pattern: ^/customers/login
             stateless: true
             provider: customers
+            custom_authenticators:
+                - App\Customer\Security\MaintenancePasswordAuthenticator
             json_login:
                 check_path: /customers/login
                 success_handler: lexik_jwt_authentication.handler.authentication_success
@@ -42,6 +44,8 @@ security:
             pattern: ^/vendors/login
             stateless: true
             provider: vendors
+            custom_authenticators:
+                - App\Vendor\Security\MaintenancePasswordAuthenticator
             json_login:
                 check_path: /vendors/login
                 success_handler: lexik_jwt_authentication.handler.authentication_success
