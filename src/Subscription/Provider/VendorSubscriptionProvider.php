@@ -20,7 +20,7 @@ class VendorSubscriptionProvider
     public function findWithRequest(Vendor $vendor, SubscriptionSearchRequest $subscriptionSearchRequest): array
     {
         if (true === $subscriptionSearchRequest->isActive) {
-            return $this->subscriptionRepository->findActiveByVendor($vendor);
+            return $this->subscriptionRepository->findActiveByVendor($vendor->getId());
         }
 
         if (false === $subscriptionSearchRequest->isActive) {
