@@ -32,7 +32,7 @@ class VendorFacebookLoginService
             $this->createOrUpdateVendorSocialNetwork($vendor, $graphUser, $accessToken);
 
             return $vendor;
-        } catch (\Exception) {
+        } catch (\Exception $e) {
             throw new VendorFacebookLoginFailedException();
         }
     }

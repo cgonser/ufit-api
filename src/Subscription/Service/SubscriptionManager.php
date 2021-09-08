@@ -91,11 +91,14 @@ class SubscriptionManager
 
     public function renew(Subscription $subscription, ?Invoice $invoice = null): void
     {
-        $previousExpiration = clone $subscription->getExpiresAt();
+        $previousExpiration = null;
+        if (null !== $subscription->getExpiresAt()) {
+            $previousExpiration = clone $subscription->getExpiresAt();
 
-        $newExpiration = $this->calculateExpiration($subscription)->format(DateTimeInterface::ATOM);
-        $subscription->setExpiresAt(DateTime::createFromFormat(DateTimeInterface::ATOM, $newExpiration));
-        // overcome stupid doctrine bug
+            $newExpiration = $this->calculateExpiration($subscription)->format(DateTimeInterface::ATOM);
+            $subscription->setExpiresAt(DateTime::createFromFormat(DateTimeInterface::ATOM, $newExpiration));
+            // overcome stupid doctrine bug
+        }
 
         $subscription->setIsActive(true);
 

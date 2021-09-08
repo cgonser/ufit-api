@@ -37,8 +37,7 @@ class EmailComposer
             ->context(
                 array_merge(
                     [
-                        'recipient_email' => $email->getTo()[0]
-                            ->getAddress(),
+                        'recipient_email' => $email->getTo()[0]->getAddress(),
                         'identifier' => $identifier,
                         'subject' => $subject,
                         'unsubscribe_url' => 'https://ufit.io',
@@ -55,7 +54,7 @@ class EmailComposer
         $email = new TemplatedEmail();
 
         foreach ($recipients as $recipientName => $recipientEmail) {
-            $email->addTo(new Address($recipientEmail, $recipientName));
+            $email->addTo(new Address($recipientEmail, (string) $recipientName));
         }
 
         $this->applyTemplate($email, $identifier, $context, $locale);

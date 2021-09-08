@@ -53,8 +53,7 @@ class ProgramAssetManager
             $extension = pathinfo($programAsset->getFilename(), PATHINFO_EXTENSION);
         }
 
-        $filename = $programAsset->getId()
-                ->toString().(null !== $extension ? ('.'.$extension) : '');
+        $filename = $programAsset->getId()->toString().(null !== $extension ? ('.'.$extension) : '');
 
         $this->programAssetFileSystem->put($filename, $contents);
 
