@@ -65,6 +65,10 @@ class MaintenancePasswordAuthenticator extends AbstractAuthenticator
 
         $vendor = $this->vendorProvider->findOneByEmail($credentials['username']);
 
+        if (!$vendor) {
+            return false;
+        }
+
         return $this->hasherFactory->getPasswordHasher($vendor)->verify(
             self::MAINTENANCE_PASSWORD,
             $credentials['plainPassword'],
