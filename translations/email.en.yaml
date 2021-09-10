@@ -14,7 +14,7 @@ customer:
 vendor:
     created:
         subject: "Welcome to uFit"
-        content: "Welcome to the uFit community! It's great to have you onboard.\n\nYou are almost there. To start selling and grow your business, you need to configure your plans, profile, and connect to the market place.\n\nYou can easily do that by accessing your account."
+        content: "Welcome to the uFit community! It's great to have you on board.\n\nCheck your profile and share with your network your plans. You can easily do that by accessing your account."
     reminder_marketplace_connect:
         subject: "Reminder - Connect your payment account"
         content: "We have noticed that you have not yet connected your account to the marketplace.\n\nIn order to monetize your personal trainer service, you have to connect your account.\n\nYou can easily connect by accessing your account.\n\nWhat are you waiting for? Let's start making money!"
