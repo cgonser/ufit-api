@@ -8,6 +8,7 @@ use App\Core\Service\FacebookApiClientFactory;
 use App\Vendor\Entity\Vendor;
 use App\Vendor\Entity\VendorSocialNetwork;
 use App\Vendor\Exception\VendorFacebookLoginFailedException;
+use App\Vendor\Provider\VendorProvider;
 use App\Vendor\Provider\VendorSocialNetworkProvider;
 use App\Vendor\Request\VendorRequest;
 
@@ -17,7 +18,8 @@ class VendorFacebookLoginService
         private FacebookApiClientFactory $facebookApiClientFactory,
         private VendorRequestManager $vendorRequestManager,
         private VendorSocialNetworkProvider $vendorSocialNetworkProvider,
-        private VendorSocialNetworkManager $vendorSocialNetworkManager
+        private VendorSocialNetworkManager $vendorSocialNetworkManager,
+        private VendorProvider $vendorProvider,
     ) {
     }
 
@@ -69,6 +71,12 @@ class VendorFacebookLoginService
 
         if (null !== $vendorSocialNetwork) {
             return $vendorSocialNetwork->getVendor();
+        }
+
+        $vendor = $this->vendorProvider->findOneByEmail($graphUser['email']);
+
+        if (null !== $vendor) {
+            return $vendor;
         }
 
         $vendorRequest = new VendorRequest();

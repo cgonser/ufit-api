@@ -8,6 +8,7 @@ use App\Core\Service\FacebookApiClientFactory;
 use App\Customer\Entity\Customer;
 use App\Customer\Entity\CustomerSocialNetwork;
 use App\Customer\Exception\CustomerFacebookLoginFailedException;
+use App\Customer\Provider\CustomerProvider;
 use App\Customer\Provider\CustomerSocialNetworkProvider;
 use App\Customer\Request\CustomerRequest;
 
@@ -17,7 +18,8 @@ class CustomerFacebookLoginManager
         private FacebookApiClientFactory $facebookApiClientFactory,
         private CustomerRequestManager $customerRequestManager,
         private CustomerSocialNetworkProvider $customerSocialNetworkProvider,
-        private CustomerSocialNetworkManager $customerSocialNetworkManager
+        private CustomerSocialNetworkManager $customerSocialNetworkManager,
+        private CustomerProvider $customerProvider,
     ) {
     }
 
@@ -69,6 +71,12 @@ class CustomerFacebookLoginManager
 
         if ($customerSocialNetwork) {
             return $customerSocialNetwork->getCustomer();
+        }
+
+        $customer = $this->customerProvider->findOneByEmail($graphUser['email']);
+
+        if (null !== $customer) {
+            return $customer;
         }
 
         $customerRequest = new CustomerRequest();

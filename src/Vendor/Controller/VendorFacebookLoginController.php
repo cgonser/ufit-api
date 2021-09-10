@@ -38,8 +38,10 @@ class VendorFacebookLoginController extends AbstractController
         options: ['deserializationContext' => ['allow_extra_attributes' => false]],
         converter: 'fos_rest.request_body'
     )]
-    public function facebookLogin(VendorLoginFacebookRequest $vendorLoginFacebookRequest, Request $request): Response
-    {
+    public function facebookLogin(
+        VendorLoginFacebookRequest $vendorLoginFacebookRequest,
+        Request $request
+    ): Response {
         $vendor = $this->vendorFacebookLoginService->prepareVendorFromFacebookToken(
             $vendorLoginFacebookRequest->accessToken,
             $request->getClientIp()
