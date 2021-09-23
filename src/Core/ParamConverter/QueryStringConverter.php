@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\ParamConverter;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -18,11 +20,17 @@ class QueryStringConverter implements ParamConverterInterface
 
         foreach ($reflectionClass->getProperties() as $property) {
             $propertyName = $property->getName();
-            if (!$request->query->has($propertyName)) {
+            if (! $request->query->has($propertyName)) {
                 continue;
             }
 
-            $object->$propertyName = $request->query->get($propertyName);
+            $value = $request->query->get($propertyName);
+
+            $object->{$propertyName} = match ($property->getType()->getName()) {
+                'boolean', 'bool' => (bool) $value,
+                'integer', 'int' => (int) $value,
+                default => $value,
+            };
         }
 
         $request->attributes->set($name, $object);
@@ -30,6 +38,6 @@ class QueryStringConverter implements ParamConverterInterface
 
     public function supports(ParamConverter $configuration)
     {
-        return 'querystring' == $configuration->getConverter();
+        return 'querystring' === $configuration->getConverter();
     }
 }

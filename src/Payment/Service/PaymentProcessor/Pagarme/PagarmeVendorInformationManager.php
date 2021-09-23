@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Service\PaymentProcessor\Pagarme;
 
 use App\Payment\Exception\PagarmeInvalidInputException;
@@ -14,35 +16,29 @@ use Ramsey\Uuid\UuidInterface;
 
 class PagarmeVendorInformationManager implements VendorInformationManagerInterface
 {
-    const PAGARME_ERROR_SAME_DOC = 'ERROR TYPE: invalid_parameter. PARAMETER: bank_account_id. MESSAGE: The new bank account should have the same document number as the previous';
-
-    private VendorBankAccountProvider $vendorBankAccountProvider;
-
-    private VendorBankAccountManager $vendorBankAccountManager;
-
-    private VendorSettingManager $vendorSettingManager;
-
-    private Client $pagarmeClient;
+    /**
+     * @var string
+     */
+    public const PAGARME_ERROR_SAME_DOC = 'ERROR TYPE: invalid_parameter. PARAMETER: bank_account_id. MESSAGE: The new bank account should have the same document number as the previous';
 
     public function __construct(
-        VendorBankAccountProvider $vendorBankAccountProvider,
-        VendorBankAccountManager $vendorBankAccountManager,
-        VendorSettingManager $vendorSettingManager,
-        Client $pagarmeClient
+        private VendorBankAccountProvider $vendorBankAccountProvider,
+        private VendorBankAccountManager $vendorBankAccountManager,
+        private VendorSettingManager $vendorSettingManager,
+        private Client $pagarmeClient
     ) {
-        $this->vendorBankAccountProvider = $vendorBankAccountProvider;
-        $this->vendorBankAccountManager = $vendorBankAccountManager;
-        $this->vendorSettingManager = $vendorSettingManager;
-        $this->pagarmeClient = $pagarmeClient;
     }
 
-    public function updateVendorInformation(UuidInterface $vendorId)
+    public function updateVendorInformation(UuidInterface $vendorId): void
     {
         $vendorBankAccount = $this->vendorBankAccountProvider->getOneByVendorId($vendorId);
 
         $this->pushVendorInformation($vendorBankAccount);
     }
 
+    /**
+     * @return mixed|void
+     */
     public function pushVendorInformation(VendorBankAccount $vendorBankAccount)
     {
         $pagarmeId = $this->vendorSettingManager->getValue($vendorBankAccount->getVendorId(), 'pagarme_id');
@@ -64,7 +60,7 @@ class PagarmeVendorInformationManager implements VendorInformationManagerInterfa
             'bank_account' => [
                 'bank_code' => $vendorBankAccount->getBankCode(),
                 'agencia' => $vendorBankAccount->getAgencyNumber(),
-//                'agencia_dv' => '',
+                //                'agencia_dv' => '',
                 'conta' => $vendorBankAccount->getAccountNumber(),
                 'conta_dv' => $vendorBankAccount->getAccountDigit(),
                 'document_number' => $vendorBankAccount->getOwnerDocumentNumber(),
@@ -76,27 +72,31 @@ class PagarmeVendorInformationManager implements VendorInformationManagerInterfa
             if (null !== $pagarmeId) {
                 $recipientData['id'] = $pagarmeId;
 
-                $this->pagarmeClient->recipients()->update($recipientData);
+                $this->pagarmeClient->recipients()
+                    ->update($recipientData);
             } else {
-                $recipient = $this->pagarmeClient->recipients()->create($recipientData);
+                $arrayObject = $this->pagarmeClient->recipients()
+                    ->create($recipientData);
 
-                $this->vendorSettingManager->set($vendorBankAccount->getVendorId(), 'pagarme_id', $recipient->id);
+                $this->vendorSettingManager->set($vendorBankAccount->getVendorId(), 'pagarme_id', $arrayObject->id);
             }
 
             $this->vendorBankAccountManager->markAsValid($vendorBankAccount);
-        } catch (PagarMeException $e) {
-            if ($e->getMessage() === self::PAGARME_ERROR_SAME_DOC) {
+        } catch (PagarMeException $pagarMeException) {
+            if (self::PAGARME_ERROR_SAME_DOC === $pagarMeException->getMessage()) {
                 $this->vendorSettingManager->set($vendorBankAccount->getVendorId(), 'pagarme_id', null);
 
                 return $this->pushVendorInformation($vendorBankAccount);
             }
 
-            $this->handlePagarmeException($vendorBankAccount, $e);
+            $this->handlePagarmeException($vendorBankAccount, $pagarMeException);
         }
     }
 
-    private function handlePagarmeException(VendorBankAccount $vendorBankAccount, PagarMeException $e): void
-    {
+    private function handlePagarmeException(
+        VendorBankAccount $vendorBankAccount,
+        PagarMeException $pagarMeException
+    ): void {
         $this->vendorBankAccountManager->markAsInvalid($vendorBankAccount);
 
         $mappedProperties = [
@@ -108,8 +108,8 @@ class PagarmeVendorInformationManager implements VendorInformationManagerInterfa
             'legal_name' => 'ownerName',
         ];
 
-        $propertyName = $mappedProperties[$e->getParameterName()] ?? $e->getParameterName();
+        $propertyName = $mappedProperties[$pagarMeException->getParameterName()] ?? $pagarMeException->getParameterName();
 
-        throw new PagarmeInvalidInputException($vendorBankAccount, $propertyName, $e->getMessage());
+        throw new PagarmeInvalidInputException($vendorBankAccount, $propertyName, $pagarMeException->getMessage());
     }
 }

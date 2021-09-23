@@ -1,16 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Controller\BankAccount;
 
-use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
+use App\Core\Security\AuthorizationVoterInterface;
 use App\Vendor\Dto\VendorBankAccountDto;
 use App\Vendor\Provider\VendorBankAccountProvider;
 use App\Vendor\Provider\VendorProvider;
 use App\Vendor\Request\VendorBankAccountRequest;
 use App\Vendor\ResponseMapper\VendorBankAccountResponseMapper;
 use App\Vendor\Service\VendorBankAccountRequestManager;
-use App\Vendor\Entity\Vendor;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Ramsey\Uuid\Uuid;
@@ -18,67 +19,46 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\ConstraintViolationListInterface;
 
+#[Route(path: '/vendors/{vendorId}/bank_accounts')]
 class VendorBankAccountUpdateController extends AbstractController
 {
-    private VendorBankAccountRequestManager $vendorBankAccountManager;
-
-    private VendorBankAccountProvider $vendorBankAccountProvider;
-
-    private VendorBankAccountResponseMapper $vendorBankAccountResponseMapper;
-
-    private VendorProvider $vendorProvider;
-
     public function __construct(
-        VendorBankAccountRequestManager $vendorBankAccountManager,
-        VendorBankAccountProvider $vendorBankAccountProvider,
-        VendorBankAccountResponseMapper $vendorBankAccountResponseMapper,
-        VendorProvider $vendorProvider
+        private VendorBankAccountRequestManager $vendorBankAccountRequestManager,
+        private VendorBankAccountProvider $vendorBankAccountProvider,
+        private VendorBankAccountResponseMapper $vendorBankAccountResponseMapper,
+        private VendorProvider $vendorProvider,
     ) {
-        $this->vendorBankAccountManager = $vendorBankAccountManager;
-        $this->vendorBankAccountProvider = $vendorBankAccountProvider;
-        $this->vendorProvider = $vendorProvider;
-        $this->vendorBankAccountResponseMapper = $vendorBankAccountResponseMapper;
     }
 
     /**
-     * @Route(
-     *     "/vendors/{vendorId}/bank_accounts/{vendorBankAccountId}",
-     *     methods="PUT",
-     *     name="vendor_bank_accounts_update"
-     * )
-     * @ParamConverter("vendorBankAccountRequest", converter="fos_rest.request_body", options={
-     *     "deserializationContext"= {"allow_extra_attributes"=false}
-     * })
-     *
      * @OA\Tag(name="Vendor / Bank Account")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=VendorBankAccountRequest::class)))
      * @OA\Response(response=200, description="Success", @OA\JsonContent(ref=@Model(type=VendorBankAccountDto::class)))
      * @OA\Response(response=400, description="Invalid input")
      * @OA\Response(response=404, description="Resource not found")
      */
+    #[Route(path: '/{vendorBankAccountId}', name: 'vendor_bank_accounts_update', methods: 'PUT')]
+    #[ParamConverter(
+        data: 'vendorBankAccountRequest',
+        options: ['deserializationContext' => ['allow_extra_attributes' => false]],
+        converter: 'fos_rest.request_body'
+    )]
     public function update(
         string $vendorId,
         string $vendorBankAccountId,
         VendorBankAccountRequest $vendorBankAccountRequest,
-        ConstraintViolationListInterface $validationErrors
-    ): Response {
-        if ('current' == $vendorId) {
-            /** @var Vendor $vendor */
-            $vendor = $this->getUser();
-        } else {
-            // vendor fetching not implemented yet; requires also authorization
-            throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
-        }
+    ): ApiJsonResponse {
+        $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
+        $this->denyAccessUnlessGranted(AuthorizationVoterInterface::UPDATE, $vendor);
 
         $vendorBankAccount = $this->vendorBankAccountProvider->getByVendorAndId(
             $vendor->getId(),
             Uuid::fromString($vendorBankAccountId)
         );
 
-        $vendorBankAccountRequest->vendorId = $vendor->getId();
-        $this->vendorBankAccountManager->updateFromRequest($vendorBankAccount, $vendorBankAccountRequest);
+        $vendorBankAccountRequest->vendorId = $vendor->getId()->toString();
+        $this->vendorBankAccountRequestManager->updateFromRequest($vendorBankAccount, $vendorBankAccountRequest);
 
         return new ApiJsonResponse(
             Response::HTTP_OK,

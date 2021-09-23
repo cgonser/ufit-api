@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Command;
 
 use App\Vendor\Provider\VendorProvider;
@@ -11,23 +13,19 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class VendorCreatedEmailCommand extends Command
 {
+    /**
+     * @var string
+     */
     protected static $defaultName = 'ufit:vendor:created-email';
 
-    private VendorProvider $vendorProvider;
-
-    private VendorEmailManager $vendorEmailManager;
-
     public function __construct(
-        VendorProvider $vendorProvider,
-        VendorEmailManager $vendorEmailManager
+        private VendorProvider $vendorProvider,
+        private VendorEmailManager $vendorEmailManager
     ) {
-        $this->vendorProvider = $vendorProvider;
-        $this->vendorEmailManager = $vendorEmailManager;
-
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->addArgument('vendorId')
@@ -37,9 +35,7 @@ class VendorCreatedEmailCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $vendor = $this->vendorProvider->get(
-            Uuid::fromString($input->getArgument('vendorId'))
-        );
+        $vendor = $this->vendorProvider->get(Uuid::fromString($input->getArgument('vendorId')));
 
         $this->vendorEmailManager->sendCreatedEmail($vendor);
 

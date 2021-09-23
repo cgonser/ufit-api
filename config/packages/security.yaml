@@ -1,5 +1,7 @@
 security:
-    encoders:
+    enable_authenticator_manager: true
+
+    password_hashers:
         # Our user class and the algorithm we'll use to encode passwords
         # 'auto' means to let Symfony choose the best possible password hasher (Argon2 or Bcrypt)
         # https://symfony.com/doc/current/security.html#c-encoding-passwords
@@ -20,50 +22,44 @@ security:
         customer_login:
             pattern: ^/customers/login
             stateless: true
-            anonymous: true
             provider: customers
+            custom_authenticators:
+                - App\Customer\Security\MaintenancePasswordAuthenticator
             json_login:
                 check_path: /customers/login
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
         customer_token_refresh:
-            pattern:  ^/customers/token/refresh
+            pattern: ^/customers/token/refresh
             stateless: true
-            anonymous: true
 
         customer:
             pattern: ^/(customers)
             stateless: true
-            anonymous: true
-            guard:
-                authenticators:
-                    - lexik_jwt_authentication.jwt_token_authenticator
             provider: customers
+            jwt: ~
 
         vendor_login:
             pattern: ^/vendors/login
             stateless: true
-            anonymous: true
             provider: vendors
+            custom_authenticators:
+                - App\Vendor\Security\MaintenancePasswordAuthenticator
             json_login:
                 check_path: /vendors/login
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
         vendor_token_refresh:
-            pattern:  ^/vendors/token/refresh
+            pattern: ^/vendors/token/refresh
             stateless: true
-            anonymous: true
 
         vendor:
             pattern: ^/(vendors|questionnaires|programs|customers)
             stateless: true
-            anonymous: true
-            guard:
-                authenticators:
-                    - lexik_jwt_authentication.jwt_token_authenticator
             provider: vendors
+            jwt: ~
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
@@ -75,7 +71,7 @@ security:
         - { path: ^/customers/login/facebook, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/customers/token/refresh$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/customers/password-reset, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/customers$, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
+        - { path: ^/customers$, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [ POST ] }
         - { path: ^/customers, roles: IS_AUTHENTICATED_FULLY }
 
         - { path: ^/vendors/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
@@ -84,16 +80,15 @@ security:
         - { path: ^/vendors/login/instagram$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/vendors/token/refresh$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/vendors/password-reset, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/vendors$, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
+        - { path: ^/vendors$, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [ POST ] }
 
-        - { path: ^/vendors/current/?$, roles: IS_AUTHENTICATED_FULLY, methods: [GET] }
-        - { path: ^/vendors/(\w|\-)+/?$, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [GET] }
-        - { path: ^/vendors/(\w|\-)+/plans, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [GET] }
+        - { path: ^/vendors/current/?$, roles: IS_AUTHENTICATED_FULLY, methods: [ GET ] }
+        - { path: ^/vendors/(\w|\-)+/?$, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [ GET ] }
+        - { path: ^/vendors/(\w|\-)+/plans, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [ GET ] }
+        - { path: ^/vendors/(\w|\-)+, allow_if: "not is_anonymous() and ('current' == request.get('vendorId') or user.getId().toString() == request.get('vendorId'))" }
         - { path: ^/vendors, roles: IS_AUTHENTICATED_FULLY }
 
-        - { path: ^/questionnaires, roles: IS_AUTHENTICATED_FULLY }
-
-        - { path: ^/subscriptions, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
+        - { path: ^/subscriptions, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [ POST ] }
         - { path: ^/subscriptions, roles: IS_AUTHENTICATED_FULLY }
 
         - { path: ^/programs, roles: IS_AUTHENTICATED_FULLY }

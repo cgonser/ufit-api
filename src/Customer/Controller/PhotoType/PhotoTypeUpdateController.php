@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Controller\PhotoType;
 
 use App\Core\Exception\ApiJsonException;
@@ -21,68 +23,34 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
+#[Route(path: '/photo_types')]
 class PhotoTypeUpdateController extends AbstractController
 {
-    private PhotoTypeService $photoTypeService;
-
-    private PhotoTypeResponseMapper $photoTypeResponseMapper;
-
-    private PhotoTypeProvider $photoTypeProvider;
-
     public function __construct(
-        PhotoTypeService $photoTypeService,
-        PhotoTypeProvider $photoTypeProvider,
-        PhotoTypeResponseMapper $photoTypeResponseMapper
+        private PhotoTypeService $photoTypeService,
+        private PhotoTypeProvider $photoTypeProvider,
+        private PhotoTypeResponseMapper $photoTypeResponseMapper
     ) {
-        $this->photoTypeService = $photoTypeService;
-        $this->photoTypeResponseMapper = $photoTypeResponseMapper;
-        $this->photoTypeProvider = $photoTypeProvider;
     }
 
     /**
-     * @Route("/photo_types/{photoTypeId}", methods="PUT", name="photo_types_update")
-     *
-     * @ParamConverter("photoTypeRequest", converter="fos_rest.request_body", options={
-     *     "deserializationContext"= {"allow_extra_attributes"=false}
-     * })
-     *
      * @OA\Tag(name="PhotoType")
-     * @OA\RequestBody(
-     *     required=true,
-     *     @OA\JsonContent(ref=@Model(type=PhotoTypeRequest::class))
-     * )
-     * @OA\Response(
-     *     response=200,
-     *     description="Updates a photo type",
-     *     @OA\JsonContent(ref=@Model(type=PhotoTypeDto::class))
-     * )
-     * @OA\Response(
-     *     response=400,
-     *     description="Invalid input"
-     * )
+     * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=PhotoTypeRequest::class)))
+     * @OA\Response(response=200, description="Success", @OA\JsonContent(ref=@Model(type=PhotoTypeDto::class)))
+     * @OA\Response(response=400, description="Invalid input")
      */
+    #[Route(name: 'photo_types_update', methods: 'PUT')]
+    #[ParamConverter(data: 'photoTypeRequest', options: [
+        'deserializationContext' => ['allow_extra_attributes' => false],
+    ], converter: 'fos_rest.request_body')]
     public function update(
         string $photoTypeId,
         PhotoTypeRequest $photoTypeRequest,
-        ConstraintViolationListInterface $validationErrors
     ): Response {
-        try {
-            if ($validationErrors->count() > 0) {
-                throw new ApiJsonInputValidationException($validationErrors);
-            }
+        $photoType = $this->photoTypeProvider->get(Uuid::fromString($photoTypeId));
 
-            $photoType = $this->photoTypeProvider->get(Uuid::fromString($photoTypeId));
+        $this->photoTypeService->update($photoType, $photoTypeRequest);
 
-            $this->photoTypeService->update($photoType, $photoTypeRequest);
-
-            return new ApiJsonResponse(
-                Response::HTTP_OK,
-                $this->photoTypeResponseMapper->map($photoType)
-            );
-        } catch (PhotoTypeNotFoundException $e) {
-            throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
-        } catch (PhotoTypeAlreadyExistsException $e) {
-            throw new ApiJsonException(Response::HTTP_BAD_REQUEST, $e->getMessage());
-        }
+        return new ApiJsonResponse(Response::HTTP_OK, $this->photoTypeResponseMapper->map($photoType));
     }
 }

@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Exception;
 
-class CustomerMeasurementInvalidTakenAtException extends \Exception
+use App\Core\Exception\InvalidInputException;
+
+class CustomerMeasurementInvalidTakenAtException extends InvalidInputException
 {
-    protected $message = "Invalid takenAt value";
+    protected $message = 'Invalid takenAt value';
 }

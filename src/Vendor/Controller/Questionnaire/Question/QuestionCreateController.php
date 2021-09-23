@@ -1,14 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Controller\Questionnaire\Question;
 
-use App\Core\Exception\ApiJsonException;
 use App\Core\Exception\ApiJsonInputValidationException;
 use App\Core\Response\ApiJsonResponse;
+use App\Core\Security\AuthorizationVoterInterface;
 use App\Vendor\Dto\QuestionDto;
-use App\Vendor\Entity\Vendor;
-use App\Vendor\Exception\QuestionnaireNotFoundException;
 use App\Vendor\Provider\QuestionnaireProvider;
+use App\Vendor\Provider\VendorProvider;
 use App\Vendor\Request\QuestionRequest;
 use App\Vendor\ResponseMapper\QuestionResponseMapper;
 use App\Vendor\Service\QuestionService;
@@ -21,76 +22,50 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
+#[Route(path: '/vendors/{vendorId}/questionnaires/{questionnaireId}/questions')]
 class QuestionCreateController extends AbstractController
 {
-    private QuestionnaireProvider $questionnaireProvider;
-
-    private QuestionResponseMapper $questionResponseMapper;
-
-    private QuestionService $questionService;
-
     public function __construct(
-        QuestionnaireProvider $questionnaireProvider,
-        QuestionResponseMapper $questionResponseMapper,
-        QuestionService $questionService
+        private QuestionnaireProvider $questionnaireProvider,
+        private QuestionResponseMapper $questionResponseMapper,
+        private QuestionService $questionService,
+        private VendorProvider $vendorProvider,
     ) {
-        $this->questionnaireProvider = $questionnaireProvider;
-        $this->questionResponseMapper = $questionResponseMapper;
-        $this->questionService = $questionService;
     }
 
     /**
-     * @Route("/questionnaires/{questionnaireId}/questions", methods="POST", name="questionnaires_questions_create")
-     *
-     * @ParamConverter("questionRequest", converter="fos_rest.request_body", options={
-     *     "deserializationContext"= {"allow_extra_attributes"=false}
-     * })
-     *
      * @OA\Tag(name="Questionnaire")
-     * @OA\RequestBody(
-     *     required=true,
-     *     @OA\JsonContent(ref=@Model(type=QuestionRequest::class))
-     * )
-     * @OA\Response(
-     *     response=201,
-     *     description="Creates a new questionnaire",
-     *     @OA\JsonContent(ref=@Model(type=QuestionDto::class))
-     * )
-     * @OA\Response(
-     *     response=400,
-     *     description="Invalid input"
-     * )
-     * @OA\Response(
-     *     response=404,
-     *     description="Questionnaire not found"
-     * )
+     * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=QuestionRequest::class)))
+     * @OA\Response(response=201, description="Created", @OA\JsonContent(ref=@Model(type=QuestionDto::class)))
+     * @OA\Response(response=400, description="Invalid input")
+     * @OA\Response(response=404, description="Questionnaire not found")
      */
+    #[Route(name: 'questionnaires_questions_create', methods: 'POST')]
+    #[ParamConverter(data: 'questionRequest', options: [
+        'deserializationContext' => [
+            'allow_extra_attributes' => false,
+        ],
+    ], converter: 'fos_rest.request_body')]
     public function create(
+        string $vendorId,
         string $questionnaireId,
         QuestionRequest $questionRequest,
-        ConstraintViolationListInterface $validationErrors
+        ConstraintViolationListInterface $constraintViolationList
     ): Response {
-        try {
-            if ($validationErrors->count() > 0) {
-                throw new ApiJsonInputValidationException($validationErrors);
-            }
-
-            // TODO: implement authorization
-            /** @var Vendor $vendor */
-            $vendor = $this->getUser();
-
-            $questionnaire = $this->questionnaireProvider->getByVendorAndId(
-                $vendor, Uuid::fromString($questionnaireId)
-            );
-
-            $question = $this->questionService->create($questionnaire, $questionRequest);
-
-            return new ApiJsonResponse(
-                Response::HTTP_CREATED,
-                $this->questionResponseMapper->map($question)
-            );
-        } catch (QuestionnaireNotFoundException $e) {
-            throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
+        if ($constraintViolationList->count() > 0) {
+            throw new ApiJsonInputValidationException($constraintViolationList);
         }
+
+        $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
+        $this->denyAccessUnlessGranted(AuthorizationVoterInterface::UPDATE, $vendor);
+
+        $questionnaire = $this->questionnaireProvider->getByVendorAndId(
+            $vendor,
+            Uuid::fromString($questionnaireId)
+        );
+
+        $question = $this->questionService->create($questionnaire, $questionRequest);
+
+        return new ApiJsonResponse(Response::HTTP_CREATED, $this->questionResponseMapper->map($question));
     }
 }

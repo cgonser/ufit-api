@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Provider;
 
 use App\Customer\Entity\Customer;
@@ -10,11 +12,8 @@ use Ramsey\Uuid\UuidInterface;
 
 class CustomerMeasurementProvider
 {
-    private CustomerMeasurementRepository $customerMeasurementRepository;
-
-    public function __construct(CustomerMeasurementRepository $customerMeasurementRepository)
+    public function __construct(private CustomerMeasurementRepository $customerMeasurementRepository)
     {
-        $this->customerMeasurementRepository = $customerMeasurementRepository;
     }
 
     public function get(UuidInterface $customerMeasurementId): CustomerMeasurement
@@ -22,7 +21,7 @@ class CustomerMeasurementProvider
         /** @var CustomerMeasurement|null $customerMeasurement */
         $customerMeasurement = $this->customerMeasurementRepository->find($customerMeasurementId);
 
-        if (!$customerMeasurement) {
+        if ($customerMeasurement === null) {
             throw new CustomerMeasurementNotFoundException();
         }
 
@@ -37,15 +36,20 @@ class CustomerMeasurementProvider
             'customer' => $customer,
         ]);
 
-        if (!$customerMeasurement) {
+        if ($customerMeasurement === null) {
             throw new CustomerMeasurementNotFoundException();
         }
 
         return $customerMeasurement;
     }
 
+    /**
+     * @return mixed[]
+     */
     public function findByCustomer(Customer $customer): array
     {
-        return $this->customerMeasurementRepository->findBy(['customer' => $customer]);
+        return $this->customerMeasurementRepository->findBy([
+            'customer' => $customer,
+        ]);
     }
 }

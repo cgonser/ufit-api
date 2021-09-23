@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Provider;
 
-use App\Customer\Entity\Customer;
 use App\Customer\Entity\MeasurementType;
 use App\Customer\Exception\MeasurementTypeNotFoundException;
 use App\Customer\Repository\MeasurementTypeRepository;
@@ -10,11 +11,8 @@ use Ramsey\Uuid\UuidInterface;
 
 class MeasurementTypeProvider
 {
-    private MeasurementTypeRepository $measurementTypeRepository;
-
-    public function __construct(MeasurementTypeRepository $measurementTypeRepository)
+    public function __construct(private MeasurementTypeRepository $measurementTypeRepository)
     {
-        $this->measurementTypeRepository = $measurementTypeRepository;
     }
 
     public function get(UuidInterface $measurementTypeId): MeasurementType
@@ -22,7 +20,7 @@ class MeasurementTypeProvider
         /** @var MeasurementType|null $measurementType */
         $measurementType = $this->measurementTypeRepository->find($measurementTypeId);
 
-        if (!$measurementType) {
+        if ($measurementType === null) {
             throw new MeasurementTypeNotFoundException();
         }
 
@@ -36,7 +34,7 @@ class MeasurementTypeProvider
             'name' => $name,
         ]);
 
-        if (!$measurementType) {
+        if ($measurementType === null) {
             throw new MeasurementTypeNotFoundException();
         }
 
@@ -48,23 +46,30 @@ class MeasurementTypeProvider
         /** @var MeasurementType|null $measurementType */
         $measurementType = $this->findOneBySlug($slug);
 
-        if (!$measurementType) {
+        if ($measurementType === null) {
             throw new MeasurementTypeNotFoundException();
         }
 
         return $measurementType;
     }
 
-    public function findOneBySlug(string $slug): ?MeasurementType
+    public function findOneBySlug(string $slug): ?object
     {
-        return $this->measurementTypeRepository->findOneBy(['slug' => $slug]);
+        return $this->measurementTypeRepository->findOneBy([
+            'slug' => $slug,
+        ]);
     }
 
-    public function findOneByName(string $name): ?MeasurementType
+    public function findOneByName(string $name): ?object
     {
-        return $this->measurementTypeRepository->findOneBy(['name' => $name]);
+        return $this->measurementTypeRepository->findOneBy([
+            'name' => $name,
+        ]);
     }
 
+    /**
+     * @return mixed[]
+     */
     public function findAll(): array
     {
         return $this->measurementTypeRepository->findAll();

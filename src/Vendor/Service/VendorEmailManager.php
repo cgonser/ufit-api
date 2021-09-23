@@ -1,24 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Service;
 
 use App\Core\Service\EmailComposer;
 use App\Vendor\Entity\Vendor;
+use DateTime;
 use Symfony\Component\Mailer\MailerInterface;
 
 class VendorEmailManager
 {
-    private EmailComposer $emailComposer;
-
-    private MailerInterface $mailer;
-
-    public function __construct(EmailComposer $emailComposer, MailerInterface $mailer)
-    {
-        $this->emailComposer = $emailComposer;
-        $this->mailer = $mailer;
+    public function __construct(
+        private VendorManager $vendorManager,
+        private EmailComposer $emailComposer,
+        private MailerInterface $mailer,
+    ) {
     }
 
-    public function sendCreatedEmail(Vendor $vendor)
+    public function sendCreatedEmail(Vendor $vendor): void
     {
         $this->mailer->send(
             $this->emailComposer->compose(
@@ -32,5 +32,9 @@ class VendorEmailManager
                 $vendor->getLocale()
             )
         );
+
+        $vendor->setWelcomeEmailSentAt(new DateTime());
+
+        $this->vendorManager->save($vendor);
     }
 }

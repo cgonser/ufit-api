@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Controller\MeasurementType;
 
 use App\Core\Exception\ApiJsonException;
@@ -17,35 +19,26 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route(path: '/measurement_types')]
 class MeasurementTypeController extends AbstractController
 {
-    private MeasurementTypeResponseMapper $measurementTypeResponseMapper;
-
-    private MeasurementTypeProvider $measurementTypeProvider;
-
     public function __construct(
-        MeasurementTypeProvider $measurementTypeProvider,
-        MeasurementTypeResponseMapper $measurementTypeResponseMapper
+        private MeasurementTypeProvider $measurementTypeProvider,
+        private MeasurementTypeResponseMapper $measurementTypeResponseMapper
     ) {
-        $this->measurementTypeResponseMapper = $measurementTypeResponseMapper;
-        $this->measurementTypeProvider = $measurementTypeProvider;
     }
 
     /**
-     * @Route("/measurement_types", methods="GET", name="measurement_types_get")
-     *
      * @OA\Tag(name="MeasurementType")
      * @OA\Response(
      *     response=200,
      *     description="Returns the information all measurementTypes",
-     *     @OA\JsonContent(
-     *         type="array",
-     *         @OA\Items(ref=@Model(type=MeasurementTypeDto::class)))
-     *     )*
+     *     @OA\JsonContent(type="array", @OA\Items(ref=@Model(type=MeasurementTypeDto::class))))
      * )
      * @Security(name="Bearer")
      */
-    public function getMeasurementTypes(): Response
+    #[Route(name: 'measurement_types_get', methods: 'GET')]
+    public function getMeasurementTypes(): ApiJsonResponse
     {
         $measurementTypes = $this->measurementTypeProvider->findAll();
 
@@ -56,29 +49,18 @@ class MeasurementTypeController extends AbstractController
     }
 
     /**
-     * @Route("/measurement_types/{measurementTypeId}", methods="GET", name="measurement_types_get_one")
-     *
      * @OA\Tag(name="MeasurementType")
-     * @OA\Response(
-     *     response=200,
-     *     description="Returns the information about a measurement type",
-     *     @OA\JsonContent(ref=@Model(type=MeasurementTypeDto::class))
-     * )
+     * @OA\Response(response=200, description="Success", @OA\JsonContent(ref=@Model(type=MeasurementTypeDto::class)))
      * @Security(name="Bearer")
      */
+    #[Route(path: '/{measurementTypeId}', name: 'measurement_types_get_one', methods: 'GET')]
     public function getMeasurementType(string $measurementTypeId): Response
     {
-        try {
-            $measurementType = $this->measurementTypeProvider->get(
-                Uuid::fromString($measurementTypeId)
-            );
+        $measurementType = $this->measurementTypeProvider->get(Uuid::fromString($measurementTypeId));
 
-            return new ApiJsonResponse(
-                Response::HTTP_OK,
-                $this->measurementTypeResponseMapper->map($measurementType)
-            );
-        } catch (MeasurementTypeNotFoundException $e) {
-            throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
-        }
+        return new ApiJsonResponse(
+            Response::HTTP_OK,
+            $this->measurementTypeResponseMapper->map($measurementType)
+        );
     }
 }

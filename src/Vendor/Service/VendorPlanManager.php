@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Service;
 
 use App\Core\Validation\EntityValidator;
@@ -12,24 +14,12 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
 class VendorPlanManager
 {
-    private VendorPlanRepository $vendorPlanRepository;
-
-    private VendorPlanProvider $vendorPlanProvider;
-
-    private EntityValidator $validator;
-
-    private SluggerInterface $slugger;
-
     public function __construct(
-        VendorPlanRepository $vendorPlanRepository,
-        VendorPlanProvider $vendorPlanProvider,
-        EntityValidator $validator,
-        SluggerInterface $slugger
+        private VendorPlanRepository $vendorPlanRepository,
+        private VendorPlanProvider $vendorPlanProvider,
+        private EntityValidator $entityValidator,
+        private SluggerInterface $slugger
     ) {
-        $this->vendorPlanRepository = $vendorPlanRepository;
-        $this->vendorPlanProvider = $vendorPlanProvider;
-        $this->validator = $validator;
-        $this->slugger = $slugger;
     }
 
     public function create(VendorPlan $vendorPlan): void
@@ -55,7 +45,7 @@ class VendorPlanManager
 
     public function generateSlug(VendorPlan $vendorPlan, ?int $suffix = null): string
     {
-        $slug = strtolower($this->slugger->slug($vendorPlan->getName()));
+        $slug = strtolower($this->slugger->slug($vendorPlan->getName())->toString());
 
         if (null !== $suffix) {
             $slug .= '-'.$suffix;
@@ -74,33 +64,30 @@ class VendorPlanManager
     {
         $existingVendorPlan = $this->vendorPlanProvider->findOneByVendorAndSlug($vendorPlan->getVendor(), $slug);
 
-        if (!$existingVendorPlan) {
+        if (! $existingVendorPlan instanceof VendorPlan) {
             return true;
         }
 
-        if (!$vendorPlan->isNew() && $existingVendorPlan->getId()->equals($vendorPlan->getId())) {
-            return true;
-        }
-
-        return false;
+        return ! $vendorPlan->isNew() && $existingVendorPlan->getId()
+            ->equals($vendorPlan->getId());
     }
 
-    private function prepareVendorPlan(VendorPlan $vendorPlan)
+    private function prepareVendorPlan(VendorPlan $vendorPlan): void
     {
         if (null === $vendorPlan->getSlug() && null !== $vendorPlan->getName()) {
             $vendorPlan->setSlug($this->generateSlug($vendorPlan));
         }
     }
 
-    private function validateVendorPlan(VendorPlan $vendorPlan)
+    private function validateVendorPlan(VendorPlan $vendorPlan): void
     {
-        $this->validator->validate($vendorPlan);
+        $this->entityValidator->validate($vendorPlan);
 
-        if ($vendorPlan->isRecurring() && !$vendorPlan->getDuration()) {
+        if ($vendorPlan->isRecurring() && ! $vendorPlan->getDuration()) {
             throw new VendorPlanInvalidDurationException();
         }
 
-        if (null !== $vendorPlan->getSlug() && !$this->isSlugUnique($vendorPlan, $vendorPlan->getSlug())) {
+        if (null !== $vendorPlan->getSlug() && ! $this->isSlugUnique($vendorPlan, $vendorPlan->getSlug())) {
             throw new VendorPlanSlugInUseException();
         }
     }

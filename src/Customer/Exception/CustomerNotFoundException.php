@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Exception;
 
-class CustomerNotFoundException extends \Exception
+use App\Core\Exception\ResourceNotFoundException;
+
+class CustomerNotFoundException extends ResourceNotFoundException
 {
-    protected $message = "Customer not found";
+    protected $message = 'Customer not found';
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\MessageHandler;
 
 use App\Payment\Message\PagarmeSubscriptionResponseReceivedEvent;
@@ -9,25 +11,23 @@ use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
 class PagarmeSubscriptionResponseHandler implements MessageHandlerInterface
 {
-    private PagarmeSubscriptionResponseProcessor $pagarmeResponseProcessor;
-
-    private LoggerInterface $logger;
-
     public function __construct(
-        PagarmeSubscriptionResponseProcessor $pagarmeResponseProcessor,
-        LoggerInterface $logger
+        private PagarmeSubscriptionResponseProcessor $pagarmeSubscriptionResponseProcessor,
+        private LoggerInterface $logger,
     ) {
-        $this->pagarmeResponseProcessor = $pagarmeResponseProcessor;
-        $this->logger = $logger;
     }
 
-    public function __invoke(PagarmeSubscriptionResponseReceivedEvent $event)
+    public function __invoke(PagarmeSubscriptionResponseReceivedEvent $pagarmeSubscriptionResponseReceivedEvent)
     {
         $this->logger->info(
             'payment.subscription.response',
-            (array) $event->getResponse()
+            (array)$pagarmeSubscriptionResponseReceivedEvent->getResponse()
         );
 
-        $this->pagarmeResponseProcessor->process($event->getResponse(), $event->getSubscriptionId(), $event->getPaymentId());
+        $this->pagarmeSubscriptionResponseProcessor->process(
+            $pagarmeSubscriptionResponseReceivedEvent->getResponse(),
+            $pagarmeSubscriptionResponseReceivedEvent->getSubscriptionId(),
+            $pagarmeSubscriptionResponseReceivedEvent->getPaymentId()
+        );
     }
 }

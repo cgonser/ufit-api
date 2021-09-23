@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Service;
 
 use App\Program\Entity\ProgramAsset;
@@ -12,20 +14,11 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 class ProgramAssetManager
 {
-    private ProgramAssetRepository $programAssetRepository;
-
-    private FilesystemInterface $filesystem;
-
-    private MessageBusInterface $messageBus;
-
     public function __construct(
-        ProgramAssetRepository $programAssetRepository,
-        FilesystemInterface $programAssetFileSystem,
-        MessageBusInterface $messageBus
+        private ProgramAssetRepository $programAssetRepository,
+        private FilesystemInterface $programAssetFileSystem,
+        private MessageBusInterface $messageBus,
     ) {
-        $this->programAssetRepository = $programAssetRepository;
-        $this->filesystem = $programAssetFileSystem;
-        $this->messageBus = $messageBus;
     }
 
     public function create(ProgramAsset $programAsset): void
@@ -60,9 +53,9 @@ class ProgramAssetManager
             $extension = pathinfo($programAsset->getFilename(), PATHINFO_EXTENSION);
         }
 
-        $filename = $programAsset->getId()->toString().($extension !== null ? ('.'.$extension) : '');
+        $filename = $programAsset->getId()->toString().(null !== $extension ? ('.'.$extension) : '');
 
-        $this->filesystem->put($filename, $contents);
+        $this->programAssetFileSystem->put($filename, $contents);
 
         $programAsset->setFilename($filename);
         $programAsset->setType($type);

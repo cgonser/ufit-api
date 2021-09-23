@@ -1,38 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Service;
 
 use App\Vendor\Entity\Question;
 use App\Vendor\Entity\Questionnaire;
 use App\Vendor\Entity\Vendor;
-use App\Vendor\Provider\QuestionnaireProvider;
 use App\Vendor\Provider\QuestionProvider;
 use App\Vendor\Repository\QuestionnaireRepository;
-use App\Vendor\Repository\QuestionRepository;
 use App\Vendor\Request\QuestionnaireRequest;
 use App\Vendor\Request\QuestionRequest;
 use Ramsey\Uuid\Uuid;
 
 class QuestionnaireService
 {
-    private QuestionnaireRepository $questionnaireRepository;
-
-    private QuestionnaireProvider $questionnaireProvider;
-
-    private QuestionProvider $questionProvider;
-
-    private QuestionRepository $questionRepository;
-
     public function __construct(
-        QuestionnaireRepository $questionnaireRepository,
-        QuestionRepository $questionRepository,
-        QuestionnaireProvider $questionnaireProvider,
-        QuestionProvider $questionProvider
+        private QuestionnaireRepository $questionnaireRepository,
+        private QuestionProvider $questionProvider
     ) {
-        $this->questionnaireRepository = $questionnaireRepository;
-        $this->questionnaireProvider = $questionnaireProvider;
-        $this->questionProvider = $questionProvider;
-        $this->questionRepository = $questionRepository;
     }
 
     public function create(Vendor $vendor, QuestionnaireRequest $questionnaireRequest): Questionnaire
@@ -47,28 +33,28 @@ class QuestionnaireService
         return $questionnaire;
     }
 
-    public function update(Questionnaire $questionnaire, QuestionnaireRequest $questionnaireRequest)
+    public function update(Questionnaire $questionnaire, QuestionnaireRequest $questionnaireRequest): void
     {
         $this->mapFromRequest($questionnaire, $questionnaireRequest);
 
         $this->questionnaireRepository->save($questionnaire);
     }
 
-    public function delete(Questionnaire $questionnaire)
+    public function delete(Questionnaire $questionnaire): void
     {
         $this->questionnaireRepository->delete($questionnaire);
     }
 
-    private function mapFromRequest(Questionnaire $questionnaire, QuestionnaireRequest $questionnaireRequest)
+    private function mapFromRequest(Questionnaire $questionnaire, QuestionnaireRequest $questionnaireRequest): void
     {
         $questionnaire->setTitle($questionnaireRequest->title);
 
-        if (count($questionnaireRequest->questions) > 0) {
+        if ([] !== $questionnaireRequest->questions) {
             $this->mapItemsFromRequest($questionnaire, $questionnaireRequest->questions);
         }
     }
 
-    private function mapItemsFromRequest(Questionnaire $questionnaire, array $questions)
+    private function mapItemsFromRequest(Questionnaire $questionnaire, array $questions): void
     {
         /** @var QuestionRequest $questionRequest */
         foreach ($questions as $questionRequest) {
@@ -76,7 +62,8 @@ class QuestionnaireService
 
             if (null !== $questionRequest->id) {
                 $question = $this->questionProvider->findOneByQuestionnaireAndId(
-                    $questionnaire, Uuid::fromString($questionRequest->id)
+                    $questionnaire,
+                    Uuid::fromString($questionRequest->id)
                 );
             }
 

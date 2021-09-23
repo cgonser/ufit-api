@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Message;
 
-use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 class ProgramAssetCreatedEvent
 {
+    /**
+     * @var string
+     */
     public const NAME = 'program_asset.created';
 
     protected ?UuidInterface $programAssetId = null;

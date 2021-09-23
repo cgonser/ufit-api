@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Controller;
 
-use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
 use App\Vendor\Dto\VendorDto;
 use App\Vendor\Entity\Vendor;
@@ -17,52 +18,39 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class VendorController extends AbstractController
+final class VendorController extends AbstractController
 {
-    private VendorProvider $vendorProvider;
-
-    private VendorResponseMapper $vendorResponseMapper;
-
     public function __construct(
-        VendorProvider $vendorProvider,
-        VendorResponseMapper $vendorResponseMapper
+        private VendorProvider $vendorProvider,
+        private VendorResponseMapper $vendorResponseMapper
     ) {
-        $this->vendorResponseMapper = $vendorResponseMapper;
-        $this->vendorProvider = $vendorProvider;
     }
 
-    /**
-     * @Route("/vendors", methods="GET", name="vendors_get")
-     *
-     * @OA\Tag(name="Vendor")
-     * @OA\Response(
-     *     response=200,
-     *     description="Returns the information about all vendors",
-     *     @OA\JsonContent(
-     *         type="array",
-     *         @OA\Items(ref=@Model(type=VendorDto::class)))
-     *     )*
-     * )
-     * @Security(name="Bearer")
-     */
-    public function getVendors(): Response
-    {
-        $vendors = $this->vendorProvider->findAll();
+//    /**
+//     *
+//     * @OA\Tag(name="Vendor")
+//     * @OA\Response(
+//     *     response=200,
+//     *     description="Returns the information about all vendors",
+//     *     @OA\JsonContent(
+//     *         type="array",
+//     *         @OA\Items(ref=@Model(type=VendorDto::class)))
+//     *     )*
+//     * )
+//     * @Security(name="Bearer")
+//     */
+//    #[Route(path: '/vendors', methods: 'GET', name: 'vendors_get')]
+//    public function getVendors(): ApiJsonResponse
+//    {
+//        $vendors = $this->vendorProvider->findAll();
+//
+//        return new ApiJsonResponse(
+//            Response::HTTP_OK,
+//            $this->vendorResponseMapper->mapMultiple($vendors)
+//        );
+//    }
 
-        return new ApiJsonResponse(
-            Response::HTTP_OK,
-            $this->vendorResponseMapper->mapMultiple($vendors)
-        );
-    }
-
     /**
-     * @Route(
-     *     "/vendors/{vendorId}",
-     *     methods="GET",
-     *     name="vendors_get_one",
-     *     requirements={"vendorId" = "[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}"}
-     * )
-     *
      * @OA\Tag(name="Vendor")
      * @OA\Response(
      *     response=200,
@@ -70,7 +58,15 @@ class VendorController extends AbstractController
      *     @OA\JsonContent(ref=@Model(type=VendorDto::class))
      * )
      */
-    public function getVendor(string $vendorId): Response
+    #[Route(
+        path: '/vendors/{vendorId}',
+        name: 'vendors_get_one',
+        requirements: [
+            'vendorId' => '(current|[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12})',
+        ],
+        methods: ['GET']
+    )]
+    public function getVendor(string $vendorId): ApiJsonResponse
     {
         $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
 
@@ -82,8 +78,6 @@ class VendorController extends AbstractController
     }
 
     /**
-     * @Route("/vendors/{slug}", methods="GET", name="vendors_get_one_by_slug")
-     *
      * @OA\Tag(name="Vendor")
      * @OA\Response(
      *     response=200,
@@ -91,24 +85,18 @@ class VendorController extends AbstractController
      *     @OA\JsonContent(ref=@Model(type=VendorDto::class))
      * )
      */
-    public function getVendorBySlug(string $slug): Response
+    #[Route(path: '/vendors/{vendorSlug}', name: 'vendors_get_one_by_slug', methods: 'GET')]
+    public function getVendorBySlug(string $vendorSlug): ApiJsonResponse
     {
-        if ('current' === $slug) {
-            /** @var Vendor $vendor */
-            $vendor = $this->getUser();
+        $vendor = $this->vendorProvider->findOneBySlug($vendorSlug);
 
-            $vendorDto = $this->vendorResponseMapper->map($vendor);
-        } else {
-            $vendor = $this->vendorProvider->findOneBySlug($slug);
-
-            if (null === $vendor) {
-                throw new VendorNotFoundException();
-            }
-
-            $vendorDto = $this->getUser() && $this->getUser()->getId()->equals($vendor->getId())
-                ? $this->vendorResponseMapper->map($vendor)
-                : $this->vendorResponseMapper->mapPublic($vendor);
+        if (! $vendor instanceof Vendor) {
+            throw new VendorNotFoundException();
         }
+
+        $vendorDto = $this->getUser() && $this->getUser()->getId()->equals($vendor->getId())
+            ? $this->vendorResponseMapper->map($vendor)
+            : $this->vendorResponseMapper->mapPublic($vendor);
 
         return new ApiJsonResponse(Response::HTTP_OK, $vendorDto);
     }

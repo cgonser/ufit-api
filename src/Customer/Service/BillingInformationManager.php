@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Service;
 
 use App\Customer\Entity\BillingInformation;
@@ -9,9 +11,8 @@ class BillingInformationManager
 {
     private BillingInformationRepository $billingInformationRepository;
 
-    public function __construct(
-        BillingInformationRepository $billingInformationRepository
-    ) {
+    public function __construct(BillingInformationRepository $billingInformationRepository)
+    {
         $this->billingInformationRepository = $billingInformationRepository;
     }
 

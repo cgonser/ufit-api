@@ -1,20 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Exception;
 
 class ApiJsonException extends \JsonException
 {
-    private ?int $statusCode = null;
-
-    private array $errors = [];
-
-    public function __construct(int $statusCode, string $message = null, array $errors = [], \Throwable $previous = null)
-    {
-        $this->statusCode = $statusCode;
-
-        $this->errors = $errors;
-
-        parent::__construct($message, $statusCode, $previous);
+    public function __construct(
+        private ?int $statusCode,
+        string $message = null,
+        private array $errors = [],
+        \Throwable $previous = null
+    ) {
+        parent::__construct($message ?? '', $statusCode, $previous);
     }
 
     public function getStatusCode(): ?int

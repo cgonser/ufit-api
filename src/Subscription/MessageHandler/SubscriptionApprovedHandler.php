@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\MessageHandler;
 
 use App\Subscription\Message\SubscriptionApprovedEvent;
@@ -10,20 +12,11 @@ use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
 class SubscriptionApprovedHandler implements MessageHandlerInterface
 {
-    private SubscriptionProvider $subscriptionProvider;
-
-    private SubscriptionEmailManager $subscriptionEmailManager;
-
-    private LoggerInterface $logger;
-
     public function __construct(
-        SubscriptionProvider $subscriptionProvider,
-        SubscriptionEmailManager $subscriptionEmailManager,
-        LoggerInterface $logger
+        private SubscriptionProvider $subscriptionProvider,
+        private SubscriptionEmailManager $subscriptionEmailManager,
+        private LoggerInterface $logger
     ) {
-        $this->subscriptionProvider = $subscriptionProvider;
-        $this->subscriptionEmailManager = $subscriptionEmailManager;
-        $this->logger = $logger;
     }
 
     public function __invoke(SubscriptionApprovedEvent $subscriptionApprovedEvent)
@@ -33,9 +26,14 @@ class SubscriptionApprovedHandler implements MessageHandlerInterface
         $this->logger->info(
             'subscription.approved',
             [
-                'id' => $subscription->getId()->toString(),
-                'customerId' => $subscription->getCustomer()->getId()->toString(),
-                'vendorPlanId' => $subscription->getVendorPlan()->getId()->toString(),
+                'id' => $subscription->getId()
+                    ->toString(),
+                'customerId' => $subscription->getCustomer()
+                    ->getId()
+                    ->toString(),
+                'vendorPlanId' => $subscription->getVendorPlan()
+                    ->getId()
+                    ->toString(),
             ]
         );
 

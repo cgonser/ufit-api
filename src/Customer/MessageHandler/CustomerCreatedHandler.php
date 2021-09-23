@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\MessageHandler;
 
 use App\Customer\Message\CustomerCreatedEvent;
@@ -30,12 +32,10 @@ class CustomerCreatedHandler implements MessageHandlerInterface
     {
         $customer = $this->customerProvider->get($customerCreatedEvent->getCustomerId());
 
-        $this->logger->info(
-            'customer.created',
-            [
-                'id' => $customer->getId()->toString(),
-            ]
-        );
+        $this->logger->info('customer.created', [
+            'id' => $customer->getId()
+                ->toString(),
+        ]);
 
         $this->customerEmailManager->sendCreatedEmail($customer);
     }

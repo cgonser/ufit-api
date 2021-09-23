@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Service;
 
 use App\Core\Exception\InvalidEntityException;
@@ -58,7 +60,7 @@ class CustomerRequestManager
 
                 if (null !== $existingCustomer
                     && null === $existingCustomer->getPassword()
-                    && !$customerRequest->has('password')) {
+                    && ! $customerRequest->has('password')) {
                     return $existingCustomer;
                 }
             }
@@ -100,7 +102,7 @@ class CustomerRequestManager
 
         if (null !== $customerRequest->password && null === $customer->getPassword()) {
             $customer->setPassword(
-                $this->customerPasswordManager->encodePassword($customer, $customerRequest->password)
+                $this->customerPasswordManager->hashPassword($customer, $customerRequest->password)
             );
         }
 
@@ -109,7 +111,7 @@ class CustomerRequestManager
         }
 
         if (null !== $customerRequest->lastWeight) {
-            $customer->setLastWeight(new Decimal((string)$customerRequest->lastWeight));
+            $customer->setLastWeight(new Decimal((string) $customerRequest->lastWeight));
         }
 
         if (null !== $customerRequest->birthDate) {
@@ -160,7 +162,7 @@ class CustomerRequestManager
     {
         $customer = $this->customerProvider->findOneByEmail($customerPasswordResetRequest->emailAddress);
 
-        if (!$customer) {
+        if (! $customer) {
             return;
         }
 
@@ -169,11 +171,11 @@ class CustomerRequestManager
 
     public function concludePasswordReset(CustomerPasswordResetTokenRequest $customerPasswordResetTokenRequest)
     {
-        [$emailAddress, $token] = explode('|', base64_decode($customerPasswordResetTokenRequest->token));
+        [$emailAddress, $token] = explode('|', base64_decode($customerPasswordResetTokenRequest->token, true));
 
         $customer = $this->customerProvider->findOneByEmail($emailAddress);
 
-        if (!$customer) {
+        if (! $customer) {
             throw new CustomerNotFoundException();
         }
 
@@ -197,10 +199,8 @@ class CustomerRequestManager
         }
     }
 
-    public function changeEmail(
-        Customer $customer,
-        CustomerEmailChangeRequest $customerEmailChangeRequest
-    ): void {
+    public function changeEmail(Customer $customer, CustomerEmailChangeRequest $customerEmailChangeRequest): void
+    {
         $customer->setEmail($customerEmailChangeRequest->email);
 
         $this->customerManager->update($customer);

@@ -1,84 +1,68 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Entity;
 
 use App\Vendor\Entity\Vendor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Knp\DoctrineBehaviors\Contract\Entity\SoftDeletableInterface;
+use Knp\DoctrineBehaviors\Contract\Entity\TimestampableInterface;
+use Knp\DoctrineBehaviors\Model\SoftDeletable\SoftDeletableTrait;
+use Knp\DoctrineBehaviors\Model\Timestampable\TimestampableTrait;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
+use App\Program\Repository\ProgramRepository;
 
-/**
- * @ORM\Entity(repositoryClass="App\Program\Repository\ProgramRepository")
- * @ORM\Table(name="program")
- * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
- */
-class Program
+#[ORM\Entity(repositoryClass: ProgramRepository::class)]
+#[ORM\Table(name: "program")]
+class Program implements SoftDeletableInterface, TimestampableInterface
 {
-    use TimestampableEntity;
-    use SoftDeleteableEntity;
+    use TimestampableTrait;
+    use SoftDeletableTrait;
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="uuid", unique=true)
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class=UuidGenerator::class)
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: "uuid", unique: true)]
+    #[ORM\GeneratedValue(strategy: "CUSTOM")]
+    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     private UuidInterface $id;
 
-    /**
-     * @ORM\Column(type="uuid")
-     */
+    #[ORM\Column(type: "uuid", nullable: true)]
+    private ?UuidInterface $originalProgramId = null;
+
+    #[ORM\ManyToOne(targetEntity: Program::class)]
+    private ?Program $originalProgram = null;
+
+    #[ORM\Column(type: "uuid")]
     private UuidInterface $vendorId;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Vendor\Entity\Vendor")
-     * @ORM\JoinColumn(name="vendor_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: Vendor::class)]
     private Vendor $vendor;
 
-    /**
-     * @ORM\Column(type="text", nullable=false)
-     */
+    #[ORM\Column(type: "text", nullable: false)]
     private string $name;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: "text", nullable: true)]
     private ?string $level = null;
 
-    /**
-     * @ORM\Column(type="json", nullable=true)
-     */
+    #[ORM\Column(type: "json", nullable: true)]
     private ?array $goals = null;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: "text", nullable: true)]
     private ?string $description = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false, options={"default": false})
-     */
+    #[ORM\Column(type: "boolean", nullable: false, options: ["default" => false])]
     private bool $isTemplate = false;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false, options={"default": true})
-     */
+    #[ORM\Column(type: "boolean", nullable: false, options: ["default" => true])]
     private bool $isActive = true;
 
-    /**
-     * @ORM\OneToMany(targetEntity="ProgramAsset", mappedBy="program", cascade={"persist"})
-     */
+    #[ORM\OneToMany(mappedBy: "program", targetEntity: "ProgramAsset", cascade: ["persist"])]
     private Collection $assets;
 
-    /**
-     * @ORM\OneToMany(targetEntity="ProgramAssignment", mappedBy="program", cascade={"persist"})
-     */
+    #[ORM\OneToMany(mappedBy: "program", targetEntity: "ProgramAssignment", cascade: ["persist"])]
     private Collection $assignments;
 
     public function __construct()
@@ -92,12 +76,36 @@ class Program
         return $this->id;
     }
 
+    public function getOriginalProgramId(): ?UuidInterface
+    {
+        return $this->originalProgramId;
+    }
+
+    public function setOriginalProgramId(?UuidInterface $originalProgramId): self
+    {
+        $this->originalProgramId = $originalProgramId;
+
+        return $this;
+    }
+
+    public function getOriginalProgram(): ?Program
+    {
+        return $this->originalProgram;
+    }
+
+    public function setOriginalProgram(?Program $originalProgram): self
+    {
+        $this->originalProgram = $originalProgram;
+
+        return $this;
+    }
+
     public function getVendorId(): UuidInterface
     {
         return $this->vendorId;
     }
 
-    public function setVendorId(UuidInterface $vendorId): Program
+    public function setVendorId(UuidInterface $vendorId): self
     {
         $this->vendorId = $vendorId;
 

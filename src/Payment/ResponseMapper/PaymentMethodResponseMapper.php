@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\ResponseMapper;
 
 use App\Payment\Dto\PaymentMethodDto;
@@ -10,7 +12,8 @@ class PaymentMethodResponseMapper
     public function map(PaymentMethod $paymentMethod): PaymentMethodDto
     {
         $paymentMethodDto = new PaymentMethodDto();
-        $paymentMethodDto->id = $paymentMethod->getId()->toString();
+        $paymentMethodDto->id = $paymentMethod->getId()
+            ->toString();
         $paymentMethodDto->name = $paymentMethod->getName();
         $paymentMethodDto->countriesEnabled = $paymentMethod->getCountriesEnabled();
         $paymentMethodDto->countriesDisabled = $paymentMethod->getCountriesDisabled();
@@ -19,6 +22,9 @@ class PaymentMethodResponseMapper
         return $paymentMethodDto;
     }
 
+    /**
+     * @return PaymentMethodDto[]
+     */
     public function mapMultiple(array $paymentMethods): array
     {
         $paymentMethodDtos = [];

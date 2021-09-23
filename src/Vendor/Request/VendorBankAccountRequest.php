@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Request;
 
 use App\Core\Request\AbstractRequest;
@@ -13,45 +15,45 @@ class VendorBankAccountRequest extends AbstractRequest
     /**
      * @OA\Property()
      */
-    public ?string $vendorId;
+    public ?string $vendorId = null;
 
     /**
      * @OA\Property()
      */
-    public ?string $description;
+    public ?string $description = null;
 
     /**
      * @OA\Property()
      */
-    public ?string $bankCode;
+    public ?string $bankCode = null;
 
     /**
      * @OA\Property()
      */
-    public ?string $agencyNumber;
+    public ?string $agencyNumber = null;
 
     /**
      * @OA\Property()
      */
-    public ?string $accountNumber;
+    public ?string $accountNumber = null;
 
     /**
      * @OA\Property()
      */
-    public ?string $accountDigit;
+    public ?string $accountDigit = null;
 
     /**
      * @OA\Property()
      */
-    public ?string $ownerName;
+    public ?string $ownerName = null;
 
     /**
      * @OA\Property()
      */
-    public ?string $ownerDocumentType;
+    public ?string $ownerDocumentType = null;
 
     /**
      * @OA\Property()
      */
-    public ?string $ownerDocumentNumber;
+    public ?string $ownerDocumentNumber = null;
 }

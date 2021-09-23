@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\Service;
 
 use App\Customer\Entity\Customer;
@@ -13,24 +15,12 @@ use Ramsey\Uuid\Uuid;
 
 class SubscriptionRequestManager
 {
-    private SubscriptionManager $subscriptionManager;
-
-    private CustomerProvider $customerProvider;
-
-    private CustomerRequestManager $customerManager;
-
-    private VendorPlanProvider $vendorPlanProvider;
-
     public function __construct(
-        SubscriptionManager $subscriptionManager,
-        CustomerProvider $customerProvider,
-        CustomerRequestManager $customerManager,
-        VendorPlanProvider $vendorPlanProvider
+        private SubscriptionManager $subscriptionManager,
+        private CustomerProvider $customerProvider,
+        private CustomerRequestManager $customerRequestManager,
+        private VendorPlanProvider $vendorPlanProvider
     ) {
-        $this->subscriptionManager = $subscriptionManager;
-        $this->customerProvider = $customerProvider;
-        $this->customerManager = $customerManager;
-        $this->vendorPlanProvider = $vendorPlanProvider;
     }
 
     public function createFromCustomerRequest(
@@ -40,7 +30,7 @@ class SubscriptionRequestManager
     ): Subscription {
         $subscription = new Subscription();
 
-        $this->mapDataFromRequest($subscription, $subscriptionRequest);
+        $this->mapDataFromRequest($subscription, $subscriptionRequest, $ipAddress);
 
         $subscription->setCustomer($customer);
 
@@ -59,9 +49,9 @@ class SubscriptionRequestManager
         return $subscription;
     }
 
-    public function review(Subscription $subscription, SubscriptionReviewRequest $subscriptionReviewRequest)
+    public function review(Subscription $subscription, SubscriptionReviewRequest $subscriptionReviewRequest): void
     {
-        if (true === $subscriptionReviewRequest->isApproved) {
+        if ($subscriptionReviewRequest->isApproved) {
             $this->subscriptionManager->approve($subscription, $subscriptionReviewRequest->reviewNotes);
         } else {
             $this->subscriptionManager->reject($subscription, $subscriptionReviewRequest->reviewNotes);
@@ -74,7 +64,7 @@ class SubscriptionRequestManager
         ?string $ipAddress = null
     ): void {
         if (null !== $subscriptionRequest->customer) {
-            $customer = $this->customerManager->createFromRequest($subscriptionRequest->customer, $ipAddress);
+            $customer = $this->customerRequestManager->createFromRequest($subscriptionRequest->customer, $ipAddress);
 
             $subscription->setCustomer($customer);
         }

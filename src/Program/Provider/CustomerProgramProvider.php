@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Provider;
 
 use App\Customer\Entity\Customer;
@@ -10,7 +12,7 @@ use Ramsey\Uuid\UuidInterface;
 
 class CustomerProgramProvider extends ProgramProvider
 {
-    public function getByCustomerAndId(Customer $customer, UuidInterface $programId): Program
+    public function getByCustomerAndId(Customer $customer, UuidInterface $programId): ?Program
     {
         $queryBuilder = $this->repository->createQueryBuilder('p')
             ->innerJoin('p.assignments', 'a')
@@ -23,24 +25,32 @@ class CustomerProgramProvider extends ProgramProvider
         /** @var Program|null $program */
         $program = $queryBuilder->getQuery()->getOneOrNullResult();
 
-        if (!$program) {
+        if ($program === null) {
             $this->throwNotFoundException();
         }
 
         return $program;
     }
 
-    public function searchCustomerPrograms(Customer $customer, CustomerProgramSearchRequest $searchRequest): array
-    {
-        return $this->search($searchRequest, ['customer' => $customer]);
+    public function searchCustomerPrograms(
+        Customer $customer,
+        CustomerProgramSearchRequest $customerProgramSearchRequest
+    ): array {
+        return $this->search($customerProgramSearchRequest, [
+            'customer' => $customer,
+        ]);
     }
 
-    public function countCustomerPrograms(Customer $customer, CustomerProgramSearchRequest $searchRequest): int
-    {
-        return $this->count($searchRequest, ['customer' => $customer]);
+    public function countCustomerPrograms(
+        Customer $customer,
+        CustomerProgramSearchRequest $customerProgramSearchRequest
+    ): int {
+        return $this->count($customerProgramSearchRequest, [
+            'customer' => $customer,
+        ]);
     }
 
-    protected function addFilters(QueryBuilder $queryBuilder, array $filters)
+    protected function addFilters(QueryBuilder $queryBuilder, array $filters): void
     {
         if (isset($filters['customer'])) {
             $queryBuilder

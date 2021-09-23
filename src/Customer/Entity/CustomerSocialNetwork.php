@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -19,7 +21,7 @@ class CustomerSocialNetwork
     use TimestampableEntity;
     use SoftDeleteableEntity;
 
-    const PLATFORM_FACEBOOK = 'facebook';
+    public const PLATFORM_FACEBOOK = 'facebook';
 
     /**
      * @ORM\Id
@@ -156,6 +158,6 @@ class CustomerSocialNetwork
 
     public function isNew(): bool
     {
-        return !isset($this->id);
+        return ! isset($this->id);
     }
 }

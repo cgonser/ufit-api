@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Service;
 
 use App\Customer\Entity\Customer;
@@ -11,9 +13,8 @@ class CustomerPhotoRequestManager
 {
     private CustomerPhotoManager $customerPhotoManager;
 
-    public function __construct(
-        CustomerPhotoManager $customerPhotoManager
-    ) {
+    public function __construct(CustomerPhotoManager $customerPhotoManager)
+    {
         $this->customerPhotoManager = $customerPhotoManager;
     }
 
@@ -38,10 +39,7 @@ class CustomerPhotoRequestManager
 
     public function uploadPhoto(CustomerPhoto $customerPhoto, string $photoContents): void
     {
-        $this->customerPhotoManager->persistPhoto(
-            $customerPhoto,
-            $photoContents
-        );
+        $this->customerPhotoManager->persistPhoto($customerPhoto, $photoContents);
     }
 
     private function mapFromRequest(CustomerPhoto $customerPhoto, CustomerPhotoRequest $customerPhotoRequest): void

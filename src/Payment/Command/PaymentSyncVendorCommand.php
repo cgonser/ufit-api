@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Command;
 
 use App\Payment\Service\PaymentProcessor\VendorInformationManagerInterface;
@@ -10,19 +12,17 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class PaymentSyncVendorCommand extends Command
 {
+    /**
+     * @var string
+     */
     protected static $defaultName = 'ufit:payment:sync-vendor';
 
-    private VendorInformationManagerInterface $vendorInformationManager;
-
-    public function __construct(
-        VendorInformationManagerInterface $vendorInformationManager
-    ) {
-        $this->vendorInformationManager = $vendorInformationManager;
-
+    public function __construct(private VendorInformationManagerInterface $vendorInformationManager)
+    {
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->addArgument('vendorId')
@@ -32,9 +32,7 @@ class PaymentSyncVendorCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->vendorInformationManager->updateVendorInformation(
-            Uuid::fromString($input->getArgument('vendorId'))
-        );
+        $this->vendorInformationManager->updateVendorInformation(Uuid::fromString($input->getArgument('vendorId')));
 
         return 0;
     }

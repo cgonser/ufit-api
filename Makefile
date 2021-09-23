@@ -37,7 +37,7 @@ CMD_ARGUMENTS ?= $(cmd)
 export PROJECT_NAME
 
 # all our targets are phony (no files to check).
-.PHONY: shell help build rebuild service start stop login test clean prune symfony aws-push aws-deploy build-push-deploy sql
+.PHONY: shell help build rebuild service start stop login test test-docker clean prune symfony aws-push aws-deploy build-push-deploy sql
 
 # suppress makes own output
 #.SILENT:
@@ -64,7 +64,8 @@ help:
 	@echo 'Targets:'
 	@echo '  build		build docker --image--'
 	@echo '  rebuild	rebuild docker --image--'
-	@echo '  test		test docker --container--'
+	@echo '  test		run tests on the local environment'
+	@echo '  test		run tests inside of the docker container
 	@echo '  service	run as service --container--'
 	@echo '  start		start services'
 	@echo '  stop		stop services'
@@ -125,11 +126,20 @@ db-recreate:
 	docker-compose -p $(PROJECT_NAME) run --rm $(SERVICE_TARGET) sh -c "/var/www/html/symfony doctrine:insert-sql"
 
 test:
-	# here it is useful to add your own customised tests
-	docker-compose -p $(PROJECT_NAME) run --rm $(SERVICE_TARGET) sh -c '\
-		/app/bin/console doctrine:database:create --env=test ; \
-		/app/bin/console doctrine:schema:create --env=test --force ; \
-		/app/bin/phpunit'
+	php bin/console --env=test doctrine:database:drop --force -q
+	php bin/console --env=test doctrine:database:create -q
+	php bin/console --env=test doctrine:schema:create -q
+	php bin/console --env=test doctrine:fixtures:load -n
+	bin/fakes3 -db var/cache/test/s3.db -port localhost:7003 > /dev/null 2>&1 &
+	php ./vendor/bin/phpunit
+	kill $!
+
+test-docker:
+	docker-compose -p $(PROJECT_NAME) exec $(SERVICE_TARGET) php bin/console --env=test doctrine:database:drop --force -q
+	docker-compose -p $(PROJECT_NAME) exec $(SERVICE_TARGET) php bin/console --env=test doctrine:database:create -q
+	docker-compose -p $(PROJECT_NAME) exec $(SERVICE_TARGET) php bin/console --env=test doctrine:schema:create -q
+	docker-compose -p $(PROJECT_NAME) exec $(SERVICE_TARGET) php ./vendor/bin/phpunit
+
 
 aws-push:
 	# ecr login + tag image + push image

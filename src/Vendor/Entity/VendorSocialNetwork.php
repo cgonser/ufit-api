@@ -1,71 +1,69 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
+use App\Vendor\Repository\VendorSocialNetworkRepository;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\CustomIdGenerator;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\Table;
+use Knp\DoctrineBehaviors\Contract\Entity\SoftDeletableInterface;
+use Knp\DoctrineBehaviors\Contract\Entity\TimestampableInterface;
+use Knp\DoctrineBehaviors\Model\SoftDeletable\SoftDeletableTrait;
+use Knp\DoctrineBehaviors\Model\Timestampable\TimestampableTrait;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
 
-/**
- * @ORM\Entity(repositoryClass="App\Vendor\Repository\VendorSocialNetworkRepository")
- * @ORM\Table()
- * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
- */
-class VendorSocialNetwork
+#[Entity(repositoryClass: VendorSocialNetworkRepository::class)]
+#[Table]
+class VendorSocialNetwork implements SoftDeletableInterface, TimestampableInterface
 {
-    use TimestampableEntity;
-    use SoftDeleteableEntity;
-
-    const PLATFORM_FACEBOOK = 'facebook';
+    use TimestampableTrait;
+    use SoftDeletableTrait;
 
     /**
-     * @ORM\Id
-     * @ORM\Column(type="uuid", unique=true)
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class=UuidGenerator::class)
+     * @var string
      */
+    public const PLATFORM_FACEBOOK = 'facebook';
+
+    #[Id]
+    #[Column(type: 'uuid', unique: true)]
+    #[GeneratedValue(strategy: 'CUSTOM')]
+
+    #[CustomIdGenerator(class: UuidGenerator::class)]
     private UuidInterface $id;
 
-    /**
-     * @ORM\Column(type="uuid")
-     */
+    #[Column(type: 'uuid')]
     private UuidInterface $vendorId;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Vendor")
-     * @ORM\JoinColumn(name="vendor_id", referencedColumnName="id", nullable=false)
-     */
+    #[ManyToOne(targetEntity: 'Vendor')]
+    #[JoinColumn(name: 'vendor_id', nullable: false)]
     private Vendor $vendor;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    #[Column(type: 'string')]
     private string $platform;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    #[Column(type: 'string')]
     private string $externalId;
 
-    /**
-     * @ORM\Column(type="text")
-     */
+    #[Column(type: 'text')]
     private string $accessToken;
 
-    /**
-     * @ORM\Column(type="json")
-     */
-    private ?array $details;
+    #[Column(type: 'json')]
+    private ?array $details = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false, options={"default": true})
-     */
+    #[Column(type: 'boolean', options: [
+        'default' => true,
+    ])]
     private bool $isActive = true;
 
-    public function getId(): ?UuidInterface
+    public function getId(): UuidInterface
     {
         return $this->id;
     }
@@ -156,6 +154,6 @@ class VendorSocialNetwork
 
     public function isNew(): bool
     {
-        return !isset($this->id);
+        return ! isset($this->id);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\ResponseMapper;
 
 use App\Customer\Dto\CustomerMeasurementDto;
@@ -19,7 +21,7 @@ class CustomerMeasurementResponseMapper
         $customerMeasurementDto = new CustomerMeasurementDto();
         $customerMeasurementDto->id = $customerMeasurement->getId()->toString();
         $customerMeasurementDto->notes = $customerMeasurement->getNotes() ?? '';
-        $customerMeasurementDto->takenAt = $customerMeasurement->getTakenAt()->format(\DateTimeInterface::ISO8601);
+        $customerMeasurementDto->takenAt = $customerMeasurement->getTakenAt()?->format(\DateTimeInterface::ATOM);
         $customerMeasurementDto->items = $this->customerMeasurementItemResponseMapper->mapMultiple(
             $customerMeasurement->getItems()->toArray()
         );

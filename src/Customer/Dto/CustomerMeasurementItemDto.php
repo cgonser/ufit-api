@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Dto;
 
 class CustomerMeasurementItemDto
@@ -8,7 +10,7 @@ class CustomerMeasurementItemDto
 
     public MeasurementTypeDto $measurementType;
 
-    public float $measurement;
+    public string $measurement;
 
     public string $unit;
 }

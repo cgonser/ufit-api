@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\ResponseMapper;
 
 use App\Customer\Dto\CustomerMeasurementItemDto;
@@ -18,7 +20,7 @@ class CustomerMeasurementItemResponseMapper
     {
         $customerMeasurementItemDto = new CustomerMeasurementItemDto();
         $customerMeasurementItemDto->id = $customerMeasurementItem->getId()->toString();
-        $customerMeasurementItemDto->measurement = $customerMeasurementItem->getMeasurement()->toFloat();
+        $customerMeasurementItemDto->measurement = $customerMeasurementItem->getMeasurement()->toString();
         $customerMeasurementItemDto->unit = $customerMeasurementItem->getUnit();
         $customerMeasurementItemDto->measurementType = $this->measurementTypeResponseMapper->map(
             $customerMeasurementItem->getMeasurementType()

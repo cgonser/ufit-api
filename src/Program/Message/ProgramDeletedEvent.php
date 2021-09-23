@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Message;
 
-use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 class ProgramDeletedEvent
 {
+    /**
+     * @var string
+     */
     public const NAME = 'program.deleted';
 
     protected ?UuidInterface $programId = null;

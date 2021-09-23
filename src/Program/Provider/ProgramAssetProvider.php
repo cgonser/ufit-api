@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Provider;
 
 use App\Core\Provider\AbstractProvider;
@@ -11,17 +13,12 @@ use Ramsey\Uuid\UuidInterface;
 
 class ProgramAssetProvider extends AbstractProvider
 {
-    public function __construct(ProgramAssetRepository $repository)
+    public function __construct(ProgramAssetRepository $programAssetRepository)
     {
-        $this->repository = $repository;
+        $this->repository = $programAssetRepository;
     }
 
-    protected function throwNotFoundException()
-    {
-        throw new ProgramAssetNotFoundException();
-    }
-
-    public function getByProgramAndId(Program $program, UuidInterface $programAssetId): ProgramAsset
+    public function getByProgramAndId(Program $program, UuidInterface $programAssetId): ?ProgramAsset
     {
         /** @var ProgramAsset|null $programAsset */
         $programAsset = $this->repository->findOneBy([
@@ -29,10 +26,15 @@ class ProgramAssetProvider extends AbstractProvider
             'program' => $program,
         ]);
 
-        if (!$programAsset) {
+        if ($programAsset === null) {
             $this->throwNotFoundException();
         }
 
         return $programAsset;
+    }
+
+    protected function throwNotFoundException(): void
+    {
+        throw new ProgramAssetNotFoundException();
     }
 }

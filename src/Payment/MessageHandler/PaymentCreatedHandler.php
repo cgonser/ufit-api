@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\MessageHandler;
 
 use App\Payment\Entity\Payment;
@@ -11,20 +13,11 @@ use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
 class PaymentCreatedHandler implements MessageHandlerInterface
 {
-    private PaymentProvider $paymentProvider;
-
-    private PaymentProcessor $paymentProcessor;
-
-    private LoggerInterface $logger;
-
     public function __construct(
-        PaymentProvider $paymentProvider,
-        PaymentProcessor $paymentProcessor,
-        LoggerInterface $logger
+        private PaymentProvider $paymentProvider,
+        private PaymentProcessor $paymentProcessor,
+        private LoggerInterface $logger,
     ) {
-        $this->paymentProvider = $paymentProvider;
-        $this->paymentProcessor = $paymentProcessor;
-        $this->logger = $logger;
     }
 
     public function __invoke(PaymentCreatedEvent $paymentCreatedEvent)
@@ -39,7 +32,7 @@ class PaymentCreatedHandler implements MessageHandlerInterface
             [
                 'id' => $payment->getId()->toString(),
                 'subscriptionId' => $payment->getInvoice()->getSubscriptionId()->toString(),
-                'customerId' => $payment->getInvoice()->getSubscription()->getCustomerId()->toString(),
+                'customerId' => $payment->getInvoice()->getSubscription()->getCustomerId()?->toString(),
                 'vendorPlanId' => $payment->getInvoice()->getSubscription()->getVendorPlanId()->toString(),
             ]
         );

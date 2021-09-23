@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Controller;
 
 use App\Core\Response\ApiJsonResponse;
@@ -16,60 +18,46 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ProgramController extends AbstractController
 {
-    private ProgramProvider $programProvider;
-
-    private ProgramResponseMapper $programResponseMapper;
-
     public function __construct(
-        ProgramProvider $programProvider,
-        ProgramResponseMapper $programResponseMapper
+        private ProgramProvider $programProvider,
+        private ProgramResponseMapper $programResponseMapper,
     ) {
-        $this->programProvider = $programProvider;
-        $this->programResponseMapper = $programResponseMapper;
     }
 
-    /**
-     * @Route("/programs", methods="GET", name="programs_get")
-     *
-     * @OA\Tag(name="Program")
-     * @OA\Response(
-     *     response=200,
-     *     description="Returns the information about all programs",
-     *     @OA\JsonContent(
-     *         type="array",
-     *         @OA\Items(ref=@Model(type=ProgramDto::class)))
-     *     )*
-     * )
-     *
-     * @Security(name="Bearer")
-     */
-    public function getPrograms(): Response
-    {
-        $programs = $this->programProvider->findAll();
+//    /**
+//     * @OA\Tag(name="Program")
+//     * @OA\Response(
+//     *     response=200,
+//     *     description="Returns the information about all programs",
+//     *     @OA\JsonContent(
+//     *         type="array",
+//     *         @OA\Items(ref=@Model(type=ProgramDto::class)))
+//     *     )*
+//     * )
+//     * @Security(name="Bearer")
+//     */
+//    #[Route(path: '/programs', name: 'programs_get', methods: 'GET')]
+//    public function getPrograms(): ApiJsonResponse
+//    {
+//        $programs = $this->programProvider->findAll();
+//
+//        return new ApiJsonResponse(Response::HTTP_OK, $this->programResponseMapper->mapMultiple($programs));
+//    }
 
-        return new ApiJsonResponse(
-            Response::HTTP_OK,
-            $this->programResponseMapper->mapMultiple($programs)
-        );
-    }
-
-    /**
-     * @Route("/programs/{programId}", methods="GET", name="programs_get_one")
-     *
-     * @OA\Tag(name="Program")
-     * @OA\Response(
-     *     response=200,
-     *     description="Returns the information about a program",
-     *     @OA\JsonContent(ref=@Model(type=ProgramDto::class))
-     * )
-     */
-    public function getProgram(string $programId): Response
-    {
-        $program = $this->programProvider->get(Uuid::fromString($programId));
-
-        return new ApiJsonResponse(
-            Response::HTTP_OK,
-            $this->programResponseMapper->map($program)
-        );
-    }
+//    /**
+//     *
+//     * @OA\Tag(name="Program")
+//     * @OA\Response(
+//     *     response=200,
+//     *     description="Returns the information about a program",
+//     *     @OA\JsonContent(ref=@Model(type=ProgramDto::class))
+//     * )
+//     */
+//    #[Route(path: '/programs/{programId}', methods: 'GET', name: 'programs_get_one')]
+//    public function getProgram(string $programId): ApiJsonResponse
+//    {
+//        $program = $this->programProvider->get(Uuid::fromString($programId));
+//
+//        return new ApiJsonResponse(Response::HTTP_OK, $this->programResponseMapper->map($program));
+//    }
 }

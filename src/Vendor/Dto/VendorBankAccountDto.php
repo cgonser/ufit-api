@@ -1,24 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Dto;
 
 class VendorBankAccountDto
 {
     public string $id;
 
-    public ?string $vendorId;
+    public ?string $vendorId = null;
 
-    public ?string $bankCode;
+    public ?string $bankCode = null;
 
-    public ?string $agencyNumber;
+    public ?string $agencyNumber = null;
 
-    public ?string $accountNumber;
+    public ?string $accountNumber = null;
 
-    public ?string $accountDigit;
+    public ?string $accountDigit = null;
 
-    public ?string $ownerName;
+    public ?string $ownerName = null;
 
-    public ?string $ownerDocumentType;
+    public ?string $ownerDocumentType = null;
 
-    public ?string $ownerDocumentNumber;
+    public ?string $ownerDocumentNumber = null;
 }

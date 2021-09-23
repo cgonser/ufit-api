@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Exception;
 
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use App\Core\Exception\InvalidInputException;
 
-class CustomerPhotoInvalidTakenAtException extends BadRequestHttpException
+class CustomerPhotoInvalidTakenAtException extends InvalidInputException
 {
-    protected $message = "Invalid takenAt value";
+    protected $message = 'Invalid takenAt value';
 }

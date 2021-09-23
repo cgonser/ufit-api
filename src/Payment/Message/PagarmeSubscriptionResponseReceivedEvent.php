@@ -1,25 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Message;
 
+use stdClass;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 class PagarmeSubscriptionResponseReceivedEvent
 {
+    /**
+     * @var string
+     */
     public const NAME = 'payment.pagarme.subscription.response';
 
-    private ?UuidInterface $paymentId = null;
-
-    private ?UuidInterface $subscriptionId = null;
-
-    private \stdClass $response;
-
-    public function __construct(\stdClass $response, ?string $subscriptionId = null, ?string $paymentId = null)
-    {
-        $this->response = $response;
-        $this->subscriptionId = null !== $subscriptionId ? Uuid::fromString($subscriptionId) : null;
-        $this->paymentId = null !== $paymentId ? Uuid::fromString($paymentId) : null;
+    public function __construct(
+        private stdClass $response,
+        private ?UuidInterface $subscriptionId = null,
+        private ?UuidInterface $paymentId = null
+    ) {
     }
 
     public function getSubscriptionId(): ?UuidInterface
@@ -32,7 +32,7 @@ class PagarmeSubscriptionResponseReceivedEvent
         return $this->paymentId;
     }
 
-    public function getResponse(): \stdClass
+    public function getResponse(): stdClass
     {
         return $this->response;
     }

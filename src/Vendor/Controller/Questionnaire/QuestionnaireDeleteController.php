@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Controller\Questionnaire;
 
-use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
-use App\Vendor\Entity\Vendor;
-use App\Vendor\Exception\QuestionnaireNotFoundException;
+use App\Core\Security\AuthorizationVoterInterface;
 use App\Vendor\Provider\QuestionnaireProvider;
+use App\Vendor\Provider\VendorProvider;
 use App\Vendor\Service\QuestionnaireService;
 use OpenApi\Annotations as OA;
 use Ramsey\Uuid\Uuid;
@@ -14,50 +15,34 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route(path: '/vendors/{vendorId}/questionnaires')]
 class QuestionnaireDeleteController extends AbstractController
 {
-    private QuestionnaireService $questionnaireService;
-
-    private QuestionnaireProvider $questionnaireProvider;
-
     public function __construct(
-        QuestionnaireService $questionnaireService,
-        QuestionnaireProvider $questionnaireProvider
+        private QuestionnaireService $questionnaireService,
+        private QuestionnaireProvider $questionnaireProvider,
+        private VendorProvider $vendorProvider,
     ) {
-        $this->questionnaireService = $questionnaireService;
-        $this->questionnaireProvider = $questionnaireProvider;
     }
 
     /**
-     * @Route("/questionnaires/{questionnaireId}", methods="DELETE", name="questionnaires_delete")
-     *
      * @OA\Tag(name="Questionnaire")
-     * @OA\Response(
-     *     response=204,
-     *     description="Deletes a questionnaire"
-     * )
-     * @OA\Response(
-     *     response=404,
-     *     description="Questionnaire not found"
-     * )
+     * @OA\Response(response=204, description="Deletes a questionnaire")
+     * @OA\Response(response=404, description="Questionnaire not found")
      */
-    public function delete(string $questionnaireId): Response
+    #[Route(path: '/{questionnaireId}', name: 'questionnaires_delete', methods: 'DELETE')]
+    public function delete(string $vendorId, string $questionnaireId): Response
     {
-        try {
-            // TODO: implement proper authorization and token handling
-            /** @var Vendor $vendor */
-            $vendor = $this->getUser();
+        $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
+        $this->denyAccessUnlessGranted(AuthorizationVoterInterface::UPDATE, $vendor);
 
-            $questionnaire = $this->questionnaireProvider->getByVendorAndId(
-                $vendor,
-                Uuid::fromString($questionnaireId)
-            );
+        $questionnaire = $this->questionnaireProvider->getByVendorAndId(
+            $vendor,
+            Uuid::fromString($questionnaireId)
+        );
 
-            $this->questionnaireService->delete($questionnaire);
+        $this->questionnaireService->delete($questionnaire);
 
-            return new ApiJsonResponse(Response::HTTP_NO_CONTENT);
-        } catch (QuestionnaireNotFoundException $e) {
-            throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
-        }
+        return new ApiJsonResponse(Response::HTTP_NO_CONTENT);
     }
 }

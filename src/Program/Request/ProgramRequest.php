@@ -1,48 +1,49 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Request;
 
+use App\Core\Request\AbstractRequest;
 use OpenApi\Annotations as OA;
 
 /**
- * @OA\RequestBody(
- *     request="ProgramRequest"
- * )
+ * @OA\RequestBody()
  */
-class ProgramRequest
+class ProgramRequest extends AbstractRequest
 {
     /**
      * @OA\Property()
      */
-    public ?string $vendorId = null;
+    public ?string $vendorId;
 
     /**
      * @OA\Property()
      */
-    public ?string $name = null;
+    public ?string $name;
 
     /**
      * @OA\Property()
      */
-    public ?string $level = null;
+    public ?string $level;
 
     /**
      * @OA\Property(type="array", @OA\Items(type="string"))
      */
-    public ?array $goals = null;
+    public ?array $goals;
 
     /**
      * @OA\Property()
      */
-    public ?string $description = null;
+    public ?string $description;
 
     /**
      * @OA\Property()
      */
-    public ?bool $isTemplate = null;
+    public ?bool $isTemplate;
 
     /**
      * @OA\Property()
      */
-    public ?bool $isActive = null;
+    public ?bool $isActive;
 }

@@ -1,21 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Message;
 
+use DateTimeInterface;
 use Ramsey\Uuid\UuidInterface;
 
 class InvoicePaidEvent
 {
+    /**
+     * @var string
+     */
     public const NAME = 'invoice.paid';
 
     protected ?UuidInterface $invoiceId = null;
 
-    protected \DateTimeInterface $paidAt;
-
-    public function __construct(UuidInterface $invoiceId, \DateTimeInterface $paidAt)
+    public function __construct(UuidInterface $invoiceId, protected DateTimeInterface $dateTime)
     {
         $this->invoiceId = $invoiceId;
-        $this->paidAt = $paidAt;
     }
 
     public function getInvoiceId(): ?UuidInterface
@@ -23,8 +26,8 @@ class InvoicePaidEvent
         return $this->invoiceId;
     }
 
-    public function getPaidAt(): \DateTimeInterface
+    public function getPaidAt(): DateTimeInterface
     {
-        return $this->paidAt;
+        return $this->dateTime;
     }
 }

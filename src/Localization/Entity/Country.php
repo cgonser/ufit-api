@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Localization\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -75,6 +77,11 @@ class Country
      * @ORM\Column(type="string", nullable=true)
      */
     private ?string $documentName = null;
+
+    public function __toString(): string
+    {
+        return $this->getName();
+    }
 
     public function getId(): UuidInterface
     {
@@ -201,13 +208,8 @@ class Country
         return $this;
     }
 
-    public function __toString(): string
-    {
-        return $this->getName();
-    }
-
     public function isNew(): bool
     {
-        return !isset($this->id);
+        return ! isset($this->id);
     }
 }

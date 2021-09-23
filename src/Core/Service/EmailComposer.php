@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Service;
 
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -52,7 +54,7 @@ class EmailComposer
         $email = new TemplatedEmail();
 
         foreach ($recipients as $recipientName => $recipientEmail) {
-            $email->addTo(new Address($recipientEmail, $recipientName));
+            $email->addTo(new Address($recipientEmail, (string) $recipientName));
         }
 
         $this->applyTemplate($email, $identifier, $context, $locale);

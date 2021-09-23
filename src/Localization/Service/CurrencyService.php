@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Localization\Service;
 
 use App\Localization\Entity\Currency;
@@ -13,10 +15,8 @@ class CurrencyService
 
     private CurrencyProvider $currencyProvider;
 
-    public function __construct(
-        CurrencyRepository $currencyRepository,
-        CurrencyProvider $currencyProvider
-    ) {
+    public function __construct(CurrencyRepository $currencyRepository, CurrencyProvider $currencyProvider)
+    {
         $this->currencyRepository = $currencyRepository;
         $this->currencyProvider = $currencyProvider;
     }
@@ -44,7 +44,7 @@ class CurrencyService
         $existingCurrency = $this->currencyProvider->findOneByCode($currencyRequest->code);
 
         if ($existingCurrency &&
-            ($currency->isNew() || $existingCurrency->getId()->toString() != $currency->getId()->toString())
+            ($currency->isNew() || $existingCurrency->getId()->toString() !== $currency->getId()->toString())
         ) {
             throw new CurrencyAlreadyExistsException();
         }

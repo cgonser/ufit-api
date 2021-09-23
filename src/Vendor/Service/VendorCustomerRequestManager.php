@@ -1,58 +1,58 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Service;
 
 use App\Customer\Entity\Customer;
 use App\Customer\Exception\CustomerInvalidBirthDateException;
 use App\Customer\Service\CustomerManager;
 use App\Vendor\Request\VendorCustomerRequest;
+use DateTime;
 use Decimal\Decimal;
 
 class VendorCustomerRequestManager
 {
-    private CustomerManager $customerManager;
-
     public function __construct(
-        CustomerManager $customerManager
+        private CustomerManager $customerManager
     ) {
-        $this->customerManager = $customerManager;
     }
 
-    public function updateFromRequest(Customer $customer, VendorCustomerRequest $customerRequest)
+    public function updateFromRequest(Customer $customer, VendorCustomerRequest $vendorCustomerRequest): void
     {
-        $this->mapFromRequest($customer, $customerRequest);
+        $this->mapFromRequest($customer, $vendorCustomerRequest);
 
         $this->customerManager->update($customer);
     }
 
-    public function mapFromRequest(Customer $customer, VendorCustomerRequest $customerRequest)
+    public function mapFromRequest(Customer $customer, VendorCustomerRequest $vendorCustomerRequest): void
     {
-        if (null !== $customerRequest->name) {
-            $customer->setName($customerRequest->name);
+        if (null !== $vendorCustomerRequest->name) {
+            $customer->setName($vendorCustomerRequest->name);
         }
 
-        if (null !== $customerRequest->phoneIntlCode) {
-            $customer->setPhoneIntlCode($customerRequest->phoneIntlCode);
+        if (null !== $vendorCustomerRequest->phoneIntlCode) {
+            $customer->setPhoneIntlCode($vendorCustomerRequest->phoneIntlCode);
         }
 
-        if (null !== $customerRequest->phoneAreaCode) {
-            $customer->setPhoneAreaCode($customerRequest->phoneAreaCode);
+        if (null !== $vendorCustomerRequest->phoneAreaCode) {
+            $customer->setPhoneAreaCode($vendorCustomerRequest->phoneAreaCode);
         }
 
-        if (null !== $customerRequest->phoneNumber) {
-            $customer->setPhoneNumber($customerRequest->phoneNumber);
+        if (null !== $vendorCustomerRequest->phoneNumber) {
+            $customer->setPhoneNumber($vendorCustomerRequest->phoneNumber);
         }
 
-        if (null !== $customerRequest->height) {
-            $customer->setHeight($customerRequest->height);
+        if (null !== $vendorCustomerRequest->height) {
+            $customer->setHeight($vendorCustomerRequest->height);
         }
 
-        if (null !== $customerRequest->lastWeight) {
-            $customer->setLastWeight(new Decimal((string) $customerRequest->lastWeight));
+        if (null !== $vendorCustomerRequest->lastWeight) {
+            $customer->setLastWeight(new Decimal((string) $vendorCustomerRequest->lastWeight));
         }
 
-        if (null !== $customerRequest->birthDate) {
-            $birthDate = \DateTime::createFromFormat('Y-m-d', $customerRequest->birthDate);
+        if (null !== $vendorCustomerRequest->birthDate) {
+            $birthDate = DateTime::createFromFormat('Y-m-d', $vendorCustomerRequest->birthDate);
 
             if (false === $birthDate) {
                 throw new CustomerInvalidBirthDateException();
@@ -61,12 +61,12 @@ class VendorCustomerRequestManager
             $customer->setBirthDate($birthDate);
         }
 
-        if (null !== $customerRequest->gender) {
-            $customer->setGender($customerRequest->gender);
+        if (null !== $vendorCustomerRequest->gender) {
+            $customer->setGender($vendorCustomerRequest->gender);
         }
 
-        if (null !== $customerRequest->goals) {
-            $customer->setGoals($customerRequest->goals);
+        if (null !== $vendorCustomerRequest->goals) {
+            $customer->setGoals($vendorCustomerRequest->goals);
         }
     }
 }

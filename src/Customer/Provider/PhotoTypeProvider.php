@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Provider;
 
-use App\Customer\Entity\Customer;
 use App\Customer\Entity\PhotoType;
 use App\Customer\Exception\PhotoTypeNotFoundException;
 use App\Customer\Repository\PhotoTypeRepository;
@@ -10,11 +11,8 @@ use Ramsey\Uuid\UuidInterface;
 
 class PhotoTypeProvider
 {
-    private PhotoTypeRepository $photoTypeRepository;
-
-    public function __construct(PhotoTypeRepository $photoTypeRepository)
+    public function __construct(private PhotoTypeRepository $photoTypeRepository)
     {
-        $this->photoTypeRepository = $photoTypeRepository;
     }
 
     public function get(UuidInterface $photoTypeId): PhotoType
@@ -22,7 +20,7 @@ class PhotoTypeProvider
         /** @var PhotoType|null $photoType */
         $photoType = $this->photoTypeRepository->find($photoTypeId);
 
-        if (!$photoType) {
+        if ($photoType === null) {
             throw new PhotoTypeNotFoundException();
         }
 
@@ -34,18 +32,23 @@ class PhotoTypeProvider
         /** @var PhotoType|null $photoType */
         $photoType = $this->findOneByName($name);
 
-        if (!$photoType) {
+        if ($photoType === null) {
             throw new PhotoTypeNotFoundException();
         }
 
         return $photoType;
     }
 
-    public function findOneByName(string $name): ?PhotoType
+    public function findOneByName(string $name): ?object
     {
-        return $this->photoTypeRepository->findOneBy(['name' => $name]);
+        return $this->photoTypeRepository->findOneBy([
+            'name' => $name,
+        ]);
     }
 
+    /**
+     * @return mixed[]
+     */
     public function findAll(): array
     {
         return $this->photoTypeRepository->findAll();

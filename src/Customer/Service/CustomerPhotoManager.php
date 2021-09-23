@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Service;
 
 use App\Core\Validation\EntityValidator;
@@ -47,12 +49,10 @@ class CustomerPhotoManager
             throw new CustomerPhotoInvalidPhotoException();
         }
 
-        $filename = $customerPhoto->getId()->toString().'.png';
+        $filename = $customerPhoto->getId()
+            ->toString().'.png';
 
-        $this->filesystem->put(
-            $filename,
-            $image->encode('png')
-        );
+        $this->filesystem->put($filename, $image->encode('png'));
 
         $customerPhoto->setFilename($filename);
 

@@ -1,52 +1,44 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Controller\BillingInformation;
 
 use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
+use App\Core\Security\AuthorizationVoterInterface;
 use App\Customer\Entity\Customer;
 use App\Customer\Provider\BillingInformationProvider;
+use App\Customer\Provider\CustomerProvider;
 use App\Customer\Service\BillingInformationManager;
+use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route(path: '/customers/{customerId}/billing_information')]
 class BillingInformationDeleteController extends AbstractController
 {
-    private BillingInformationManager $billingInformationManager;
-
-    private BillingInformationProvider $billingInformationProvider;
-
     public function __construct(
-        BillingInformationManager $billingInformationManager,
-        BillingInformationProvider $billingInformationProvider
+        private CustomerProvider $customerProvider,
+        private BillingInformationManager $billingInformationManager,
+        private BillingInformationProvider $billingInformationProvider
     ) {
-        $this->billingInformationManager = $billingInformationManager;
-        $this->billingInformationProvider = $billingInformationProvider;
     }
 
     /**
-     * @Route(
-     *     "/customers/{customerId}/billing_information/{billingInformationId}",
-     *     methods="DELETE",
-     *     name="customer_billing_information_delete"
-     * )
-     *
      * @OA\Tag(name="Customer / Billing Information")
      * @OA\Response(response=204, description="Success")
      * @OA\Response(response=404, description="Resource not found")
+     * @Security(name="Bearer")
      */
-    public function delete(string $customerId, string $billingInformationId): Response
+    #[Route(path: '/{billingInformationId}', name: 'customer_billing_information_delete', methods: 'DELETE')]
+    public function delete(string $customerId, string $billingInformationId): ApiJsonResponse
     {
-        if ('current' === $customerId) {
-            /** @var Customer $customer */
-            $customer = $this->getUser();
-        } else {
-            // customer fetching not implemented yet; requires also authorization
-            throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
-        }
+        $customer = $this->customerProvider->get(Uuid::fromString($customerId));
+        $this->denyAccessUnlessGranted(AuthorizationVoterInterface::UPDATE, $customer);
 
         $billingInformation = $this->billingInformationProvider->getByCustomerAndId(
             $customer->getId(),

@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\Controller\Customer;
 
 use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
+use App\Core\Security\AuthorizationVoterInterface;
 use App\Customer\Entity\Customer;
+use App\Customer\Provider\CustomerProvider;
 use App\Subscription\Dto\SubscriptionDto;
 use App\Subscription\Exception\SubscriptionNotFoundException;
 use App\Subscription\Provider\SubscriptionProvider;
@@ -19,52 +23,32 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route(path: '/customers/{customerId}/subscriptions')]
 class SubscriptionController extends AbstractController
 {
-    private SubscriptionProvider $subscriptionProvider;
-
-    private SubscriptionResponseMapper $subscriptionResponseMapper;
-
     public function __construct(
-        SubscriptionProvider $subscriptionProvider,
-        SubscriptionResponseMapper $subscriptionResponseMapper
+        private SubscriptionProvider $subscriptionProvider,
+        private SubscriptionResponseMapper $subscriptionResponseMapper,
+        private CustomerProvider $customerProvider,
     ) {
-        $this->subscriptionProvider = $subscriptionProvider;
-        $this->subscriptionResponseMapper = $subscriptionResponseMapper;
     }
 
     /**
-     * @Route("/customers/{customerId}/subscriptions", methods="GET", name="customers_subscriptions_get")
-     * @ParamConverter("subscriptionSearchRequest", converter="querystring")
-     *
      * @OA\Tag(name="Subscription")
-     * @OA\Parameter(
-     *     in="query",
-     *     name="filters",
-     *     @OA\Schema(ref=@Model(type=SubscriptionSearchRequest::class))
-     * )
-     * @OA\Response(
-     *     response=200,
-     *     description="Returns all the subscriptions for a given customer",
-     *     @OA\JsonContent(
-     *         type="array",
-     *         @OA\Items(ref=@Model(type=SubscriptionDto::class))
-     *     )
-     * )
-     *
+     * @OA\Parameter(in="query", name="filters", @OA\Schema(ref=@Model(type=SubscriptionSearchRequest::class)))
+     * @OA\Response(response=200, description="Success", @OA\JsonContent(type="array", @OA\Items(ref=@Model(type=SubscriptionDto::class))))
      * @Security(name="Bearer")
      */
-    public function getSubscriptions(string $customerId, SubscriptionSearchRequest $subscriptionSearchRequest): Response
-    {
-        if ('current' == $customerId) {
-            /** @var Customer $customer */
-            $customer = $this->getUser();
-        } else {
-            // customer fetching not implemented yet; requires also authorization
-            throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
-        }
+    #[Route(name: 'customers_subscriptions_get', methods: 'GET')]
+    #[ParamConverter(data: 'subscriptionSearchRequest', converter: 'querystring')]
+    public function getSubscriptions(
+        string $customerId,
+        SubscriptionSearchRequest $subscriptionSearchRequest
+    ): ApiJsonResponse {
+        $customer = $this->customerProvider->get(Uuid::fromString($customerId));
+        $this->denyAccessUnlessGranted(AuthorizationVoterInterface::UPDATE, $customer);
 
-        $subscriptionSearchRequest->customerId = $customer->getId();
+        $subscriptionSearchRequest->customerId = $customer->getId()->toString();
         $subscriptions = $this->subscriptionProvider->search($subscriptionSearchRequest);
         $count = $this->subscriptionProvider->count($subscriptionSearchRequest);
 
@@ -78,36 +62,24 @@ class SubscriptionController extends AbstractController
     }
 
     /**
-     * @Route("/customers/{customerId}/subscriptions/{subscriptionId}", methods="GET", name="customers_subscriptions_get_one")
-     *
      * @OA\Tag(name="Subscription")
-     * @OA\Response(
-     *     response=200,
-     *     description="Returns the information about a subscription",
-     *     @OA\JsonContent(ref=@Model(type=SubscriptionDto::class))
-     * )
-     *
+     * @OA\Response(response=200, description="Success", @OA\JsonContent(ref=@Model(type=SubscriptionDto::class)))
      * @Security(name="Bearer")
      */
+    #[Route(path: '/{subscriptionId}', name: 'customers_subscriptions_get_one', methods: 'GET')]
     public function getSubscription(string $customerId, string $subscriptionId): Response
     {
-        try {
-            if ('current' == $customerId) {
-                /** @var Customer $customer */
-                $customer = $this->getUser();
-            } else {
-                // customer fetching not implemented yet; requires also authorization
-                throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
-            }
+        $customer = $this->customerProvider->get(Uuid::fromString($customerId));
+        $this->denyAccessUnlessGranted(AuthorizationVoterInterface::READ, $customer);
 
-            $subscription = $this->subscriptionProvider->getByCustomerAndId($customer, Uuid::fromString($subscriptionId));
+        $subscription = $this->subscriptionProvider->getByCustomerAndId(
+            $customer,
+            Uuid::fromString($subscriptionId)
+        );
 
-            return new ApiJsonResponse(
-                Response::HTTP_OK,
-                $this->subscriptionResponseMapper->map($subscription, true)
-            );
-        } catch (SubscriptionNotFoundException $e) {
-            throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
-        }
+        return new ApiJsonResponse(
+            Response::HTTP_OK,
+            $this->subscriptionResponseMapper->map($subscription, true)
+        );
     }
 }

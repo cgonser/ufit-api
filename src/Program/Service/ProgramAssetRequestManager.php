@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Service;
 
 use App\Program\Entity\Program;
@@ -8,12 +10,8 @@ use App\Program\Request\ProgramAssetRequest;
 
 class ProgramAssetRequestManager
 {
-    private ProgramAssetManager $programAssetManager;
-
-    public function __construct(
-        ProgramAssetManager $programAssetManager
-    ) {
-        $this->programAssetManager = $programAssetManager;
+    public function __construct(private ProgramAssetManager $programAssetManager)
+    {
     }
 
     public function createFromRequest(Program $program, ProgramAssetRequest $programAssetRequest): ProgramAsset
@@ -37,11 +35,11 @@ class ProgramAssetRequestManager
 
     public function mapFromRequest(ProgramAsset $programAsset, ProgramAssetRequest $programAssetRequest): void
     {
-        if (null !== $programAssetRequest->title) {
+        if ($programAssetRequest->has('title')) {
             $programAsset->setTitle($programAssetRequest->title);
         }
 
-        if (null !== $programAssetRequest->type) {
+        if ($programAssetRequest->has('type')) {
             $programAsset->setType($programAssetRequest->type);
         }
     }

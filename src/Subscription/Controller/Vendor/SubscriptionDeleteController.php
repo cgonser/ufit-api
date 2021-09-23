@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\Controller\Vendor;
 
 use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
+use App\Core\Security\AuthorizationVoterInterface;
 use App\Subscription\Provider\VendorSubscriptionProvider;
-use App\Vendor\Entity\Vendor;
-use App\Subscription\Exception\SubscriptionNotFoundException;
 use App\Subscription\Service\SubscriptionManager;
+use App\Vendor\Entity\Vendor;
+use App\Vendor\Provider\VendorProvider;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
 use Ramsey\Uuid\Uuid;
@@ -17,39 +20,34 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class SubscriptionDeleteController extends AbstractController
 {
-    private VendorSubscriptionProvider $subscriptionProvider;
-
-    private SubscriptionManager $subscriptionService;
-
     public function __construct(
-        VendorSubscriptionProvider $subscriptionProvider,
-        SubscriptionManager $subscriptionService
+        private VendorSubscriptionProvider $vendorSubscriptionProvider,
+        private SubscriptionManager $subscriptionManager,
+        private VendorProvider $vendorProvider,
     ) {
-        $this->subscriptionProvider = $subscriptionProvider;
-        $this->subscriptionService = $subscriptionService;
     }
 
     /**
-     * @Route("/vendors/{vendorId}/subscriptions/{subscriptionId}", methods="DELETE", name="vendors_subscriptions_delete")
-     * @Security(name="Bearer")
-     *
      * @OA\Tag(name="Subscription")
      * @OA\Response(response=204, description="Success")
      * @OA\Response(response=404, description="Subscription not found")
+     * @Security(name="Bearer")
      */
-    public function cancelSubscription(string $vendorId, string $subscriptionId): Response
+    #[Route(
+        path: '/vendors/{vendorId}/subscriptions/{subscriptionId}',
+        name: 'vendors_subscriptions_delete',
+        methods: 'DELETE'
+    )]
+    public function cancelSubscription(string $vendorId, string $subscriptionId): ApiJsonResponse
     {
-        if ('current' == $vendorId) {
-            /** @var Vendor $vendor */
-            $vendor = $this->getUser();
-        } else {
-            // vendor fetching not implemented yet; requires also authorization
-            throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
-        }
+        $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
+        $this->denyAccessUnlessGranted(AuthorizationVoterInterface::UPDATE, $vendor);
 
-        $subscription = $this->subscriptionProvider->getByVendorAndId($$vendor, Uuid::fromString($subscriptionId));
-
-        $this->subscriptionService->vendorCancellation($subscription);
+        $subscription = $this->vendorSubscriptionProvider->getByVendorAndId(
+            $vendor,
+            Uuid::fromString($subscriptionId)
+        );
+        $this->subscriptionManager->vendorCancellation($subscription);
 
         return new ApiJsonResponse(Response::HTTP_NO_CONTENT);
     }

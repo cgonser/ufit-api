@@ -1,8 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Exception;
 
-class VendorAlreadyExistsException extends \Exception
+use Exception;
+
+class VendorAlreadyExistsException extends Exception
 {
-    protected $message = "Vendor already exists";
+    /**
+     * @var string
+     */
+    protected $message = 'Vendor already exists';
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Service;
 
 use App\Customer\Entity\PhotoType;
@@ -7,7 +9,6 @@ use App\Customer\Exception\PhotoTypeAlreadyExistsException;
 use App\Customer\Provider\PhotoTypeProvider;
 use App\Customer\Repository\PhotoTypeRepository;
 use App\Customer\Request\PhotoTypeRequest;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 class PhotoTypeService
 {
@@ -15,10 +16,8 @@ class PhotoTypeService
 
     private PhotoTypeProvider $photoTypeProvider;
 
-    public function __construct(
-        PhotoTypeRepository $photoTypeRepository,
-        PhotoTypeProvider $photoTypeProvider
-    ) {
+    public function __construct(PhotoTypeRepository $photoTypeRepository, PhotoTypeProvider $photoTypeProvider)
+    {
         $this->photoTypeRepository = $photoTypeRepository;
         $this->photoTypeProvider = $photoTypeProvider;
     }
@@ -46,7 +45,7 @@ class PhotoTypeService
         $existingPhotoType = $this->photoTypeProvider->findOneByName($photoTypeRequest->name);
 
         if ($existingPhotoType &&
-            ($photoType->isNew() || $existingPhotoType->getId()->toString() != $photoType->getId()->toString())
+            ($photoType->isNew() || $existingPhotoType->getId()->toString() !== $photoType->getId()->toString())
         ) {
             throw new PhotoTypeAlreadyExistsException();
         }

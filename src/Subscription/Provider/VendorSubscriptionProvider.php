@@ -1,9 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\Provider;
 
-use App\Customer\Entity\Customer;
-use App\Customer\Exception\CustomerNotFoundException;
 use App\Subscription\Entity\Subscription;
 use App\Subscription\Exception\SubscriptionNotFoundException;
 use App\Subscription\Repository\SubscriptionRepository;
@@ -13,22 +13,17 @@ use Ramsey\Uuid\UuidInterface;
 
 class VendorSubscriptionProvider
 {
-    private SubscriptionRepository $subscriptionRepository;
-
-    public function __construct(SubscriptionRepository $subscriptionRepository)
+    public function __construct(private SubscriptionRepository $subscriptionRepository)
     {
-        $this->subscriptionRepository = $subscriptionRepository;
     }
 
-    public function findWithRequest(
-        Vendor $vendor,
-        SubscriptionSearchRequest $subscriptionSearchRequest
-    ): array {
+    public function findWithRequest(Vendor $vendor, SubscriptionSearchRequest $subscriptionSearchRequest): array
+    {
         if (true === $subscriptionSearchRequest->isActive) {
-            return $this->subscriptionRepository->findActiveByVendor($vendor);
+            return $this->subscriptionRepository->findActiveByVendor($vendor->getId());
         }
 
-        if (true === $subscriptionSearchRequest->isInactive) {
+        if (false === $subscriptionSearchRequest->isActive) {
             return $this->subscriptionRepository->findInactiveByVendor($vendor);
         }
 
@@ -41,10 +36,9 @@ class VendorSubscriptionProvider
 
     public function getByVendorAndId(Vendor $vendor, UuidInterface $subscriptionId): Subscription
     {
-        /** @var Subscription|null $subscription */
         $subscription = $this->subscriptionRepository->findOneByVendorAndId($vendor, $subscriptionId);
 
-        if (!$subscription) {
+        if (!$subscription instanceof Subscription) {
             throw new SubscriptionNotFoundException();
         }
 

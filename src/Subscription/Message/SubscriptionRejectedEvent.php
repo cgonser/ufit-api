@@ -1,19 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\Message;
 
-use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 class SubscriptionRejectedEvent
 {
+    /**
+     * @var string
+     */
     public const NAME = 'subscription.rejected';
 
-    protected ?UuidInterface $subscriptionId = null;
-
-    public function __construct(UuidInterface $subscriptionId)
+    public function __construct(protected UuidInterface $subscriptionId)
     {
-        $this->subscriptionId = $subscriptionId;
     }
 
     public function getSubscriptionId(): ?UuidInterface

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Dto;
 
 use App\Localization\Dto\CurrencyDto;
@@ -7,25 +9,25 @@ use App\Subscription\Dto\SubscriptionDto;
 
 class InvoiceDto
 {
-    public ?string $id;
+    public ?string $id = null;
 
-    public ?string $subscriptionId;
+    public ?string $subscriptionId = null;
 
-    public ?SubscriptionDto $subscription;
+    public ?SubscriptionDto $subscription = null;
 
-    public ?string $currencyId;
+    public ?string $currencyId = null;
 
-    public ?CurrencyDto $currency;
+    public ?CurrencyDto $currency = null;
 
-    public ?string $totalAmount;
+    public ?string $totalAmount = null;
 
-    public ?string $dueDate;
+    public ?string $dueDate = null;
 
-    public ?string $paidAt;
+    public ?string $paidAt = null;
 
-    public ?string $overdueNotificationSentAt;
+    public ?string $overdueNotificationSentAt = null;
 
-    public ?string $createdAt;
+    public ?string $createdAt = null;
 
-    public ?string $updatedAt;
+    public ?string $updatedAt = null;
 }

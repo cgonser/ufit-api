@@ -1,14 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Request;
 
 use App\Core\Request\SearchRequest;
 use OpenApi\Annotations as OA;
 
 /**
- * @OA\RequestBody(
- *     request="VendorSetting"
- * )
+ * @OA\RequestBody()
  */
 class VendorSettingSearchRequest extends SearchRequest
 {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Localization\Provider;
 
 use App\Core\Provider\AbstractProvider;
@@ -15,14 +17,16 @@ class CountryProvider extends AbstractProvider
 
     public function findOneByCode(string $countryCode): ?Country
     {
-        return $this->repository->findOneBy(['code' => $countryCode]);
+        return $this->repository->findOneBy([
+            'code' => $countryCode,
+        ]);
     }
 
     public function getByCode(string $countryCode): Country
     {
         $country = $this->findOneByCode($countryCode);
 
-        if (!$country) {
+        if (! $country) {
             $this->throwNotFoundException();
         }
 
@@ -38,10 +42,6 @@ class CountryProvider extends AbstractProvider
 
     protected function getFilterableFields(): array
     {
-        return [
-            'code',
-            'customersEnabled',
-            'vendorsEnabled',
-        ];
+        return ['code', 'customersEnabled', 'vendorsEnabled'];
     }
 }

@@ -1,32 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Request;
 
 use OpenApi\Annotations as OA;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints;
 
 /**
- * @OA\RequestBody(
- *     request="MeasurementTypeRequest"
- * )
+ * @OA\RequestBody()
  */
 class MeasurementTypeRequest
 {
     /**
      * @OA\Property()
-     * @Assert\NotBlank()
      */
+    #[Constraints\NotBlank]
     public ?string $name = null;
 
     /**
      * @var string[]
-     *
-     * @OA\Property(
-     *     type="array",
-     *     @OA\Items(type="string")
-     * )
-     *
-     * @Assert\NotBlank()
+     * @OA\Property(type="array", @OA\Items(type="string"))
      */
+    #[Constraints\NotBlank]
     public array $units = [];
 }

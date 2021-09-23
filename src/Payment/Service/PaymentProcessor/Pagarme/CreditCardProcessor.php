@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Service\PaymentProcessor\Pagarme;
 
 use App\Payment\Entity\Payment;
@@ -9,6 +11,11 @@ use App\Payment\Service\PaymentProcessor\PaymentProcessorInterface;
 
 class CreditCardProcessor extends PagarmeProcessor implements PaymentProcessorInterface
 {
+    public function supports(PaymentMethod $paymentMethod): bool
+    {
+        return 'credit-card' === $paymentMethod->getName();
+    }
+
     protected function validate(Payment $payment): void
     {
         parent::validate($payment);
@@ -20,6 +27,9 @@ class CreditCardProcessor extends PagarmeProcessor implements PaymentProcessorIn
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function prepareTransactionData(Payment $payment): array
     {
         return [
@@ -27,10 +37,5 @@ class CreditCardProcessor extends PagarmeProcessor implements PaymentProcessorIn
             'capture' => true,
             'card_hash' => $payment->getDetails()['card_hash'],
         ];
-    }
-
-    public function supports(PaymentMethod $paymentMethod): bool
-    {
-        return 'credit-card' === $paymentMethod->getName();
     }
 }

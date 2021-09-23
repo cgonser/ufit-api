@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Service;
 
 use App\Core\Validation\EntityValidator;
@@ -16,25 +18,16 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 class VendorBankAccountManager
 {
-    private VendorBankAccountRepository $vendorBankAccountRepository;
-
-    private EntityValidator $validator;
-
-    private MessageBusInterface $messageBus;
-
     public function __construct(
-        VendorBankAccountRepository $vendorBankAccountRepository,
-        EntityValidator $validator,
-        MessageBusInterface $messageBus
+        private VendorBankAccountRepository $vendorBankAccountRepository,
+        private EntityValidator $entityValidator,
+        private MessageBusInterface $messageBus
     ) {
-        $this->vendorBankAccountRepository = $vendorBankAccountRepository;
-        $this->validator = $validator;
-        $this->messageBus = $messageBus;
     }
 
     public function create(VendorBankAccount $vendorBankAccount): void
     {
-        $this->validator->validate($vendorBankAccount);
+        $this->entityValidator->validate($vendorBankAccount);
 
         $this->vendorBankAccountRepository->save($vendorBankAccount);
 
@@ -42,14 +35,14 @@ class VendorBankAccountManager
             $this->messageBus->dispatch(
                 new VendorBankAccountCreatedEvent($vendorBankAccount->getVendorId(), $vendorBankAccount->getId())
             );
-        } catch (HandlerFailedException $e) {
-            throw $e->getNestedExceptions()[0];
+        } catch (HandlerFailedException $handlerFailedException) {
+            throw $handlerFailedException->getNestedExceptions()[0];
         }
     }
 
     public function update(VendorBankAccount $vendorBankAccount): void
     {
-        $this->validator->validate($vendorBankAccount);
+        $this->entityValidator->validate($vendorBankAccount);
 
         $this->vendorBankAccountRepository->save($vendorBankAccount);
 
@@ -71,14 +64,14 @@ class VendorBankAccountManager
         );
     }
 
-    public function markAsInvalid(VendorBankAccount $vendorBankAccount)
+    public function markAsInvalid(VendorBankAccount $vendorBankAccount): void
     {
         $vendorBankAccount->setIsValid(false);
 
         $this->vendorBankAccountRepository->save($vendorBankAccount);
     }
 
-    public function markAsValid(VendorBankAccount $vendorBankAccount)
+    public function markAsValid(VendorBankAccount $vendorBankAccount): void
     {
         $vendorBankAccount->setIsValid(true);
 

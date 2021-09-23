@@ -1,12 +1,12 @@
-FROM php:7.4-fpm-alpine
+FROM php:8.0-fpm-alpine
 
 RUN mkdir -p /etc/nginx/conf.d
 ADD ./docker/nginx/default.conf /etc/nginx/conf.d/default.conf
-ADD ./docker/nginx/nginx.conf /etc/nginx/nginx.conf
 VOLUME /etc/nginx/conf.d
 
 ADD ./docker/php-fpm/www.conf /usr/local/etc/php-fpm.d/www.conf
 ADD ./docker/php-fpm/xdebug.ini.disabled /usr/local/etc/php/conf.d/xdebug.ini.disabled
+ADD ./docker/php-fpm/custom.ini /usr/local/etc/php/conf.d/custom.ini
 
 RUN set -e; \
          apk add --no-cache \
@@ -29,11 +29,12 @@ RUN set -e; \
                 postgresql-dev \
                 zlib-dev
 
+
 RUN docker-php-ext-install sockets \
     && apk add --no-cache --update rabbitmq-c-dev \
     && apk add --no-cache --update --virtual .phpize-deps $PHPIZE_DEPS \
     && for i in $(seq 1 3); do echo yes | pecl install -o "xdebug" && s=0 && break || s=$? && sleep 1; done; (exit $s) \
-    && pecl install -o -f amqp \
+    && echo -ne '\n' | pecl install -f https://github.com/0x450x6c/php-amqp/raw/7323b3c9cc2bcb8343de9bb3c2f31f6efbc8894b/amqp-1.10.3.tgz \
     && docker-php-ext-enable amqp
 
 ARG MPDECIMAL_VERSION=2.5.1
@@ -48,11 +49,14 @@ RUN set -eux; \
 			make install
 
 RUN pecl install decimal \
-    && docker-php-ext-enable decimal \
-    && apk del .phpize-deps
+    && docker-php-ext-enable decimal
 
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN docker-php-ext-install gd pdo_pgsql intl exif zip
+
+#RUN rm -rf /tmp/* \
+#    rm -rf /usr/share/php7 \
+#    && apk del .memcached-deps .phpize-deps
 
 RUN mkdir -p /var/log/newrelic /var/run/newrelic && \
     touch /var/log/newrelic/php_agent.log /var/log/newrelic/newrelic-daemon.log && \
@@ -73,8 +77,8 @@ ADD ./docker/php-fpm/newrelic.ini /usr/local/etc/php/conf.d/newrelic.ini
 WORKDIR /app
 ARG APP_ENV=prod
 
-COPY composer.json composer.lock symfony.lock ./
-COPY --from=composer /usr/bin/composer /usr/bin/composer
+COPY composer.json symfony.lock ./
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 RUN set -eux; \
     composer install --no-dev --no-scripts ; \

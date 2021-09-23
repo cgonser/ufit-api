@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Controller;
 
 use App\Core\Exception\ApiJsonException;
@@ -17,26 +19,21 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class VendorInstagramController extends AbstractController
 {
-    private VendorInstagramManager $vendorInstagramManager;
-
-    private AuthenticationSuccessHandler $authenticationSuccessHandler;
-
     public function __construct(
-        VendorInstagramManager $vendorInstagramManager,
-        AuthenticationSuccessHandler $authenticationSuccessHandler
+        private VendorInstagramManager $vendorInstagramManager,
+        private AuthenticationSuccessHandler $authenticationSuccessHandler
     ) {
-        $this->vendorInstagramManager = $vendorInstagramManager;
-        $this->authenticationSuccessHandler = $authenticationSuccessHandler;
     }
 
     /**
-     * @Route("/vendors/login/instagram", methods="POST", name="vendor_instagram_login")
-     * @ParamConverter("vendorInstagramLoginRequest", converter="fos_rest.request_body", options={
-     *     "deserializationContext"= {"allow_extra_attributes"=false}
-     * })
-     *
      * @OA\Tag(name="Vendor")
      */
+    #[Route(path: '/vendors/login/instagram', methods: 'POST', name: 'vendor_instagram_login')]
+    #[ParamConverter(data: 'vendorInstagramLoginRequest', converter: 'fos_rest.request_body', options: [
+        'deserializationContext' => [
+            'allow_extra_attributes' => false,
+        ],
+    ])]
     public function login(VendorInstagramLoginRequest $vendorInstagramLoginRequest): Response
     {
         try {
@@ -48,8 +45,8 @@ class VendorInstagramController extends AbstractController
             return $this->authenticationSuccessHandler->handleAuthenticationSuccess($vendor);
         } catch (VendorInstagramLoginMissingEmailException | VendorEmailAddressInUseException $e) {
             throw new ApiJsonException(Response::HTTP_BAD_REQUEST, $e->getMessage());
-        } catch (VendorInstagramLoginFailedException $e) {
-            throw new ApiJsonException(Response::HTTP_UNAUTHORIZED, $e->getMessage());
+        } catch (VendorInstagramLoginFailedException $vendorInstagramLoginFailedException) {
+            throw new ApiJsonException(Response::HTTP_UNAUTHORIZED, $vendorInstagramLoginFailedException->getMessage());
         }
     }
 }

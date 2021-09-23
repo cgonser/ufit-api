@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Service;
 
 use App\Program\Entity\Program;
@@ -9,21 +11,28 @@ use App\Program\Message\ProgramUpdatedEvent;
 use App\Program\Repository\ProgramRepository;
 use App\Program\Request\ProgramRequest;
 use App\Vendor\Entity\Vendor;
-use Ramsey\Uuid\Uuid;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class ProgramManager
 {
-    private ProgramRepository $programRepository;
-
-    private MessageBusInterface $messageBus;
-
     public function __construct(
-        ProgramRepository $programRepository,
-        MessageBusInterface $messageBus
+        private ProgramRepository $programRepository,
+        private MessageBusInterface $messageBus,
     ) {
-        $this->programRepository = $programRepository;
-        $this->messageBus = $messageBus;
+    }
+
+    public function clone(Program $originalProgram): Program
+    {
+        $program = clone $originalProgram;
+        $program->setOriginalProgram($originalProgram);
+
+        foreach ($originalProgram->getAssets() as $originalProgramAsset) {
+            $program->addAsset(clone $originalProgramAsset);
+        }
+
+        $this->programRepository->save($program);
+
+        return $program;
     }
 
     public function createFromRequest(Vendor $vendor, ProgramRequest $programRequest): Program
@@ -40,7 +49,7 @@ class ProgramManager
         return $program;
     }
 
-    public function updateFromRequest(Program $program, ProgramRequest $programRequest)
+    public function updateFromRequest(Program $program, ProgramRequest $programRequest): void
     {
         $this->mapFromRequest($program, $programRequest);
 
@@ -49,36 +58,36 @@ class ProgramManager
         $this->messageBus->dispatch(new ProgramUpdatedEvent($program->getId()));
     }
 
-    public function delete(Program $program)
+    public function delete(Program $program): void
     {
         $this->programRepository->delete($program);
 
         $this->messageBus->dispatch(new ProgramDeletedEvent($program->getId()));
     }
 
-    private function mapFromRequest(Program $program, ProgramRequest $programRequest)
+    private function mapFromRequest(Program $program, ProgramRequest $programRequest): void
     {
-        if (null !== $programRequest->name) {
+        if ($programRequest->has('name')) {
             $program->setName($programRequest->name);
         }
 
-        if (null !== $programRequest->level) {
+        if ($programRequest->has('level')) {
             $program->setLevel($programRequest->level);
         }
 
-        if (null !== $programRequest->goals) {
+        if ($programRequest->has('goals')) {
             $program->setGoals($programRequest->goals);
         }
 
-        if (null !== $programRequest->description) {
+        if ($programRequest->has('description')) {
             $program->setDescription($programRequest->description);
         }
 
-        if (null !== $programRequest->isTemplate) {
+        if ($programRequest->has('isTemplate')) {
             $program->setIsTemplate($programRequest->isTemplate);
         }
 
-        if (null !== $programRequest->isActive) {
+        if ($programRequest->has('isActive')) {
             $program->setIsActive($programRequest->isActive);
         }
     }

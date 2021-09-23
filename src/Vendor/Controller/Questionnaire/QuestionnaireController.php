@@ -1,13 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Controller\Questionnaire;
 
-use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
+use App\Core\Security\AuthorizationVoterInterface;
 use App\Vendor\Dto\QuestionnaireDto;
-use App\Vendor\Entity\Vendor;
-use App\Vendor\Exception\QuestionnaireNotFoundException;
 use App\Vendor\Provider\QuestionnaireProvider;
+use App\Vendor\Provider\VendorProvider;
 use App\Vendor\Request\QuestionnaireSearchRequest;
 use App\Vendor\ResponseMapper\QuestionnaireResponseMapper;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -19,84 +20,69 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route(path: '/vendors/{vendorId}/questionnaires')]
 class QuestionnaireController extends AbstractController
 {
-    private QuestionnaireResponseMapper $questionnaireResponseMapper;
-
-    private QuestionnaireProvider $questionnaireProvider;
-
     public function __construct(
-        QuestionnaireResponseMapper $questionnaireResponseMapper,
-        QuestionnaireProvider $questionnaireProvider
+        private QuestionnaireResponseMapper $questionnaireResponseMapper,
+        private QuestionnaireProvider $questionnaireProvider,
+        private VendorProvider $vendorProvider,
     ) {
-        $this->questionnaireResponseMapper = $questionnaireResponseMapper;
-        $this->questionnaireProvider = $questionnaireProvider;
     }
 
     /**
-     * @Route("/questionnaires", methods="GET", name="questionnaires_get")
-     *
-     * @ParamConverter("questionnaireSearchRequest", converter="querystring")
-     *
      * @OA\Tag(name="Questionnaire")
-     * @OA\Parameter(
-     *     in="query",
-     *     name="filters",
-     *     @OA\Schema(ref=@Model(type=QuestionnaireSearchRequest::class))
-     * )
+     * @OA\Parameter(in="query", name="filters", @OA\Schema(ref=@Model(type=QuestionnaireSearchRequest::class)))
      * @OA\Response(
      *     response=200,
      *     description="Lists questionnaires",
-     *     @OA\JsonContent(
-     *         type="array",
-     *         @OA\Items(ref=@Model(type=QuestionnaireDto::class)))
-     *     )
+     *     @OA\JsonContent(type="array", @OA\Items(ref=@Model(type=QuestionnaireDto::class))))
      * )
-     *
      * @Security(name="Bearer")
      */
-    public function getQuestionnaires(QuestionnaireSearchRequest $questionnaireSearchRequest): Response
-    {
-        if ('current' == $questionnaireSearchRequest->vendorId) {
-            /** @var Vendor $vendor */
-            $vendor = $this->getUser();
-        } else {
-            // vendor fetching not implemented yet; requires also authorization
-            throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
-        }
+    #[Route(name: 'questionnaires_get', methods: 'GET')]
+    #[ParamConverter(data: 'questionnaireSearchRequest', converter: 'querystring')]
+    public function getQuestionnaires(
+        string $vendorId,
+        QuestionnaireSearchRequest $questionnaireSearchRequest
+    ): ApiJsonResponse {
+        $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
+        $this->denyAccessUnlessGranted(AuthorizationVoterInterface::READ, $vendor);
 
-        $questionnaires = $this->questionnaireProvider->findByVendor($vendor);
+        $questionnaireSearchRequest->vendorId = $vendor->getId()
+            ->toString();
+        $questionnaires = $this->questionnaireProvider->search($questionnaireSearchRequest);
+        $count = $this->questionnaireProvider->count($questionnaireSearchRequest);
 
-        return new ApiJsonResponse(Response::HTTP_OK, $this->questionnaireResponseMapper->mapMultiple($questionnaires));
+        return new ApiJsonResponse(
+            Response::HTTP_OK,
+            $this->questionnaireResponseMapper->mapMultiple($questionnaires),
+            [
+                'X-Total-Count' => $count,
+            ]
+        );
     }
 
     /**
-     * @Route("/questionnaires/{questionnaireId}", methods="GET", name="questionnaires_get_one")
-     *
      * @OA\Tag(name="Questionnaire")
      * @OA\Response(
      *     response=200,
      *     description="Returns the information about a questionnaire",
      *     @OA\JsonContent(ref=@Model(type=QuestionnaireDto::class))
      * )
-     *
      * @Security(name="Bearer")
      */
-    public function getQuestionnaire(string $questionnaireId): Response
+    #[Route(path: '/{questionnaireId}', name: 'questionnaires_get_one', methods: 'GET')]
+    public function getQuestionnaire(string $vendorId, string $questionnaireId): Response
     {
-        try {
-            // TODO: implement proper authorization and token handling
-            /** @var Vendor $vendor */
-            $vendor = $this->getUser();
+        $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
+        $this->denyAccessUnlessGranted(AuthorizationVoterInterface::READ, $vendor);
 
-            $questionnaire = $this->questionnaireProvider->getByVendorAndId(
-                $vendor,
-                Uuid::fromString($questionnaireId)
-            );
+        $questionnaire = $this->questionnaireProvider->getByVendorAndId(
+            $vendor,
+            Uuid::fromString($questionnaireId)
+        );
 
-            return new ApiJsonResponse(Response::HTTP_OK, $this->questionnaireResponseMapper->map($questionnaire));
-        } catch (QuestionnaireNotFoundException $e) {
-            throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
-        }
+        return new ApiJsonResponse(Response::HTTP_OK, $this->questionnaireResponseMapper->map($questionnaire));
     }
 }

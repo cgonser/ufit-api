@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Controller\PhotoType;
 
 use App\Core\Exception\ApiJsonException;
@@ -17,65 +19,38 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route(path: '/photo_types')]
 class PhotoTypeController extends AbstractController
 {
-    private PhotoTypeResponseMapper $photoTypeResponseMapper;
-
-    private PhotoTypeProvider $photoTypeProvider;
-
     public function __construct(
-        PhotoTypeProvider $photoTypeProvider,
-        PhotoTypeResponseMapper $photoTypeResponseMapper
+        private PhotoTypeProvider $photoTypeProvider,
+        private PhotoTypeResponseMapper $photoTypeResponseMapper
     ) {
-        $this->photoTypeResponseMapper = $photoTypeResponseMapper;
-        $this->photoTypeProvider = $photoTypeProvider;
     }
 
     /**
-     * @Route("/photo_types", methods="GET", name="photo_types_get")
-     *
      * @OA\Tag(name="PhotoType")
-     * @OA\Response(
-     *     response=200,
-     *     description="Returns the information all photoTypes",
-     *     @OA\JsonContent(
-     *         type="array",
-     *         @OA\Items(ref=@Model(type=PhotoTypeDto::class)))
-     *     )
-     * )
+     * @OA\Response(response=200, description="Success", @OA\JsonContent(type="array", @OA\Items(ref=@Model(type=PhotoTypeDto::class)))))
      * @Security(name="Bearer")
      */
-    public function getPhotoTypes(): Response
+    #[Route(name: 'photo_types_get', methods: 'GET')]
+    public function getPhotoTypes(): ApiJsonResponse
     {
         $photoTypes = $this->photoTypeProvider->findAll();
 
-        return new ApiJsonResponse(
-            Response::HTTP_OK,
-            $this->photoTypeResponseMapper->mapMultiple($photoTypes)
-        );
+        return new ApiJsonResponse(Response::HTTP_OK, $this->photoTypeResponseMapper->mapMultiple($photoTypes));
     }
 
     /**
-     * @Route("/photo_types/{photoTypeId}", methods="GET", name="photo_types_get_one")
-     *
      * @OA\Tag(name="PhotoType")
-     * @OA\Response(
-     *     response=200,
-     *     description="Returns the information about a photo type",
-     *     @OA\JsonContent(ref=@Model(type=PhotoTypeDto::class))
-     * )
+     * @OA\Response(response=200, description="Success", @OA\JsonContent(ref=@Model(type=PhotoTypeDto::class)))
      * @Security(name="Bearer")
      */
+    #[Route(path: '/{photoTypeId}', name: 'photo_types_get_one', methods: 'GET')]
     public function getPhotoType(string $photoTypeId): Response
     {
-        try {
-            $photoType = $this->photoTypeProvider->get(
-                Uuid::fromString($photoTypeId)
-            );
+        $photoType = $this->photoTypeProvider->get(Uuid::fromString($photoTypeId));
 
-            return new ApiJsonResponse(Response::HTTP_OK, $this->photoTypeResponseMapper->map($photoType));
-        } catch (PhotoTypeNotFoundException $e) {
-            throw new ApiJsonException(Response::HTTP_NOT_FOUND, $e->getMessage());
-        }
+        return new ApiJsonResponse(Response::HTTP_OK, $this->photoTypeResponseMapper->map($photoType));
     }
 }

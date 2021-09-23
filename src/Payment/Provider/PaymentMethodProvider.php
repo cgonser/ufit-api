@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Provider;
 
 use App\Core\Provider\AbstractProvider;
@@ -9,12 +11,12 @@ use Doctrine\ORM\QueryBuilder;
 
 class PaymentMethodProvider extends AbstractProvider
 {
-    public function __construct(PaymentMethodRepository $repository)
+    public function __construct(PaymentMethodRepository $paymentMethodRepository)
     {
-        $this->repository = $repository;
+        $this->repository = $paymentMethodRepository;
     }
 
-    protected function addFilters(QueryBuilder $queryBuilder, array $filters)
+    protected function addFilters(QueryBuilder $queryBuilder, array $filters): void
     {
         if (isset($filters['root.countryCode'])) {
             $queryBuilder
@@ -28,11 +30,14 @@ class PaymentMethodProvider extends AbstractProvider
         parent::addFilters($queryBuilder, $filters);
     }
 
-    protected function throwNotFoundException()
+    protected function throwNotFoundException(): void
     {
         throw new PaymentMethodNotFoundException();
     }
 
+    /**
+     * @return array<string, string>
+     */
     protected function getSearchableFields(): array
     {
         return [
@@ -40,10 +45,11 @@ class PaymentMethodProvider extends AbstractProvider
         ];
     }
 
+    /**
+     * @return string[]
+     */
     protected function getFilterableFields(): array
     {
-        return [
-            'countryCode',
-        ];
+        return ['countryCode'];
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core\Twig;
 
 use Twig\Extension\AbstractExtension;
@@ -10,7 +12,10 @@ class MailtoExtension extends AbstractExtension
     public function getFilters()
     {
         return [
-            new TwigFilter('mailto', [$this, 'mailto'], ['pre_escape' => 'html', 'is_safe' => ['html']]),
+            new TwigFilter('mailto', [$this, 'mailto'], [
+                'pre_escape' => 'html',
+                'is_safe' => ['html'],
+            ]),
         ];
     }
 

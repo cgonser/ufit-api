@@ -1,28 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Service;
 
 use App\Payment\Entity\Payment;
-use App\Payment\Service\PaymentProcessor\CreditCardProcessor;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\String\UnicodeString;
 
 class PaymentProcessor
 {
-    private PaymentProcessorFactory $paymentProcessorFactory;
-
-    private LoggerInterface $logger;
-
-    public function __construct(PaymentProcessorFactory $paymentProcessorFactory, LoggerInterface $logger)
+    public function __construct(private PaymentProcessorFactory $paymentProcessorFactory)
     {
-        $this->paymentProcessorFactory = $paymentProcessorFactory;
-        $this->logger = $logger;
     }
 
-    public function process(Payment $payment)
+    public function process(Payment $payment): void
     {
-        $processor = $this->paymentProcessorFactory->createProcessor($payment->getPaymentMethod());
+        $paymentProcessor = $this->paymentProcessorFactory->createProcessor($payment->getPaymentMethod());
 
-        $processor->process($payment);
+        $paymentProcessor->process($payment);
     }
 }

@@ -1,54 +1,61 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\DataFixtures;
 
 use App\Localization\Provider\CurrencyProvider;
 use App\Vendor\Entity\Vendor;
 use App\Vendor\Provider\VendorProvider;
 use App\Vendor\Request\VendorPlanRequest;
-use App\Vendor\Service\VendorPlanManager;
+use App\Vendor\Service\VendorPlanRequestManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use Iterator;
 
 class VendorPlanFixtures extends Fixture implements DependentFixtureInterface
 {
-    private VendorProvider $vendorProvider;
-
-    private VendorPlanManager $vendorPlanService;
-
-    private CurrencyProvider $currencyProvider;
-
     public function __construct(
-        VendorProvider $vendorProvider,
-        CurrencyProvider $currencyProvider,
-        VendorPlanManager $vendorPlanService
+        private VendorProvider $vendorProvider,
+        private CurrencyProvider $currencyProvider,
+        private VendorPlanRequestManager $vendorPlanManager
     ) {
-        $this->vendorProvider = $vendorProvider;
-        $this->vendorPlanService = $vendorPlanService;
-        $this->currencyProvider = $currencyProvider;
     }
 
-    public function load(ObjectManager $manager): void
+    public function load(ObjectManager $objectManager): void
     {
         foreach ($this->vendorProvider->findAll() as $vendor) {
             $this->loadVendor($vendor);
         }
 
-        $manager->flush();
+        $objectManager->flush();
     }
 
-    private function loadVendor(Vendor $vendor)
+    /**
+     * @return array<class-string<VendorFixtures>>
+     */
+    public function getDependencies(): array
+    {
+        return [VendorFixtures::class];
+    }
+
+    private function loadVendor(Vendor $vendor): void
     {
         foreach ($this->getData() as $vendorPlanRequest) {
-            $this->vendorPlanService->create($vendor, $vendorPlanRequest);
+            $this->vendorPlanManager->createFromRequest($vendor, $vendorPlanRequest);
         }
     }
 
-    private function getData(): \Iterator
+    /**
+     * @return Iterator<VendorPlanRequest>
+     */
+    private function getData(): Iterator
     {
         $currencies = $this->currencyProvider->findAll();
         $currency = $currencies[array_rand($currencies)];
+
+        $price = 10 * random_int(3, 30);
 
         $vendorPlanRequest = new VendorPlanRequest();
         $vendorPlanRequest->name = 'Monthly';
@@ -56,19 +63,15 @@ class VendorPlanFixtures extends Fixture implements DependentFixtureInterface
         $vendorPlanRequest->durationMonths = 1;
         $vendorPlanRequest->isVisible = true;
         $vendorPlanRequest->currency = $currency->getCode();
-        $vendorPlanRequest->features = [
-            'Photos and videos',
-            'Weekly updates',
-            'Detailed routine',
-        ];
-        $vendorPlanRequest->price = 10 * rand(3, 30);
+        $vendorPlanRequest->features = ['Photos and videos', 'Weekly updates', 'Detailed routine'];
+        $vendorPlanRequest->price = (string) $price;
 
         yield $vendorPlanRequest;
 
         $vendorPlanRequest->name = 'Weekly';
         $vendorPlanRequest->durationDays = 7;
         $vendorPlanRequest->durationMonths = null;
-        $vendorPlanRequest->price = $vendorPlanRequest->price / 4;
+        $vendorPlanRequest->price = (string) ($price / 4);
 
         yield $vendorPlanRequest;
 
@@ -76,15 +79,8 @@ class VendorPlanFixtures extends Fixture implements DependentFixtureInterface
         $vendorPlanRequest->isRecurring = false;
         $vendorPlanRequest->durationDays = null;
         $vendorPlanRequest->durationMonths = null;
-        $vendorPlanRequest->price = $vendorPlanRequest->price * 0.75;
+        $vendorPlanRequest->price = (string) ($price * 0.75);
 
         yield $vendorPlanRequest;
-    }
-
-    public function getDependencies()
-    {
-        return [
-            VendorFixtures::class,
-        ];
     }
 }

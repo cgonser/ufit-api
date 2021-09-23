@@ -1,43 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Provider;
 
+use App\Core\Provider\AbstractProvider;
 use App\Vendor\Entity\Questionnaire;
 use App\Vendor\Entity\Vendor;
 use App\Vendor\Exception\QuestionnaireNotFoundException;
 use App\Vendor\Repository\QuestionnaireRepository;
 use Ramsey\Uuid\UuidInterface;
 
-class QuestionnaireProvider
+class QuestionnaireProvider extends AbstractProvider
 {
-    private QuestionnaireRepository $questionnaireRepository;
-
-    public function __construct(QuestionnaireRepository $questionnaireRepository)
-    {
-        $this->questionnaireRepository = $questionnaireRepository;
-    }
-
-    public function get(UuidInterface $questionnaireId): Questionnaire
-    {
-        /** @var Questionnaire|null $questionnaire */
-        $questionnaire = $this->questionnaireRepository->find($questionnaireId);
-
-        if (!$questionnaire) {
-            throw new QuestionnaireNotFoundException();
-        }
-
-        return $questionnaire;
+    public function __construct(QuestionnaireRepository $questionnaireRepository) {
+        $this->repository = $questionnaireRepository;
     }
 
     public function getByVendorAndId(Vendor $vendor, UuidInterface $questionnaireId): Questionnaire
     {
-        /** @var Questionnaire|null $vendorPlan */
-        $questionnaire = $this->questionnaireRepository->findOneBy([
+        $questionnaire = $this->repository->findOneBy([
             'id' => $questionnaireId,
             'vendor' => $vendor,
         ]);
 
-        if (!$questionnaire) {
+        if (! $questionnaire) {
             throw new QuestionnaireNotFoundException();
         }
 
@@ -46,6 +33,21 @@ class QuestionnaireProvider
 
     public function findByVendor(Vendor $vendor): array
     {
-        return $this->questionnaireRepository->findBy(['vendor' => $vendor]);
+        return $this->repository->findBy([
+            'vendor' => $vendor,
+        ]);
+    }
+
+    protected function throwNotFoundException(): void
+    {
+        throw new QuestionnaireNotFoundException();
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function getFilterableFields(): array
+    {
+        return ['vendorId'];
     }
 }

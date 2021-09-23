@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Localization\Service;
 
-use App\Localization\Provider\CurrencyProvider;
 use App\Localization\Entity\Country;
+use App\Localization\Provider\CurrencyProvider;
 use App\Localization\Request\CountryRequest;
 use Ramsey\Uuid\Uuid;
 
@@ -13,10 +15,8 @@ class CountryRequestManager
 
     private CurrencyProvider $currencyProvider;
 
-    public function __construct(
-        CountryManager $countryManager,
-        CurrencyProvider $currencyProvider
-    ) {
+    public function __construct(CountryManager $countryManager, CurrencyProvider $currencyProvider)
+    {
         $this->countryManager = $countryManager;
         $this->currencyProvider = $currencyProvider;
     }
@@ -42,9 +42,7 @@ class CountryRequestManager
     private function mapFromRequest(Country $country, CountryRequest $countryRequest): void
     {
         if (null !== $countryRequest->currencyId) {
-            $country->setCurrency(
-                $this->currencyProvider->get(Uuid::fromString($countryRequest->currencyId))
-            );
+            $country->setCurrency($this->currencyProvider->get(Uuid::fromString($countryRequest->currencyId)));
         }
 
         if (null !== $countryRequest->code) {

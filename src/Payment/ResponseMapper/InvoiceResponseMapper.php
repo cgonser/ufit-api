@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\ResponseMapper;
 
 use App\Localization\ResponseMapper\CurrencyResponseMapper;
@@ -9,16 +11,10 @@ use App\Subscription\ResponseMapper\SubscriptionResponseMapper;
 
 class InvoiceResponseMapper
 {
-    private SubscriptionResponseMapper $subscriptionResponseMapper;
-
-    private CurrencyResponseMapper $currencyResponseMapper;
-
     public function __construct(
-        SubscriptionResponseMapper $subscriptionResponseMapper,
-        CurrencyResponseMapper $currencyResponseMapper
+        private SubscriptionResponseMapper $subscriptionResponseMapper,
+        private CurrencyResponseMapper $currencyResponseMapper
     ) {
-        $this->subscriptionResponseMapper = $subscriptionResponseMapper;
-        $this->currencyResponseMapper = $currencyResponseMapper;
     }
 
     public function map(Invoice $invoice, bool $mapSubscription = false, bool $mapCurrency = true): InvoiceDto
@@ -27,16 +23,14 @@ class InvoiceResponseMapper
         $invoiceDto->id = $invoice->getId()->toString();
         $invoiceDto->subscriptionId = $invoice->getSubscriptionId()->toString();
         $invoiceDto->currencyId = $invoice->getCurrencyId()->toString();
-        $invoiceDto->totalAmount = $invoice->getTotalAmount();
-        $invoiceDto->dueDate = $invoice->getDueDate()->format('Y-m-d');
-        $invoiceDto->paidAt = null !== $invoice->getPaidAt()
-            ? $invoice->getPaidAt()->format(\DateTimeInterface::ISO8601)
-            : null;
-        $invoiceDto->overdueNotificationSentAt = null !== $invoice->getOverdueNotificationSentAt()
-            ? $invoice->getOverdueNotificationSentAt()->format(\DateTimeInterface::ISO8601)
-            : null;
-        $invoiceDto->createdAt = $invoice->getCreatedAt()->format(\DateTimeInterface::ISO8601);
-        $invoiceDto->updatedAt = $invoice->getUpdatedAt()->format(\DateTimeInterface::ISO8601);
+        $invoiceDto->totalAmount = $invoice->getTotalAmount()?->toString();
+        $invoiceDto->dueDate = $invoice->getDueDate()?->format('Y-m-d');
+        $invoiceDto->paidAt = $invoice->getPaidAt()?->format(\DateTimeInterface::ATOM);
+        $invoiceDto->overdueNotificationSentAt = $invoice->getOverdueNotificationSentAt()?->format(
+            \DateTimeInterface::ATOM
+        );
+        $invoiceDto->createdAt = $invoice->getCreatedAt()->format(\DateTimeInterface::ATOM);
+        $invoiceDto->updatedAt = $invoice->getUpdatedAt()->format(\DateTimeInterface::ATOM);
 
         if ($mapSubscription) {
             $invoiceDto->subscription = $this->subscriptionResponseMapper->map($invoice->getSubscription());
@@ -49,6 +43,9 @@ class InvoiceResponseMapper
         return $invoiceDto;
     }
 
+    /**
+     * @return InvoiceDto[]
+     */
     public function mapMultiple(array $invoices, bool $mapSubscription = true, bool $mapCurrency = true): array
     {
         $invoiceDtos = [];

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Service;
 
 use App\Customer\Entity\Customer;
@@ -47,8 +49,10 @@ class CustomerMeasurementService
         $this->customerManager = $customerManager;
     }
 
-    public function create(Customer $customer, CustomerMeasurementRequest $customerMeasurementRequest): CustomerMeasurement
-    {
+    public function create(
+        Customer $customer,
+        CustomerMeasurementRequest $customerMeasurementRequest
+    ): CustomerMeasurement {
         $customerMeasurement = new CustomerMeasurement();
         $customerMeasurement->setCustomer($customer);
 
@@ -59,8 +63,10 @@ class CustomerMeasurementService
         return $customerMeasurement;
     }
 
-    public function update(CustomerMeasurement $customerMeasurement, CustomerMeasurementRequest $customerMeasurementRequest)
-    {
+    public function update(
+        CustomerMeasurement $customerMeasurement,
+        CustomerMeasurementRequest $customerMeasurementRequest
+    ) {
         $this->mapFromRequest($customerMeasurement, $customerMeasurementRequest);
 
         $this->customerMeasurementRepository->save($customerMeasurement);
@@ -71,8 +77,10 @@ class CustomerMeasurementService
         $this->customerMeasurementRepository->delete($customerMeasurement);
     }
 
-    private function mapFromRequest(CustomerMeasurement $customerMeasurement, CustomerMeasurementRequest $customerMeasurementRequest)
-    {
+    private function mapFromRequest(
+        CustomerMeasurement $customerMeasurement,
+        CustomerMeasurementRequest $customerMeasurementRequest
+    ) {
         if ($customerMeasurementRequest->has('notes')) {
             $customerMeasurement->setNotes($customerMeasurementRequest->notes);
         }
@@ -101,9 +109,7 @@ class CustomerMeasurementService
             $measurementType = null;
 
             if ($customerMeasurementItemRequest->has('type')) {
-                $measurementType = $this->measurementTypeProvider->getBySlug(
-                    $customerMeasurementItemRequest->type
-                );
+                $measurementType = $this->measurementTypeProvider->getBySlug($customerMeasurementItemRequest->type);
             }
 
             if ($customerMeasurementItemRequest->has('measurementTypeId')) {
@@ -117,7 +123,8 @@ class CustomerMeasurementService
             }
 
             $customerMeasurementItem = $this->customerMeasurementItemProvider->findOneByCustomerMeasurementAndType(
-                $customerMeasurement, $measurementType
+                $customerMeasurement,
+                $measurementType
             );
 
             if (null === $customerMeasurementItem) {
@@ -130,7 +137,7 @@ class CustomerMeasurementService
             }
 
             if ($customerMeasurementItemRequest->has('unit')) {
-                if (!$measurementType->isUnitValid($customerMeasurementItemRequest->unit)) {
+                if (! $measurementType->isUnitValid($customerMeasurementItemRequest->unit)) {
                     throw new CustomerMeasurementItemInvalidUnitException();
                 }
 

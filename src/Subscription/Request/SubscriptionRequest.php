@@ -1,22 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\Request;
 
+use Symfony\Component\Validator\Constraints\NotNull;
 use App\Customer\Request\CustomerRequest;
 use OpenApi\Annotations as OA;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints;
 
 /**
- * @OA\RequestBody(
- *     request="SubscriptionRequest"
- * )
+ * @OA\RequestBody()
  */
 class SubscriptionRequest
 {
     /**
      * @OA\Property()
-     * @Assert\NotNull()
      */
+    #[NotNull]
     public ?string $vendorPlanId = null;
 
     /**

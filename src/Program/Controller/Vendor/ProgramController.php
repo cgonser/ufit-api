@@ -1,16 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Controller\Vendor;
 
-use App\Core\Exception\ApiJsonException;
-use App\Core\Request\SearchRequest;
 use App\Core\Response\ApiJsonResponse;
-use App\Customer\ResponseMapper\CustomerResponseMapper;
+use App\Core\Security\AuthorizationVoterInterface;
 use App\Program\Dto\ProgramDto;
+use App\Program\Provider\VendorProgramProvider;
 use App\Program\Request\VendorProgramSearchRequest;
 use App\Program\ResponseMapper\ProgramResponseMapper;
-use App\Vendor\Entity\Vendor;
-use App\Program\Provider\VendorProgramProvider;
+use App\Vendor\Provider\VendorProvider;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
@@ -22,66 +22,36 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ProgramController extends AbstractController
 {
-    private VendorProgramProvider $programProvider;
-
-    private ProgramResponseMapper $programResponseMapper;
-
-    private CustomerResponseMapper $customerResponseMapper;
-
     public function __construct(
-        VendorProgramProvider $programProvider,
-        ProgramResponseMapper $programResponseMapper,
-        CustomerResponseMapper $customerResponseMapper
+        private VendorProvider $vendorProvider,
+        private VendorProgramProvider $vendorProgramProvider,
+        private ProgramResponseMapper $programResponseMapper
     ) {
-        $this->programProvider = $programProvider;
-        $this->programResponseMapper = $programResponseMapper;
-        $this->customerResponseMapper = $customerResponseMapper;
     }
 
     /**
-     * @Route("/vendors/{vendorId}/programs", methods="GET", name="vendor_programs_find")
-     *
-     * @ParamConverter("searchRequest", converter="querystring")
-     *
      * @OA\Tag(name="Program")
-     *
-     * @OA\Parameter(
-     *     in="query",
-     *     name="filters",
-     *     @OA\Schema(ref=@Model(type=VendorProgramSearchRequest::class))
-     * )
-     *
+     * @OA\Parameter(in="query", name="filters", @OA\Schema(ref=@Model(type=VendorProgramSearchRequest::class)))
      * @OA\Response(
      *     response=200,
-     *     description="Returns all programs of a given vendor",
-     *     @OA\Header(
-     *         header="X-Total-Count",
-     *         @OA\Schema(
-     *             type="int"
-     *         )
-     *     ),
-     *     @OA\JsonContent(
-     *         type="array",
-     *         @OA\Items(ref=@Model(type=ProgramDto::class)))
-     *     )
+     *     description="Success",
+     *     @OA\Header(header="X-Total-Count", @OA\Schema(type="int")),
+     *     @OA\JsonContent(type="array", @OA\Items(ref=@Model(type=ProgramDto::class))))
      * )
-     *
      * @Security(name="Bearer")
      */
-    public function getPrograms(string $vendorId, VendorProgramSearchRequest $searchRequest): Response
-    {
-        if ('current' == $vendorId) {
-            /** @var Vendor $vendor */
-            $vendor = $this->getUser();
-        } else {
-            // vendor fetching not implemented yet; requires also authorization
-            throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
-        }
+    #[Route(path: '/vendors/{vendorId}/programs', name: 'vendor_programs_find', methods: 'GET')]
+    #[ParamConverter(data: 'vendorProgramSearchRequest', converter: 'querystring')]
+    public function getPrograms(
+        string $vendorId,
+        VendorProgramSearchRequest $vendorProgramSearchRequest
+    ): ApiJsonResponse {
+        $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
+        $this->denyAccessUnlessGranted(AuthorizationVoterInterface::READ, $vendor);
 
-        $searchRequest->vendorId = $vendor->getId()->toString();
-
-        $programs = $this->programProvider->search($searchRequest);
-        $count = $this->programProvider->count($searchRequest);
+        $vendorProgramSearchRequest->vendorId = $vendor->getId()->toString();
+        $programs = $this->vendorProgramProvider->search($vendorProgramSearchRequest);
+        $count = $this->vendorProgramProvider->count($vendorProgramSearchRequest);
 
         return new ApiJsonResponse(
             Response::HTTP_OK,
@@ -93,32 +63,18 @@ class ProgramController extends AbstractController
     }
 
     /**
-     * @Route("/vendors/{vendorId}/programs/{programId}", methods="GET", name="vendor_programs_get_one")
-     *
      * @OA\Tag(name="Program")
-     * @OA\Response(
-     *     response=200,
-     *     description="Returns the information about a program",
-     *     @OA\JsonContent(ref=@Model(type=ProgramDto::class))
-     * )
-     *
+     * @OA\Response(response=200, description="Success", @OA\JsonContent(ref=@Model(type=ProgramDto::class)))
      * @Security(name="Bearer")
      */
-    public function getProgram(string $vendorId, string $programId): Response
+    #[Route(path: '/vendors/{vendorId}/programs/{programId}', name: 'vendor_programs_get_one', methods: 'GET')]
+    public function getProgram(string $vendorId, string $programId): ApiJsonResponse
     {
-        if ('current' == $vendorId) {
-            /** @var Vendor $vendor */
-            $vendor = $this->getUser();
-        } else {
-            // vendor fetching not implemented yet; requires also authorization
-            throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
-        }
+        $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
+        $this->denyAccessUnlessGranted(AuthorizationVoterInterface::READ, $vendor);
 
-        $program = $this->programProvider->getByVendorAndId($vendor, Uuid::fromString($programId));
+        $program = $this->vendorProgramProvider->getByVendorAndId($vendor, Uuid::fromString($programId));
 
-        return new ApiJsonResponse(
-            Response::HTTP_OK,
-            $this->programResponseMapper->map($program)
-        );
+        return new ApiJsonResponse(Response::HTTP_OK, $this->programResponseMapper->map($program));
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Localization\Controller\Timezone;
 
 use App\Core\Response\ApiJsonResponse;
@@ -47,9 +49,6 @@ class TimezoneController
             $timezones = $this->timezoneProvider->findAll();
         }
 
-        return new ApiJsonResponse(
-            Response::HTTP_OK,
-            $this->timezoneResponseMapper->mapMultiple($timezones)
-        );
+        return new ApiJsonResponse(Response::HTTP_OK, $this->timezoneResponseMapper->mapMultiple($timezones));
     }
 }

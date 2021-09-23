@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Provider;
 
 use App\Core\Provider\AbstractProvider;
@@ -11,17 +13,17 @@ use Ramsey\Uuid\UuidInterface;
 
 class PaymentProvider extends AbstractProvider
 {
-    public function __construct(PaymentRepository $repository)
+    public function __construct(PaymentRepository $paymentRepository)
     {
-        $this->repository = $repository;
+        $this->repository = $paymentRepository;
     }
 
-    public function getByCustomerAndId(UuidInterface $customerId, UuidInterface $paymentId): Payment
+    public function getByCustomerAndId(UuidInterface $customerId, UuidInterface $paymentId): ?Payment
     {
         /** @var Payment|null $payment */
         $payment = $this->get($paymentId);
 
-        if (!$payment->getInvoice()->getSubscription()->getCustomerId()->equals($customerId)) {
+        if (! $payment->getInvoice()->getSubscription()->getCustomerId()->equals($customerId)) {
             $this->throwNotFoundException();
         }
 
@@ -35,7 +37,7 @@ class PaymentProvider extends AbstractProvider
         ]);
     }
 
-    protected function throwNotFoundException()
+    protected function throwNotFoundException(): void
     {
         throw new PaymentNotFoundException();
     }
@@ -51,9 +53,15 @@ class PaymentProvider extends AbstractProvider
     protected function getFilterableFields(): array
     {
         return [
-            ['customerId' => 'subscription'],
-            ['vendorId' => 'vendorPlan'],
-            ['subscriptionId' => 'invoice'],
+            [
+                'customerId' => 'subscription',
+            ],
+            [
+                'vendorId' => 'vendorPlan',
+            ],
+            [
+                'subscriptionId' => 'invoice',
+            ],
             'invoiceId',
             'paymentMethodId',
             'status',

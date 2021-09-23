@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Controller;
 
-use App\Core\Exception\ApiJsonException;
 use App\Core\Exception\ApiJsonInputValidationException;
 use App\Core\Response\ApiJsonResponse;
+use App\Core\Security\AuthorizationVoterInterface;
 use App\Customer\Dto\CustomerDto;
 use App\Customer\Entity\Customer;
 use App\Customer\Provider\CustomerProvider;
@@ -22,44 +24,29 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class CustomerUpdateController extends AbstractController
 {
-    private CustomerRequestManager $customerRequestManager;
-
-    private CustomerResponseMapper $customerResponseMapper;
-
-    private CustomerProvider $customerProvider;
-
     public function __construct(
-        CustomerRequestManager $customerRequestManager,
-        CustomerProvider $customerProvider,
-        CustomerResponseMapper $customerResponseMapper
+        private CustomerProvider $customerProvider,
+        private CustomerRequestManager $customerRequestManager,
+        private CustomerResponseMapper $customerResponseMapper,
     ) {
-        $this->customerRequestManager = $customerRequestManager;
-        $this->customerResponseMapper = $customerResponseMapper;
-        $this->customerProvider = $customerProvider;
     }
 
     /**
-     * @Route("/customers/{customerId}", methods="PUT", name="customers_update")
-     * @ParamConverter("customerRequest", converter="fos_rest.request_body", options={
-     *     "deserializationContext"= {"allow_extra_attributes"=false}
-     * })
-     *
      * @OA\Tag(name="Customer")
      * @OA\RequestBody(required=true, @OA\JsonContent(ref=@Model(type=CustomerRequest::class)))
      * @OA\Response(response=200, description="Updates a customer", @OA\JsonContent(ref=@Model(type=CustomerDto::class)))
      * @OA\Response(response=400, description="Invalid input")
      */
+    #[Route(path: '/customers/{customerId}', name: 'customers_update', methods: 'PUT')]
+    #[ParamConverter(data: 'customerRequest', options: [
+        'deserializationContext' => ['allow_extra_attributes' => false],
+    ], converter: 'fos_rest.request_body')]
     public function update(
         string $customerId,
         CustomerRequest $customerRequest,
-        ConstraintViolationListInterface $validationErrors
-    ): Response {
-        if ($validationErrors->count() > 0) {
-            throw new ApiJsonInputValidationException($validationErrors);
-        }
-
-        /** @var Customer $customer */
-        $customer = $this->getUser();
+    ): ApiJsonResponse {
+        $customer = $this->customerProvider->get(Uuid::fromString($customerId));
+        $this->denyAccessUnlessGranted(AuthorizationVoterInterface::UPDATE, $customer);
 
         $this->customerRequestManager->updateFromRequest($customer, $customerRequest);
 

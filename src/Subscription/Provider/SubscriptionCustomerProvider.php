@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\Provider;
 
 use App\Core\Provider\AbstractProvider;
@@ -11,9 +13,9 @@ use Ramsey\Uuid\UuidInterface;
 
 class SubscriptionCustomerProvider extends AbstractProvider
 {
-    public function __construct(SubscriptionRepository $repository)
+    public function __construct(SubscriptionRepository $subscriptionRepository)
     {
-        $this->repository = $repository;
+        $this->repository = $subscriptionRepository;
     }
 
     public function getVendorCustomer(Vendor $vendor, UuidInterface $customerId): Customer
@@ -27,18 +29,13 @@ class SubscriptionCustomerProvider extends AbstractProvider
         return $customer;
     }
 
-    protected function throwNotFoundException()
+    protected function throwNotFoundException(): void
     {
         throw new CustomerNotFoundException();
     }
 
     protected function getFilterableFields(): array
     {
-        return [
-            'vendorPlanId',
-            'customerId',
-            'vendorId',
-            'isActive',
-        ];
+        return ['vendorPlanId', 'customerId', 'vendorId', 'isActive'];
     }
 }

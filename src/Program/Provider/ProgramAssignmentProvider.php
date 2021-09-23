@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Provider;
 
 use App\Core\Provider\AbstractProvider;
@@ -13,12 +15,41 @@ use Ramsey\Uuid\UuidInterface;
 
 class ProgramAssignmentProvider extends AbstractProvider
 {
-    public function __construct(ProgramAssignmentRepository $repository)
+    public function __construct(ProgramAssignmentRepository $programAssignmentRepository)
     {
-        $this->repository = $repository;
+        $this->repository = $programAssignmentRepository;
     }
 
-    protected function throwNotFoundException()
+    public function getByProgramAndId(Program $program, UuidInterface $programAssignmentId): ?ProgramAssignment
+    {
+        /** @var ProgramAssignment|null $programAssignment */
+        $programAssignment = $this->repository->findOneBy([
+            'id' => $programAssignmentId,
+            'program' => $program,
+        ]);
+
+        if ($programAssignment === null) {
+            $this->throwNotFoundException();
+        }
+
+        return $programAssignment;
+    }
+
+    public function searchProgramAssignments(Program $program, SearchRequest $searchRequest): array
+    {
+        return $this->search($searchRequest, [
+            'program' => $program,
+        ]);
+    }
+
+    public function countProgramAssignments(Program $program, SearchRequest $searchRequest): int
+    {
+        return $this->count($searchRequest, [
+            'program' => $program,
+        ]);
+    }
+
+    protected function throwNotFoundException(): void
     {
         throw new ProgramAssignmentNotFoundException();
     }
@@ -29,36 +60,14 @@ class ProgramAssignmentProvider extends AbstractProvider
             ->innerJoin('root.program', 'program');
     }
 
-    public function getByProgramAndId(Program $program, UuidInterface $programAssignmentId): ProgramAssignment
-    {
-        /** @var ProgramAssignment|null $programAssignment */
-        $programAssignment = $this->repository->findOneBy([
-            'id' => $programAssignmentId,
-            'program' => $program,
-        ]);
-
-        if (!$programAssignment) {
-            $this->throwNotFoundException();
-        }
-
-        return $programAssignment;
-    }
-
-    public function searchProgramAssignments(Program $program, SearchRequest $searchRequest): array
-    {
-        return $this->search($searchRequest, ['program' => $program]);
-    }
-
-    public function countProgramAssignments(Program $program, SearchRequest $searchRequest): int
-    {
-        return $this->count($searchRequest, ['program' => $program]);
-    }
-
     protected function getSearchableFields(): array
     {
         return [];
     }
 
+    /**
+     * @return string[]|array<string, string>
+     */
     protected function getFilterableFields(): array
     {
         return [

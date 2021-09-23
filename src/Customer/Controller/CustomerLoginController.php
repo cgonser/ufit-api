@@ -1,25 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Controller;
 
 use Gesdinet\JWTRefreshTokenBundle\Service\RefreshToken;
 use OpenApi\Annotations as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class CustomerLoginController extends AbstractController
 {
-    private RefreshToken $refreshTokenService;
-
-    public function __construct(RefreshToken $refreshTokenService)
-    {
-        $this->refreshTokenService = $refreshTokenService;
+    public function __construct(
+        private RefreshToken $refreshToken
+    ) {
     }
 
     /**
-     * @Route("/customers/login", methods="POST", name="customer_login_check")
-     *
      * @OA\Tag(name="Customer")
      * @OA\RequestBody(
      *     required=true,
@@ -33,13 +32,12 @@ class CustomerLoginController extends AbstractController
      * @OA\Response(response=400, description="Invalid input")
      * @OA\Response(response=401, description="Invalid credentials")
      */
-    public function login()
+    #[Route(path: '/customers/login', name: 'customer_login_check', methods: 'POST')]
+    public function login(): void
     {
     }
 
     /**
-     * @Route("/customers/token/refresh", methods="POST", name="customer_token_refresh")
-     *
      * @OA\Tag(name="Customer")
      * @OA\RequestBody(
      *     required=true,
@@ -52,8 +50,9 @@ class CustomerLoginController extends AbstractController
      * @OA\Response(response=400, description="Invalid input")
      * @OA\Response(response=401, description="Invalid credentials")
      */
-    public function tokenRefresh(Request $request)
+    #[Route(path: '/customers/token/refresh', name: 'customer_token_refresh', methods: 'POST')]
+    public function tokenRefresh(Request $request): Response
     {
-        return $this->refreshTokenService->refresh($request);
+        return $this->refreshToken->refresh($request);
     }
 }

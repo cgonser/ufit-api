@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\DataFixtures;
 
 use App\Customer\Request\CustomerRequest;
@@ -9,18 +11,18 @@ use Doctrine\Persistence\ObjectManager;
 
 class CustomerFixtures extends Fixture
 {
-    const CUSTOMER_COUNT = 20;
+    public const CUSTOMER_COUNT = 20;
 
-    const CUSTOMER_DEFAULT_PASSWORD = '123';
+    public const CUSTOMER_DEFAULT_PASSWORD = '123';
 
-    const COUNTRIES = ['BR', 'LU'];
+    public const COUNTRIES = ['BR', 'LU'];
 
-    const LOCALES = [
+    public const LOCALES = [
         'BR' => 'pt_BR',
         'LU' => 'en',
     ];
 
-    const TIMEZONES = [
+    public const TIMEZONES = [
         'BR' => 'America/Sao_Paulo',
         'LU' => 'Europe/Luxembourg',
     ];
@@ -40,7 +42,7 @@ class CustomerFixtures extends Fixture
     private function loadCustomers(ObjectManager $manager): void
     {
         foreach ($this->getData() as $customerRequest) {
-            $customer = $this->customerRequestManager->create($customerRequest);
+            $customer = $this->customerRequestManager->createFromRequest($customerRequest);
 
             $this->addReference('customer-'.$customer->getEmail(), $customer);
         }

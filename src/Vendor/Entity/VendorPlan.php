@@ -1,129 +1,118 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Entity;
 
 use App\Localization\Entity\Currency;
 use App\Payment\Entity\PaymentMethod;
 use App\Subscription\Entity\Subscription;
+use App\Vendor\Repository\VendorPlanRepository;
+use DateInterval;
 use Decimal\Decimal;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\CustomIdGenerator;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\Table;
+use Knp\DoctrineBehaviors\Contract\Entity\SoftDeletableInterface;
+use Knp\DoctrineBehaviors\Contract\Entity\TimestampableInterface;
+use Knp\DoctrineBehaviors\Model\SoftDeletable\SoftDeletableTrait;
+use Knp\DoctrineBehaviors\Model\Timestampable\TimestampableTrait;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
-/**
- * @ORM\Entity(repositoryClass="App\Vendor\Repository\VendorPlanRepository")
- * @ORM\Table(name="vendor_plan")
- * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
- */
-class VendorPlan
+#[Entity(repositoryClass: VendorPlanRepository::class)]
+#[Table(name: 'vendor_plan')]
+class VendorPlan implements SoftDeletableInterface, TimestampableInterface
 {
-    use TimestampableEntity;
-    use SoftDeleteableEntity;
+    use TimestampableTrait;
+    use SoftDeletableTrait;
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="uuid", unique=true)
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class=UuidGenerator::class)
-     */
+    #[Id]
+    #[Column(type: 'uuid', unique: true)]
+    #[GeneratedValue(strategy: 'CUSTOM')]
+    #[CustomIdGenerator(class: UuidGenerator::class)]
     private UuidInterface $id;
 
-    /**
-     * @ORM\Column(type="uuid")
-     */
+    #[Column(type: 'uuid')]
     private ?UuidInterface $vendorId = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Vendor")
-     * @ORM\JoinColumn(name="vendor_id", referencedColumnName="id", nullable=false)
-     */
+    #[ManyToOne(targetEntity: 'Vendor')]
+    #[JoinColumn(name: 'vendor_id', nullable: false)]
     private Vendor $vendor;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Questionnaire")
-     * @ORM\JoinColumn(name="questionnaire_id", referencedColumnName="id", nullable=true)
-     */
+    #[ManyToOne(targetEntity: 'Questionnaire')]
+    #[JoinColumn(name: 'questionnaire_id')]
     private ?Questionnaire $questionnaire = null;
 
-    /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank()
-     */
+    #[Column(type: 'string')]
+    #[NotBlank]
     private ?string $name = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     * @Assert\NotBlank()
-     */
+    #[Column(type: 'string', nullable: true)]
+    #[NotBlank]
     private ?string $slug = null;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[Column(type: 'text', nullable: true)]
     private ?string $description = null;
 
-    /**
-     * @ORM\Column(type="json", nullable=true)
-     */
+    #[Column(type: 'json', nullable: true)]
     private ?array $features = null;
 
-    /**
-     * @ORM\Column(type="decimal", nullable=false, options={"precision": 11, "scale": 2})
-     * @Assert\NotBlank()
-     */
-    private string $price;
+    #[Column(type: 'decimal', options: [
+        'precision' => 11,
+        'scale' => 2,
+    ])]
+    #[NotBlank]
+    private Decimal|string|null $price;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[Column(type: 'string', nullable: true)]
     private ?string $image = null;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Payment\Entity\PaymentMethod")
-     */
+    #[ManyToMany(targetEntity: PaymentMethod::class)]
     private Collection $paymentMethods;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Subscription\Entity\Subscription", mappedBy="vendorPlan")
+     * @var Subscription[]|Collection<int, Subscription>
      */
+    #[OneToMany(mappedBy: 'vendorPlan', targetEntity: Subscription::class)]
     private Collection $subscriptions;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Localization\Entity\Currency")
-     * @ORM\JoinColumn(name="currency_id", referencedColumnName="id")
-     * @Assert\NotBlank()
-     */
+    #[ManyToOne(targetEntity: Currency::class)]
+    #[JoinColumn(name: 'currency_id')]
+    #[NotBlank]
     private Currency $currency;
 
-    /**
-     * @ORM\Column(type="dateinterval", nullable=true)
-     */
-    private ?\DateInterval $duration = null;
+    #[Column(type: 'dateinterval', nullable: true)]
+    private ?DateInterval $duration = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false, options={"default": false})
-     */
+    #[Column(type: 'boolean', options: [
+        'default' => false,
+    ])]
     private bool $isApprovalRequired = false;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false, options={"default": true})
-     */
+    #[Column(type: 'boolean', options: [
+        'default' => true,
+    ])]
     private bool $isVisible = true;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false, options={"default": true})
-     */
+    #[Column(type: 'boolean', options: [
+        'default' => true,
+    ])]
     private bool $isActive = true;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false, options={"default": true})
-     */
+    #[Column(type: 'boolean', options: [
+        'default' => true,
+    ])]
     private bool $isRecurring = true;
 
     public function __construct()
@@ -132,7 +121,7 @@ class VendorPlan
         $this->paymentMethods = new ArrayCollection();
     }
 
-    public function getId(): ?UuidInterface
+    public function getId(): UuidInterface
     {
         return $this->id;
     }
@@ -156,6 +145,7 @@ class VendorPlan
 
     public function setVendor(Vendor $vendor): self
     {
+        $this->vendorId = $vendor->getId();
         $this->vendor = $vendor;
 
         return $this;
@@ -216,7 +206,7 @@ class VendorPlan
 
     public function setFeatures(?array $features): self
     {
-        if (is_array($features) && 0 == count($features)) {
+        if (is_array($features) && [] === $features) {
             $features = null;
         }
 
@@ -230,9 +220,9 @@ class VendorPlan
         return new Decimal($this->price);
     }
 
-    public function setPrice(Decimal $price): self
+    public function setPrice(Decimal|string $price): self
     {
-        $this->price = $price;
+        $this->price = is_string($price) ? new Decimal($price) : $price;
 
         return $this;
     }
@@ -273,7 +263,7 @@ class VendorPlan
         return $this;
     }
 
-    public function getSubscriptions()
+    public function getSubscriptions(): Collection
     {
         return $this->subscriptions;
     }
@@ -285,14 +275,14 @@ class VendorPlan
         return $this;
     }
 
-    public function getDuration(): ?\DateInterval
+    public function getDuration(): ?DateInterval
     {
         return $this->duration;
     }
 
-    public function setDuration(\DateInterval $duration): self
+    public function setDuration(DateInterval $dateInterval): self
     {
-        $this->duration = $duration;
+        $this->duration = $dateInterval;
 
         return $this;
     }
@@ -347,6 +337,6 @@ class VendorPlan
 
     public function isNew(): bool
     {
-        return !isset($this->id);
+        return ! isset($this->id);
     }
 }

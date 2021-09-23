@@ -1,60 +1,75 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Service;
 
+use App\Core\Service\ImageUploader;
 use App\Vendor\Entity\Vendor;
 use App\Vendor\Exception\VendorInvalidPhotoException;
-use Intervention\Image\ImageManagerStatic as Image;
 use GuzzleHttp\Client;
+use Intervention\Image\ImageManagerStatic;
 use League\Flysystem\FilesystemInterface;
 
-class VendorPhotoManager
+class VendorPhotoManager extends ImageUploader
 {
-    private VendorManager $vendorManager;
-    private FilesystemInterface $filesystem;
+    public const MAX_WIDTH = 1024;
+    public const MAX_HEIGHT = 1024;
 
     public function __construct(
-        VendorManager $vendorManager,
-        FilesystemInterface $vendorPhotoFileSystem
+        private VendorManager $vendorManager,
+        private FilesystemInterface $vendorPhotoFileSystem,
     ) {
-        $this->vendorManager = $vendorManager;
-        $this->filesystem = $vendorPhotoFileSystem;
     }
 
-    public function uploadPhoto(Vendor $vendor, string $photoContents): void
+    public function uploadPhoto(Vendor $vendor, string $photoContents, ?string $mimeType = null): void
     {
-        $image = Image::make($photoContents);
+        try {
+            $imageFile = tmpfile();
+            $imagePath = stream_get_meta_data($imageFile)['uri'];
+            fwrite($imageFile, $photoContents);
 
-        if (false === $image) {
-            throw new VendorInvalidPhotoException();
+            $filesize = getimagesize($imagePath);
+            $this->validateImageSize($filesize[0], $filesize[1]);
+            $this->allocateMemory($filesize[0], $filesize[1]);
+
+            $image = ImageManagerStatic::make($imageFile);
+
+            if (false === $image) {
+                throw new VendorInvalidPhotoException();
+            }
+
+            $image->fit(self::MAX_WIDTH, self::MAX_HEIGHT);
+            $filename = $vendor->getId()
+                ->toString().'.png';
+
+            $this->vendorPhotoFileSystem->put($filename, $image->encode('png'), [
+                'ACL' => 'public-read',
+            ]);
+
+            $vendor->setPhoto($filename);
+
+            $this->vendorManager->update($vendor);
+        } finally {
+            $this->resetMemoryAllocation();
         }
-
-        $filename = $vendor->getId()->toString().'.png';
-
-        $this->filesystem->put(
-            $filename,
-            $image->encode('png'),
-            ['ACL' => 'public-read']
-        );
-
-        $vendor->setPhoto($filename);
-
-        $this->vendorManager->update($vendor);
     }
 
     public function uploadFromUrl(Vendor $vendor, string $photoUrl): bool
     {
         try {
             $httpClient = new Client();
-            $photo = $httpClient->get($photoUrl);
+            $response = $httpClient->get($photoUrl);
 
-            $photoContents = $photo->getBody()->getContents();
+            $photoContents = $response->getBody()
+                ->getContents();
 
             $this->uploadPhoto($vendor, $photoContents);
 
             return true;
-        } catch (\Exception $e) {
-            echo $e;
+        } catch (\Exception $exception) {
+            echo $exception;
+
             return false;
         }
     }

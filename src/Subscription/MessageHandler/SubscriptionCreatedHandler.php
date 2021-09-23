@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\MessageHandler;
 
 use App\Subscription\Message\SubscriptionCreatedEvent;
@@ -10,20 +12,11 @@ use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
 class SubscriptionCreatedHandler implements MessageHandlerInterface
 {
-    private SubscriptionProvider $subscriptionProvider;
-
-    private SubscriptionEmailManager $subscriptionEmailManager;
-
-    private LoggerInterface $logger;
-
     public function __construct(
-        SubscriptionProvider $subscriptionProvider,
-        SubscriptionEmailManager $subscriptionEmailManager,
-        LoggerInterface $logger
+        private SubscriptionProvider $subscriptionProvider,
+        private SubscriptionEmailManager $subscriptionEmailManager,
+        private LoggerInterface $logger
     ) {
-        $this->subscriptionProvider = $subscriptionProvider;
-        $this->subscriptionEmailManager = $subscriptionEmailManager;
-        $this->logger = $logger;
     }
 
     public function __invoke(SubscriptionCreatedEvent $subscriptionCreatedEvent)
@@ -33,9 +26,14 @@ class SubscriptionCreatedHandler implements MessageHandlerInterface
         $this->logger->info(
             'subscription.created',
             [
-                'id' => $subscription->getId()->toString(),
-                'customerId' => $subscription->getCustomer()->getId()->toString(),
-                'vendorPlanId' => $subscription->getVendorPlan()->getId()->toString(),
+                'id' => $subscription->getId()
+                    ->toString(),
+                'customerId' => $subscription->getCustomer()
+                    ->getId()
+                    ->toString(),
+                'vendorPlanId' => $subscription->getVendorPlan()
+                    ->getId()
+                    ->toString(),
             ]
         );
 

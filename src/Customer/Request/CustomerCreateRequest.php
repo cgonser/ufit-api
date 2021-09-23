@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Request;
 
-use App\Core\Request\AbstractRequest;
 use OpenApi\Annotations as OA;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints;
 
 /**
  * @OA\RequestBody()
@@ -13,8 +14,9 @@ class CustomerCreateRequest extends CustomerRequest
 {
     /**
      * @OA\Property()
-     * @Assert\NotNull()
-     * @Assert\NotBlank()
      */
+    #[Constraints\NotNull]
+    #[Constraints\NotBlank]
+    #[Constraints\Email]
     public ?string $email = null;
 }

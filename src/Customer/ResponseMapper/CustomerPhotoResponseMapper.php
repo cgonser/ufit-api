@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\ResponseMapper;
 
 use App\Customer\Dto\CustomerPhotoDto;
@@ -12,10 +14,8 @@ class CustomerPhotoResponseMapper
 
     private string $customerPhotoS3Bucket;
 
-    public function __construct(
-        S3Client $s3Client,
-        string $customerPhotoS3Bucket
-    ) {
+    public function __construct(S3Client $s3Client, string $customerPhotoS3Bucket)
+    {
         $this->s3Client = $s3Client;
         $this->customerPhotoS3Bucket = $customerPhotoS3Bucket;
     }
@@ -27,7 +27,7 @@ class CustomerPhotoResponseMapper
         $customerPhotoDto->customerId = $customerPhoto->getCustomer()->getId()->toString();
         $customerPhotoDto->title = $customerPhoto->getTitle() ?? '';
         $customerPhotoDto->description = $customerPhoto->getDescription() ?? '';
-        $customerPhotoDto->takenAt = $customerPhoto->getTakenAt()->format(\DateTimeInterface::ATOM);
+        $customerPhotoDto->takenAt = $customerPhoto->getTakenAt()?->format(\DateTimeInterface::ATOM);
 
         if (null !== $customerPhoto->getFilename()) {
             $cmd = $this->s3Client->getCommand('GetObject', [

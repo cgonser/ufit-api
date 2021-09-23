@@ -1,25 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Controller;
 
 use Gesdinet\JWTRefreshTokenBundle\Service\RefreshToken;
 use OpenApi\Annotations as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class VendorLoginController extends AbstractController
 {
-    private RefreshToken $refreshTokenService;
-
-    public function __construct(RefreshToken $refreshTokenService)
-    {
-        $this->refreshTokenService = $refreshTokenService;
+    public function __construct(
+        private RefreshToken $refreshToken
+    ) {
     }
 
     /**
-     * @Route("/vendors/login", methods="POST", name="vendor_login_check")
-     *
      * @OA\Tag(name="Vendor")
      * @OA\RequestBody(
      *     required=true,
@@ -42,13 +41,12 @@ class VendorLoginController extends AbstractController
      *     description="Invalid credentials"
      * )
      */
-    public function login()
+    #[Route(path: '/vendors/login', name: 'vendor_login_check', methods: 'POST')]
+    public function login(): void
     {
     }
 
     /**
-     * @Route("/vendors/token/refresh", methods="POST", name="vendor_token_refresh")
-     *
      * @OA\Tag(name="Vendor")
      *
      * @OA\RequestBody(
@@ -78,8 +76,9 @@ class VendorLoginController extends AbstractController
      *     description="Invalid credentials"
      * )
      */
-    public function tokenRefresh(Request $request)
+    #[Route(path: '/vendors/token/refresh', name: 'vendor_token_refresh', methods: 'POST')]
+    public function tokenRefresh(Request $request): Response
     {
-        return $this->refreshTokenService->refresh($request);
+        return $this->refreshToken->refresh($request);
     }
 }

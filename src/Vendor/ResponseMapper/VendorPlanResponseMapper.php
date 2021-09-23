@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\ResponseMapper;
 
 use App\Payment\ResponseMapper\PaymentMethodResponseMapper;
@@ -9,24 +11,12 @@ use Aws\S3\S3Client;
 
 class VendorPlanResponseMapper
 {
-    private QuestionnaireResponseMapper $questionnaireResponseMapper;
-
-    private PaymentMethodResponseMapper $paymentMethodResponseMapper;
-
-    private S3Client $s3Client;
-
-    private string $vendorPhotoS3Bucket;
-
     public function __construct(
-        QuestionnaireResponseMapper $questionnaireResponseMapper,
-        PaymentMethodResponseMapper $paymentMethodResponseMapper,
-        S3Client $s3Client,
-        string $vendorPhotoS3Bucket
+        private QuestionnaireResponseMapper $questionnaireResponseMapper,
+        private PaymentMethodResponseMapper $paymentMethodResponseMapper,
+        private S3Client $s3Client,
+        private string $vendorPhotoS3Bucket
     ) {
-        $this->questionnaireResponseMapper = $questionnaireResponseMapper;
-        $this->paymentMethodResponseMapper = $paymentMethodResponseMapper;
-        $this->s3Client = $s3Client;
-        $this->vendorPhotoS3Bucket = $vendorPhotoS3Bucket;
     }
 
     public function map(VendorPlan $vendorPlan, bool $mapQuestionnaire = true): VendorPlanDto
@@ -36,9 +26,9 @@ class VendorPlanResponseMapper
         $vendorPlanDto->vendorId = $vendorPlan->getVendor()->getId()->toString();
         $vendorPlanDto->name = $vendorPlan->getName() ?? '';
         $vendorPlanDto->currency = $vendorPlan->getCurrency()->getCode();
-        $vendorPlanDto->durationDays = $vendorPlan->getDuration() ? $vendorPlan->getDuration()->d : null;
-        $vendorPlanDto->durationMonths = $vendorPlan->getDuration() ? $vendorPlan->getDuration()->m : null;
-        $vendorPlanDto->price = $vendorPlan->getPrice()->toFloat();
+        $vendorPlanDto->durationDays = $vendorPlan->getDuration()?->d;
+        $vendorPlanDto->durationMonths = $vendorPlan->getDuration()?->m;
+        $vendorPlanDto->price = $vendorPlan->getPrice()->toString();
         $vendorPlanDto->isVisible = $vendorPlan->isVisible();
         $vendorPlanDto->isRecurring = $vendorPlan->isRecurring();
         $vendorPlanDto->isActive = $vendorPlan->isActive();
@@ -58,7 +48,7 @@ class VendorPlanResponseMapper
                 : null;
         }
 
-        if (null != $vendorPlan->getImage()) {
+        if (null !== $vendorPlan->getImage()) {
             $vendorPlanDto->image = $this->s3Client->getObjectUrl(
                 $this->vendorPhotoS3Bucket,
                 $vendorPlan->getImage()
@@ -68,6 +58,9 @@ class VendorPlanResponseMapper
         return $vendorPlanDto;
     }
 
+    /**
+     * @return VendorPlanDto[]
+     */
     public function mapMultiple(array $vendorPlans, bool $mapQuestionnaire = false): array
     {
         $vendorPlanDtos = [];

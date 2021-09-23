@@ -1,116 +1,107 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Entity;
 
+use App\Vendor\Repository\VendorRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\CustomIdGenerator;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\Table;
+use Knp\DoctrineBehaviors\Contract\Entity\SoftDeletableInterface;
+use Knp\DoctrineBehaviors\Contract\Entity\TimestampableInterface;
+use Knp\DoctrineBehaviors\Model\SoftDeletable\SoftDeletableTrait;
+use Knp\DoctrineBehaviors\Model\Timestampable\TimestampableTrait;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
+use Serializable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
-/**
- * @ORM\Entity(repositoryClass="App\Vendor\Repository\VendorRepository")
- * @ORM\Table(name="vendor")
- * @UniqueEntity(fields={"email"})
- * @Gedmo\SoftDeleteable(fieldName="deletedAt", hardDelete=false)
- */
-class Vendor implements UserInterface, \Serializable
+#[Entity(repositoryClass: VendorRepository::class)]
+#[Table(name: 'vendor')]
+#[UniqueEntity(fields: ['email'])]
+class Vendor implements PasswordAuthenticatedUserInterface, UserInterface, Serializable, SoftDeletableInterface, TimestampableInterface
 {
-    use TimestampableEntity;
-    use SoftDeleteableEntity;
+    use TimestampableTrait;
+    use SoftDeletableTrait;
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="uuid", unique=true)
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class=UuidGenerator::class)
-     */
+    #[Id]
+    #[Column(type: 'uuid', unique: true)]
+    #[GeneratedValue(strategy: 'CUSTOM')]
+    #[CustomIdGenerator(class: UuidGenerator::class)]
     private UuidInterface $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="VendorPlan", mappedBy="vendor", cascade={"persist"})
+     * @var VendorPlan[]|Collection<int, VendorPlan>
      */
+    #[OneToMany(mappedBy: 'vendor', targetEntity: 'VendorPlan', cascade: ['persist'])]
     private Collection $plans;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[Column(type: 'string', nullable: true)]
     private ?string $name = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[Column(type: 'string', nullable: true)]
     private ?string $displayName = null;
 
-    /**
-     * @ORM\Column(type="string", unique=true)
-     * @Assert\NotBlank()
-     * @Assert\Email()
-     */
+    #[Column(type: 'string', unique: true)]
+    #[NotBlank]
+    #[Email]
     private string $email;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[Column(type: 'string', nullable: true)]
     private ?string $photo = null;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[Column(type: 'text', nullable: true)]
     private ?string $biography = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[Column(type: 'string', nullable: true)]
     private ?string $password = null;
 
-    /**
-     * @ORM\Column(type="json")
-     */
+    #[Column(type: 'json')]
     private array $roles = [];
 
-    /**
-     * @ORM\Column(type="json", nullable=false, options={"default": "{}"})
-     */
+    #[Column(type: 'json', options: [
+        'default' => '{}',
+    ])]
     private array $socialLinks = [];
 
-    /**
-     * @ORM\Column(type="string", nullable=true, unique=true)
-     */
+    #[Column(type: 'string', unique: true, nullable: true)]
     private ?string $slug = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[Column(type: 'string', nullable: true)]
     private ?string $country = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[Column(type: 'string', nullable: true)]
     private ?string $locale = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[Column(type: 'string', nullable: true)]
     private ?string $timezone = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=false, options={"default": true})
-     */
+    #[Column(type: 'boolean', options: [
+        'default' => true,
+    ])]
     private bool $allowEmailMarketing = true;
+
+    #[Column(type: 'datetime', nullable: true)]
+    private ?DateTimeInterface $welcomeEmailSentAt = null;
 
     public function __construct()
     {
         $this->plans = new ArrayCollection();
     }
 
-    public function getId(): ?UuidInterface
+    public function getId(): UuidInterface
     {
         return $this->id;
     }
@@ -139,7 +130,12 @@ class Vendor implements UserInterface, \Serializable
         return $this;
     }
 
-    public function getUsername(): ?string
+    public function getUserIdentifier(): string
+    {
+        return $this->getUsername();
+    }
+
+    public function getUsername(): string
     {
         return $this->email;
     }
@@ -151,7 +147,7 @@ class Vendor implements UserInterface, \Serializable
         return $this;
     }
 
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
         return $this->email;
     }
@@ -199,6 +195,9 @@ class Vendor implements UserInterface, \Serializable
         return $this;
     }
 
+    /**
+     * @return mixed[]
+     */
     public function getSocialLinks(): array
     {
         return $this->socialLinks;
@@ -220,6 +219,9 @@ class Vendor implements UserInterface, \Serializable
         return $this;
     }
 
+    /**
+     * @param mixed[] $socialLinks
+     */
     public function setSocialLinks(array $socialLinks): self
     {
         $this->socialLinks = $socialLinks;
@@ -229,6 +231,8 @@ class Vendor implements UserInterface, \Serializable
 
     /**
      * Returns the roles or permissions granted to the user for security.
+     *
+     * @return mixed[]
      */
     public function getRoles(): array
     {
@@ -242,6 +246,9 @@ class Vendor implements UserInterface, \Serializable
         return array_unique($roles);
     }
 
+    /**
+     * @param mixed[] $roles
+     */
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
@@ -323,6 +330,18 @@ class Vendor implements UserInterface, \Serializable
         return $this;
     }
 
+    public function getWelcomeEmailSentAt(): ?DateTimeInterface
+    {
+        return $this->welcomeEmailSentAt;
+    }
+
+    public function setWelcomeEmailSentAt(?\DateTimeInterface $welcomeEmailSentAt): self
+    {
+        $this->welcomeEmailSentAt = $welcomeEmailSentAt;
+
+        return $this;
+    }
+
     /**
      * Returns the salt that was originally used to encode the password.
      *
@@ -363,11 +382,13 @@ class Vendor implements UserInterface, \Serializable
     public function unserialize($serialized): void
     {
         // add $this->salt too if you don't use Bcrypt or Argon2i
-        [$this->id, $this->email, $this->password] = unserialize($serialized, ['allowed_classes' => false]);
+        [$this->id, $this->email, $this->password] = unserialize($serialized, [
+            'allowed_classes' => false,
+        ]);
     }
 
     public function isNew(): bool
     {
-        return !isset($this->id);
+        return ! isset($this->id);
     }
 }

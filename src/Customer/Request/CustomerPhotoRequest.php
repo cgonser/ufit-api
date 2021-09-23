@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Request;
 
 use OpenApi\Annotations as OA;
 
 /**
- * @OA\RequestBody(
- *     request="CustomerPhotoRequest"
- * )
+ * @OA\RequestBody()
  */
 class CustomerPhotoRequest
 {

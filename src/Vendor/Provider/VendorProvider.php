@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Provider;
 
 use App\Vendor\Entity\Vendor;
@@ -9,11 +11,9 @@ use Ramsey\Uuid\UuidInterface;
 
 class VendorProvider
 {
-    private VendorRepository $vendorRepository;
-
-    public function __construct(VendorRepository $vendorRepository)
-    {
-        $this->vendorRepository = $vendorRepository;
+    public function __construct(
+        private VendorRepository $vendorRepository
+    ) {
     }
 
     public function get(UuidInterface $vendorId): Vendor
@@ -21,25 +21,32 @@ class VendorProvider
         /** @var Vendor|null $vendor */
         $vendor = $this->vendorRepository->find($vendorId);
 
-        if (!$vendor) {
+        if (null === $vendor) {
             throw new VendorNotFoundException();
         }
 
         return $vendor;
     }
 
-    public function findOneByEmail(string $emailAddress): ?Vendor
+    public function findOneByEmail(string $emailAddress): ?object
     {
-        return $this->vendorRepository->findOneBy(['email' => $emailAddress]);
+        return $this->vendorRepository->findOneBy([
+            'email' => $emailAddress,
+        ]);
     }
 
-    public function findOneBySlug(string $slug): ?Vendor
+    public function findOneBySlug(string $slug): ?object
     {
-        return $this->vendorRepository->findOneBy(['slug' => $slug]);
+        return $this->vendorRepository->findOneBy([
+            'slug' => $slug,
+        ]);
     }
 
-    public function findAll(): array
+    /**
+     * @return mixed[]
+     */
+    public function findAll(?array $orderBy = []): array
     {
-        return $this->vendorRepository->findAll();
+        return $this->vendorRepository->findBy([], $orderBy);
     }
 }

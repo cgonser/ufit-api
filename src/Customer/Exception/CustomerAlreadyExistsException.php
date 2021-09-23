@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Exception;
 
-class CustomerAlreadyExistsException extends \Exception
+use App\Core\Exception\InvalidInputException;
+
+class CustomerAlreadyExistsException extends InvalidInputException
 {
-    protected $message = "Customer already exists";
+    protected $message = 'Customer already exists';
 }

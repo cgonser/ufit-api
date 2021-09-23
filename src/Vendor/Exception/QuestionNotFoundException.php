@@ -1,10 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Exception;
 
 use App\Core\Exception\ResourceNotFoundException;
 
 class QuestionNotFoundException extends ResourceNotFoundException
 {
-    protected $message = "Question not found";
+    /**
+     * @var string
+     */
+    protected $message = 'Question not found';
 }

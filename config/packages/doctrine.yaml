@@ -1,5 +1,6 @@
 doctrine:
     dbal:
+        server_version: 13
         url: '%env(resolve:DATABASE_URL)%'
         types:
             uuid: Ramsey\Uuid\Doctrine\UuidType
@@ -106,10 +107,9 @@ doctrine:
                 NOT_SIMILAR_TO: MartinGeorgiev\Doctrine\ORM\Query\AST\Functions\NotSimilarTo
                 UNACCENT: MartinGeorgiev\Doctrine\ORM\Query\AST\Functions\Unaccent
 
-
         filters:
             softdeleteable:
-                class: Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter
+                class: App\Core\ORM\SoftDeletableFilter
                 enabled: true
 
         mappings:
@@ -129,28 +129,28 @@ doctrine:
 
             App\Payment:
                 is_bundle: false
-                type: annotation
+                type: attribute
                 dir: '%kernel.project_dir%/src/Payment/Entity'
                 prefix: 'App\Payment\Entity'
                 alias: AppPayment
 
             App\Program:
                 is_bundle: false
-                type: annotation
+                type: attribute
                 dir: '%kernel.project_dir%/src/Program/Entity'
                 prefix: 'App\Program\Entity'
                 alias: AppProgram
 
             App\Vendor:
                 is_bundle: false
-                type: annotation
+                type: attribute
                 dir: '%kernel.project_dir%/src/Vendor/Entity'
                 prefix: 'App\Vendor\Entity'
                 alias: AppVendor
 
             App\Subscription:
                 is_bundle: false
-                type: annotation
+                type: attribute
                 dir: '%kernel.project_dir%/src/Subscription/Entity'
                 prefix: 'App\Subscription\Entity'
                 alias: AppVendor

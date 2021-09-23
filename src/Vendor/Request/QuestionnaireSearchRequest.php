@@ -1,15 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Request;
 
+use App\Core\Request\SearchRequest;
 use OpenApi\Annotations as OA;
 
 /**
- * @OA\RequestBody(
- *     request="QuestionnaireSearchRequest"
- * )
+ * @OA\RequestBody()
  */
-class QuestionnaireSearchRequest
+class QuestionnaireSearchRequest extends SearchRequest
 {
     /**
      * @OA\Property()

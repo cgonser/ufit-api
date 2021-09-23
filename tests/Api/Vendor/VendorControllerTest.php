@@ -1,110 +1,129 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Api\Vendor;
 
-use App\Vendor\Exception\VendorEmailAddressInUseException;
+use App\Vendor\Entity\Vendor;
+use joshtronic\LoremIpsum;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\HttpFoundation\Response;
 
-class VendorControllerTest extends VendorBaseTest
+class VendorControllerTest extends AbstractVendorTest
 {
-    public function testGetVendorUnauthenticated()
+    public function testGetPublicVendor(): void
     {
-        $client = $this->createClient();
-        $client->request('GET', '/vendors');
+        $client = static::createClient();
 
-        $this->assertResponseHeaderSame('Content-Type', 'application/json');
-        $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
+        $vendorData = $this->getVendorDummyData();
+        $vendor = $this->createVendorDummy($vendorData);
+
+        $this->testGetPublicVendorById($client, $vendor);
+        $this->testGetPublicVendorBySlug($client, $vendor);
     }
 
-    public function testPostVendor()
+    public function testGetPrivateVendor(): void
     {
-        $client = $this->createClient();
+        $client = static::createClient();
 
-        $vendor = $this->getVendor();
+        $vendorData = $this->getVendorDummyData();
+        $vendor = $this->createVendorDummy($vendorData);
 
-        $email = time().$vendor->getEmail();
-
-        $this->jsonPost(
-            $client,
-            '/vendors',
-            [
-                'name' => $vendor->getName(),
-                'email' => $email,
-                'password' => self::DEFAULT_VENDOR_PASSWORD,
-            ]
-        );
-
-        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
-        $this->assertResponseHeaderSame('Content-Type', 'application/json');
-
-        $response = json_decode($client->getResponse()->getContent(), true);
-        $this->assertSame($response['name'], $vendor->getName());
-        $this->assertNotEmpty($response['id']);
-        $this->assertNotEmpty($response['slug']);
-        // $this->assertSame($response['email'], $email);
-    }
-
-    public function testPostDuplicatedVendor()
-    {
-        $client = $this->createClient();
-
-        $vendor = $this->getVendor();
-
-        $this->jsonPost(
-            $client,
-            '/vendors',
-            [
-                'name' => $vendor->getName(),
-                'email' => $vendor->getEmail(),
-                'password' => self::DEFAULT_VENDOR_PASSWORD,
-            ]
-        );
-
-        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
-        $this->assertResponseHeaderSame('Content-Type', 'application/json');
-
-        $response = json_decode($client->getResponse()->getContent(), true);
-        $this->assertSame($response['message'], (new VendorEmailAddressInUseException())->getMessage());
-    }
-
-    public function testGetVendor()
-    {
-        $client = $this->createAuthenticatedClient();
         $client->request('GET', '/vendors/current');
+        $this->assertJsonResponse(Response::HTTP_UNAUTHORIZED);
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
-        $this->assertResponseHeaderSame('Content-Type', 'application/json');
+        $this->authenticateClient($client, $vendorData['email'], $vendorData['password']);
 
-        $response = json_decode($client->getResponse()->getContent(), true);
-        $vendor = $this->getVendor();
-        $this->assertSame($response['name'], $vendor->getName());
-        $this->assertNotEmpty($response['id']);
-        $this->assertNotEmpty($response['slug']);
-        // $this->assertSame($response['email'], $vendor->getEmail());
+        $this->testGetPrivateVendorById($client, $vendor);
+        $this->testGetPrivateVendorByCurrent($client, $vendor);
+        $this->testGetPrivateVendorBySlug($client, $vendor);
     }
 
-    public function testPutVendor()
+    public function testGetAnotherVendor(): void
     {
-        $client = $this->createAuthenticatedClient();
+        $client = static::createClient();
 
-        $vendor = $this->getVendor();
-        $vendor->setName('updated-'.$vendor->getName());
+        $vendorData = $this->getVendorDummyData();
+        $this->createVendorDummy($vendorData);
 
-        $this->jsonPut(
-            $client,
-            '/vendors/current',
-            [
-                'name' => $vendor->getName(),
-                'slug' => strtolower($vendor->getName()),
-                'email' => $vendor->getEmail(),
-            ]
-        );
+        $vendor2Data = $this->getVendorDummyData();
+        $vendor2Data['email'] = 'vendor-'.(new LoremIpsum())->word().'@ufit.io';
+        $vendor2 = $this->createVendorDummy($vendor2Data);
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $this->authenticateClient($client, $vendorData['email'], $vendorData['password']);
 
-        $response = json_decode($client->getResponse()->getContent(), true);
-        $this->assertSame($response['name'], $vendor->getName());
-        $this->assertNotEmpty($response['id']);
-        $this->assertNotEmpty($response['slug']);
+        $this->testGetPublicVendorById($client, $vendor2);
+        $this->testGetPublicVendorBySlug($client, $vendor2);
+    }
+
+    public function testVendorNotFound(): void
+    {
+        $client = static::createClient();
+
+        $client->request('GET', '/vendors/some-random-vendor');
+        $this->assertJsonResponse(Response::HTTP_NOT_FOUND);
+    }
+
+    private function testGetPublicVendorById(KernelBrowser $client, Vendor $vendor): void
+    {
+        $client->request('GET', '/vendors/'.$vendor->getId()->toString());
+        $this->assertJsonResponse(Response::HTTP_OK);
+        $this->testVendorPublicResponseData($vendor, $this->getAndAssertJsonResponseData($client));
+    }
+
+    private function testGetPublicVendorBySlug(KernelBrowser $client, Vendor $vendor): void
+    {
+        $client->request('GET', '/vendors/'.$vendor->getSlug());
+        $this->assertJsonResponse(Response::HTTP_OK);
+        $this->testVendorPublicResponseData($vendor, $this->getAndAssertJsonResponseData($client));
+    }
+
+    private function testVendorPublicResponseData(Vendor $vendor, array $responseData): void
+    {
+        $this->assertNull($responseData['email']);
+        $this->assertNull($responseData['locale']);
+        $this->assertNull($responseData['timezone']);
+        $this->assertNull($responseData['allowEmailMarketing']);
+        $this->assertSame($vendor->getId()->toString(), $responseData['id']);
+        $this->assertSame($vendor->getDisplayName(), $responseData['displayName']);
+        $this->assertSame($vendor->getName(), $responseData['name']);
+        $this->assertSame($vendor->getSlug(), $responseData['slug']);
+        $this->assertSame($vendor->getBiography(), $responseData['biography']);
+        $this->assertSame($vendor->getCountry(), $responseData['country']);
+    }
+
+    private function testGetPrivateVendorById(KernelBrowser $client, Vendor $vendor): void
+    {
+        $client->request('GET', '/vendors/'.$vendor->getId()->toString());
+        $this->assertJsonResponse(Response::HTTP_OK);
+        $this->testVendorPrivateResponseData($vendor, $this->getAndAssertJsonResponseData($client));
+    }
+
+    private function testGetPrivateVendorByCurrent(KernelBrowser $client, Vendor $vendor): void
+    {
+        $client->request('GET', '/vendors/current');
+        $this->assertJsonResponse(Response::HTTP_OK);
+        $this->testVendorPrivateResponseData($vendor, $this->getAndAssertJsonResponseData($client));
+    }
+
+    private function testGetPrivateVendorBySlug(KernelBrowser $client, Vendor $vendor): void
+    {
+        $client->request('GET', '/vendors/'.$vendor->getSlug());
+        $this->assertJsonResponse(Response::HTTP_OK);
+        $this->testVendorPrivateResponseData($vendor, $this->getAndAssertJsonResponseData($client));
+    }
+
+    private function testVendorPrivateResponseData(Vendor $vendor, array $responseData): void
+    {
+        $this->assertSame($vendor->getId()->toString(), $responseData['id']);
+        $this->assertSame($vendor->getEmail(), $responseData['email']);
+        $this->assertSame($vendor->getDisplayName(), $responseData['displayName']);
+        $this->assertSame($vendor->getName(), $responseData['name']);
+        $this->assertSame($vendor->getSlug(), $responseData['slug']);
+        $this->assertSame($vendor->getBiography(), $responseData['biography']);
+        $this->assertSame($vendor->getCountry(), $responseData['country']);
+        $this->assertSame($vendor->getTimezone(), $responseData['timezone']);
+        $this->assertSame($vendor->getLocale(), $responseData['locale']);
+        $this->assertSame($vendor->allowEmailMarketing(), $responseData['allowEmailMarketing']);
     }
 }

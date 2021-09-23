@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Subscription\DataFixtures;
 
 use App\Customer\DataFixtures\CustomerFixtures;
@@ -17,48 +19,48 @@ use Doctrine\Persistence\ObjectManager;
 
 class SubscriptionFixtures extends Fixture implements DependentFixtureInterface
 {
-    private SubscriptionRequestManager $service;
-
-    private CustomerProvider $customerProvider;
-
-    private VendorProvider $vendorProvider;
-
     private array $vendors = [];
 
-    public function __construct(
-        SubscriptionRequestManager $service,
-        CustomerProvider $customerProvider,
-        VendorProvider $vendorProvider
-    ) {
-        $this->service = $service;
-        $this->customerProvider = $customerProvider;
-        $this->vendorProvider = $vendorProvider;
+    public function __construct(private SubscriptionRequestManager $subscriptionRequestManager, private CustomerProvider $customerProvider, private VendorProvider $vendorProvider)
+    {
     }
 
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $objectManager): void
     {
         foreach ($this->customerProvider->findAll() as $customer) {
             $this->loadCustomer($customer);
         }
 
-        $manager->flush();
+        $objectManager->flush();
     }
 
-    private function loadCustomer(Customer $customer)
+    /**
+     * @return class-string<CustomerFixtures>[]|class-string<VendorFixtures>[]|class-string<VendorPlanFixtures>[]
+     */
+    public function getDependencies(): array
+    {
+        return [CustomerFixtures::class, VendorFixtures::class, VendorPlanFixtures::class];
+    }
+
+    private function loadCustomer(Customer $customer): void
     {
         $vendors = $this->getVendors();
         /** @var Vendor $vendor */
         $vendor = $vendors[array_rand($vendors)];
 
-        $vendorPlans = $vendor->getPlans();
-        $vendorPlan = $vendorPlans->get(rand(0, $vendorPlans->count() - 1));
+        $collection = $vendor->getPlans();
+        $vendorPlan = $collection->get(random_int(0, $collection->count() - 1));
 
         $subscriptionRequest = new SubscriptionRequest();
-        $subscriptionRequest->vendorPlanId = $vendorPlan->getId()->toString();
+        $subscriptionRequest->vendorPlanId = $vendorPlan->getId()
+            ->toString();
 
-        $this->service->createFromCustomerRequest($customer, $subscriptionRequest);
+        $this->subscriptionRequestManager->createFromCustomerRequest($customer, $subscriptionRequest);
     }
 
+    /**
+     * @return mixed[]
+     */
     private function getVendors(): array
     {
         if (empty($this->vendors)) {
@@ -66,14 +68,5 @@ class SubscriptionFixtures extends Fixture implements DependentFixtureInterface
         }
 
         return $this->vendors;
-    }
-
-    public function getDependencies()
-    {
-        return [
-            CustomerFixtures::class,
-            VendorFixtures::class,
-            VendorPlanFixtures::class,
-        ];
     }
 }

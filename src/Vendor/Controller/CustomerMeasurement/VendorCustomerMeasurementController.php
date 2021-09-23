@@ -1,17 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Vendor\Controller\CustomerMeasurement;
 
-use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
+use App\Core\Security\AuthorizationVoterInterface;
 use App\Customer\Dto\CustomerMeasurementDto;
 use App\Customer\Entity\Customer;
-use App\Customer\Exception\CustomerMeasurementNotFoundException;
 use App\Customer\Provider\CustomerMeasurementProvider;
-use App\Customer\Provider\CustomerProvider;
 use App\Customer\ResponseMapper\CustomerMeasurementResponseMapper;
 use App\Subscription\Provider\SubscriptionCustomerProvider;
 use App\Vendor\Entity\Vendor;
+use App\Vendor\Provider\VendorProvider;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
@@ -20,50 +21,33 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route(path: '/vendors/{vendorId}/customers/{customerId}/measurements')]
 class VendorCustomerMeasurementController extends AbstractController
 {
-    private CustomerMeasurementResponseMapper $customerMeasurementResponseMapper;
-    private CustomerMeasurementProvider $customerMeasurementProvider;
-    private CustomerProvider $customerProvider;
-    private SubscriptionCustomerProvider $subscriptionCustomerProvider;
-
     public function __construct(
-        CustomerMeasurementProvider $customerMeasurementProvider,
-        CustomerMeasurementResponseMapper $customerMeasurementResponseMapper,
-        CustomerProvider $customerProvider,
-        SubscriptionCustomerProvider $subscriptionCustomerProvider
+        private CustomerMeasurementProvider $customerMeasurementProvider,
+        private CustomerMeasurementResponseMapper $customerMeasurementResponseMapper,
+        private SubscriptionCustomerProvider $subscriptionCustomerProvider,
+        private VendorProvider $vendorProvider,
     ) {
-        $this->customerMeasurementResponseMapper = $customerMeasurementResponseMapper;
-        $this->customerMeasurementProvider = $customerMeasurementProvider;
-        $this->customerProvider = $customerProvider;
-        $this->subscriptionCustomerProvider = $subscriptionCustomerProvider;
     }
 
     /**
-     * @Route(
-     *     "/vendors/{vendorId}/customers/{customerId}/measurements",
-     *     methods="GET",
-     *     name="vendor_customers_measurements_get"
-     * )
-     *
      * @OA\Tag(name="Vendor / Customer / Measurement")
      * @OA\Response(
      *     response=200,
-     *     description="Returns the information about a customer measurements",
-     *     @OA\JsonContent(
-     *         type="array",
-     *         @OA\Items(ref=@Model(type=CustomerMeasurementDto::class)))
-     *     )
+     *     description="Success",
+     *     @OA\JsonContent(type="array", @OA\Items(ref=@Model(type=CustomerMeasurementDto::class))))
      * )
      * @Security(name="Bearer")
      */
-    public function getVendorCustomerMeasurements(string $vendorId, string $customerId): Response
+    #[Route(name: 'vendor_customers_measurements_get', methods: 'GET')]
+    public function getVendorCustomerMeasurements(string $vendorId, string $customerId): ApiJsonResponse
     {
-        /** @var Vendor $vendor */
-        $vendor = $this->getUser();
+        $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
+        $this->denyAccessUnlessGranted(AuthorizationVoterInterface::UPDATE, $vendor);
 
         $customer = $this->subscriptionCustomerProvider->getVendorCustomer($vendor, Uuid::fromString($customerId));
-
         $customerMeasurements = $this->customerMeasurementProvider->findByCustomer($customer);
 
         return new ApiJsonResponse(
@@ -73,30 +57,20 @@ class VendorCustomerMeasurementController extends AbstractController
     }
 
     /**
-     * @Route(
-     *     "/vendors/{vendorId}/customers/{customerId}/measurements/{customerMeasurementId}",
-     *     methods="GET",
-     *     name="vendor_customers_measurements_get_one"
-     * )
-     *
      * @OA\Tag(name="Vendor / Customer / Measurement")
-     * @OA\Response(
-     *     response=200,
-     *     description="Returns the information about a measurement",
-     *     @OA\JsonContent(ref=@Model(type=CustomerMeasurementDto::class))
-     * )
+     * @OA\Response(response=200, description="Success", @OA\JsonContent(ref=@Model(type=CustomerMeasurementDto::class)))
      * @Security(name="Bearer")
      */
+    #[Route(path: '/{customerMeasurementId}', name: 'vendor_customers_measurements_get_one', methods: 'GET')]
     public function getCustomerMeasurement(
         string $vendorId,
         string $customerId,
         string $customerMeasurementId
-    ): Response {
-        /** @var Vendor $vendor */
-        $vendor = $this->getUser();
+    ): ApiJsonResponse {
+        $vendor = $this->vendorProvider->get(Uuid::fromString($vendorId));
+        $this->denyAccessUnlessGranted(AuthorizationVoterInterface::UPDATE, $vendor);
 
         $customer = $this->subscriptionCustomerProvider->getVendorCustomer($vendor, Uuid::fromString($customerId));
-
         $customerMeasurement = $this->customerMeasurementProvider->getByCustomerAndId(
             $customer,
             Uuid::fromString($customerMeasurementId)

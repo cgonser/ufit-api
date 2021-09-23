@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Program\Controller\Customer;
 
-use App\Core\Exception\ApiJsonException;
 use App\Core\Response\ApiJsonResponse;
-use App\Customer\Entity\Customer;
+use App\Core\Security\AuthorizationVoterInterface;
 use App\Customer\Provider\CustomerProvider;
 use App\Program\Dto\ProgramAssignmentDto;
 use App\Program\Provider\ProgramAssignmentProvider;
@@ -22,27 +23,14 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class AssignmentController extends AbstractController
 {
-    private ProgramAssignmentProvider $programAssignmentProvider;
-
-    private ProgramAssignmentResponseMapper $responseMapper;
-
-    private CustomerProvider $customerProvider;
-
     public function __construct(
-        ProgramAssignmentProvider $programAssignmentProvider,
-        ProgramAssignmentResponseMapper $responseMapper,
-        CustomerProvider $customerProvider
+        private ProgramAssignmentProvider $programAssignmentProvider,
+        private ProgramAssignmentResponseMapper $programAssignmentResponseMapper,
+        private CustomerProvider $customerProvider
     ) {
-        $this->programAssignmentProvider = $programAssignmentProvider;
-        $this->customerProvider = $customerProvider;
-        $this->responseMapper = $responseMapper;
     }
 
     /**
-     * @Route("/customers/{customerId}/program_assignments", methods="GET", name="customer_program_assignments_find")
-     * @ParamConverter("searchRequest", converter="querystring")
-     * @Security(name="Bearer")
-     *
      * @OA\Tag(name="Program / Assignments")
      * @OA\Parameter(in="query", name="filters", @OA\Schema(ref=@Model(type=CustomerProgramSearchRequest::class)))
      * @OA\Response(
@@ -50,30 +38,28 @@ class AssignmentController extends AbstractController
      *     @OA\Header(header="X-Total-Count", @OA\Schema(type="int")),
      *     @OA\JsonContent(type="array", @OA\Items(ref=@Model(type=ProgramAssignmentDto::class))))
      * )
+     * @Security(name="Bearer")
      */
-    public function getProgramAssignments(string $customerId, ProgramAssignmentSearchRequest $searchRequest): Response
-    {
-        if ('current' === $customerId) {
-            /** @var Customer $customer */
-            $customer = $this->getUser();
-        } else {
-            if ($this->getUser() instanceof Customer) {
-                // customer fetching not implemented yet; requires also authorization
-                throw new ApiJsonException(Response::HTTP_UNAUTHORIZED);
-            }
+    #[Route(
+        path: '/customers/{customerId}/program_assignments',
+        name: 'customer_program_assignments_find',
+        methods: 'GET'
+    )]
+    #[ParamConverter(data: 'programAssignmentSearchRequest', converter: 'querystring')]
+    public function getProgramAssignments(
+        string $customerId,
+        ProgramAssignmentSearchRequest $programAssignmentSearchRequest
+    ): ApiJsonResponse {
+        $customer = $this->customerProvider->get(Uuid::fromString($customerId));
+        $this->denyAccessUnlessGranted(AuthorizationVoterInterface::READ, $customer);
 
-            // TODO: implement proper vendor authorization
-            $customer = $this->customerProvider->get(Uuid::fromString($customerId));
-        }
-
-        $searchRequest->customerId = $customer->getId();
-
-        $assignments = $this->programAssignmentProvider->search($searchRequest);
-        $count = $this->programAssignmentProvider->count($searchRequest);
+        $programAssignmentSearchRequest->customerId = $customer->getId()->toString();
+        $assignments = $this->programAssignmentProvider->search($programAssignmentSearchRequest);
+        $count = $this->programAssignmentProvider->count($programAssignmentSearchRequest);
 
         return new ApiJsonResponse(
             Response::HTTP_OK,
-            $this->responseMapper->mapMultiple($assignments, false, true),
+            $this->programAssignmentResponseMapper->mapMultiple($assignments, false, true),
             [
                 'X-Total-Count' => $count,
             ]

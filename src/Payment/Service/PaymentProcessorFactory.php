@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Payment\Service;
 
 use App\Payment\Entity\PaymentMethod;
@@ -8,12 +10,11 @@ use App\Payment\Service\PaymentProcessor\PaymentProcessorInterface;
 
 class PaymentProcessorFactory
 {
-    /** @var Iterable<PaymentProcessorInterface> */
-    private iterable $processors;
-
-    public function __construct(iterable $processors)
+    /**
+     * @param PaymentProcessorInterface[] $processors
+     */
+    public function __construct(private iterable $processors)
     {
-        $this->processors = $processors;
     }
 
     public function createProcessor(PaymentMethod $paymentMethod): PaymentProcessorInterface
