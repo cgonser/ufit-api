@@ -16,16 +16,16 @@ use Symfony\Component\Messenger\Exception\HandlerFailedException;
 
 class ApiExceptionEventSubscriber implements EventSubscriberInterface
 {
-    private LoggerInterface $logger;
-
-    public function __construct(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
+    public function __construct(
+        private LoggerInterface $logger
+    ) {
     }
 
     public function onKernelException(ExceptionEvent $event): void
     {
-        $event->setResponse($this->prepareResponse($event->getThrowable()));
+        $event->setResponse(
+            $this->prepareResponse($event->getThrowable())
+        );
     }
 
     public static function getSubscribedEvents()

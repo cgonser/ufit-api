@@ -25,6 +25,7 @@ class ProgramManager
     {
         $program = clone $originalProgram;
         $program->setOriginalProgram($originalProgram);
+        $program->setIsTemplate(false);
 
         foreach ($originalProgram->getAssets() as $originalProgramAsset) {
             $program->addAsset(clone $originalProgramAsset);
