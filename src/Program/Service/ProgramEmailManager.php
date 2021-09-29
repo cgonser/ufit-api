@@ -10,15 +10,17 @@ use Symfony\Component\Mailer\MailerInterface;
 
 class ProgramEmailManager
 {
-    public function __construct(private EmailComposer $emailComposer, private MailerInterface $mailer)
-    {
+    public function __construct(
+        private EmailComposer $emailComposer,
+        private MailerInterface $mailer,
+        private string $programOpenUrl
+    ) {
     }
 
     public function sendAssignedEmail(ProgramAssignment $programAssignment): void
     {
         $customer = $programAssignment->getCustomer();
-        $vendor = $programAssignment->getProgram()
-            ->getVendor();
+        $vendor = $programAssignment->getProgram()->getVendor();
 
         $this->mailer->send(
             $this->emailComposer->compose(
@@ -29,7 +31,7 @@ class ProgramEmailManager
                 [
                     'greeting_name' => $customer->getName(),
                     'vendor_name' => $vendor->getDisplayName(),
-                    'program_url' => 'https://ufit.io',
+                    'program_url' => $this->programOpenUrl,
                 ],
                 $customer->getLocale()
             )
